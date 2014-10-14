@@ -1,0 +1,76 @@
+Bookworm Developers Guide
+---------------------------------------------------------------------------
+
+DISPLAYABLE CONTENT
+
+Something which can be displayed in the bookworm viewer is referred to as
+a Content object. This is a table/object which provides the following
+values and methods:
+
+  VALUES:
+    title - The document title (becomes frame title)
+    minPage - The lowest page number (integer)
+    maxPage - The highest page number (integer)
+
+  REQUIRED METHODS:
+    :getPageLabel(page) - Returns the label for the page
+                         (displayed between prev and next buttons)
+    :getPageMaterial(page) - Returns the string material type (or nil for
+                            default) for the page.
+    :getPageContent(page) - Returns the string text content for the page.
+
+  OPTIONAL METHODS:
+    :resolveHref(href, view, page)
+            Called to resolve a hyperlink when clicked in the specified
+	    view, while viewing the specified page. Return true if
+	    resolved, false otherwise.
+
+  DO NOT IMPLEMENT A :getContent method, since this method is used to
+  determine if an object is displayable content or a content reference.
+
+CONTENT REFERENCE
+
+A content reference is a small object which provides a mechanism by which
+a piece of displayable content can be created, but which in theory is itself
+much smaller.
+
+  REQUIRED METHODS:
+    :getContent() - Returns the content that this reference represents.
+
+VIEWER API
+
+Interaction with the content display is performed through a viewer API. The
+default implementation is available as Bookworm.DEFAULT_VIEW.
+
+  METHODS:
+    :setPage(page) - Turn to the specified page
+    :getPage() - Return the current displayed page number
+    :getContent([stepsBack[,forceRef]) 
+            - Return the currently displayed content, or
+               a stored content reference from the history. If
+	       forceRef is true then return reference rather than content
+	       if possible (Only really useful if stepsBack = 0);
+    :show(content[,page[,flushStack]]) - Show the specified content
+              (or content reference), optionally looking at the 
+		specified page (nil == first page), and optionally
+                resetting the browse stack.
+    :refresh() - Refresh the current display
+    :back([steps]) - Drop the current view and go back in the browse
+                     stack (defaults to 1 step back)
+    :clear() - Clear the current view and browse stack
+    :resolveHref(href) - Resolve the specified hyperlink. Returns true if
+                         resolved, false oth
+
+LOCALIZATION
+
+Localization is split into two sets of files:
+
+Message and command catalogs are initialized in Bookworm.lua, and then
+overridden by locale in localization.lua (We can split this up into multiple
+files if it gets out of hand, the message catalog is pretty big now).
+
+Help documentation is provided in separate localized files, they're
+all loaded, starting with enUS which is the default. Other locales
+replace the help pages with the appropriate translations upon load, or
+do nothing if they do not apply.
+

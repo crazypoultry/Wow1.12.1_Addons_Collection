@@ -1,0 +1,346 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<!--
+	///////////////////////////////////////////////
+	//
+	// Thanks to Gypsymod for the great templates
+	//
+	///////////////////////////////////////////////
+	-->
+	<!-- Buff display template to determine how the buff icon, name text and duration text, as well as the border are displayed. -->
+	<Button name="m_WepBuffButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="39" y="20"/>
+		</Size>
+		<!-- Background to color according to helpful/harmful -->
+		<Backdrop name="$parentBackdrop" bgFile="interface\Addons\m_buffbar\bar1" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="48"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Icon to the left of the buff button -->
+				<Texture name="$parentIcon" file="interface\icons\INV_Sword_02">
+					<Size>
+						<AbsDimension x="29" y="29"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="6" y="23"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Buff Stacks -->
+				<FontString name="$parentStack" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHand" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<Color r="1" g="0.8196079" b="0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- purple buff border -->
+				<Texture name="$parentBorder" file="interface\buttons\ui-tempenchant-border" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="4" y="23"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Changed font size -->
+				<!-- Effect name text -->
+				<FontString name="$parentName" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="12"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- Effect duration text -->
+				<FontString name="$parentDuration" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<!-- Changed font color -->
+					<Color r="1" g=".82" b="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- buffType text -->
+				<FontString name="$parentbuffTypeText" setAllPoints="true" inherits="MasterFont" font="Fonts\FRIZQT__.TTF">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<!-- Changed font color -->
+					<Color r="0" g="1.0" b="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<!-- Script events for each buff -->
+		<Scripts>
+			<OnEvent>
+			</OnEvent>
+			<OnUpdate>
+			</OnUpdate>
+			<OnMouseDown>
+				if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+
+				elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+					m_WepBuffFrameCapsule:StartMoving();
+					mbbTooltip:Hide();
+       elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+       	if(m_options:IsVisible()) then
+        	m_options:Hide();
+        else
+        	m_options:Show();
+        end
+			end
+			</OnMouseDown>
+			<OnMouseUp>
+				m_WepBuffFrameCapsule:StopMovingOrSizing();
+			</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(weaponbuff_list[tmpbuff]) then
+										mbbTooltip:ClearLines();
+										mbbTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										mbbTooltip:SetInventoryItem("player", weaponbuff_list[tmpbuff]['slot']);
+									end
+								</OnEnter>
+								<OnLeave>
+									mbbTooltip:Hide();
+								</OnLeave>
+		</Scripts>
+	</Button>
+	<!-- Buff frame capsule for movement -->
+	<Button name="m_WepBuffFrameCapsule" frameStrata="LOW" movable="true" parent="UIParent" hidden="true">
+		<TitleRegion setAllPoints="true"/>
+		<Size>
+			<AbsDimension x="34" y="96"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="MinimapCluster" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-65" y="-2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	
+		<Scripts>
+		</Scripts>
+		<Frames>
+			<!-- Frame to place buffs in, up to a max of 24, anchored to the bottom left of the Minimap	-->
+			<Frame name="m_WepBuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true" movable="true">
+				<Size>
+					<AbsDimension x="50" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="m_WepBuffFrameCapsule" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-3" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<!-- Actual buttons to display each buff, anchored off eachother -->
+				<Frames>
+					<Button name="m_WepBuffButton1" inherits="m_WepBuffButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_WepBuffButton1a" id="1">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_WepBuffButton1Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_woptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_WepBuffFrameCapsule:StartMoving();
+										mbbTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_WepBuffFrameCapsule:StartMoving();
+										mbbTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_WepBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(weaponbuff_list[tmpbuff]) then
+										mbbTooltip:ClearLines();
+										mbbTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										mbbTooltip:SetInventoryItem("player", weaponbuff_list[tmpbuff]['slot']);
+									end
+								</OnEnter>
+								<OnLeave>
+									mbbTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					<Button name="m_WepBuffButton2" inherits="m_WepBuffButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_WepBuffButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_WepBuffButton2a" id="2">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_WepBuffButton2Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_woptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_WepBuffFrameCapsule:StartMoving();
+										mbbTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_WepBuffFrameCapsule:StartMoving();
+										mbbTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_WepBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(weaponbuff_list[tmpbuff]) then
+										mbbTooltip:ClearLines();
+										mbbTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										mbbTooltip:SetInventoryItem("player", weaponbuff_list[tmpbuff]['slot']);
+									end
+								</OnEnter>
+								<OnLeave>
+									mbbTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+				</Frames>
+				<!-- Scripts to run for the entire buff bar -->
+				<Scripts>
+      		<OnLoad>
+					</OnLoad>
+      		<OnEvent>
+					</OnEvent>
+					<OnUpdate>
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

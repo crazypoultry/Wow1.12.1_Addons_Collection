@@ -1,0 +1,314 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="InventoryOnParOption.lua"/>
+	
+	<CheckButton name="InventoryOnParOptionCheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	<EditBox name="IOPOptionEditBoxTemplate" enableMouse="true" autoFocus="false" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+                        <AbsDimension x="8" y="20" />
+					</Size>
+					<Anchors>
+                        <Anchor point="LEFT" />
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+                        <AbsDimension x="8" y="20" />
+					</Size>
+					<Anchors>
+                        <Anchor point="RIGHT" />
+					</Anchors>
+					<TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+                        <AbsDimension x="10" y="20" />
+					</Size>
+					<Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                        <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEditFocusLost>
+				this:HighlightText(0, 0);
+			</OnEditFocusLost>
+			<OnEnterPressed>
+				this:ClearFocus();
+			</OnEnterPressed>
+			<OnEscapePressed>
+				this:ClearFocus();
+			</OnEscapePressed>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	<Frame name="InventoryOnParOptionFrame" toplevel="true" frameStrata="MEDIUM" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="350" y="250"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<EditBox name="InventoryOnParOptionMinLevel" letters="2" numeric="true" inherits="IOPOptionEditBoxTemplate">
+				<Size>
+					<AbsDimension x="50" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="Minimum Level">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0" ></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed>
+						InventoryOnParOptionMaxLevel:SetFocus();
+					</OnTabPressed>
+					<OnTextChanged>
+						InventoryOnParOption.MinLevel.OnUpdate();
+					</OnTextChanged>
+					<OnShow>
+						InventoryOnParOption.MinLevel.OnShow();
+					</OnShow>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip:SetText("Minimum Level to scan", nil, nil, nil, nil, 1);
+					</OnEnter>
+				</Scripts>
+			</EditBox>
+			<EditBox name="InventoryOnParOptionMaxLevel" letters="2" numeric="true" inherits="IOPOptionEditBoxTemplate">
+				<Size>
+					<AbsDimension x="50" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InventoryOnParOptionMinLevel" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="150" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="Maximum Level">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0" ></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTabPressed>
+						InventoryOnParOptionDateFormat:SetFocus();
+					</OnTabPressed>
+					<OnTextChanged>
+						InventoryOnParOption.MaxLevel.OnUpdate();
+					</OnTextChanged>
+					<OnShow>
+						InventoryOnParOption.MaxLevel.OnShow();
+					</OnShow>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip:SetText("Maximum Level to scan", nil, nil, nil, nil, 1);
+					</OnEnter>
+				</Scripts>
+			</EditBox>
+			<EditBox name="InventoryOnParOptionDateFormat" letters="16"  numeric="false" inherits="IOPOptionEditBoxTemplate">
+				<Size>
+					<AbsDimension x="125" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InventoryOnParOptionMinLevel" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="Date Format">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0" ></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged>
+						InventoryOnParOption.DateFormat.OnUpdate();
+					</OnTextChanged>
+					<OnShow>
+						InventoryOnParOption.DateFormat.OnShow();
+					</OnShow>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip:SetText("Set Date Format for display", nil, nil, nil, nil, 1);
+					</OnEnter>
+				</Scripts>
+			</EditBox>
+			<Frame name="InventoryOnParOptionDropDownUpdateMinutes" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InventoryOnParOptionDateFormat" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="125" y="0" ></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontNormal" text="Minutes between updates">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="0" ></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						InventoryOnParOption.DropDownUpdateMinutes.OnShow();
+					</OnShow>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip:SetText("Specify the number of minutes to wait between requesting Par information for the same player.", nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<CheckButton name="InventoryOnParOptionCheckButtonScanPlayers" inherits="InventoryOnParOptionCheckButtonTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="InventoryOnParOptionDateFormat" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						InventoryOnParOption.CheckButtonScanPlayers.OnShow();
+					</OnShow>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, this)
+						GameTooltip:SetText("If checked this will scan other players par score when you target them within inspect range", nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentButtonClose" inherits="GameMenuButtonTemplate" text="CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>InventoryOnParOption.Close();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonSave" inherits="GameMenuButtonTemplate" text="SAVE">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentButtonClose" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-10" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>InventoryOnParOption.Save();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTitleTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitleText" inherits="GameTooltipHeaderText" text="OPTIONS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTitleTexture">
+							<Offset>
+								<AbsDimension x="0" y="-14" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>InventoryOnParOption.OnShow();</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,12 @@
+BINDING_HEADER_STANCESETS3 = "Stance Sets v3"
+BINDING_NAME_TOGGLESTANCESETSDLG = "Toggle Configuration Pane";
+BINDING_NAME_STANCESETNEXT = "Equip Next Weapon Set";
+BINDING_NAME_STANCESETSET1 = "Equip First Weapon Set";
+BINDING_NAME_STANCESETSET2 = "Equip Second Weapon Set";
+BINDING_NAME_STANCESETSET3 = "Equip Third Weapon Set";
+BINDING_NAME_STANCESETNEXT2 = "Equip Next of Alternative Sets 2";
+BINDING_NAME_STANCESETNEXT3 = "Equip Next of Alternative Sets 3";
+STANCESETS3_TITLE = "StanceSets 3"
+STANCESETS3_SETGROUP2 = "Alternative Sets 2"
+STANCESETS3_SETGROUP3 = "Alternative Sets 3"
+STANCESETS3_EQUIPFIRST = "Equip first on activate"

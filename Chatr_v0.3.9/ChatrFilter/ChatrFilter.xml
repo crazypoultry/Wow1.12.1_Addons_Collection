@@ -1,0 +1,150 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="ChatrFilter.lua" />
+	<Frame name="ChatrFilterOptions" toplevel="true" hidden="true" enableMouse="true" parent="ChatrOptions">
+		<Size><AbsDimension x="250" y="300"/></Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+				<Offset><AbsDimension x="0" y="0" /></Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<BackgroundInsets><AbsInset left="11" right="12" top="12" bottom="11"/></BackgroundInsets>
+		</Backdrop>
+		
+		<Scripts>
+			<OnLoad>
+				ChatrFilter_Init();
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent>
+				if event=="VARIABLES_LOADED" then
+					tinsert(Chatr_InboundFilters,ChatrFilter_In);
+					tinsert(Chatr_OutboundFilters,ChatrFilter_Out);
+					if Chatr_FilterList==nil or Chatr_FilterList=="" then
+						Chatr_FilterList="# No filters set. Check below for help.";
+					end
+					ChatrFilterList:SetText(ChatrFilter_List);
+					Chatr_Print(GetAddOnMetadata("ChatrFilter","Title").." loaded.");
+					ChatrFilterOptionsTitle:SetText(GetAddOnMetadata("ChatrFilter","Title"));
+					ChatrFilterHelpText:SetText(ChatrFilter_HelpText);
+					ChatrFilterHelpText:SetFont("Fonts\\ARIALN.TTF",11);
+					Chatr_AddPlugin("ChatrFilter");
+				end
+			</OnEvent>
+		</Scripts>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="ChatrFilterOptionsTitle" inherits="GameFontNormal" text="ChatrFilter" justifyH="CENTER">
+					<Anchors><Anchor point="TOP"></Anchor></Anchors>
+				</FontString>			
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ChatrFilterHelp" hidden="true">
+				<Size><AbsDimension x="225" y="300"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"></Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<EdgeSize><AbsValue val="32"/></EdgeSize>
+					<TileSize><AbsValue val="32"/></TileSize>
+					<BackgroundInsets><AbsInset left="11" right="12" top="12" bottom="11"/></BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="ChatrFilterHelpText" inherits="GameFontNormal" text="" justifyH="LEFT" justifyV="TOP">
+							<Anchors>
+								<Anchor point="TOPLEFT"><Offset><AbsDimension x="10" y="-10" /></Offset></Anchor>
+								<Anchor point="BOTTOMRIGHT"><Offset><AbsDimension x="-10" y="10" /></Offset></Anchor>
+							</Anchors>
+						</FontString>			
+					</Layer>
+				</Layers>				
+			</Frame>
+			<!-- Thanks TinyPad -->
+			<ScrollFrame name="ChatrFilterOptionsScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"><Offset><AbsDimension x="10" y="-15" /></Offset></Anchor>
+					<Anchor point="BOTTOMRIGHT"><Offset><AbsDimension x="-40" y="30" /></Offset></Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer level="BORDER">
+						<Texture file="Interface\ChatFrame\ChatFrameBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ChatrFilterOptionsScrollFrame" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="ChatrFilterOptionsScrollFrame" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="23" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Gradient>
+								<MinColor r="0.1" g="0.1" b="0.1"/>
+								<MaxColor r="0" g="0" b="0"/>
+							</Gradient>
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<EditBox name="ChatrFilterList" multiLine="true" maxLines="9" letters="4096" nonspacewrap="false" spacing="1" autoFocus="false">
+						<FontString inherits="ChatFontNormal"/>
+						<Size>
+							<AbsDimension x="190" y="300"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged>
+								local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+								this:GetParent():UpdateScrollChildRect();
+								local min;
+								local max;
+								min, max = scrollBar:GetMinMaxValues();
+								if ( max > 0 and (this.max ~= max) ) then
+									this.max = max;
+									scrollBar:SetValue(max);
+								end
+								ChatrFilter_List=this:GetText();
+							</OnTextChanged>
+							<OnEscapePressed>
+								this:ClearFocus();
+							</OnEscapePressed>
+							<OnLoad>
+								this:SetFont("Fonts\\ARIALN.TTF",12);
+							</OnLoad>
+						</Scripts>
+						
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="ChatrFilterHelpButton" inherits="GameMenuButtonTemplate" text="Help">
+				<Size><AbsDimension x="50" y="20" /></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="10" y="12"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>if ChatrFilterHelp:IsShown() then ChatrFilterHelp:Hide() else ChatrFilterHelp:Show() end</OnClick>
+				</Scripts>
+				
+			</Button>
+		</Frames>
+		
+	</Frame>
+	<Button name="ChatrFilterToggle" inherits="GameMenuButtonTemplate" text="Filters" parent="ChatrOptions">
+		<Size><AbsDimension x="60" y="25" /></Size>
+		<Scripts>
+			<OnClick>Chatr_ShowPlugin("ChatrFilter")</OnClick>
+		</Scripts>
+	</Button>	
+</Ui>

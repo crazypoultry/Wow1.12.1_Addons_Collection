@@ -1,0 +1,2226 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+ <Script file="MyQuestsWizard.lua" />
+
+  <CheckButton name="MyQuestsRadioButtonTemplate" virtual="true">
+   <Size>
+    <AbsDimension x="16" y="16"/>
+   </Size>
+   <Layers>
+    <Layer level="BACKGROUND">
+     <FontString name="$parentText" inherits="GameFontNormalSmall">
+      <Anchors>
+       <Anchor point="LEFT" relativePoint="RIGHT">
+        <Offset>
+         <AbsDimension x="1" y="0"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+     </FontString>
+    </Layer>
+   </Layers>
+   <Scripts>
+    <OnClick>
+     SendMailRadioButton_OnClick(this:GetID());
+    </OnClick>
+   </Scripts>
+   <NormalTexture file="Interface\Buttons\UI-RadioButton">
+    <TexCoords left="0" right="0.25" top="0" bottom="1"/>
+   </NormalTexture>
+   <HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
+    <TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+   </HighlightTexture>
+   <CheckedTexture file="Interface\Buttons\UI-RadioButton">
+    <TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+   </CheckedTexture>
+  </CheckButton>
+
+  <ScrollFrame name="EpBookScrollFrameTemplate" virtual="true" inherits="UIPanelScrollFrameTemplate">
+    <Scripts>
+      <OnLoad>
+        this.scrollBarHideable = true
+        ScrollFrame_OnScrollRangeChanged()
+      </OnLoad>
+    </Scripts>
+  </ScrollFrame>
+
+  <EditBox name="EpBookEditBoxTemplate" virtual="true" multiLine="true" letters="2048" autoFocus="false">
+    <Scripts>
+      <OnEscapePressed>
+        this:ClearFocus()
+      </OnEscapePressed>
+      <!--
+      <OnLoad>
+        this:EnableKeyboard(nil)
+        this:EnableMouse(nil)
+      </OnLoad>
+      <OnTabPressed>
+        this:Insert("    ")
+      </OnTabPressed>
+      -->
+      <OnTextChanged>
+        mq.UpdateEditBoxScroller(this)
+      </OnTextChanged>
+    </Scripts>
+  </EditBox>
+
+  <EditBox name="MQWizard_EditBoxTemplate" virtual="true" multiLine="true" letters="2048" autoFocus="false">
+   <Scripts>
+    <OnEscapePressed>
+     this:ClearFocus()
+    </OnEscapePressed>
+    <OnLoad>
+     this:EnableKeyboard(nil)
+     this:EnableMouse(nil)
+    </OnLoad>
+    <OnTabPressed>
+     --this:Insert( "    " )
+    </OnTabPressed>
+    <OnTextChanged>
+     mq.UpdateEditBoxScroller(this)
+    </OnTextChanged>
+   </Scripts>
+  </EditBox>
+
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Parent                                                 -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Parent" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="0" y="-104" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+  <HitRectInsets>
+   <AbsInset left="0" right="30" top="0" bottom="70"/>
+  </HitRectInsets>
+
+  <Layers>
+   <Layer leve="BACKGROUND">
+    <Texture file="Interface\QuestFrame\UI-QuestLog-BookIcon">
+     <Size>
+      <AbsDimension x="64" y="64" />
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="5" y="-5" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </Texture>
+   </Layer>   
+   <Layer level="ARTWORK">
+    <Texture file="Interface\ItemTextFrame\UI-ItemText-TopLeft">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT"/>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+     <Size>
+      <AbsDimension x="128" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPRIGHT"/>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\ItemTextFrame\UI-ItemText-BotLeft">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="BOTTOMLEFT"/>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+     <Size>
+      <AbsDimension x="128" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="BOTTOMRIGHT"/>
+     </Anchors>
+    </Texture>
+   </Layer>
+   <Layer level="ARTWORK">
+    <FontString name="MQWizard_TitleText" inherits="GameFontNormal" text="MQ_QUEST_WIZARD_FRAMETITLE">
+     <Anchors>
+      <Anchor point="CENTER">
+       <Offset>
+        <AbsDimension x="0" y="232"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="MQWizard_StepNameText" inherits="GameFontNormal" text="">
+     <Anchors>
+      <Anchor point="CENTER">
+       <Offset>
+        <AbsDimension x="0" y="205"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="MQWizard_StepNumberText" inherits="GameFontNormal">
+     <Anchors>
+      <Anchor point="CENTER" relativeTo="MQWizard_StepNameText" relativePoint="CENTER">
+       <Offset>
+        <AbsDimension x="0" y="-15"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <Texture name="$parentMaterialTopLeft" file="">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="21" y="-75"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </Texture>
+    <Texture name="$parentMaterialTopRight" file="">
+     <Size>
+      <AbsDimension x="64" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="TOPRIGHT"/>
+     </Anchors>
+    </Texture>
+    <Texture name="$parentMaterialBottomLeft" file="">
+     <Size>
+      <AbsDimension x="256" y="128"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMLEFT"/>
+     </Anchors>
+    </Texture>
+    <Texture name="$parentMaterialBottomRight" file="">
+     <Size>
+      <AbsDimension x="64" y="128"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentMaterialTopLeft" relativePoint="BOTTOMRIGHT"/>
+     </Anchors>
+    </Texture>
+   </Layer>
+  </Layers>
+
+  <Frames>
+   <Button name="MQWizard_CloseButton" inherits="UIPanelCloseButton">
+    <Anchors>
+     <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+      <Offset>
+       <AbsDimension x="-28" y="-9"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnClick>
+      MyQuestsWizard_OnCancel();
+     </OnClick>
+    </Scripts>
+   </Button>
+
+   <Button name="MQWizard_CancelButton" inherits="UIPanelButtonTemplate" text="MQ_QUEST_WIZARD_CANCEL">
+    <Size>
+     <AbsDimension x="80" y="22"/>
+    </Size>
+    <Anchors>
+     <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+      <Offset>
+       <AbsDimension x="-41" y="80"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnClick>
+      MyQuestsWizard_OnCancel();
+     </OnClick>
+    </Scripts>
+   </Button>
+
+   <Button name="MQWizard_SaveButton" inherits="UIPanelButtonTemplate" text="MQ_QUEST_WIZARD_SAVE">
+    <Size>
+     <AbsDimension x="80" y="22" />
+    </Size>
+    <Anchors>
+     <Anchor point="RIGHT" relativeTo="MQWizard_CancelButton" relativePoint="LEFT">
+      <Offset>
+       <AbsDimension x="-1" y="0" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnClick>
+      mq.CreateOrUpdateQuest();
+     </OnClick>
+    </Scripts>
+   </Button>
+
+   <Button name="MQWizard_PrevButton">
+    <Size>
+     <AbsDimension x="24" y="24"/>
+    </Size>
+    <Anchors>
+     <Anchor point="CENTER" relativeTo="MyQuestsWizard_Parent" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="40" y="115" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="BACKGROUND">
+      <FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="PREV">
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="MQWizard_PrevButton" relativePoint="RIGHT"/>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+    <Scripts>
+     <OnClick>
+      MyQuestsWizard_PrevPage();
+     </OnClick>
+    </Scripts>
+    <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+    <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+    <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+    <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+   </Button>
+   
+   <Button name="MQWizard_NextButton">
+    <Size>
+     <AbsDimension x="24" y="24"/>
+    </Size>
+    <Anchors>
+     <Anchor point="CENTER" relativeTo="MyQuestsWizard_Parent" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="323" y="115" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="BACKGROUND">
+      <FontString inherits="GameFontNormalSmall" justifyH="RIGHT" text="NEXT">
+       <Anchors>
+        <Anchor point="RIGHT" relativeTo="MQWizard_NextButton" relativePoint="LEFT"/>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+    <Scripts>
+     <OnClick>
+      MyQuestsWizard_NextPage();
+     </OnClick>
+    </Scripts>
+    <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+    <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+    <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+    <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+   </Button>
+  </Frames>
+
+  <Scripts>
+   <OnShow>
+    MyQuestsWizard_OnShow();
+   </OnShow>
+  </Scripts>
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page1                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page1" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="20" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+  <Frames>
+
+   <!--                                                                     -->
+   <!--                                                                     -->
+   <Frame name="MQWizard_Create" inherits="OptionFrameBoxTemplate">
+    <Size>
+     <AbsDimension x="310" y="90"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT">
+      <Offset>
+       <AbsDimension x="5" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="OVERLAY">
+      <FontString name="$parentTitleLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_QUESTTITLE">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="13" y="-7"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+      <FontString name="$parentLevelLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_QUESTLEVEL">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="200" y="-7"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+      <FontString name="$parentChainTitle" inherits="GameFontNormalSmall" text="Chain Parent">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentTitleLabel" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-25"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+    <Frames>
+     <EditBox name="$parentTitleEntry" letters="60" autoFocus="true" inherits="InputBoxTemplate">
+      <Size>
+       <AbsDimension x="150" y="16"/>
+      </Size>
+      <Anchors>
+       <Anchor point="TOPLEFT" relativeTo="$parentTitleLabel" relativePoint="BOTTOMLEFT">
+        <Offset>
+         <AbsDimension x="0" y="-3"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+     </EditBox>
+     <EditBox name="$parentLevelEntry" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+      <Size>
+       <AbsDimension x="50" y="16"/>
+      </Size>
+      <Anchors>
+       <Anchor point="TOPLEFT" relativeTo="$parentLevelLabel" relativePoint="BOTTOMLEFT">
+        <Offset>
+         <AbsDimension x="0" y="-3"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+     </EditBox>
+
+     <!--
+     <CheckButton name="$parentChainToggle" inherits="UICheckButtonTemplate">
+       <Size>
+         <AbsDimension x="22" y="22"/>
+       </Size>
+       <Anchors>
+         <Anchor point="TOPLEFT" relativeTo="$parentTitleLabel" relativePoint="BOTTOMLEFT">
+           <Offset>
+             <AbsDimension x="-7" y="-20"/>
+           </Offset>
+         </Anchor>
+       </Anchors>
+       <Layers>
+         <Layer level="OVERLAY">
+           <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Chain Quest">
+             <Anchors>
+               <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                 <Offset>
+                   <AbsDimension x="1" y="1"/>
+                 </Offset>
+               </Anchor>
+             </Anchors>
+           </FontString>
+         </Layer>
+       </Layers>
+     </CheckButton>
+     <CheckButton name="$parentChainLocal" inherits="MyQuestsRadioButtonTemplate" id="1">
+      <Anchors>
+       <Anchor point="TOPLEFT" relativeTo="$parentChainToggle" relativePoint="BOTTOMLEFT">
+        <Offset>
+         <AbsDimension x="20" y="8"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        getglobal(this:GetName().."Text"):SetText("Local Quest");
+       </OnLoad>
+      </Scripts>
+     </CheckButton>
+     -->
+     
+     <Frame name="MQWizard_ChainDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT" relativeTo="$parentChainTitle" relativePoint="BOTTOMLEFT">
+        <Offset>
+         <AbsDimension x="-20" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_ChainDropDown_OnLoad();
+       </OnLoad>
+       <OnShow>
+        MQWizard_ChainDropDown_OnLoad();
+       </OnShow>
+      </Scripts>
+     </Frame>
+
+     <!--
+     <CheckButton name="$parentChainRemote" inherits="MyQuestsRadioButtonTemplate" id="2">
+      <Anchors>
+       <Anchor point="LEFT" relativeTo="$parentChainLocal" relativePoint="RIGHT">
+        <Offset>
+         <AbsDimension x="125" y="0"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        getglobal(this:GetName().."Text"):SetText("Remote Quest");
+       </OnLoad>
+      </Scripts>
+     </CheckButton>
+     <EditBox name="$parentLevelEntry" autoFocus="false" inherits="InputBoxTemplate">
+      <Size>
+       <AbsDimension x="100" y="16"/>
+      </Size>
+      <Anchors>
+       <Anchor point="TOPLEFT" relativeTo="$parentChainRemote" relativePoint="BOTTOMLEFT">
+        <Offset>
+         <AbsDimension x="23" y="-3" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+     </EditBox>
+     -->
+    
+    </Frames>
+    <Scripts>
+     <OnLoad>
+      this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+      this:SetBackdropColor(0.15, 0.15, 0.15);
+      getglobal(this:GetName().."Title"):SetText("New Quest Creation");
+     </OnLoad>
+    </Scripts>
+   </Frame>
+
+   <!--                                                                     -->
+   <!--                                                                     -->
+   <Frame name="MQWizard_Failure" inherits="OptionFrameBoxTemplate">
+    <Size>
+     <AbsDimension x="310" y="55"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Create" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <CheckButton name="$parentDeathToggle" inherits="UICheckButtonTemplate">
+       <Size>
+         <AbsDimension x="22" y="22"/>
+       </Size>
+       <!--
+       <HitRectInsets>
+         <AbsInset left="-22" right="0" top="0" bottom="0"/>
+       </HitRectInsets>
+       -->
+       <Anchors>
+         <Anchor point="TOPLEFT">
+           <Offset>
+             <AbsDimension x="5" y="-5"/>
+           </Offset>
+         </Anchor>
+       </Anchors>
+       <Layers>
+         <Layer level="OVERLAY">
+           <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_PLAYERDEATH">
+             <Anchors>
+               <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                 <Offset>
+                   <AbsDimension x="1" y="1"/>
+                 </Offset>
+               </Anchor>
+             </Anchors>
+           </FontString>
+         </Layer>
+       </Layers>
+     </CheckButton>
+     <CheckButton name="$parentTimeToggle" inherits="UICheckButtonTemplate">
+       <Size>
+         <AbsDimension x="22" y="22"/>
+       </Size>
+       <!--
+       <HitRectInsets>
+         <AbsInset left="-22" right="0" top="0" bottom="0"/>
+       </HitRectInsets>
+       -->
+       <Anchors>
+         <Anchor point="TOPLEFT" relativeTo="$parentDeathToggle" relativePoint="BOTTOMLEFT">
+           <Offset>
+             <AbsDimension x="0" y="0"/>
+           </Offset>
+         </Anchor>
+       </Anchors>
+       <Layers>
+         <Layer level="OVERLAY">
+           <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_TIMELIMIT">
+             <Anchors>
+               <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                 <Offset>
+                   <AbsDimension x="1" y="1"/>
+                 </Offset>
+               </Anchor>
+             </Anchors>
+           </FontString>
+         </Layer>
+       </Layers>
+     </CheckButton>
+     <EditBox name="$parentTimeEntry" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+       <!-- <FontString inherits="GameFontNormalSmall" /> -->
+       <Size>
+         <AbsDimension x="20" y="16"/>
+       </Size>
+       <Anchors>
+         <Anchor point="LEFT" relativeTo="$parentTimeToggle" relativePoint="RIGHT">
+           <Offset>
+             <AbsDimension x="65" y="0"/>
+           </Offset>
+         </Anchor>
+       </Anchors>
+       <Layers>
+         <Layer level="OVERLAY">
+           <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_MINUTES">
+             <Anchors>
+               <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                 <Offset>
+                   <AbsDimension x="1" y="1"/>
+                 </Offset>
+               </Anchor>
+             </Anchors>
+           </FontString>
+         </Layer>
+       </Layers>
+     </EditBox>
+    </Frames>
+    <Scripts>
+     <OnLoad>
+      this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+      this:SetBackdropColor(0.15, 0.15, 0.15);
+      getglobal(this:GetName().."Title"):SetText("Failure Conditions");
+     </OnLoad>
+    </Scripts>
+   </Frame>
+
+   <Frame name="MQWizard_Complete" inherits="OptionFrameBoxTemplate">
+    <Size>
+     <AbsDimension x="310" y="55"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Failure" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <CheckButton name="$parentRepeatableToggle" inherits="UICheckButtonTemplate">
+       <Size>
+         <AbsDimension x="22" y="22"/>
+       </Size>
+       <!--
+       <HitRectInsets>
+         <AbsInset left="-22" right="0" top="0" bottom="0"/>
+       </HitRectInsets>
+       -->
+       <Anchors>
+         <Anchor point="TOPLEFT">
+           <Offset>
+             <AbsDimension x="5" y="-5"/>
+           </Offset>
+         </Anchor>
+       </Anchors>
+       <Layers>
+         <Layer level="OVERLAY">
+           <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_REPEATABLE">
+             <Anchors>
+               <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                 <Offset>
+                   <AbsDimension x="1" y="1"/>
+                 </Offset>
+               </Anchor>
+             </Anchors>
+           </FontString>
+         </Layer>
+       </Layers>
+     </CheckButton>
+     <CheckButton name="$parentLocalStoreToggle" inherits="UICheckButtonTemplate">
+       <Size>
+         <AbsDimension x="22" y="22"/>
+       </Size>
+       <!--
+       <HitRectInsets>
+         <AbsInset left="-22" right="0" top="0" bottom="0"/>
+       </HitRectInsets>
+       -->
+       <Anchors>
+         <Anchor point="TOPLEFT" relativeTo="$parentRepeatableToggle" relativePoint="BOTTOMLEFT">
+           <Offset>
+             <AbsDimension x="0" y="0"/>
+           </Offset>
+         </Anchor>
+       </Anchors>
+       <Layers>
+         <Layer level="OVERLAY">
+           <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_LABEL_LOCALSTORE">
+             <Anchors>
+               <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                 <Offset>
+                   <AbsDimension x="1" y="1"/>
+                 </Offset>
+               </Anchor>
+             </Anchors>
+           </FontString>
+         </Layer>
+       </Layers>
+     </CheckButton>
+    </Frames>
+    <Scripts>
+     <OnLoad>
+      this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+      this:SetBackdropColor(0.15, 0.15, 0.15);
+      getglobal(this:GetName().."Title"):SetText("Completion Options");
+     </OnLoad>
+    </Scripts>
+   </Frame>
+
+
+
+
+
+  
+
+
+  </Frames>
+
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page2                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page2" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="ARTWORK">
+    <FontString name="MQWizard_FilterTitle" inherits="GameFontHighlight" text="MQ_QUEST_WIZARD_FILTERHEADER" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="0" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="MQWizard_FilterInfo" inherits="GameFontNormal" text="MQ_QUEST_WIZARD_FILTERINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="300" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="MQWizard_FilterTitle" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>    
+   </Layer>
+  </Layers>
+
+  <Frames>
+   <CheckButton name="MQWizard_ClassFilterCheck" inherits="UIOptionsCheckButtonTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_FilterInfo" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_CLASSFILTER" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+   <EditBox name="MQWizard_ClassFilterEntry" autoFocus="false" inherits="InputBoxTemplate">
+    <Size>
+     <AbsDimension x="100" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_ClassFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="45" y="5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </EditBox>
+
+   <CheckButton name="MQWizard_GuildFilterCheck" inherits="UIOptionsCheckButtonTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_ClassFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_GUILDFILTER" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+   <EditBox name="MQWizard_GuildFilterEntry" autoFocus="false" inherits="InputBoxTemplate">
+    <Size>
+     <AbsDimension x="100" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_GuildFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="45" y="5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </EditBox>
+
+   <CheckButton name="MQWizard_LevelFilterCheck" inherits="UIOptionsCheckButtonTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_GuildFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_LEVELFILTER" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+   <EditBox name="MQWizard_MinLevelFilter" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+    <Size>
+     <AbsDimension x="30" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_LevelFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="45" y="5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString inherits="GameFontHighlightSmall" text="-">
+       <Anchors>
+        <Anchor point="LEFT" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="-5" y="0"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </EditBox>
+   <EditBox name="MQWizard_MaxLevelFilter" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+    <Size>
+     <AbsDimension x="30" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="MQWizard_MinLevelFilter" relativePoint="RIGHT">
+      <Offset>
+       <AbsDimension x="8" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </EditBox>
+
+   <CheckButton name="MQWizard_PlayerFilterCheck" inherits="UIOptionsCheckButtonTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_LevelFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_PLAYERFILTER" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+   <EditBox name="MQWizard_PlayerFilterEntry" autoFocus="false" inherits="InputBoxTemplate">
+    <Size>
+     <AbsDimension x="100" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_PlayerFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="45" y="5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </EditBox>
+
+   <CheckButton name="MQWizard_RaceFilterCheck" inherits="UIOptionsCheckButtonTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_PlayerFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_RACEFILTER" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+   <EditBox name="MQWizard_RaceFilterEntry" autoFocus="false" inherits="InputBoxTemplate">
+    <Size>
+     <AbsDimension x="100" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_RaceFilterCheck" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="45" y="5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </EditBox>
+
+  </Frames>
+ </Frame>
+ 
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page3                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page3" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="OVERLAY">
+    <FontString name="$parentHeader" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_DESCRIPTION">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="5" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="$parentInfo" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_HEADER_DESCINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>    
+   </Layer>
+  </Layers>
+
+  <Frames>
+
+      <ScrollFrame name="$parentScrollFrame" inherits="EpBookScrollFrameTemplate">
+       <Size>
+        <AbsDimension x="279" y="250"/>
+       </Size>
+       <Anchors>
+        <Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT">
+         <Offset>
+          <AbsDimension x="0" y="-5"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <ScrollChild>
+        <EditBox name="MQWizard_DescEntry" inherits="EpBookEditBoxTemplate" autoFocus="true">
+         <Size>
+          <AbsDimension x="279" y="250"/>
+         </Size>
+         <Layers>
+          <Layer level="BACKGROUND">
+           <Texture name="$parentBackground">
+            <Size>
+             <AbsDimension x="279" y="250"/>
+            </Size>
+            <Anchors>
+             <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Color r="1.0" g="1.0" b="1.0" a="0.15" />
+           </Texture>
+          </Layer>
+         </Layers>
+         <FontString inherits="QuestFont" />
+        </EditBox>
+       </ScrollChild>
+      </ScrollFrame>
+
+  </Frames>
+  <Scripts>
+   <OnMouseUp>
+    MQWizard_DescEntry:SetFocus();
+   </OnMouseUp>
+   <OnShow>
+    MQWizard_DescEntry:SetFocus();
+   </OnShow>
+  </Scripts>
+ </Frame>
+ 
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page4                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page4" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="OVERLAY">
+    <FontString name="$parentHeader" inherits="QuestTitleFont" justifyH="LEFT" text="MYQUESTS_WIZARD_HEADER_SUMMARY">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="5" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="$parentInfo" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_HEADER_SUMMARYINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+   </Layer>
+  </Layers>
+
+  <Frames>
+
+      <ScrollFrame name="$parentScrollFrame" inherits="EpBookScrollFrameTemplate">
+       <Size>
+        <AbsDimension x="279" y="250"/>
+       </Size>
+       <Anchors>
+        <Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT">
+         <Offset>
+          <AbsDimension x="0" y="-5"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <ScrollChild>
+        <EditBox name="MQWizard_SummaryEntry" inherits="EpBookEditBoxTemplate" autoFocus="true">
+         <Size>
+          <AbsDimension x="279" y="250"/>
+         </Size>
+         <Layers>
+          <Layer level="BACKGROUND">
+           <Texture name="$parentBackground">
+            <Size>
+             <AbsDimension x="279" y="250"/>
+            </Size>
+            <Anchors>
+             <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Color r="1.0" g="1.0" b="1.0" a="0.15" />
+           </Texture>
+          </Layer>
+         </Layers>
+         <FontString inherits="QuestFont" />
+        </EditBox>
+       </ScrollChild>
+      </ScrollFrame>
+
+  </Frames>
+  <Scripts>
+   <OnMouseUp>
+    MQWizard_SummaryEntry:SetFocus();
+   </OnMouseUp>
+   <OnShow>
+    MQWizard_SummaryEntry:SetFocus();
+   </OnShow>
+  </Scripts>
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_ObjectiveTemplate                                      -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_ObjectiveTemplate" virtual="true">
+  <Size>
+   <AbsDimension x="300" y="45" />
+  </Size>
+  <Layers>
+   <Layer level="ARTWORK">
+    <FontString name="$parentNameLabel" inherits="GameFontHighlight" text="Name:" justifyH="LEFT" hidden="true">
+     <Size>
+      <AbsDimension x="55" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <!-- <AbsDimension x="10" y="-31" /> -->
+        <AbsDimension x="115" y="-7" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    
+    <FontString name="$parentCountLabel" inherits="GameFontHighlight" text="Count:" justifyH="LEFT" hidden="true">
+     <Size>
+      <AbsDimension x="55" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="10" y="-31" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+
+    <FontString name="$parentLevelLabel" inherits="GameFontHighlight" text="Levels:" justifyH="LEFT" hidden="true">
+     <Size>
+      <AbsDimension x="55" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="LEFT" relativeTo="$parentCountLabel" relativePoint="RIGHT">
+       <Offset>
+        <AbsDimension x="50" y="0" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+
+   </Layer>
+  </Layers>
+
+  <Frames>
+
+   <CheckButton name="$parentItemBox" inherits="ActionButtonTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="37" y="37"/>
+    </Size>
+    <Anchors>
+     <Anchor point="RIGHT">
+      <Offset>
+       <AbsDimension x="0" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnLoad>
+      this:RegisterForDrag("LeftButton", "RightButton");
+      this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+     </OnLoad>
+     <OnClick>
+      MQWizard_PlaceItem(this, "Objective");
+      this:SetChecked(0);
+     </OnClick>
+     <OnDragStart>
+      MQWizard_PlaceItem(this, "Objective");
+     </OnDragStart>
+     <OnReceiveDrag>
+      MQWizard_PlaceItem(this, "Objective");
+     </OnReceiveDrag>
+     <OnEnter>
+      GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+      if (GetSendMailItem()) then
+       GameTooltip:SetSendMailItem();
+      else
+       GameTooltip:SetText(MQ_QUEST_WIZARD_ITEM1_TIP, 1.0, 1.0, 1.0);
+      end
+     </OnEnter>
+     <OnLeave>
+      GameTooltip:Hide();
+     </OnLeave>
+    </Scripts>
+   </CheckButton>
+
+   <Button name="$parentISyncButton" inherits="UIPanelButtonTemplate" text="ISync">
+    <Size>
+     <AbsDimension x="80" y="22" />
+    </Size>
+    <Anchors>
+     <Anchor point="TOPRIGHT" relativeTo="$parentItemBox" relativePoint="TOPLEFT">
+      <Offset>
+       <AbsDimension x="-5" y="0" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnClick>
+      MQWizard_ISyncImportClick();
+     </OnClick>
+    </Scripts>
+   </Button>
+
+   <CheckButton name="$parentItemNoTrade" inherits="UIOptionsCheckButtonTemplate" hidden="true">
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentLevelLabel" relativePoint="LEFT">
+      <Offset>
+       <AbsDimension x="0" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontHighlight" text="MQ_QUEST_WIZARD_ITEMNOTRADE" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+    <Scripts>
+     <OnEnter>
+      GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+      if (GetSendMailItem()) then
+       GameTooltip:SetSendMailItem();
+      else
+       GameTooltip:SetText(MQ_QUEST_WIZARD_ITEMNOTRADE_TIP, 1.0, 1.0, 1.0);
+      end
+     </OnEnter>
+     <OnLeave>
+      GameTooltip:Hide();
+     </OnLeave>
+    </Scripts>
+   </CheckButton>
+
+
+   <CheckButton name="$parentItemNoDisplay" inherits="UIOptionsCheckButtonTemplate" hidden="true">
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentLevelLabel" relativePoint="LEFT">
+      <Offset>
+       <AbsDimension x="0" y="20"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontHighlight" text="MQ_QUEST_WIZARD_ITEMNODISPLAY" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+    <Scripts>
+     <OnEnter>
+      GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+      if (GetSendMailItem()) then
+       GameTooltip:SetSendMailItem();
+      else
+       GameTooltip:SetText(MQ_QUEST_WIZARD_ITEMNODISPLAY_TIP, 1.0, 1.0, 1.0);
+      end
+     </OnEnter>
+     <OnLeave>
+      GameTooltip:Hide();
+     </OnLeave>
+    </Scripts>
+   </CheckButton>
+
+   <EditBox name="$parentNameBox" letters="60" autoFocus="false" inherits="InputBoxTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="125" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentNameLabel" relativePoint="RIGHT">
+      <Offset>
+       <AbsDimension x="0" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnEscPressed>
+      this:ClearFocus();
+     </OnEscPressed>
+     <OnTabPressed>
+      this:ClearFocus();
+     </OnTabPressed>
+    </Scripts>
+   </EditBox>
+
+   <EditBox name="$parentCountBox" letters="3" numeric="true"  autoFocus="false" inherits="InputBoxTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="50" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentCountLabel" relativePoint="RIGHT">
+      <Offset>
+       <AbsDimension x="0" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnEscPressed>
+      this:ClearFocus();
+     </OnEscPressed>
+     <OnTabPressed>
+      this:ClearFocus();
+     </OnTabPressed>
+    </Scripts>
+   </EditBox>
+
+   <EditBox name="$parentMinLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="30" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentLevelLabel" relativePoint="RIGHT">
+      <Offset>
+       <AbsDimension x="5" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString inherits="GameFontHighlightSmall" text="-">
+       <Anchors>
+        <Anchor point="LEFT" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="-5" y="0"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </EditBox>
+   <EditBox name="$parentMaxLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="30" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentMinLevel" relativePoint="RIGHT">
+      <Offset>
+       <AbsDimension x="8" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </EditBox>
+
+   <Frame name="$parentRequiredMoney" inherits="MoneyInputFrameTemplate" hidden="true">
+    <Anchors>
+     <Anchor point="TOPLEFT">
+      <Offset>
+       <AbsDimension x="10" y="-27"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </Frame>
+  </Frames> 
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page5                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page5" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="ARTWORK">
+    <FontString name="MQWizard_ObjectivesTitle" inherits="QuestTitleFont" text="QUEST_OBJECTIVES" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="0" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="MQWizard_ObjectivesInfo" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_OBJECTIVEINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="MQWizard_ObjectivesTitle" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+   </Layer>
+  </Layers>
+  
+  <Frames>
+   <Frame name="MQWizard_Objective1" id ="1" inherits="MyQuestsWizard_ObjectiveTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_ObjectivesInfo" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Objective1DropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_ObjectiveDropDown_OnLoad(this:GetParent():GetID());
+       </OnLoad>
+       <OnShow>
+        MQWizard_ObjectiveDropDown_OnLoad(this:GetParent():GetID());
+       </OnShow>
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+
+   <Frame name="MQWizard_Objective2" id="2" inherits="MyQuestsWizard_ObjectiveTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Objective1" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Objective2DropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+   
+   <Frame name="MQWizard_Objective3" id="3" inherits="MyQuestsWizard_ObjectiveTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Objective2" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Objective3DropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+   
+   <Frame name="MQWizard_Objective4" id="4" inherits="MyQuestsWizard_ObjectiveTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Objective3" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Objective4DropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+   
+   <Frame name="MQWizard_Objective5" id="5" inherits="MyQuestsWizard_ObjectiveTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Objective4" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Objective5DropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_ObjectiveDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+  </Frames>
+  <Scripts>
+   <OnShow>
+    PickupContainerItem = MQWizard_PickupContainerItem;
+   </OnShow>
+   <OnHide>
+    PickupContainerItem = MQOverride_PickupContainerItem;
+   </OnHide>
+  </Scripts>
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_RewardTemplate                                         -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_RewardTemplate" virtual="true">
+  <Size>
+   <AbsDimension x="300" y="45" />
+  </Size>
+  <Layers>
+   <Layer level="ARTWORK">
+    <FontString name="$parentCountLabel" inherits="GameFontHighlight" text="Count:" justifyH="LEFT" hidden="true">
+     <Size>
+      <AbsDimension x="55" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="10" y="-31" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+   </Layer>
+  </Layers>
+  
+  <Frames>
+   <CheckButton name="$parentItemBox" inherits="ActionButtonTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="37" y="37"/>
+    </Size>
+    <Anchors>
+     <Anchor point="RIGHT">
+      <Offset>
+       <AbsDimension x="0" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnLoad>
+      this:RegisterForDrag("LeftButton", "RightButton");
+      this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+     </OnLoad>
+     <OnClick>
+      MQWizard_PlaceItem(this, "Reward");
+      this:SetChecked(0);
+     </OnClick>
+     <OnDragStart>
+      MQWizard_PlaceItem(this, "Reward");
+     </OnDragStart>
+     <OnReceiveDrag>
+      MQWizard_PlaceItem(this, "Reward");
+     </OnReceiveDrag>
+     <OnEnter>
+      GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+      GameTooltip:SetText(MQ_QUEST_WIZARD_ITEM2_TIP, 1.0, 1.0, 1.0);
+     </OnEnter>
+     <OnLeave>
+      GameTooltip:Hide();
+     </OnLeave>
+    </Scripts>
+   </CheckButton>
+
+   <EditBox name="$parentCountBox" letters="3" numeric="true"  autoFocus="false" inherits="InputBoxTemplate" hidden="true">
+    <Size>
+     <AbsDimension x="50" y="16"/>
+    </Size>
+    <Anchors>
+     <Anchor point="LEFT" relativeTo="$parentCountLabel" relativePoint="RIGHT">
+      <Offset>
+       <AbsDimension x="0" y="0"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnEscPressed>
+      this:ClearFocus();
+     </OnEscPressed>
+     <OnTabPressed>
+      this:ClearFocus();
+     </OnTabPressed>
+    </Scripts>
+   </EditBox>
+
+   <Frame name="$parentRewardMoney" inherits="MoneyInputFrameTemplate" hidden="true">
+    <Anchors>
+     <Anchor point="TOPLEFT">
+      <Offset>
+       <AbsDimension x="10" y="-27"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+   </Frame>
+  </Frames> 
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page6                                                  -->
+ <!--   Quest Reward Entry                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page6" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="ARTWORK">
+    <FontString name="MQWizard_RewardsTitle" inherits="QuestTitleFont" text="QUEST_REWARDS" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="0" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="MQWizard_RewardsInfo" inherits="GameFontNormalSmall" text="MQ_QUEST_WIZARD_REWARDINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="MQWizard_RewardsTitle" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+   </Layer>
+  </Layers>
+  <Frames>
+   <Frame name="MQWizard_Reward1" id="1" inherits="MyQuestsWizard_RewardTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_RewardsInfo" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Reward1DropDown" id="1" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+
+   <Frame name="MQWizard_Reward2" id="2" inherits="MyQuestsWizard_RewardTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Reward1" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Reward2DropDown" id="2" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+   
+   <Frame name="MQWizard_Reward3" id="3" inherits="MyQuestsWizard_RewardTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Reward2" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Reward3DropDown" id="3" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+   
+   <Frame name="MQWizard_Reward4" id="4" inherits="MyQuestsWizard_RewardTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Reward3" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Reward4DropDown" id="4" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+   
+   <Frame name="MQWizard_Reward5" id="5" inherits="MyQuestsWizard_RewardTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MQWizard_Reward4" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-5"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <Frame name="MQWizard_Reward5DropDown" id="5" inherits="UIDropDownMenuTemplate" enableMouse="true">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="-17" y="0" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Scripts>
+       <OnLoad>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnLoad>
+       <!--
+       <OnShow>
+        MQWizard_RewardDropDown_OnLoad();
+       </OnShow>
+       -->
+      </Scripts>
+     </Frame>
+    </Frames>
+   </Frame>
+  </Frames>
+  <Scripts>
+   <OnShow>
+    PickupContainerItem = MQWizard_PickupContainerItem;
+   </OnShow>
+   <OnHide>
+    PickupContainerItem = MQOverride_PickupContainerItem;
+   </OnHide>
+  </Scripts>
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page7                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page7" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="OVERLAY">
+    <FontString name="$parentHeader" inherits="QuestTitleFont" justifyH="LEFT" text="MYQUESTS_WIZARD_HEADER_PROGRESS">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="5" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="$parentInfo" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_HEADER_PROGRESSINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>    
+   </Layer>
+  </Layers>
+
+  <Frames>
+
+      <ScrollFrame name="$parentScrollFrame" inherits="EpBookScrollFrameTemplate">
+       <Size>
+        <AbsDimension x="279" y="250"/>
+       </Size>
+       <Anchors>
+        <Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT">
+         <Offset>
+          <AbsDimension x="0" y="-5"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <ScrollChild>
+        <EditBox name="MQWizard_ProgressEntry" inherits="EpBookEditBoxTemplate" autoFocus="true">
+         <Size>
+          <AbsDimension x="279" y="250"/>
+         </Size>
+         <Layers>
+          <Layer level="BACKGROUND">
+           <Texture name="$parentBackground">
+            <Size>
+             <AbsDimension x="279" y="250"/>
+            </Size>
+            <Anchors>
+             <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Color r="1.0" g="1.0" b="1.0" a="0.15" />
+           </Texture>
+          </Layer>
+         </Layers>
+         <FontString inherits="QuestFont" />
+        </EditBox>
+       </ScrollChild>
+      </ScrollFrame>
+
+  </Frames>
+
+  <Scripts>
+   <OnMouseUp>
+    MQWizard_ProgressEntry:SetFocus();
+   </OnMouseUp>
+   <OnShow>
+    MQWizard_ProgressEntry:SetFocus();
+   </OnShow>
+  </Scripts>
+ </Frame>
+
+ <!-- ********************************************************************* -->
+ <!-- MyQuestsWizard_Page8                                                  -->
+ <!-- ********************************************************************* -->
+ <Frame name="MyQuestsWizard_Page8" parent="MyQuestsWizard_Parent" hidden="true">
+  <Size>
+   <AbsDimension x="384" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="TOPLEFT">
+    <Offset>
+     <AbsDimension x="30" y="-85" />
+    </Offset>
+   </Anchor>
+  </Anchors>
+
+  <Layers>
+   <Layer level="OVERLAY">
+    <FontString name="$parentHeader" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_COMPLETE">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="5" y="0"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    <FontString name="$parentInfo" inherits="GameFontNormalSmall" text="MYQUESTS_WIZARD_HEADER_COMPLETEINFO" justifyH="LEFT">
+     <Size>
+      <AbsDimension x="285" y="0"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT">
+       <Offset>
+        <AbsDimension x="0" y="-5"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>    
+   </Layer>
+  </Layers>
+
+  <Frames>
+
+      <ScrollFrame name="$parentScrollFrame" inherits="EpBookScrollFrameTemplate">
+       <Size>
+        <AbsDimension x="279" y="250"/>
+       </Size>
+       <Anchors>
+        <Anchor point="TOPLEFT" relativeTo="$parentInfo" relativePoint="BOTTOMLEFT">
+         <Offset>
+          <AbsDimension x="0" y="-5"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <ScrollChild>
+        <EditBox name="MQWizard_CompleteEntry" inherits="EpBookEditBoxTemplate" autoFocus="true">
+         <Size>
+          <AbsDimension x="279" y="250"/>
+         </Size>
+         <Layers>
+          <Layer level="BACKGROUND">
+           <Texture name="$parentBackground">
+            <Size>
+             <AbsDimension x="279" y="250"/>
+            </Size>
+            <Anchors>
+             <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Color r="1.0" g="1.0" b="1.0" a="0.15" />
+           </Texture>
+          </Layer>
+         </Layers>
+         <FontString inherits="QuestFont" />
+        </EditBox>
+       </ScrollChild>
+      </ScrollFrame>
+
+  </Frames>
+
+  <Scripts>
+   <OnMouseUp>
+    MQWizard_CompleteEntry:SetFocus();
+   </OnMouseUp>
+   <OnShow>
+    MQWizard_CompleteEntry:SetFocus();
+   </OnShow>
+  </Scripts>
+ </Frame>
+
+
+ <Frame name="MyQuests_ThickFrameTemplate" virtual="true" enableMouse="true">
+  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+   <BackgroundInsets>
+    <AbsInset left="11" right="12" top="12" bottom="11"/>
+   </BackgroundInsets>
+   <TileSize>
+    <AbsValue val="32"/>
+   </TileSize>
+   <EdgeSize>
+    <AbsValue val="32"/>
+   </EdgeSize>
+  </Backdrop>
+  <Layers>
+   <Layer level="ARTWORK">
+    <!--
+    <Texture name="$parentTitleBox" file="Interface\DialogFrame\UI-DialogBox-Header">
+     <Size>
+      <AbsDimension x="310" y="64"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOP">
+       <Offset>
+        <AbsDimension x="0" y="12"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </Texture>
+    <FontString name="$parentTitle" inherits="GameFontNormal" text="...">
+     <Anchors>
+      <Anchor point="TOP" relativeTo="$parentTitleBox">
+       <Offset>
+        <AbsDimension x="0" y="-14"/>
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+    -->
+   </Layer>
+  </Layers>
+ </Frame>
+
+  <Frame name="MyQuests_ThinFrameTemplate" virtual="true" enableMouse="true">
+    <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="5" right="5" top="5" bottom="5"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="16"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="16"/>
+      </EdgeSize>
+    </Backdrop>
+    <Scripts>
+      <OnLoad>
+        this:SetBackdropBorderColor( 0.8, 0.8, 0.8 )
+        this:SetBackdropColor( 0.09, 0.09, 0.19, 0.5 )
+      </OnLoad>
+    </Scripts>
+  </Frame>
+ 
+ <Frame name="MyQuests_ThickTest" parent="MyQuestsWizard_Parent" toplevel="true" inherits="MyQuests_ThickFrameTemplate" hidden="true">
+  <Size>
+   <AbsDimension x="100" y="100" />
+  </Size>
+  <Anchors>
+   <Anchor point="CENTER" />
+  </Anchors>
+ </Frame>
+ 
+
+
+</Ui>

@@ -1,0 +1,799 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="MonkeyBuddy.lua"/>
+	
+	<CheckButton name="MonkeyBuddyCheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="22" y="22"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				MonkeyBuddyCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
+	<Button name="MonkeyBuddyQuestColourButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+				
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_BorderTexture">
+					<Size>
+						<AbsDimension x="14" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				--MonkeyBuddyQuestColourButton_OnShow();
+			</OnShow>
+			<OnClick>
+				UIDropDownMenuButton_OpenColorPicker(this);
+				ColorPickerFrame:Show();
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."_BorderTexture"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."_BorderTexture"):SetVertexColor(this.r, this.g, this.b);
+			</OnLeave>
+		</Scripts>
+		
+		<NormalTexture name="$parent_SwatchTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+	</Button>
+	
+	<Slider name="MonkeyBuddySliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="256" y="17"/>
+		</Size>
+		<Scripts>
+			<OnValueChanged>
+				PlaySound("igMainMenuOptionCheckBoxOn");
+				MonkeyBuddySlider_OnValueChanged();
+			</OnValueChanged>
+			<OnEnter>
+				MonkeyBuddySlider_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				MonkeyBuddySlider_OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Slider>
+	
+	<Button name="MonkeyBuddyIconButton" parent="MinimapBackdrop" toplevel="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="MinimapBackdrop">
+				<Offset>
+					<AbsDimension x="-4" y="40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				MonkeyBuddyIconButton_OnClick();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:SetText(MONKEYBUDDY_TITLE, 1.0, 1.0, 1.0);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\MonkeyLibrary\Textures\MonkeyBuddyIcon.tga"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>
+	
+	<Frame name="MonkeyBuddyFrame" toplevel="true" frameStrata="MEDIUM" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="700" y="625"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MonkeyBuddyFrame_TitleTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="480" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="MonkeyBuddyFrame_TitleText" inherits="GameTooltipHeaderText" text="MONKEYBUDDY_FRAME_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MonkeyBuddyFrame_TitleTexture">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="MonkeyBuddyQuestTab" text="MONKEYBUDDY_QUEST_TITLE">
+			    <Size>
+                    <AbsDimension x="132" y="28"/>
+                </Size>
+                <Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-42" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				
+				
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MonkeyBuddyQuestTabTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="128" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						MonkeyBuddyQuestTab_OnClick();
+					</OnClick>
+				</Scripts>
+				
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+			
+			<Button name="MonkeyBuddySpeedTab" text="MONKEYBUDDY_SPEED_TITLE" hidden="false">
+				
+				<Size>
+                    <AbsDimension x="132" y="28"/>
+                </Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MonkeyBuddyQuestTab" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MonkeyBuddySpeedTabTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="128" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						MonkeyBuddySpeedTab_OnClick();
+					</OnClick>
+				</Scripts>
+				
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+				<NormalText inherits="GameFontHighlightSmall"/>
+			</Button>
+			
+			<Button name="MonkeyBuddyClockTab" text="MONKEYBUDDY_CLOCK_TITLE">
+				
+				<Size>
+                    <AbsDimension x="132" y="28"/>
+                </Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MonkeyBuddySpeedTab" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="8" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MonkeyBuddyClockTabTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+							<Size>
+								<AbsDimension x="128" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						MonkeyBuddyClockTab_OnClick();
+					</OnClick>
+				</Scripts>
+				
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+				<NormalText inherits="GameFontHighlightSmall"/>
+			</Button>
+			
+            <Frame name="MonkeyBuddyQuestFrame" hidden="true">
+                <Size>
+                    <AbsDimension x="670" y="512"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                    	<Offset>
+                            <AbsDimension x="0" y="-64"/>
+                    	</Offset>
+                    </Anchor>
+                </Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>	
+                <Frames>
+                    <CheckButton name="MonkeyBuddyQuestCheck1" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-12"/>
+								</Offset>
+							</Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyQuestCheck2" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck1" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck3" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck2" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck4" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck3" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck5" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck4" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck6" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck5" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck7" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck6" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck8" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck7" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck9" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck8" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck10" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck9" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck11" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck10" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck12" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck11" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck13" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck12" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck14" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck13" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck15" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck14" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck16" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck15" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyQuestCheck17" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck16" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyQuestCheck18" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck17" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyQuestCheck19" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck18" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyQuestCheck20" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck19" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyQuestCheck21" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestCheck20" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+
+					<Button name="MonkeyBuddyQuestColour1" inherits="MonkeyBuddyQuestColourButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="400" y="-16"/>
+								</Offset>
+							</Anchor>
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour2" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour1" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour3" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour2" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour4" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour3" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour5" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour4" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour6" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour5" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour7" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour6" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+					<Button name="MonkeyBuddyQuestColour8" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour7" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+                    <Button name="MonkeyBuddyQuestColour9" inherits="MonkeyBuddyQuestColourButtonTemplate">
+						<Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour8" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </Button>
+
+					<Slider name="MonkeyBuddyQuestSlider1" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestColour9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyQuestSlider2" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestSlider1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyQuestSlider3" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestSlider2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyQuestSlider4" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestSlider3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyQuestSlider5" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyQuestSlider4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					
+					<Button name="MonkeyBuddyQuestResetAllButton" inherits="GameMenuButtonTemplate" text="MONKEYBUDDY_RESET">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								MonkeyQuestSlash_CmdReset();
+							</OnClick>
+						</Scripts>
+					</Button>
+                </Frames>
+				<Scripts>
+					<OnShow>
+						MonkeyBuddyQuestFrame_OnShow();
+					</OnShow>
+					<OnHide>
+						MonkeyBuddyQuestFrame_OnHide();
+					</OnHide>
+				</Scripts>
+            </Frame>
+			
+			<Frame name="MonkeyBuddySpeedFrame" hidden="true">
+                <Size>
+                    <AbsDimension x="670" y="512"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                    	<Offset>
+                            <AbsDimension x="0" y="-64"/>
+                    	</Offset>
+                    </Anchor>
+                </Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>	
+                <Frames>
+                    <CheckButton name="MonkeyBuddySpeedCheck1" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-16"/>
+								</Offset>
+							</Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddySpeedCheck2" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddySpeedCheck1" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddySpeedCheck3" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddySpeedCheck2" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddySpeedCheck4" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddySpeedCheck3" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddySpeedCheck5" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddySpeedCheck4" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+
+					<Slider name="MonkeyBuddySpeedSlider1" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddySpeedCheck5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					
+					<Button name="MonkeyBuddySpeedResetAllButton" inherits="GameMenuButtonTemplate" text="MONKEYBUDDY_RESET">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								MonkeySpeedSlash_CmdReset();
+							</OnClick>
+						</Scripts>
+					</Button>
+                </Frames>
+				<Scripts>
+					<OnShow>
+						MonkeyBuddySpeedFrame_OnShow();
+					</OnShow>
+					<OnHide>
+						MonkeyBuddySpeedFrame_OnHide();
+					</OnHide>
+				</Scripts>
+            </Frame>
+
+			<Frame name="MonkeyBuddyClockFrame" hidden="true">
+                <Size>
+                    <AbsDimension x="670" y="512"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                    	<Offset>
+                            <AbsDimension x="0" y="-64"/>
+                    	</Offset>
+                    </Anchor>
+                </Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>	
+                <Frames>
+                    <CheckButton name="MonkeyBuddyClockCheck1" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-16"/>
+								</Offset>
+							</Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyClockCheck2" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck1" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyClockCheck3" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck2" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					<CheckButton name="MonkeyBuddyClockCheck4" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck3" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyClockCheck5" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck4" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyClockCheck6" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck5" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MonkeyBuddyClockCheck7" inherits="MonkeyBuddyCheckButtonTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck6" relativePoint="BOTTOMLEFT" />
+                        </Anchors>
+                    </CheckButton>
+					
+					<Slider name="MonkeyBuddyClockSlider1" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockCheck7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyClockSlider2" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockSlider1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyClockSlider3" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockSlider2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MonkeyBuddyClockSlider4" inherits="MonkeyBuddySliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MonkeyBuddyClockSlider3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+
+					<Button name="MonkeyBuddyClockResetAllButton" inherits="GameMenuButtonTemplate" text="MONKEYBUDDY_RESET">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								MonkeyClockSlash_CmdReset();
+							</OnClick>
+						</Scripts>
+					</Button>
+                </Frames>
+				<Scripts>
+					<OnShow>
+						MonkeyBuddyClockFrame_OnShow();
+					</OnShow>
+					<OnHide>
+						MonkeyBuddyClockFrame_OnHide();
+					</OnHide>
+				</Scripts>
+            </Frame>
+			
+			<Button name="MonkeyBuddyFrame_CloseButton" inherits="GameMenuButtonTemplate" text="MONKEYBUDDY_TOOLTIP_CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+            <OnLoad>
+				MonkeyBuddy_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				MonkeyBuddy_OnEvent(event);
+			</OnEvent>
+			<OnShow>
+				PlaySound("igMainMenuOption");
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

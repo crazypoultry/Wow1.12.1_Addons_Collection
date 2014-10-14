@@ -1,0 +1,397 @@
+if (GetLocale() == "koKR") then
+
+-----------------------
+-- Localised Globals --
+-----------------------
+ATLASLOOT_FIRST_TIME_TEXT = "Atlasloot Enhanced에 오신걸 환영합니다.  설정버튼을 눌러 사용할 툴팁을 선택해주세요.  설정창을 다시 보려면 대화창에 다음 명령어를 입력해주세요.  '/atlasloot'. ";
+ATLASLOOT_FIRST_TIME_BUTTON = "설정";
+
+ATLASLOOT_OLD_ATLAS_TEXT_PT1 = "Atlas 버전과 Atlasloot 버전이 일치하지 않는 것이 감지되었습니다 (";
+ATLASLOOT_OLD_ATLAS_TEXT_PT2 = ").  버전 일치가 안되서 에러가 있을지도 모릅니다. 가능한 빨리 http://www.atlasmod.com를 방문해서 최신 버전으로 업데이트를 해주시기 바랍니다.";
+ATLASLOOT_OLD_ATLAS_BUTTON = "확인";
+
+ATLASLOOT_DROP_RATE = "드랍률: ";
+ATLASLOOT_DKP = "DKP";
+ATLASLOOT_PRIORITY = "우선:";
+
+ATLASLOOT_UIBACK = "뒤로";
+
+ATLASLOOT_ERRORTOOLTIP_L1 = "불안전 물품";
+ATLASLOOT_ERRORTOOLTIP_L2 = "ItemID:";
+ATLASLOOT_ERRORTOOLTIP_L3 = "This item is unsafe.  To view this item\nwithout the risk of disconnection, you\nneed to have first seen it in the game world.\nThis is a restriction enforced by Blizzard\nsince Patch 1.10.";
+ATLASLOOT_BANNER_TEXT = "보스네임드를 클릭하면 루팅 정보를 볼 수 있습니다."
+
+ATLASLOOT_SAFE_MESSAGE = " is now safe.";
+ATLASLOOT_QUERY_MESSAGE = "Querying server for ";
+ATLASLOOT_RECLICK_MESSAGE = ".  Please click again until you do not see this message.";
+
+ATLASLOOT_UIBACK = "뒤로";
+
+ATLASLOOT_CLOTH = "천";
+ATLASLOOT_LEATHER = "가죽";
+ATLASLOOT_MAIL = "사슬";
+ATLASLOOT_PLATE = "판금";
+
+ATLASLOOT_HEAD = "머리";
+ATLASLOOT_NECK = "목걸이";
+ATLASLOOT_SHOULDER = "어깨";
+ATLASLOOT_BACK = "등";
+ATLASLOOT_CHEST = "가슴";
+ATLASLOOT_SHIRT = "속옷";
+ATLASLOOT_TABARD = "겉옷";
+ATLASLOOT_WRIST = "손목";
+ATLASLOOT_HANDS = "손";
+ATLASLOOT_WAIST = "허리";
+ATLASLOOT_LEGS = "다리";
+ATLASLOOT_FEET = "발";
+ATLASLOOT_RING = "손가락";
+ATLASLOOT_TRINKET = "장신구";
+ATLASLOOT_OFF_HAND = "보조장비";
+ATLASLOOT_RELIC = "성물";
+
+ATLASLOOT_ONE_HAND = "한손 장비";
+ATLASLOOT_TWO_HAND = "양손 장비";
+ATLASLOOT_MAIN_HAND = "주장비";
+ATLASLOOT_OFFHAND = "보조장비";
+
+ATLASLOOT_WEAPONS = "무기";
+ATLASLOOT_AXE = "도끼";
+ATLASLOOT_BOW = "활";
+ATLASLOOT_CROSSBOW = "석궁";
+ATLASLOOT_DAGGER = "단검";
+ATLASLOOT_GUN = "총";
+ATLASLOOT_MACE = "둔기";
+ATLASLOOT_POLEARM = "장창류";
+ATLASLOOT_SHIELD = "방패";
+ATLASLOOT_STAFF = "지팡이";
+ATLASLOOT_SWORD = "도검";
+ATLASLOOT_THROWN = "투척무기";
+ATLASLOOT_WAND = "마법봉";
+ATLASLOOT_FIST = "장착무기";
+
+ATLASLOOT_POTION = "물약";
+ATLASLOOT_FOOD = "음식";
+ATLASLOOT_DRINK = "음료";
+ATLASLOOT_BANDAGE = "붕대";
+ATLASLOOT_ARROW = "화살";
+ATLASLOOT_BULLET = "총알"
+ATLASLOOT_MOUNT = "탈 것";
+ATLASLOOT_AMMO = "탄환 주머니";
+ATLASLOOT_QUIVER = "화살통";
+ATLASLOOT_BAG = "가방";
+ATLASLOOT_ENCHANT = "마법부여";
+ATLASLOOT_TRADE_GOODS = "물품";
+ATLASLOOT_SCOPE = "장치";
+ATLASLOOT_KEY = "열쇠";
+ATLASLOOT_PET = "소환수";
+ATLASLOOT_IDOL = "우상";
+ATLASLOOT_TOTEM = "토템";
+ATLASLOOT_LIBRAM = "성서";
+ATLASLOOT_DARKMOON = "다크문 축제 카드";
+ATLASLOOT_BOOK = "책";
+ATLASLOOT_BANNER = "깃발";
+
+ATLASLOOT_DRUID = "드루이드";
+ATLASLOOT_HUNTER = "사냥꾼";
+ATLASLOOT_MAGE = "마법사";
+ATLASLOOT_PALADIN = "성기사";
+ATLASLOOT_PRIEST = "사제";
+ATLASLOOT_ROGUE = "도적";
+ATLASLOOT_SHAMAN = "주술사";
+ATLASLOOT_WARLOCK = "흑마법사";
+ATLASLOOT_WARRIOR = "전사";
+
+ATLASLOOT_ALCHEMY = "연금술";
+ATLASLOOT_BLACKSMITHING = "대장장이";
+ATLASLOOT_COOKING = "요리";
+ATLASLOOT_ENCHANTING = "마법부여";
+ATLASLOOT_ENGINEERING = "기계공학";
+ATLASLOOT_FIRST_AID = "응급 치료";
+ATLASLOOT_LEATHERWORKING = "가죽세공";
+ATLASLOOT_TAILORING = "재봉솔";
+ATLASLOOT_DRAGONSCALE = "용비늘";
+ATLASLOOT_TRIBAL = "전통";
+ATLASLOOT_ELEMENTAL = "원소";
+
+ATLASLOOT_NEUTRAL = "중립";
+ATLASLOOT_FRIENDLY = "약간 우호";
+ATLASLOOT_HONORED = "우호";
+ATLASLOOT_REVERED = "매우 우호";
+ATLASLOOT_EXALTED = "확고";
+
+ATLASLOOT_CLASSES = "직업:";
+ATLASLOOT_QUEST1 = "퀘스트 시작 아이템";
+ATLASLOOT_QUEST2 = "퀘스트 아이템";
+ATLASLOOT_QUEST3 = "퀘스트 보상";
+ATLASLOOT_SHARED = "공통";
+ATLASLOOT_HORDE = "호드";
+ATLASLOOT_ALLIANCE = "얼라이언스";
+ATLASLOOT_UNIQUE = "특별";
+ATLASLOOT_RIGHTSIDE = "오른쪽 족쇄";
+ATLASLOOT_LEFTSIDE = "왼쪽 족쇄";
+ATLASLOOT_FELCOREBAG = "28칸 영혼";
+ATLASLOOT_ONYBAG = "18칸";
+ATLASLOOT_WCBAG = "10칸";
+ATLASLOOT_FULLSKILL = "(300)";
+ATLASLOOT_295 = "(295)";
+ATLASLOOT_275 = "(275)";
+ATLASLOOT_265 = "(265)";
+ATLASLOOT_290 = "(290)";
+ATLASLOOT_SET = "세트";
+ATLASLOOT_285 = "(285)";
+ATLASLOOT_16SLOT = "16칸";
+
+ATLASLOOT_VIPERSET = "세트: 독사의 은총 (5 피스)";
+ATLASLOOT_COBRAHN = "드랍 : 군주 코브란";
+ATLASLOOT_ANACONDRA = "드랍 : 여군주 아나콘드라";
+ATLASLOOT_SERPENTIS = "드랍 : 군주 서펜티스";
+ATLASLOOT_FANGDRUID = "드랍 : 송곳니의 드루이드";
+ATLASLOOT_PYTHAS = "드랍 : 군주 피타스";
+
+ATLASLOOT_DEFIASSET = "세트: 데피아즈단 (5 피스)";
+ATLASLOOT_VANCLEEF = "드랍 : 에드윈 밴클리프";
+ATLASLOOT_GREENSKIN = "드랍 : 선장 그린스킨";
+ATLASLOOT_DEFIASMINER = "드랍 : 데피아즈단 갱부";
+ATLASLOOT_DEFIASOVERSEER = "드랍 : 데피아즈단 감독관/작업반장";
+
+ATLASLOOT_Primal_Hakkari_Kossack = "고대 학카리 조끼";
+ATLASLOOT_Primal_Hakkari_Shawl = "고대 학카리 어깨걸이";
+ATLASLOOT_Primal_Hakkari_Bindings = "고대 학카리 팔보호구";
+ATLASLOOT_Primal_Hakkari_Sash = "고대 학카리 장식띠";
+ATLASLOOT_Primal_Hakkari_Stanchion = "고대 학카리 손목갑옷";
+ATLASLOOT_Primal_Hakkari_Aegis = "고대 학카리 아이기스";
+ATLASLOOT_Primal_Hakkari_Girdle = "고대 학카리 벨트";
+ATLASLOOT_Primal_Hakkari_Armsplint = "고대 학카리 어깨갑옷";
+ATLASLOOT_Primal_Hakkari_Tabard = "고대 학카리 휘장";
+
+ATLASLOOT_Qiraji_Ornate_Hilt = "화려한 퀴라지 자루";
+ATLASLOOT_Qiraji_Martial_Drape = "전쟁의 퀴라지 망토";
+ATLASLOOT_Qiraji_Magisterial_Ring = "권위의 퀴라지 반지";
+ATLASLOOT_Qiraji_Ceremonial_Ring = "의식의 퀴라지 반지";
+ATLASLOOT_Qiraji_Regal_Drape = "제왕의 퀴라지 망토";
+ATLASLOOT_Qiraji_Spiked_Hilt = "못박힌 퀴라지 자루";
+
+ATLASLOOT_Qiraji_Bindings_of_Dominance = "지배의 퀴라지 팔보호구";
+ATLASLOOT_Veknilashs_Circlet = "베크닐라쉬의 관";
+ATLASLOOT_Ouros_Intact_Hide = "온전한 아우로의 가죽";
+ATLASLOOT_Husk_of_the_Old_God = "고대신의 허물";
+ATLASLOOT_Qiraji_Bindings_of_Command = "지휘의 퀴라지 팔보호구";
+ATLASLOOT_Veklors_Diadem = "베클로어의 관";
+ATLASLOOT_Skin_of_the_Great_Sandworm = "거대한 미늘벌레의 가죽";
+ATLASLOOT_Carapace_of_the_Old_God = "고대신의 껍질";
+
+ATLASLOOT_SCARLETSET = "세트: 붉은십자군 (6 피스)";
+ATLASLOOT_SCARLETDEFENDER = "드랍 : 붉은십자군 호위병/정예병";
+ATLASLOOT_SCARLETTRASH = "드랍 : 일반몹";
+ATLASLOOT_SCARLETCHAMPION = "드랍 : 붉은십자군 용사";
+ATLASLOOT_SCARLETCENTURION = "드랍 : 붉은십자군 백인대장";
+ATLASLOOT_SCARLETHEROD = "드랍 : 헤로드/모그레인";
+ATLASLOOT_SCARLETPROTECTOR = "드랍 : 붉은십자군 수호병/보초";
+ATLASLOOT_SCARLETINTERROGATOR = "심문관 비샤스";
+
+ATLASLOOT_AQ40_SETS="안퀴라즈 사원 세트";
+ATLASLOOT_AQ20_SETS="안퀴라즈 폐허 세트";
+ATLASLOOT_ZG_SETS="줄구룹 세트";
+ATLASLOOT_TIER0_SETS="0/0.5단계 세트";
+ATLASLOOT_TIER05_SETS="0.5단계 세트";
+ATLASLOOT_TIER1_SETS="공격대 세트 1";
+ATLASLOOT_TIER2_SETS="공격대 세트 2";
+ATLASLOOT_TIER3_SETS="공격대 세트 3";
+ATLASLOOT_PVP_SETS="PvP 세트";
+
+ATLASLOOT_ZG_DRUID="제사장의 의복";
+ATLASLOOT_ZG_HUNTER="수렵꾼의 갑옷";
+ATLASLOOT_ZG_MAGE="환영술사의 의복";
+ATLASLOOT_ZG_PALADIN="자유사상가의 갑옷";
+ATLASLOOT_ZG_PRIEST="성자의 의복";
+ATLASLOOT_ZG_ROGUE="개혁가의 장비";
+ATLASLOOT_ZG_SHAMAN="점술가의 의복";
+ATLASLOOT_ZG_WARLOCK="악령술사의 의복";
+ATLASLOOT_ZG_WARRIOR="구원자의 전투장비";
+
+ATLASLOOT_AQ20_DRUID="영원한 삶의 의복";
+ATLASLOOT_AQ20_HUNTER="선도자의 전투장비";
+ATLASLOOT_AQ20_MAGE="밝혀진 비밀의 의복";
+ATLASLOOT_AQ20_PALADIN="영원한 정의의 전투장비";
+ATLASLOOT_AQ20_PRIEST="무한한 지혜의 의복";
+ATLASLOOT_AQ20_ROGUE="어두운그림자의 상징";
+ATLASLOOT_AQ20_SHAMAN="휘몰아치는 폭풍의 선물";
+ATLASLOOT_AQ20_WARLOCK="절대자의 의복";
+ATLASLOOT_AQ20_WARRIOR="굴하지 않는 힘의 전투장비";
+
+ATLASLOOT_AQ40_DRUID="태초의 의복";
+ATLASLOOT_AQ40_HUNTER="관통의 전투장비";
+ATLASLOOT_AQ40_MAGE="불가사의의 의복";
+ATLASLOOT_AQ40_PALADIN="응징의 전투장비";
+ATLASLOOT_AQ40_PRIEST="신탁의 예복";
+ATLASLOOT_AQ40_ROGUE="죽음의 선고자 전투장비";
+ATLASLOOT_AQ40_SHAMAN="폭풍소환사의 어깨갑옷";
+ATLASLOOT_AQ40_WARLOCK="파멸의 소환사";
+ATLASLOOT_AQ40_WARRIOR="정복자의 전투장비";
+
+ATLASLOOT_T0_DRUID="자연의 정수 의복";
+ATLASLOOT_T0_HUNTER="야수 추적자 갑옷";
+ATLASLOOT_T0_MAGE="원소술사 의복";
+ATLASLOOT_T0_PALADIN="성전사 방어구";
+ATLASLOOT_T0_PRIEST="기원의 의목";
+ATLASLOOT_T0_ROGUE="어둠추적자 갑옷";
+ATLASLOOT_T0_SHAMAN="정령의 방어구";
+ATLASLOOT_T0_WARLOCK="공포의 안개 의복";
+ATLASLOOT_T0_WARRIOR="용맹의 전투장비";
+
+ATLASLOOT_T05_DRUID="야생의 정수 의복";
+ATLASLOOT_T05_HUNTER="야수왕의 갑옷";
+ATLASLOOT_T05_MAGE="마술사의 의복";
+ATLASLOOT_T05_PALADIN="성령의 갑옷";
+ATLASLOOT_T05_PRIEST="고결의 의복";
+ATLASLOOT_T05_ROGUE="검은장막의 방어구";
+ATLASLOOT_T05_SHAMAN="우레의 방어구";
+ATLASLOOT_T05_WARLOCK="죽음의 안개 의복";
+ATLASLOOT_T05_WARRIOR="무용의 전투장비";
+
+ATLASLOOT_T1_DRUID="세나리온 의복";
+ATLASLOOT_T1_HUNTER="거인추적자 갑옷";
+ATLASLOOT_T1_MAGE="신비술사 의복";
+ATLASLOOT_T1_PALADIN="집행의 방어구";
+ATLASLOOT_T1_PRIEST="계시의 의복";
+ATLASLOOT_T1_ROGUE="밤그림자 갑옷";
+ATLASLOOT_T1_SHAMAN="지각변동의 방어구";
+ATLASLOOT_T1_WARLOCK="타락심장의 의복";
+ATLASLOOT_T1_WARRIOR="투지의 전투장비";
+
+ATLASLOOT_T2_DRUID="성난폭풍 의복";
+ATLASLOOT_T2_HUNTER="용추적자 갑옷";
+ATLASLOOT_T2_MAGE="소용돌이 의복";
+ATLASLOOT_T2_PALADIN="심판의 갑옷";
+ATLASLOOT_T2_PRIEST="초월의 의복";
+ATLASLOOT_T2_ROGUE="붉은송곳니 방어구";
+ATLASLOOT_T2_SHAMAN="폭풍우 방어구";
+ATLASLOOT_T2_WARLOCK="천벌의 의복";
+ATLASLOOT_T2_WARRIOR="격노의 전투장비";
+
+ATLASLOOT_T3_DRUID="꿈의감시자 의복";
+ATLASLOOT_T3_HUNTER="지하추적자 갑옷";
+ATLASLOOT_T3_MAGE="얼음불꽃 의복";
+ATLASLOOT_T3_PALADIN="구원의 갑옷";
+ATLASLOOT_T3_PRIEST="신념의 의복";
+ATLASLOOT_T3_ROGUE="해골사신의 갑옷";
+ATLASLOOT_T3_SHAMAN="지축이동의 갑옷";
+ATLASLOOT_T3_WARLOCK="역병의심장 의복";
+ATLASLOOT_T3_WARRIOR="무쌍의 전투장비";
+
+ATLASLOOT_BROOD_CONQUEROR = "정복자의 길";
+ATLASLOOT_BROOD_INVOKER = "기원사의 길";
+ATLASLOOT_BROOD_PROTECTOR = "수호자의 길";
+
+ATLASLOOT_AQ40_CLASS_SET_PIECES_1 = "X) AQ40 직업 세트";
+ATLASLOOT_AQ40_BROOD_RINGS = "X) 노즈도르무 혈족의 반지";
+ATLASLOOT_ZG_CLASS_SET_PIECES_1 = "X) ZG 직업 세트";
+ATLASLOOT_AQ20_CLASS_SET_PIECES_1 = "X) AQ20 직업 세트";
+ATLASLOOT_NAXX_SET_PIECES = "X) 공격대 세트 3";
+ATLASLOOT_BWL_SET_PIECES = "X) 공격대 세트 2";
+ATLASLOOT_MC_SET_PIECES = "X) 공격대 세트 1";
+ATLASLOOT_T0_SET_PIECES = "X) 던전 세트 0/0.5";
+ATLASLOOT_AQ_ENCHANTS = "X) AQ 마법부여";
+ATLASLOOT_ZG_ENCHANTS = "X) ZG 마법부여";
+ATLASLOOT_CLASS_BOOKS = "X) 직업 책";
+ATLASLOOT_TRIBUTE_RUN = "X) 공물함";
+ATLASLOOT_DM_BOOKS = "X) 혈장 책";
+ATLASLOOT_TRASH_MOBS = "X) 일반 몹";
+ATLASLOOT_RANDOM_LOOT = "X) 공통 드랍";
+ATLASLOOT_CLASS_SET_PIECES = "X) 직업 세트";
+ATLASLOOT_NO_ITEMINFO = " |cffff0000(아이템 정보 없음)";
+
+ATLASLOOT_BRDARENA1 = "아눕쉬아";
+ATLASLOOT_BRDARENA2 = "Eviscerator";
+ATLASLOOT_BRDARENA3 = "고로쉬";
+ATLASLOOT_BRDARENA4 = "그리즐";
+ATLASLOOT_BRDARENA5 = "헤드럼";
+ATLASLOOT_BRDARENA6 = "오크토르";
+
+ATLASLOOT_OPTIONS_TITLE = "Atlasloot 설정";
+ATLASLOOT_OPTIONS_SAFE_LINKS = "채팅 링크 |cff1eff00(추천)|r";
+ATLASLOOT_OPTIONS_ALL_LINKS = "모든 채팅 링크 활성 |cffff0000(위험 감수)|r";
+ATLASLOOT_OPTIONS_DEFAULT_TOOLTIPS = "기본 툴팁";
+ATLASLOOT_OPTIONS_LOOTLINK_TOOLTIPS = "Lootlink 툴팁 |cff1eff00(추천)|r";
+ATLASLOOT_OPTIONS_LOOTLINK_TOOLTIPS_DISABLED = "|cff9d9d9dLootlink 툴팁 (추천)|r";
+ATLASLOOT_OPTIONS_ITEMSYNC_TOOLTIPS = "ItemSync 툴팁";
+ATLASLOOT_OPTIONS_ITEMSYNC_TOOLTIPS_DISABLED = "|cff9d9d9dItemSync 툴팁|r";
+ATLASLOOT_OPTIONS_EQUIPCOMPARE = "EquipCompare 사용(비교)";
+ATLASLOOT_OPTIONS_EQUIPCOMPARE_DISABLED = "|cff9d9d9dEquipCompare 사용(비교)|r";
+ATLASLOOT_OPTIONS_DONE = "닫기";
+
+ATLASLOOT_BG_FRIENDLY = "약각 우호적 평판 보상";
+ATLASLOOT_BG_HONORED = "우호적 평판 보상";
+ATLASLOOT_BG_REVERED = "매우 우호적 평판 보상";
+ATLASLOOT_BG_EXALTED = "확고한 동맹 보상";
+
+ATLASLOOT_BG_STORMPIKE = "스톰파이크";
+ATLASLOOT_BG_FROSTWOLF = "서리늑대";
+ATLASLOOT_BG_SENTINELS = "은빛날개 요새";
+ATLASLOOT_BG_OUTRIDERS = "전쟁노래 협곡";
+ATLASLOOT_BG_ARATHOR = "아라소르 연맹";
+ATLASLOOT_BG_DEFILERS = "포세이큰 파멸단";
+
+ATLASLOOT_PVP_EPIC_H_DRUID = "장군의 드루이드 의복";
+ATLASLOOT_PVP_EPIC_H_HUNTER = "장군의 사냥꾼 갑옷";
+ATLASLOOT_PVP_EPIC_H_MAGE = "장군의 마법사 의복";
+ATLASLOOT_PVP_EPIC_H_PRIEST = "장군의 사제 예복";
+ATLASLOOT_PVP_EPIC_H_ROGUE = "장군의 도적 제복";
+ATLASLOOT_PVP_EPIC_H_SHAMAN = "장군의 주술사 갑옷";
+ATLASLOOT_PVP_EPIC_H_WARLOCK = "장군의 흑마법사 의복";
+ATLASLOOT_PVP_EPIC_H_WARRIOR = "장군의 전사 갑옷";
+
+ATLASLOOT_PVP_EPIC_A_DRUID = "야전사령관의 드루이드 의복";
+ATLASLOOT_PVP_EPIC_A_HUNTER = "야전사령관의 사냥꾼 갑옷";
+ATLASLOOT_PVP_EPIC_A_MAGE = "야전사령관의 마법사 의복";
+ATLASLOOT_PVP_EPIC_A_PALADIN = "야전사령관의 성기사 갑옷";
+ATLASLOOT_PVP_EPIC_A_PRIEST = "야전사령관의 사제 예복";
+ATLASLOOT_PVP_EPIC_A_ROGUE = "야전사령관의 도적 제복";
+ATLASLOOT_PVP_EPIC_A_WARLOCK = "야전사령관의 흑마법사 의복";
+ATLASLOOT_PVP_EPIC_A_WARRIOR = "야전사령관의 전사 갑옷";
+
+ATLASLOOT_PVP_RARE_H_DRUID = "위안의 부사령관 의복";
+ATLASLOOT_PVP_RARE_H_HUNTER = "추적의 부사령관 갑옷";
+ATLASLOOT_PVP_RARE_H_MAGE = "비전의 부사령관 의복";
+ATLASLOOT_PVP_RARE_H_PRIEST = "신탁의 부사령관 의복";
+ATLASLOOT_PVP_RARE_H_ROGUE = "경계의 부사령관 갑옷";
+ATLASLOOT_PVP_RARE_H_SHAMAN = "폭풍의 부사령관 갑옷";
+ATLASLOOT_PVP_RARE_H_WARLOCK = "공포의 부사령관 의복";
+ATLASLOOT_PVP_RARE_H_WARRIOR = "전투의 부사령관 갑옷";
+
+ATLASLOOT_PVP_RARE_A_DRUID = "위안의 부사령관 의복";
+ATLASLOOT_PVP_RARE_A_HUNTER = "추적의 부사령관 갑옷";
+ATLASLOOT_PVP_RARE_A_MAGE = "비전의 부사령관 의복";
+ATLASLOOT_PVP_RARE_A_PALADIN = "보루의 부사령관 갑옷";
+ATLASLOOT_PVP_RARE_A_PRIEST = "신탁의 부사령관 의복";
+ATLASLOOT_PVP_RARE_A_ROGUE = "경계의 부사령관 갑옷";
+ATLASLOOT_PVP_RARE_A_WARLOCK = "공포의 부사령관 의복";
+ATLASLOOT_PVP_RARE_A_WARRIOR = "전투의 부사령관 갑옷";
+
+ATLASLOOT_PVP_SET_PIECES = "PvP 세트";
+ATLASLOOT_PVP_SET_PIECES_HEADER = "PvP 보상";
+ATLASLOOT_PVP_EPIC_SET = "영웅 세트";
+ATLASLOOT_PVP_RARE_SET = "희귀 세트";
+ATLASLOOT_LEGENDARIES = "전설급 아이템";
+
+ATLASLOOT_PANEL_BUTTON_OPTIONS = "설정";
+ATLASLOOT_PANEL_BUTTON_SETS = "아이템 세트";
+ATLASLOOT_PANEL_BUTTON_REPUTATION = "진영";
+
+ATLASLOOT_FACTION_DARKMOON = "다크문 축제";
+ATLASLOOT_FACTION_THORIUM = "토륨 대장조합";
+ATLASLOOT_FACTION_TIMBERMAW = "나무구렁 요새";
+ATLASLOOT_FACTION_ARGENT = "은빛 여명회";
+ATLASLOOT_FACTION_CENARION = "세나리온 의회";
+ATLASLOOT_FACTION_BROOD = "노즈도르무 혈족";
+ATLASLOOT_FACTION_ZANDALAR = "잔달라 부족";
+ATLASLOOT_FACTION_ARGENT_INSIGNIAS = "보상 획득시 필요";
+ATLASLOOT_FACTION_ARGENT_TOKEN = "휘장 ";
+
+ATLASLOOT_RED_SCEPTER = "붉은색 홀 파편";
+ATLASLOOT_BLUE_SCEPTER = "파란색 홀 파편";
+ATLASLOOT_GREEN_SCEPTER = "녹색 홀 파편";
+ATLASLOOT_SCEPTER = "Scepter of the Shifting Sands";
+ATLASLOOT_AQ_OPENING = "X) AQ 홀 연계 퀘스트";
+
+end

@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="CensusButton.lua"/>
+	<Frame name="CensusButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="LOW">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="CensusButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="CP_ButtonDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+						    <OnLoad>
+						    	UIDropDownMenu_Initialize(CP_ButtonDropDown, CensusPlus_ButtonDropDown_Initialize, "MENU" );
+						    </OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<NormalTexture file="Interface\AddOns\CensusPlus\Skin\CensusButton-Up"/>
+				<PushedTexture file="Interface\AddOns\CensusPlus\Skin\CensusButton-Down"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+				    <OnLoad>
+                		this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				    </OnLoad>
+					<OnClick>
+				        CensusPlusButton_OnClick(arg1);
+				        PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+						GameTooltip:SetText(CENSUS_BUTTON_TOOLTIP);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+                    <OnUpdate>
+                        CensusButton_OnUpdate();
+    			    </OnUpdate>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent>
+				CensusButton_Init();
+				CensusButton_UpdatePosition();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

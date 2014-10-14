@@ -1,0 +1,465 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+
+<Script file="DiscordMiniSpellbook.lua"/>
+<Script file="DiscordMiniPanels.lua"/>
+
+<Button name="DMSB_SpellButtonTemplate" virtual="true">
+	<Scripts>
+		<OnLoad>
+			this:RegisterForDrag("LeftButton");
+			this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		</OnLoad>
+		<OnEvent>
+			DMSB_SpellButton_OnEvent(event);
+		</OnEvent>
+		<OnClick>
+			DMSB_SpellButton_OnClick(arg1, this.spellID, this.bookType);
+		</OnClick>
+		<OnDragStart>
+			DMSB_SpellButton_OnClick("drag", this.spellID, this.bookType);
+		</OnDragStart>
+		<OnReceiveDrag>
+			if (this.action) then
+				PlaceAction(this.action);
+				DMSB_Update_SpellList();
+				DMSB_ScrollFrame_Update();
+			end
+		</OnReceiveDrag>
+		<OnEnter>
+			DMSB_SpellButton_OnEnter();
+		</OnEnter>
+		<OnLeave>
+			this.updateTooltip = nil;
+			GameTooltip:Hide();
+		</OnLeave>
+		<OnUpdate>
+			DMSB_SpellButton_OnUpdate(arg1);
+		</OnUpdate>
+	</Scripts>
+</Button>
+
+<CheckButton name="DMSB_RankButtonTemplate" inherits="DMSB_SpellButtonTemplate" virtual="true">
+	<Size><AbsDimension x="14" y="13"/></Size>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture>
+				<Size><AbsDimension x="16" y="15"/></Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Text" inherits="GameFontNormalSmall"/>
+			<Texture>
+				<Size><AbsDimension x="14" y="13"/></Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Color r="0" g="0" b="0"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+</CheckButton>
+
+<Frame name="DMSB_ScrollButtonTemplate" virtual="true">
+	<Size><AbsDimension x="255" y="30"/></Size>
+	<Frames>
+		<CheckButton name="$parent_SpellButton" inherits="DMSB_SpellButtonTemplate">
+			<Size><AbsDimension x="28" y="28"/></Size>
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+			<Frames>
+				<Model name="$parent_Cooldown" inherits="CooldownFrameTemplate" scale=".7">
+					<Layers>
+						<Layer level="OVERLAY">
+							<FontString name="$parentCount" inherits="NumberFontNormal">
+								<Color r="1" g="1" b="0"/>
+								<FontHeight>
+									<AbsValue val="14"/>
+								</FontHeight>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Model>
+				<Model name="$parentAutoCast" file="Interface\Buttons\UI-AutoCastButton.mdx" scale="1.02" hidden="true">
+					<Size><AbsDimension x="30" y="30"/></Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset><AbsDimension x="1" y="1"/></Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this:SetSequence(0);
+							this:SetSequenceTime(0, 0);
+						</OnLoad>
+					</Scripts>
+				</Model>
+			</Frames>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="$parent_Icon">
+						<Size><AbsDimension x="28" y="28"/></Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture name="$parentAutoCastable" scale=".83" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
+						<Size><AbsDimension x="60" y="60"/></Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+			<Scripts>
+				<OnLoad>
+					this:RegisterForDrag("LeftButton");
+					this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					this:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+				</OnLoad>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parent_Rank1" inherits="DMSB_RankButtonTemplate">
+			<Anchors>
+				<Anchor point="BOTTOMLEFT">
+					<Offset><AbsDimension x="70" y="2"/></Offset>
+				</Anchor>
+			</Anchors>
+		</CheckButton>
+		<CheckButton name="$parent_Rank2" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank3" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank4" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank5" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank6" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank7" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank8" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank9" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank10" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank11" inherits="DMSB_RankButtonTemplate"/>
+		<CheckButton name="$parent_Rank12" inherits="DMSB_RankButtonTemplate"/>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Text" inherits="GameFontNormal" justifyH="LEFT">
+				<Size><AbsDimension x="200" y="15"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="35" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1" g="1" b="1"/>
+			</FontString>
+			<FontString name="$parent_RankText" inherits="GameFontNormalSmall" justifyH="LEFT">
+				<Size><AbsDimension x="200" y="15"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="35" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parent_TabText" font="Fonts\ARIALN.TTF" outline="THIN" justifyH="RIGHT">
+				<Size><AbsDimension x="200" y="15"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset><AbsDimension x="-5" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+				<Color r="0" g="1" b="0"/>
+			</FontString>
+			<Texture>
+				<Size><AbsDimension x="260" y="1"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="-5" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			if (this:GetID() > 1) then
+				this:SetPoint("TOP", "DMSB_ScrollButton_"..(this:GetID() - 1), "BOTTOM", 0, 0);
+			end
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<Button name="DiscordMiniSpellbookFrame" movable="true" hidden="true" parent="UIParent" frameStrata="DIALOG">
+	<Size><AbsDimension x="300" y="360"/></Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Frames>
+		<Button inherits="UIPanelButtonTemplate" hidden="false" text="X">
+			<Size><AbsDimension x="20" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-10" y="-10"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					DiscordMiniSpellbookFrame:Hide();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="DMSB_ToggleTabsButton" inherits="UIPanelButtonTemplate" hidden="false">
+			<Size><AbsDimension x="20" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-10" y="-28"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					DMSB_Toggle_Tabs();
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<ScrollFrame name="DMSB_ScrollFrame" inherits="FauxScrollFrameTemplate">
+			<Size><AbsDimension x="255" y="300"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset><AbsDimension x="10" y="-50"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnVerticalScroll>
+					FauxScrollFrame_OnVerticalScroll(30, DMSB_ScrollFrame_Update);
+				</OnVerticalScroll>
+			</Scripts>
+		</ScrollFrame>
+		<Frame name="DMSB_ScrollButton_1" inherits="DMSB_ScrollButtonTemplate" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="DMSB_ScrollFrame" relativePoint="TOPLEFT">
+					<Offset><AbsDimension x="5" y="0"/></Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="DMSB_ScrollButton_2" inherits="DMSB_ScrollButtonTemplate" id="2"/>
+		<Frame name="DMSB_ScrollButton_3" inherits="DMSB_ScrollButtonTemplate" id="3"/>
+		<Frame name="DMSB_ScrollButton_4" inherits="DMSB_ScrollButtonTemplate" id="4"/>
+		<Frame name="DMSB_ScrollButton_5" inherits="DMSB_ScrollButtonTemplate" id="5"/>
+		<Frame name="DMSB_ScrollButton_6" inherits="DMSB_ScrollButtonTemplate" id="6"/>
+		<Frame name="DMSB_ScrollButton_7" inherits="DMSB_ScrollButtonTemplate" id="7"/>
+		<Frame name="DMSB_ScrollButton_8" inherits="DMSB_ScrollButtonTemplate" id="8"/>
+		<Frame name="DMSB_ScrollButton_9" inherits="DMSB_ScrollButtonTemplate" id="9"/>
+		<Frame name="DMSB_ScrollButton_10" inherits="DMSB_ScrollButtonTemplate" id="10"/>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString inherits="GameFontNormal" text="DISCORD MINI SPELLBOOK">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+			<FontString name="$parent_SelectedTab" inherits="GameFontNormal">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<Texture>
+				<Size><AbsDimension x="1" y="300"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset><AbsDimension x="-30" y="-50"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+			<Texture>
+				<Size><AbsDimension x="280" y="1"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="10" y="-49"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniSpellbook\PlainBackdrop" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Scripts>
+		<OnLoad>
+			DMSB_OnLoad();
+		</OnLoad>
+		<OnShow>
+			DMSB_OnShow();
+		</OnShow>
+		<OnEvent>
+			DMSB_OnEvent(event);
+		</OnEvent>
+		<OnDragStart>
+			if (not DMSB_Settings.locked) then
+				this.moving = true;
+				this:StartMoving();
+			end
+		</OnDragStart>
+		<OnDragStop>
+			DMSB_Stop_Moving();
+		</OnDragStop>
+		<OnHide>
+			DMSB_Stop_Moving();
+		</OnHide>
+		<OnLeave>
+			DMSB_Stop_Moving();
+		</OnLeave>
+	</Scripts>
+</Button>
+
+<Button name="DMSB_TabButtonTemplate" parent="DiscordMiniSpellbookFrame" hidden="true" frameStrata="HIGH" virtual="true">
+	<Size><AbsDimension x="50" y="70"/></Size>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniSpellbook\PlainBackdrop" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parent_Icon">
+				<Size><AbsDimension x="30" y="30"/></Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-15"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Name" font="Fonts\ARIALN.TTF" outline="THIN">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset><AbsDimension x="0" y="15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(0, 0, 0);
+			this:SetBackdropBorderColor(1, 0, 0);
+		</OnLoad>
+		<OnClick>
+			DMSB_TabButton_OnClick(this:GetID());
+		</OnClick>
+		<OnEnter>
+			this:SetBackdropColor(1, 1, 0);
+			getglobal(this:GetName().."_Name"):SetTextColor(1, 0, 0);
+		</OnEnter>
+		<OnLeave>
+			if (DiscordMiniSpellbookFrame.selectedTab ~= this:GetID()) then
+				this:SetBackdropColor(0, 0, 0);
+				getglobal(this:GetName().."_Name"):SetTextColor(1, 1, 0);
+			end
+		</OnLeave>
+	</Scripts>
+</Button>
+
+<Button name="DMSB_TabButton_0" inherits="DMSB_TabButtonTemplate" hidden="false" id="0">
+	<Size><AbsDimension x="50" y="50"/></Size>
+	<Anchors>
+		<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+			<Offset><AbsDimension x="-15" y="0"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(1, 1, 0);
+			this:SetBackdropBorderColor(1, 0, 0);
+			DMSB_TabButton_0_Name:ClearAllPoints();
+			DMSB_TabButton_0_Name:SetPoint("CENTER", DMSB_TabButton_0, "CENTER", 0, 0);
+			DMSB_TabButton_0_Name:SetText(DMSB_TEXT.All);
+			getglobal(this:GetName().."_Name"):SetTextColor(1, 0, 0);
+		</OnLoad>
+	</Scripts>
+</Button>
+
+<Button name="DMSB_TabButton_1" inherits="DMSB_TabButtonTemplate" hidden="false" id="1"/>
+<Button name="DMSB_TabButton_2" inherits="DMSB_TabButtonTemplate" hidden="false" id="2"/>
+<Button name="DMSB_TabButton_3" inherits="DMSB_TabButtonTemplate" hidden="false" id="3"/>
+<Button name="DMSB_TabButton_4" inherits="DMSB_TabButtonTemplate" hidden="false" id="4"/>
+<Button name="DMSB_TabButton_5" inherits="DMSB_TabButtonTemplate" hidden="false" id="5">
+	<Size><AbsDimension x="50" y="50"/></Size>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(0, 0, 0);
+			this:SetBackdropBorderColor(1, 0, 0);
+			DMSB_TabButton_5_Name:ClearAllPoints();
+			DMSB_TabButton_5_Name:SetPoint("CENTER", DMSB_TabButton_5, "CENTER", 0, 0);
+			DMSB_TabButton_5_Name:SetText(DMSB_TEXT.Pet);
+		</OnLoad>
+	</Scripts>
+</Button>
+<Button name="DMSB_TabButton_6" inherits="DMSB_TabButtonTemplate" hidden="false" id="6">
+	<Size><AbsDimension x="50" y="50"/></Size>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(0, 0, 0);
+			this:SetBackdropBorderColor(1, 0, 0);
+			DMSB_TabButton_6_Name:ClearAllPoints();
+			DMSB_TabButton_6_Name:SetPoint("CENTER", DMSB_TabButton_6, "CENTER", 0, 0);
+			DMSB_TabButton_6_Name:SetText(DMSB_TEXT.Macros);
+		</OnLoad>
+	</Scripts>
+</Button>
+<Button name="DMSB_TabButton_7" inherits="DMSB_TabButtonTemplate" hidden="false" id="7">
+	<Size><AbsDimension x="50" y="50"/></Size>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(0, 0, 0);
+			this:SetBackdropBorderColor(1, 0, 0);
+			DMSB_TabButton_7_Name:ClearAllPoints();
+			DMSB_TabButton_7_Name:SetPoint("CENTER", DMSB_TabButton_7, "CENTER", 0, 0);
+			DMSB_TabButton_7_Name:SetText(DMSB_TEXT.Actions);
+		</OnLoad>
+	</Scripts>
+</Button>
+
+</Ui>

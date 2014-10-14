@@ -1,0 +1,245 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="localization.lua"/>
+<Script file="GTS_GuildRosterScan.lua"/>
+
+
+<Frame name="GTS_Menu_GRS" hidden="false" parent="GTS_Menu_Tab3">
+	<Size> 
+			<AbsDimension x="455" y="135"/> 
+		</Size> 
+		<Anchors> 
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-25"/>
+				</Offset>
+			</Anchor>
+		</Anchors> 
+			
+		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<CheckButton name="$parent_loadGRS" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then GTS_Options[GTS_Position].GRSON = true; else GTS_Options[GTS_Position].GRSON = false; end
+					</OnClick>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName().."Text");
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_scanOnOpen" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-43"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then GTS_Options[GTS_Position].GRSAUTO = true; else GTS_Options[GTS_Position].GRSAUTO = false; end
+					</OnClick>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName().."Text");
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parent_loadNow" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						this:Disable();
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>GTS_LoadAddon("GTS_BankScan", this);</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Scan" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						if (not IsInGuild()) then this:Disable();end
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>
+						GTS_Debug("GTS_GRS_DoScan is called.");
+						GTS_GRS_DoScan();
+						GTS_Echo(GTS_MSG["GRS_DONE"]);
+						GTS_GRS_MenuUpdate();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Clear" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>
+						GTS_Data.GRS.GuildRoster[GetGuildInfo("player")] = {};
+						GTS_Data.GRS.Date[GetGuildInfo("player")] = nil;
+						GTS_Echo(GTS_MSG["GRS_CLEARED"]);
+						GTS_GRS_MenuUpdate();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Header text -->
+				<FontString name="$parent_Header" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="160" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="0"/>
+				</FontString>
+				<FontString name="$parent_Ver" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="320" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="0"/>
+				</FontString>
+				<FontString name="$parent_Loaded" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</FontString>
+				<FontString name="$parent_LastScan" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0.85" b="0"/>
+				</FontString>
+				
+				<FontString name="$parent_numMem" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-115"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0.85" b="0"/>
+				</FontString>
+				<FontString name="$parent_LastScanStatus" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="105" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				
+				<FontString name="$parent_numMem1" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="90" y="-115"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				<FontString name="$parent_numMem2" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="97" y="-115"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				
+			</Layer>
+		</Layers>
+	<Scripts>
+		<OnLoad>
+			GTS_SetGUIName("GTS_Menu_GRS_Header");
+			GTS_SetGUIName("GTS_Menu_GRS_Ver");
+			GTS_SetGUIName("GTS_Menu_GRS_Loaded");
+			GTS_SetGUIName("GTS_Menu_GRS_LastScan");
+			GTS_SetGUIName("GTS_Menu_GRS_numMem");
+			GTS_SetGUIName("GTS_Menu_GRS_LastScanStatus");
+			GTS_SetGUIName("GTS_Menu_GRS_numMem1");
+			GTS_SetGUIName("GTS_Menu_GRS_numMem2");
+		</OnLoad>
+	</Scripts> 
+</Frame>
+
+<Frame name="GTS_BS_Main">
+	<Scripts>
+		<OnLoad>
+ 			GTS_GRS_OnLoad(); 
+		</OnLoad>
+	</Scripts>
+</Frame>
+</Ui>

@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<script file="EmoteButtonsImages.lua"/>
+	<Script file="EmoteButtons.lua"/>
+
+			<Button name="EmoteButtons_temp_noscript" toplevel="true" virtual="true">
+				<Size>
+					<AbsDimension x="42" y="42"/>
+				</Size>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_Icon" file="Interface\Icons\Ability_Rogue_Disguise">
+							<Size>
+								<AbsDimension x="25" y="25"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\AddOns\EmoteButtons\EmoteButtons-ButtonBase.tga"/>
+				<HighlightTexture alphaMode="BLEND" file="Interface\AddOns\EmoteButtons\EmoteButtons-ButtonGlow.tga"/>
+			</Button>
+
+			<Button name="EmoteButtons_template" movable="false" hidden="true" virtual="true" inherits="EmoteButtons_temp_noscript">
+				<Scripts>
+					<OnClick>
+						EmoteButtons_ClickAction(this:GetName());
+					</OnClick>
+					<OnEnter>
+						EmoteButtons_ShowTooltip(this:GetName());
+					</OnEnter>
+					<OnLeave>
+						EmoteButtons_HideTooltip();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="EmoteButtons_SelectImage_template" virtual="true" movable="false">
+				<Scripts>
+					<OnEnter>
+						EmoteButtons_RegisterForSlide(this:GetID());
+					</OnEnter>
+					<OnLeave>
+						EmoteButtons_SlideImageMouseLeave(this:GetID());
+					</OnLeave>
+					<OnClick>
+						EmoteButtons_ImageSelected(this:GetID());
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="EmoteButtons_SelectImage_Init" virtual="true" movable="false" inherits="EmoteButtons_SelectImage_template">
+				<Scripts>
+					<OnUpdate>
+						EmoteButtons_SlideImageUpdate();
+					</OnUpdate>
+				</Scripts>
+			</Button>
+
+			<Button name="EmoteButtons_Main" parent="UIParent" toplevel="true" movable="true" inherits="EmoteButtons_temp_noscript">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForDrag("RightButton");
+					</OnLoad>
+					<OnDragStart>
+						this:StartMoving();
+					</OnDragStart>
+					<OnDragStop>
+						this:StopMovingOrSizing();
+					</OnDragStop>
+					<OnClick>
+						EmoteButtons_ToggleFirstLevel();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+						GameTooltip:SetText(EMOTEBUTTONS_MAINHELP);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			
+			
+			<EditBox name="EmoteButtons_EditBox" inherits="ChatFrameEditBoxTemplate" parent="UIParent" hidden="true">
+				<Scripts>
+					<OnLoad>
+
+					</OnLoad>
+				</Scripts>
+			</EditBox>
+
+</Ui>

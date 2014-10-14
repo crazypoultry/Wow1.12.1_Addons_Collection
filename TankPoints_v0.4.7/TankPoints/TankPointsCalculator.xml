@@ -1,0 +1,494 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Lua Scripts -->
+	<Script file="localization.lua"/>
+	<Script file="TankPointsCalculator.lua"/>
+	
+	<!-- Template for variable player stats -->
+	<Frame name="TankPointsVariablesTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="330" y="22"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="117" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOriginalStat" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentLabel" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentPlus" inherits="GameFontHighlight" text="+">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentOriginalStat" relativePoint="RIGHT">
+							<Offset>
+                                <AbsDimension x="5" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Area that triggers tooltip show -->
+			<Frame name="$parentShowTooltip">
+				<Size>
+					<AbsDimension x="117" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+				</Anchors>
+				<!--
+				<Scripts>
+					<OnEnter>
+						TankPointsCalculatorTooltip_OnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				-->
+			</Frame>
+			<Button name="$parentDecrementButton">
+				<Size>
+					<AbsDimension x="23" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPlus" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TankPointsDecrement_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentIncrementButton">
+				<Size>
+					<AbsDimension x="23" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDecrementButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="57" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TankPointsIncrement_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<EditBox name="$parentInputBox" letters="6" autoFocus="false" inherits="InputBoxTemplate">
+				<Size>
+					<AbsDimension x="64" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDecrementButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetText("0");
+					</OnLoad>
+					<OnEnterPressed>
+						this:ClearFocus();
+					</OnEnterPressed>
+					<OnTextChanged>
+						TankPointsInputBox_OnTextChanged();
+					</OnTextChanged> 
+				</Scripts>
+			</EditBox>
+			<Frame>
+				<Layers>
+					<Layer level="BACKGROUND">
+						 <FontString name="$parentEqual" inherits="GameFontHighlight" text="=">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentIncrementButton" relativePoint="RIGHT">
+									<Offset>
+		                                <AbsDimension x="5" y="0"/>
+		                            </Offset>
+		                        </Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNewStat" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="50" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentEqual" relativePoint="RIGHT">
+									<Offset>
+		                                <AbsDimension x="5" y="0"/>
+		                            </Offset>
+		                        </Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	<!-- Template for TankPoints calculated results -->
+	<Frame name="TankPointsResultsTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="330" y="22"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="170" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<!--  -->
+				<FontString name="$parentCurrent" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentLabel" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentPlus" inherits="GameFontHighlight" text="+">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCurrent" relativePoint="RIGHT">
+							<Offset>
+                                <AbsDimension x="5" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDifference" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentPlus" relativePoint="RIGHT">
+							<Offset>
+                                <AbsDimension x="5" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentEqual" inherits="GameFontHighlight" text="=">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentDifference" relativePoint="RIGHT">
+							<Offset>
+                                <AbsDimension x="5" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentResult" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentEqual" relativePoint="RIGHT">
+							<Offset>
+                                <AbsDimension x="5" y="0"/>
+                            </Offset>
+                        </Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+		</Frames>
+	</Frame>
+	
+	<!-- Main calculator frame -->
+	<Frame name="TankPointsCalculator" parent="UIParent" enableMouse="true" movable="true" frameStrata="DIALOG" hidden="true" toplevel="true">
+		<Size>
+			<AbsDimension x="370" y="400"/>
+		</Size>
+		
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="TPCFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="360" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="TankPoints Calculator">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TankPointsCalculator">
+							<Offset>
+								<AbsDimension x="0" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<Frame name="TankPointsResultsFrame" inherits="OptionFrameBoxTemplate">
+                <Size>
+                    <AbsDimension x="330" y="76"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="20" y="-30"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0,0,0)
+					</OnLoad>
+				</Scripts>
+                <Layers>
+				</Layers>
+                <Frames>
+					<!-- TankPoints -->
+					<Frame name="TankPointsResults1" inherits="TankPointsResultsTemplate" id="1">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT">
+		                        <Offset>
+		                            <AbsDimension x="10" y="-5"/>
+		                        </Offset>
+		                    </Anchor>
+		                </Anchors>
+						<Scripts>
+							<OnEnter>
+								
+							</OnEnter>
+							<OnLeave>
+								
+							</OnLeave>
+						</Scripts>
+		            </Frame>
+					<!-- TotalReduction -->
+					<Frame name="TankPointsResults2" inherits="TankPointsResultsTemplate" id="2">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsResults1" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- CritReduction -->
+					<Frame name="TankPointsResults3" inherits="TankPointsResultsTemplate" id="3">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsResults2" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+                </Frames>
+		    </Frame>
+			<!--
+			
+			-->
+			<Frame name="TankPointsVariableFrame" inherits="OptionFrameBoxTemplate">
+                <Size>
+                    <AbsDimension x="330" y="252"/>
+                </Size>
+                <Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TankPointsResultsFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+		                    <AbsDimension x="0" y="2"/>
+		                </Offset>
+		            </Anchor>
+                </Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0,0,0)
+					</OnLoad>
+				</Scripts>
+                <Layers>
+				</Layers>
+                <Frames>
+					<Frame name="TankPointsVariables1" inherits="TankPointsVariablesTemplate" id="1">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT">
+		                        <Offset>
+		                            <AbsDimension x="10" y="-5"/>
+		                        </Offset>
+		                    </Anchor>
+		                </Anchors>
+						<Scripts>
+							<OnEnter>
+								
+							</OnEnter>
+							<OnLeave>
+								
+							</OnLeave>
+						</Scripts>
+		            </Frame>
+					<Frame name="TankPointsVariables2" inherits="TankPointsVariablesTemplate" id="2">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables1" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<Frame name="TankPointsVariables3" inherits="TankPointsVariablesTemplate" id="3">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables2" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<Frame name="TankPointsVariables4" inherits="TankPointsVariablesTemplate" id="4">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables3" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<Frame name="TankPointsVariables5" inherits="TankPointsVariablesTemplate" id="5">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables4" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- Max Health -->
+					<Frame name="TankPointsVariables6" inherits="TankPointsVariablesTemplate" id="6">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables5" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- Armor -->
+					<Frame name="TankPointsVariables7" inherits="TankPointsVariablesTemplate" id="7">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables6" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- Defense -->
+					<Frame name="TankPointsVariables8" inherits="TankPointsVariablesTemplate" id="8">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables7" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- Parry -->
+					<Frame name="TankPointsVariables9" inherits="TankPointsVariablesTemplate" id="9">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables8" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- Dodge -->
+					<Frame name="TankPointsVariables10" inherits="TankPointsVariablesTemplate" id="10">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables9" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+					<!-- Block -->
+					<Frame name="TankPointsVariables11" inherits="TankPointsVariablesTemplate" id="11">
+		                <Anchors>
+		                    <Anchor point="TOPLEFT" relativeTo="TankPointsVariables10" relativePoint="BOTTOMLEFT"/>
+		                </Anchors>
+		            </Frame>
+                </Frames>
+		    </Frame> 
+		    <!-- Reset Button -->
+			<Button name="$parentReset" inherits="OptionsButtonTemplate" text="Reset">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TankPointsCalculatorReset_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		    <!-- Close Button -->
+			<Button name="$parentClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(TankPointsCalculator);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		
+		<Scripts>	
+			<OnLoad>
+				TankPointsCalculator_OnLoad();
+			</OnLoad>
+            <OnEvent>
+                TankPointsCalculator_OnEvent(event);
+            </OnEvent>
+			<OnMouseDown>
+				TankPointsCalculator_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				TankPointsCalculator_OnMouseUp(arg1);
+			</OnMouseUp>
+			<OnShow>
+				TankPointsCalculator_Update();
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

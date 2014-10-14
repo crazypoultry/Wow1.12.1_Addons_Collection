@@ -1,0 +1,583 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\FrameXML\UI.xsd">
+
+	<Script file="SmartML_Log.lua"/>
+	
+	<Frame name="SL_LogFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="390" y="14"/> <!-- todo, see that the elements sum up -->
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentPlayer" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="90" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="$parentItem" inherits="CombatLogFont" justifyH="LEFT" nonspacewrap="true">
+					<Color r="1" g="1" b="1"/>
+					<Size>
+						<AbsDimension x="170" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentPlayer" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="$parentPool" inherits="CombatLogFont" justifyH="LEFT" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="90" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentItem" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="$parentBid" inherits="CombatLogFont" justifyH="RIGHT" nonspacewrap="true">
+					<Color r="0" g="0.8" b="1.0"/>
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentPool" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				SL_LogItem_OnClick(arg1);
+			</OnClick>
+			<OnEnter>
+				SL_LogItem_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				SL_LogItem_OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+    <Frame name="SL_LogFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="457" y="420"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<!-- thanks advanced bags (plus) for texture! modified it a bit tough -->
+		<Backdrop bgFile="Interface\AddOns\SmartML\FrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <BackgroundInsets>
+            	<AbsInset left="7" right="6" top="7" bottom="6"/>
+            </BackgroundInsets>
+        </Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_FrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="200" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Item log">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SL_LogFrame">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+        <Frames>
+			<Button name="$parent_DragButton" hidden="false">
+				<Size>
+					<AbsDimension x="200" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent_FrameHeader">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StartMoving();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StopMovingOrSizing();
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			
+			<Button name="SL_LogHeader" inherits="SL_LogFrameTemplate" hidden="false" id="32">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Player"):SetText("Player");
+						getglobal(this:GetName().."Item"):SetText("Item");
+						getglobal(this:GetName().."Bid"):SetText("Bid");
+						getglobal(this:GetName().."Pool"):SetText("Pool");
+						getglobal(this:GetName().."Player"):SetTextColor(1,1,1);
+						getglobal(this:GetName().."Item"):SetTextColor(1,1,1);
+						getglobal(this:GetName().."Bid"):SetTextColor(1,1,1);
+						getglobal(this:GetName().."Pool"):SetTextColor(1,1,1);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<Frame name="SL_LogHilight" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="12"/>
+				</Size>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parent_Texture" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="290" y="14"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+									
+			<Button name="SL_LogItem1" inherits="SL_LogFrameTemplate" hidden="true" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogHeader" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>		
+			</Button>
+			<Button name="SL_LogItem2" inherits="SL_LogFrameTemplate" hidden="true" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem3" inherits="SL_LogFrameTemplate" hidden="true" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem4" inherits="SL_LogFrameTemplate" hidden="true" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem5" inherits="SL_LogFrameTemplate" hidden="true" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem6" inherits="SL_LogFrameTemplate" hidden="true" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem7" inherits="SL_LogFrameTemplate" hidden="true" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem8" inherits="SL_LogFrameTemplate" hidden="true" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem9" inherits="SL_LogFrameTemplate" hidden="true" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem10" inherits="SL_LogFrameTemplate" hidden="true" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem11" inherits="SL_LogFrameTemplate" hidden="true" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem12" inherits="SL_LogFrameTemplate" hidden="true" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem13" inherits="SL_LogFrameTemplate" hidden="true" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem14" inherits="SL_LogFrameTemplate" hidden="true" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem13" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem15" inherits="SL_LogFrameTemplate" hidden="true" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem14" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem16" inherits="SL_LogFrameTemplate" hidden="true" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem15" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem17" inherits="SL_LogFrameTemplate" hidden="true" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem16" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem18" inherits="SL_LogFrameTemplate" hidden="true" id="18">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem17" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem19" inherits="SL_LogFrameTemplate" hidden="true" id="19">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem18" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem20" inherits="SL_LogFrameTemplate" hidden="true" id="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem19" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem21" inherits="SL_LogFrameTemplate" hidden="true" id="21">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem20" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem22" inherits="SL_LogFrameTemplate" hidden="true" id="22">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem21" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem23" inherits="SL_LogFrameTemplate" hidden="true" id="23">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem22" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem24" inherits="SL_LogFrameTemplate" hidden="true" id="24">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem23" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem25" inherits="SL_LogFrameTemplate" hidden="true" id="25">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem24" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem26" inherits="SL_LogFrameTemplate" hidden="true" id="26">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem25" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem27" inherits="SL_LogFrameTemplate" hidden="true" id="27">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem26" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem28" inherits="SL_LogFrameTemplate" hidden="true" id="28">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem27" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem29" inherits="SL_LogFrameTemplate" hidden="true" id="29">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem28" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_LogItem30" inherits="SL_LogFrameTemplate" hidden="true" id="30">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_LogItem29" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<ScrollFrame name="SL_LogScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="12" y="320"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SL_LogItem1">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<!--
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="301"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="-1" y="7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="118"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="-1" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				-->
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(SL_ITEM_HEIGHT, SL_UpdateLog);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			
+			<Frame name="SL_Log_HistoryDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="$parent_Close" inherits="OptionsButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(SL_LogFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_Export" inherits="OptionsButtonTemplate" text="Export">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent_Close" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(SL_LogFrame);
+						SL_GenerateExportData();
+						SL_ExportFrame:Show();	
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_Clear" inherits="OptionsButtonTemplate" text="Clear">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent_Export" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_ClearButton();	
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			
+
+			<!-- dropdown menu -->
+			<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate" id="33" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SL_UI_LogDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+        </Frames>
+        <Scripts>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts>
+    </Frame>        
+
+</Ui>

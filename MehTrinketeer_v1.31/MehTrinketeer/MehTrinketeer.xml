@@ -1,0 +1,2088 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+   <Script file="Localization.lua"/>
+   <Script file="MehTrinketeer.lua"/>
+
+	<!-- Prototypes -->
+
+   <CheckButton name="MTCheckProto" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="25" y="25"/>
+		</Size>		
+	</CheckButton>
+
+   <CheckButton name="MTLockCheckProto" inherits="MTCheckProto" virtual="true">
+		<Scripts>
+         <OnClick>
+            MTLockChkClick()
+            if ( this:GetChecked() ) then
+               PlaySound("igMainMenuOptionCheckBoxOn");
+            else
+               PlaySound("igMainMenuOptionCheckBoxOff");
+            end
+         </OnClick>
+         <OnEnter>
+            MTShowLockTooltip();
+         </OnEnter>
+         <OnLeave>
+            GameTooltip:Hide();
+         </OnLeave>
+      </Scripts>		
+	</CheckButton>
+
+   <CheckButton name="MTTrinketsCheckProto" inherits="MTCheckProto" virtual="true">
+	</CheckButton>
+
+   <CheckButton name="MTSlotProto" inherits="ActionButtonTemplate" virtual="true">
+      <Scripts>
+         <OnUpdate>
+            MTUpdateTooltip(arg1)
+            MTUpdateCooldown(arg1)
+         </OnUpdate>
+         <OnEnter>
+            MTShowTooltip()
+         </OnEnter>
+         <OnLeave>
+            GameTooltip:Hide();
+         </OnLeave>
+      </Scripts>
+   </CheckButton>
+
+   <CheckButton name="MTEquippedSlotProto" inherits="MTSlotProto" virtual="true">
+      <Scripts>
+         <OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+         <OnClick>
+            MTEquippedSlotClick(arg1)
+         </OnClick>
+      </Scripts>
+   </CheckButton>
+
+   <CheckButton name="MTListSlotProto" inherits="MTSlotProto" virtual="true">
+      <Scripts>
+         <OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+         <OnClick>
+            MTListSlotClick(arg1)
+         </OnClick>
+      </Scripts>
+   </CheckButton>
+
+   <CheckButton name="MTPaletteSlotProto" inherits="MTSlotProto" virtual="true">
+      <Scripts>
+         <OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+         <OnClick>
+            gPaletteFuncs[this:GetParent():GetParent():GetName()](arg1)
+         </OnClick>
+      </Scripts>
+   </CheckButton>
+
+   <CheckButton name="MTArrowButtonProto" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+	</CheckButton>
+
+   <CheckButton name="MTLeftArrowButtonProto" inherits="MTArrowButtonProto" virtual="true">
+      <NormalTexture name="$parentNormalTexture" file="Interface\AddOns\MehTrinketeer\UI-ScrollBar-ScrollLeftButton-Up">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+         <TexCoords left="0.03125" right="0.5" top="0.25" bottom="0.78125"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\AddOns\MehTrinketeer\UI-ScrollBar-ScrollLeftButton-Down">
+         <TexCoords left="0.03125" right="0.5" top="0.21875" bottom="0.78125"/>
+      </PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\MehTrinketeer\UI-ScrollBar-ScrollLeftButton-Highlight">
+         <TexCoords left="0.03125" right="0.5" top="0.21875" bottom="0.78125"/>
+      </HighlightTexture>
+   </CheckButton>
+
+   <CheckButton name="MTUpArrowButtonProto" inherits="MTArrowButtonProto" virtual="true">
+      <NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+         <TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down">
+         <TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
+      </PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight">
+         <TexCoords left="0.25" right="0.75" top="0.25" bottom="0.75"/>
+      </HighlightTexture>
+   </CheckButton>
+
+   <CheckButton name="MTRightArrowButtonProto" inherits="MTArrowButtonProto" virtual="true">
+      <NormalTexture name="$parentNormalTexture" file="Interface\AddOns\MehTrinketeer\UI-ScrollBar-ScrollLeftButton-Up">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+         <TexCoords left="0.5" right="0.03125" top="0.78125" bottom="0.25"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\AddOns\MehTrinketeer\UI-ScrollBar-ScrollLeftButton-Down">
+         <TexCoords left="0.5" right="0.03125" top="0.78125" bottom="0.25"/>
+      </PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\MehTrinketeer\UI-ScrollBar-ScrollLeftButton-Highlight">
+         <TexCoords left="0.5" right="0.03125" top="0.78125" bottom="0.25"/>
+      </HighlightTexture>
+   </CheckButton>
+
+   <CheckButton name="MTDownArrowButtonProto" inherits="MTArrowButtonProto" virtual="true">
+      <NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+         <TexCoords left="0.75" right="0.25" top="0.75" bottom="0.25"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down">
+         <TexCoords left="0.75" right="0.25" top="0.75" bottom="0.25"/>
+      </PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight">
+         <TexCoords left="0.75" right="0.25" top="0.75" bottom="0.25"/>
+      </HighlightTexture>
+   </CheckButton>
+
+   <Frame name="MTFramePaletteProto" toplevel="true" frameStrata="MEDIUM" enableMouse="true" movable="false" parent="UIParent" hidden="true" virtual="true">
+	   <Size>
+		   <AbsDimension x="99" y="94" />
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="MTFrameEquipped" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+      <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		   <BackgroundInsets>
+			   <AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+         <TileSize>
+            <AbsValue val="16" />
+         </TileSize>
+         <EdgeSize>
+            <AbsValue val="16" />
+         </EdgeSize>
+	   </Backdrop>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="MTMain_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>            
+			</Layer>
+         <Layer level="ARTWORK">
+            <FontString name="$parentlblPassives" inherits="GameFontNormalSmall" text="Passives">
+               <Anchors>
+                  <Anchor point="TOP">
+                     <Offset>
+                        <AbsDimension x="0" y="-4"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+            <FontString name="$parentlblCooldowns" inherits="GameFontNormalSmall" text="Cooldowns"/>
+         </Layer>
+      </Layers>
+      <Frames>
+         <Frame name="$parentTrinkets">
+               <Anchors>
+                  <Anchor point="TOPLEFT" >
+                     <Offset>
+                        <AbsDimension x="0" y="0"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+               <Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+            <Frames>
+               <CheckButton name="$parentPassive1" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive2" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive3" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive4" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive5" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive6" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive7" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive8" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive9" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive10" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive11" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive12" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive13" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive14" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive15" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive16" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive17" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive18" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive19" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive20" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive21" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive22" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive23" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive24" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive25" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive26" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive27" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive28" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive29" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive30" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive31" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive32" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive33" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive34" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentPassive35" inherits="MTPaletteSlotProto"/>
+
+               <CheckButton name="$parentCooldown1" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown2" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown3" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown4" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown5" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown6" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown7" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown8" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown9" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown10" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown11" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown12" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown13" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown14" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown15" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown16" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown17" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown18" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown19" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown20" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown21" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown22" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown23" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown24" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown25" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown26" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown27" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown28" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown29" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown30" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown31" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown32" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown33" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown34" inherits="MTPaletteSlotProto"/>
+               <CheckButton name="$parentCooldown35" inherits="MTPaletteSlotProto"/>
+            </Frames>
+         </Frame>
+      </Frames>
+      <Scripts>
+         <OnLoad>
+             getglobal(this:GetName().."lblPassives"):SetText(MT_TXT_PASSIVES)
+             getglobal(this:GetName().."lblCooldowns"):SetText(MT_TXT_COOLDOWNS)
+         </OnLoad>
+         <OnMouseDown>
+				MTMoveOnMouseDown(arg1, MTFrameEquipped);
+			</OnMouseDown>
+			<OnMouseUp>
+				MTMoveOnMouseUp(arg1, MTFrameEquipped);
+			</OnMouseUp>
+      </Scripts>
+   </Frame>
+
+   <Slider name="MTSliderProto" inherits="OptionsSliderTemplate" virtual="true">
+      <Anchors>
+         <Anchor point="TOPLEFT">
+            <Offset>
+               <AbsDimension x="0" y="0"/>
+            </Offset>
+         </Anchor>
+      </Anchors>
+      <Size>
+         <AbsDimension x="200" y="17"/>
+      </Size>
+      <Scripts>
+         <OnLoad>
+            MTHealthRangeInit()
+         </OnLoad>
+         <OnValueChanged>
+            MTHealthRangeChanged()
+         </OnValueChanged>
+      </Scripts>
+   </Slider>
+
+   <Frame name="MTHealthRangeProto" virtual="true">
+      <Anchors>
+         <Anchor point="TOP"/>
+      </Anchors>
+      <Size>
+         <AbsDimension x="200" y="50"/>
+      </Size>
+      <Layers>
+         <Layer level="ARTWORK">
+            <FontString name="$parentlblTopPct" inherits="GameFontHighlightSmall" text="50.0%">
+               <Anchors>
+                  <Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM">
+                     <Offset>
+                        <AbsDimension x="0" y="36"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+            <FontString name="$parentlblBottomPct" inherits="GameFontHighlightSmall" text="50.0%">
+               <Anchors>
+                  <Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM">
+                     <Offset>
+                        <AbsDimension x="0" y="-1"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+         </Layer>
+      </Layers>
+      <Frames>         
+         <Slider name="$parentSliderLeft" inherits="MTSliderProto" id="1"/>
+         <Slider name="$parentSliderRight" inherits="MTSliderProto" id="2">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="$parentSliderLeft" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="0" y="-20"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+         </Slider>
+      </Frames>
+   </Frame>
+
+   <!-- Instances -->
+
+   <!-- Equipped Trinkets Window -->
+
+   <Frame name="MTFrameEquipped" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+	   <Size>
+		   <AbsDimension x="90" y="158" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="400" y="400"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+      <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		   <BackgroundInsets>
+			   <AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+         <TileSize>
+            <AbsValue val="16" />
+         </TileSize>
+         <EdgeSize>
+            <AbsValue val="16" />
+         </EdgeSize>
+	   </Backdrop>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="MTMain_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+         <Layer level="ARTWORK">            
+            <Texture name="texWhiteVert1" file="Interface\AddOns\MehTrinketeer\UI-WhiteVertBar" alphaMode="ADD">
+               <Size>
+                  <AbsDimension x="3" y="93"/>
+               </Size>               
+               <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="MTFrameEquipped" relativePoint="TOPRIGHT">
+                     <Offset>
+                        <AbsDimension x="-56" y="0"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+               <TexCoords left="0.484375" right="0.4921875" top="0.1953125" bottom="0.78125"/>
+            </Texture>
+         </Layer>
+      </Layers>
+      <Frames>
+         <CheckButton name="MTEquipped1" inherits="MTEquippedSlotProto" id="13">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="texWhiteVert1" relativePoint="TOPRIGHT">
+                  <Offset>
+                     <AbsDimension x="9" y="-8"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+         </CheckButton>
+         <CheckButton name="MTEquipped2" inherits="MTEquippedSlotProto" id="14">
+            <Anchors>
+               <Anchor point="TOP" relativeTo="MTEquipped1" relativePoint="BOTTOM">
+                  <Offset>
+                     <AbsDimension x="0" y="-5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+         </CheckButton>
+         <CheckButton name="MTLock1"  inherits="MTLockCheckProto" id="1">
+            <Anchors>
+               <Anchor point="BOTTOMRIGHT" relativeTo="MTEquipped1" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="-13" y="0"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>            
+         </CheckButton>
+         <CheckButton name="MTLock2" inherits="MTLockCheckProto" id="2">
+            <Anchors>
+               <Anchor point="TOPRIGHT" relativeTo="MTEquipped2" relativePoint="TOPLEFT">
+                  <Offset>
+                     <AbsDimension x="-13" y="-4"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>            
+         </CheckButton>
+         <CheckButton name="MTShowAutoUse" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTEquipped2" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="15" y="-5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Layers>
+            <Layer level="ARTWORK">
+               <FontString name="lblShowAutoUse" inherits="GameFontNormalSmall" text="A-Use">
+                  <Anchors>
+                     <Anchor point="RIGHT" relativeTo="MTShowAutoUse" relativePoint="LEFT">
+                        <Offset>
+                           <AbsDimension x="-1" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+               </FontString>
+            </Layer>
+            </Layers>
+            <Scripts>
+               <OnLoad>
+                  lblShowAutoUse:SetText(MT_TXT_AUTOUSE)
+               </OnLoad>
+               <OnClick>
+                  if this:GetChecked() then
+                     if MTShowPalette:GetChecked() then
+                        MTShowPalette:SetChecked(false)
+                        MTFramePalette:Hide()
+                     elseif MTShowSetup:GetChecked() then
+                        MTShowSetup:SetChecked(false)
+                        MTFrameTrinkets:Hide()
+                     end
+                     MTFrameAutoUse:Show()
+                  else
+                     MTFrameAutoUse:Hide()
+                  end
+                  if this:GetChecked() then
+                     PlaySound("igMainMenuOptionCheckBoxOn")
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff")
+                  end
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTAutoUseActive" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="RIGHT" relativeTo="lblShowAutoUse" relativePoint="LEFT">
+                  <Offset>
+                     <AbsDimension x="1" y="0"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Scripts>
+               <OnClick>
+                  if this:GetChecked() then
+                     PlaySound("igMainMenuOptionCheckBoxOn")
+                     lblShowAutoUse:SetTextColor(1.0, 0.8196078431372, 0.0)
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff")
+                     lblShowAutoUse:SetTextColor(0.5, 0.5, 0.5)                     
+                  end
+               </OnClick>
+               <OnLoad>
+                  this:SetChecked(true)
+               </OnLoad>
+               <OnEnter>
+                  GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT")
+                  GameTooltip:AddLine(MT_TXT_AUTO_USE_ON_Q)
+                  GameTooltip:Show()
+               </OnEnter>
+               <OnLeave>
+                  GameTooltip:Hide()
+               </OnLeave>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTShowPalette" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTShowAutoUse" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="0" y="5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Layers>
+            <Layer level="ARTWORK">
+               <FontString name="lblShowPalette" inherits="GameFontNormalSmall" text="Palette">
+                  <Anchors>
+                     <Anchor point="RIGHT" relativeTo="MTShowPalette" relativePoint="LEFT">
+                        <Offset>
+                           <AbsDimension x="-1" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+               </FontString>
+            </Layer>
+            </Layers>
+            <Scripts>
+               <OnLoad>
+                  lblShowPalette:SetText(MT_TXT_PALETTE)
+               </OnLoad>
+               <OnClick>
+                  if this:GetChecked() then
+                     if MTShowSetup:GetChecked() then
+                        MTShowSetup:SetChecked(false)
+                        MTFrameTrinkets:Hide()
+                     elseif MTShowAutoUse:GetChecked() then
+                        MTShowAutoUse:SetChecked(false)
+                        MTFrameAutoUse:Hide()
+                     end
+                     MTFramePalette:Show()
+                  else
+                     MTFramePalette:Hide()
+                  end
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTShowSetup" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTShowPalette" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="0" y="5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Layers>
+            <Layer level="ARTWORK">
+               <FontString name="lblShowSetup" inherits="GameFontNormalSmall" text="Setup">
+                  <Anchors>
+                     <Anchor point="RIGHT" relativeTo="MTShowSetup" relativePoint="LEFT">
+                        <Offset>
+                           <AbsDimension x="-1" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+               </FontString>
+            </Layer>
+            </Layers>
+            <Scripts>
+               <OnLoad>
+                  lblShowSetup:SetText(MT_TXT_SETUP)
+               </OnLoad>
+               <OnClick>
+                  if this:GetChecked() then
+                     if MTShowPalette:GetChecked() then
+                        MTShowPalette:SetChecked(false)
+                        MTFramePalette:Hide()
+                     elseif MTShowAutoUse:GetChecked() then
+                        MTShowAutoUse:SetChecked(false)
+                        MTFrameAutoUse:Hide()
+                     end
+                     MTFrameTrinkets:Show()
+                  else
+                     MTFrameTrinkets:Hide()
+                  end
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+      </Frames>
+      <Scripts>
+         <OnMouseDown>
+				MTMoveOnMouseDown(arg1, this);
+			</OnMouseDown>
+			<OnMouseUp>
+				MTMoveOnMouseUp(arg1, this);
+			</OnMouseUp>         
+         <OnLoad>                            
+            MTInit()                         
+         </OnLoad>
+         <OnUpdate>
+            --MTUpdate(arg1)
+         </OnUpdate>
+         <OnEvent>                           
+            MTHandleEvent(event, arg1, arg2)             
+         </OnEvent>  
+      </Scripts>
+   </Frame>
+
+   <!-- Trinkets -->
+
+   <Frame name="MTFrameTrinkets" toplevel="true" frameStrata="MEDIUM" enableMouse="true" movable="false" parent="UIParent" hidden="true">
+	   <Size>
+		   <AbsDimension x="99" y="94" />
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="MTFrameEquipped" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+      <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		   <BackgroundInsets>
+			   <AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+         <TileSize>
+            <AbsValue val="16" />
+         </TileSize>
+         <EdgeSize>
+            <AbsValue val="16" />
+         </EdgeSize>
+	   </Backdrop>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="MTMain_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+         <Layer level="ARTWORK">
+            <FontString name="lblTitle" inherits="GameFontNormalSmall" text="MehTrinketeer">
+               <Anchors>
+                  <Anchor point="TOPLEFT">
+                     <Offset>
+                        <AbsDimension x="5" y="-5"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+         </Layer>
+      </Layers>
+      <Frames>
+         <Frame name="Advanced" hidden="true">
+            <Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+            <Size>
+			      <AbsDimension x="400" y="250"/>
+		      </Size>
+            <Layers>
+               <Layer level="ARTWORK">
+                  <FontString name="lblCurrSetup" inherits="GameFontNormalSmall" text="Current Setup:">
+                     <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                           <Offset>
+                              <AbsDimension x="7" y="65"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+                   <FontString name="lblAutoLoad" inherits="GameFontNormalSmall" text="Load This In Zone:">
+                     <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="lblCurrSetup" relativePoint="TOPLEFT">
+                           <Offset>
+                              <AbsDimension x="0" y="-25"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+                  <FontString name="lblAddSetup" inherits="GameFontNormalSmall" text="Add New Setup:">
+                     <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="lblAutoLoad" relativePoint="TOPLEFT">
+                           <Offset>
+                              <AbsDimension x="0" y="-25"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+               </Layer>
+            </Layers>
+            <Frames>
+               <Frame name="MTCurrentSetupDropDown" inherits="UIDropDownMenuTemplate">
+                  <Anchors>
+                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="lblCurrSetup">
+                        <Offset>
+                           <AbsDimension x="-5" y="-2"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnUpdate>
+                        MTSetupDropDownUpdate(arg1)
+                     </OnUpdate>
+                     <OnEnter>
+                        gSetupDDElapsed = -1000
+                     </OnEnter>
+                     <OnLeave>
+                        gSetupDDElapsed = 0
+                     </OnLeave>
+                  </Scripts>
+               </Frame>
+               <Frame name="MTContinentDropDown" inherits="UIDropDownMenuTemplate">
+                  <Anchors>
+                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="lblAutoLoad">
+                        <Offset>
+                           <AbsDimension x="-15" y="-2"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnUpdate>
+                        MTSetupDropDownUpdate(arg1)
+                     </OnUpdate>
+                     <OnEnter>
+                        gSetupDDElapsed = -1000
+                     </OnEnter>
+                     <OnLeave>
+                        gSetupDDElapsed = 0
+                     </OnLeave>                  
+                  </Scripts>
+               </Frame>
+               <Frame name="MTZoneDropDown" inherits="UIDropDownMenuTemplate">
+                  <Anchors>
+                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="MTContinentDropDown">
+                        <Offset>
+                           <AbsDimension x="-30" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnUpdate>
+                        MTSetupDropDownUpdate(arg1)
+                     </OnUpdate>
+                     <OnEnter>
+                        gSetupDDElapsed = -1000
+                     </OnEnter>
+                     <OnLeave>
+                        gSetupDDElapsed = 0
+                     </OnLeave>                  
+                  </Scripts>
+               </Frame>
+               <Button name="MTDeleteSetup" inherits="UIPanelButtonTemplate" text="Delete">
+                  <Anchors>
+                     <Anchor point="LEFT" relativeTo="MTCurrentSetupDropDown" relativePoint="RIGHT">
+                        <Offset>
+                           <AbsDimension x="-10" y="3"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Size>
+                     <AbsDimension x="65" y="21"/>
+                  </Size>
+                  <Scripts>
+                     <OnLoad>
+                        this:SetText(MT_TXT_DELETE)
+                     </OnLoad>
+                     <OnClick>
+                        PlaySound("gsTitleOptionOK")
+                        MTDeleteSetup()
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <EditBox name="MTNewSetupText" letters="24" historyLines="1" autoFocus="false">
+                  <Size>
+                     <AbsDimension x="130" y="32"/>
+                  </Size>
+                  <Anchors>
+                     <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="lblAddSetup">
+                        <Offset>
+                           <AbsDimension x="11" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Layers>
+                     <Layer level="BACKGROUND">
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+                           <Size>
+                              <AbsDimension x="75" y="32"/>
+                           </Size>
+                           <Anchors>
+                              <Anchor point="LEFT">
+                                 <Offset>
+                                    <AbsDimension x="-10" y="0"/>
+                                 </Offset>
+                              </Anchor>
+                           </Anchors>
+                           <TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+                        </Texture>
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+                           <Size>
+                              <AbsDimension x="75" y="32"/>
+                           </Size>
+                           <Anchors>
+                              <Anchor point="RIGHT">
+                                 <Offset>
+                                    <AbsDimension x="10" y="0"/>
+                                 </Offset>
+                              </Anchor>
+                           </Anchors>
+                           <TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+                        </Texture>
+                     </Layer>
+                  </Layers>
+                  <Scripts>
+                     <OnEscapePressed>
+                        this:SetText("")
+                        this:ClearFocus()
+                     </OnEscapePressed>
+                     <OnEnterPressed>
+                        MTAddNewSetup()
+                        this:SetText("")
+                        this:ClearFocus()
+                     </OnEnterPressed>
+                  </Scripts>
+                  <FontString inherits="ChatFontNormal"/>
+               </EditBox>
+               <Button name="MTAddNewSetup" inherits="UIPanelButtonTemplate" text="Add">
+                  <Anchors>
+                     <Anchor point="LEFT" relativeTo="MTNewSetupText" relativePoint="RIGHT">
+                        <Offset>
+                           <AbsDimension x="14" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Size>
+                     <AbsDimension x="65" y="21"/>
+                  </Size>
+                  <Scripts>
+                     <OnLoad>
+                        this:SetText(MT_TXT_ADD)
+                     </OnLoad>
+                     <OnClick>
+                        PlaySound("gsTitleOptionOK")
+                        MTAddNewSetup()
+                        MTNewSetupText:SetText("")
+                        MTNewSetupText:ClearFocus()
+                     </OnClick>
+                  </Scripts>
+               </Button>
+             </Frames>
+         </Frame>
+         <Button name="MTReset" inherits="UIPanelButtonTemplate" text="Reset">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTFrameTrinkets" relativePoint="TOPLEFT">
+                  <Offset>
+                     <AbsDimension x="7" y="-145"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Size>
+               <AbsDimension x="65" y="21"/>
+            </Size>
+            <Scripts>
+               <OnLoad>
+                  this:SetText(MT_TXT_RESET)
+               </OnLoad>
+               <OnClick>
+                  PlaySound("gsTitleOptionOK")
+                  MTReset()
+               </OnClick>
+            </Scripts>
+         </Button>
+         <Button name="MTAdvanced" inherits="UIPanelButtonTemplate" text="Advanced >>">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTFrameTrinkets" relativePoint="TOPLEFT">
+                  <Offset>
+                     <AbsDimension x="73" y="-145"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Size>
+               <AbsDimension x="100" y="21"/>
+            </Size>
+            <Scripts>
+               <OnLoad>
+                  this:SetText(MT_TXT_ADVANCED.." >>")
+               </OnLoad>
+               <OnClick>
+                  PlaySound("gsTitleOptionOK")
+                  MTToggleAdvanced()
+               </OnClick>
+            </Scripts>
+         </Button>
+         <Button name="MTRefresh" inherits="UIPanelButtonTemplate" text="Refresh List">
+            <Anchors>
+               <Anchor point="TOPRIGHT" relativeTo="MTFrameTrinkets" relativePoint="TOPRIGHT">
+                  <Offset>
+                     <AbsDimension x="-7" y="-145"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Size>
+               <AbsDimension x="100" y="21"/>
+            </Size>
+            <Scripts>
+               <OnLoad>
+                  this:SetText(MT_TXT_REFRESH_LIST)
+               </OnLoad>
+               <OnClick>
+                  PlaySound("gsTitleOptionOK")
+                  gRefresh = true
+                  MTLoad()
+                  MTShow()
+               </OnClick>
+               <OnEnter>
+                  GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT")
+                  GameTooltip:AddLine("Remove Trinkets that are no longer in Bags?")
+                  GameTooltip:Show()
+               </OnEnter>
+               <OnLeave>
+                  GameTooltip:Hide()
+               </OnLeave>
+            </Scripts>
+         </Button>
+         <CheckButton name="MTPassiveOn"  inherits="MTTrinketsCheckProto" id="1">
+            <Anchors>
+               <Anchor point="TOPLEFT">
+                  <Offset>
+                     <AbsDimension x="5" y="-15"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Layers>
+            <Layer level="ARTWORK">
+               <FontString name="lblPassiveOn" inherits="GameFontNormalSmall" text="Passives">
+                  <Anchors>
+                     <Anchor point="LEFT" relativeTo="MTPassiveOn" relativePoint="RIGHT">
+                        <Offset>
+                           <AbsDimension x="0" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+               </FontString>
+               <FontString name="lblQueueArrows" inherits="GameFontNormalSmall" text="Change Priorities"/>
+               <FontString name="lblSendArrows" inherits="GameFontNormalSmall" text="Change Types"/>
+               <FontString name="lblCooldownOn" inherits="GameFontNormalSmall" text="Cooldowns"/>
+            </Layer>
+            </Layers>
+            <Scripts>
+               <OnLoad>
+                  lblPassiveOn:SetText(MT_TXT_PASSIVES)
+                  lblCooldownOn:SetText(MT_TXT_COOLDOWNS)
+                  lblQueueArrows:SetText(MT_TXT_CHANGE_PRIORITIES)
+                  lblSendArrows:SetText(MT_TXT_CHANGE_TYPES)
+               </OnLoad>
+               <OnClick>
+                  MTTrinketChkClick()                 
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>
+               <OnEnter>
+                  GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT")
+                  GameTooltip:AddLine(MT_TXT_PASSIVES_ONQ)
+                  GameTooltip:Show()
+               </OnEnter>
+               <OnLeave>
+                  GameTooltip:Hide();
+               </OnLeave>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTCooldownOn" inherits="MTTrinketsCheckProto" id="2">
+            <Scripts>
+               <OnClick>
+                  MTTrinketChkClick()
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>
+               <OnEnter>
+                  GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT")
+                  GameTooltip:AddLine(MT_TXT_COOLDOWNS_ONQ)
+                  GameTooltip:Show()
+               </OnEnter>
+               <OnLeave>
+                  GameTooltip:Hide();
+               </OnLeave>
+            </Scripts>
+         </CheckButton>
+         <Frame name="MTTrinkets">
+            <Anchors>
+			      <Anchor point="TOPLEFT" >
+				      <Offset>
+					      <AbsDimension x="0" y="0"/>
+				      </Offset>
+               </Anchor>
+            </Anchors>
+            <Frames>
+               <CheckButton name="MTPassive1" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive2" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive3" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive4" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive5" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive6" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive7" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive8" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive9" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive10" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive11" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive12" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive13" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive14" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive15" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive16" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive17" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive18" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive19" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive20" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive21" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive22" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive23" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive24" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive25" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive26" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive27" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive28" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive29" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive30" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive31" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive32" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive33" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive34" inherits="MTListSlotProto"/>
+               <CheckButton name="MTPassive35" inherits="MTListSlotProto"/>
+
+               <CheckButton name="MTCooldown1" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown2" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown3" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown4" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown5" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown6" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown7" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown8" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown9" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown10" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown11" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown12" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown13" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown14" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown15" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown16" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown17" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown18" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown19" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown20" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown21" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown22" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown23" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown24" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown25" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown26" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown27" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown28" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown29" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown30" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown31" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown32" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown33" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown34" inherits="MTListSlotProto"/>
+               <CheckButton name="MTCooldown35" inherits="MTListSlotProto"/>
+            </Frames>                        
+         </Frame>
+         <CheckButton name="MTQueueLeft" inherits="MTLeftArrowButtonProto">
+            <Scripts>
+               <OnClick>
+                  MTChgPriorityLeft()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTQueueUp" inherits="MTUpArrowButtonProto">
+            <Scripts>
+               <OnClick>
+                  MTChgPriorityUp()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTQueueRight" inherits="MTRightArrowButtonProto">
+            <Scripts>
+               <OnClick>
+                  MTChgPriorityRight()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTQueueDown" inherits="MTDownArrowButtonProto">
+            <Scripts>
+               <OnClick>
+                  MTChgPriorityDown()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTTypeRight" inherits="MTRightArrowButtonProto">
+            <Scripts>
+               <OnClick>
+                  MTXPassiveToCooldown()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTTypeLeft" inherits="MTLeftArrowButtonProto">
+            <Scripts>
+               <OnClick>
+                  MTXCooldownToPassive()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+      </Frames>
+      <Scripts>
+         <OnLoad>
+            lblTitle:SetText("MehTrinketeer v"..gVersion)
+            lblCurrSetup:SetText(MT_TXT_CURR_SETUP..":")
+            lblAutoLoad:SetText(MT_TXT_AUTO_LOAD..":")
+            lblAddSetup:SetText(MT_TXT_ADD_SETUP..":")
+         </OnLoad>
+         <OnMouseDown>
+				MTMoveOnMouseDown(arg1, MTFrameEquipped);
+			</OnMouseDown>
+			<OnMouseUp>
+				MTMoveOnMouseUp(arg1, MTFrameEquipped);
+			</OnMouseUp>
+      </Scripts>
+   </Frame>
+   
+   <!-- Palette -->
+
+   <Frame name="MTFramePalette" inherits="MTFramePaletteProto" toplevel="true" frameStrata="MEDIUM" enableMouse="true" movable="false" parent="UIParent" hidden="true"/>
+
+   <!-- Auto-Use -->
+
+   <Frame name="MTFrameAutoUse" inherits="MTFramePaletteProto" toplevel="true" frameStrata="MEDIUM" enableMouse="true" movable="false" parent="UIParent" hidden="true">
+      <Layers>
+         <Layer level="ARTWORK">
+         </Layer>
+      </Layers>
+      <Frames>
+         <CheckButton name="MTAutoUseOn" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTAutoUseOnText:SetText(MT_TXT_YES_AUTO_USE..":")
+                  this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+               </OnLoad>
+               <OnClick>
+                  MTLoad()
+                  MTSaveCurrAutoUseData()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTAutoUsePlayerCheckOn" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTAutoUsePlayerCheckOnText:SetText(MT_TXT_MY_HEALTH_BETWEEN..":")
+                  this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+               </OnLoad>
+               <OnClick>
+                  MTLoad()
+                  MTSaveCurrAutoUseData()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTAutoUseEnemyCheckOn" inherits="MTCheckProto">
+            <Anchors>
+               <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTAutoUseEnemyCheckOnText:SetText(MT_TXT_TRG_HEALTH_BETWEEN..":")
+                  this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+               </OnLoad>
+               <OnClick>
+                  MTLoad()
+                  MTSaveCurrAutoUseData()
+               </OnClick>
+            </Scripts>
+         </CheckButton>
+         <Frame name="MTPlyHealthRange" inherits="MTHealthRangeProto" toplevel="true">
+            <Anchors>
+               <Anchor point="TOPRIGHT">
+                  <Offset>
+                     <AbsDimension x="-15" y="0"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+         </Frame>
+         <Frame name="MTEnyHealthRange" inherits="MTHealthRangeProto" toplevel="true">
+            <Anchors>
+               <Anchor point="TOPRIGHT">
+                  <Offset>
+                     <AbsDimension x="-15" y="0"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+         </Frame>
+         <Frame name="MTPlayerTexFrame" toplevel="true">
+            <Anchors>
+               <Anchor point="CENTER"/>                  
+            </Anchors>
+            <Size>
+               <AbsDimension x="54" y="54"/>
+            </Size>
+            <Layers>
+               <Layer level="ARTWORK">               
+                  <Texture name="MTPlayerPortrait">
+                     <Size>
+                        <AbsDimension x="54" y="54"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="CENTER"/>
+                     </Anchors>
+                  </Texture>                  
+               </Layer>
+            </Layers>
+         </Frame>
+         <Frame name="MTEnemyTexFrame" toplevel="true">
+            <Anchors>
+               <Anchor point="CENTER"/>                  
+            </Anchors>
+            <Size>
+               <AbsDimension x="54" y="54"/>
+            </Size>
+            <Layers>
+               <Layer level="ARTWORK">               
+                  <Texture name="MTEnemyPortrait" file="Interface\AddOns\MehTrinketeer\enemy">
+                     <Size>
+                        <AbsDimension x="54" y="54"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="CENTER"/>
+                     </Anchors>
+                  </Texture>
+               </Layer>
+            </Layers>
+         </Frame>
+      </Frames>
+      <Scripts>
+         <OnShow>
+            SetPortraitTexture(MTPlayerPortrait, "player")
+         </OnShow>
+         <OnEvent>
+            if event == "UNIT_PORTRAIT_UPDATE" then
+               SetPortraitTexture(MTPlayerPortrait, "player")
+            end
+         </OnEvent>
+      </Scripts>
+   </Frame>
+
+   <!--<Frame name="MTFrameLinks" toplevel="true" frameStrata="DIALOG" enableMouse="true" movable="false" parent="UIParent" hidden="true">
+	   <Size>
+		   <AbsDimension x="275" y="94" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="400" y="400"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+      <Backdrop bgFile="Interface\AddOns\MehTrinketeer\gray" edgeFile="Interface\AddOns\MehTrinketeer\gray_border" tile="true">
+		   <BackgroundInsets>
+			   <AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+         <TileSize>
+            <AbsValue val="16" />
+         </TileSize>
+         <EdgeSize>
+            <AbsValue val="16" />
+         </EdgeSize>
+	   </Backdrop>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="MTMain_TOPRIGHT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_TOPLEFT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMLEFT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMRIGHT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>            
+			</Layer>
+         <Layer level="ARTWORK">
+            <FontString name="lblWhen" inherits="GameFontNormalSmall" text="When I Click:">
+               <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="MTFrameLinks" relativePoint="TOPLEFT">
+                     <Offset>
+                        <AbsDimension x="10" y="-13"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+            <FontString name="lblButton" inherits="GameFontNormalSmall" text="xxx">
+               <Anchors>
+                  <Anchor point="LEFT" relativeTo="lblWhen" relativePoint="RIGHT">
+                     <Offset>
+                        <AbsDimension x="4" y="0"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+            <FontString name="lblUse" inherits="GameFontNormalSmall" text="Use: ">
+               <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="lblWhen" relativePoint="BOTTOMLEFT">
+                     <Offset>
+                        <AbsDimension x="0" y="-15"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+         </Layer>
+      </Layers>
+      <Frames>
+         <Frame name="MTFrameCurrLinked">
+            <Anchors>
+               <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Frames>
+               <CheckButton name="MTCurrLinkedTrinket" inherits="ActionButtonTemplate">
+                  <Anchors>
+                     <Anchor point="LEFT" relativeTo="lblUse" relativePoint="RIGHT">
+                        <Offset>
+                           <AbsDimension x="10" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnEnter>
+                        MTCurrLinkedTrinket:Hide()
+                     </OnEnter>
+                  </Scripts>
+               </CheckButton>
+            </Frames>
+         </Frame>
+         <Button name="MTToggleLinkPalette">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MTCurrLinkedTrinket" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+                  if MTFrameLinkPalette:IsVisible() then
+                     MTFrameLinkPalette:Hide()
+                  else
+                     MTFrameLinkPalette:Show()
+                  end
+                  PlaySound("gsTitleOptionOK")
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+      </Frames>
+      <Scripts>
+         <OnLoad>
+            lblButton:SetTextColor(1.0, 0.0, 0.0)
+            MTFrameCurrLinked:SetScale(0.75)
+         </OnLoad>
+      </Scripts>
+   </Frame>         
+
+   <Frame name="MTFrameLinkPalette" toplevel="true" frameStrata="DIALOG" enableMouse="true" movable="false" parent="UIParent" hidden="true">
+	   <Size>
+		   <AbsDimension x="99" y="94" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="MTToggleLinkPalette" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+      <Backdrop bgFile="Interface\AddOns\MehTrinketeer\gray" edgeFile="Interface\AddOns\MehTrinketeer\gray_border" tile="true">
+		   <BackgroundInsets>
+			   <AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+         <TileSize>
+            <AbsValue val="16" />
+         </TileSize>
+         <EdgeSize>
+            <AbsValue val="16" />
+         </EdgeSize>
+	   </Backdrop>
+
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="MTMain_TOPRIGHT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_TOPLEFT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMLEFT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="MTMain_BOTTOMRIGHT" file="Interface\AddOns\MehTrinketeer\gray_border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>            
+			</Layer>
+         <Layer level="ARTWORK">
+            <FontString name="lblLinkPassives" inherits="GameFontNormalSmall" text="Passives">
+               <Anchors>
+                  <Anchor point="TOP" relativeTo="MTFrameLinkPalette" relativePoint="TOP">
+                     <Offset>
+                        <AbsDimension x="0" y="-4"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </FontString>
+            <FontString name="lblLinkCooldowns" inherits="GameFontNormalSmall" text="Cooldowns"/>
+         </Layer>
+      </Layers>
+      <Frames>
+         <Frame name="MTLinkPaletteTrinkets">
+               <Anchors>
+                  <Anchor point="TOPLEFT" >
+                     <Offset>
+                        <AbsDimension x="0" y="0"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            <Frames>
+               <CheckButton name="MTPassiveLinkPalette1" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette2" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette3" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette4" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette5" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette6" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette7" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette8" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette9" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette10" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette11" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette12" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette13" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette14" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette15" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette16" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette17" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette18" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette19" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette20" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette21" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette22" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette23" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette24" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette25" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette26" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette27" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette28" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette29" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette30" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette31" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette32" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette33" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette34" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTPassiveLinkPalette35" inherits="MTLinkPaletteSlotProto"/>
+                                                                      
+               <CheckButton name="MTCooldownLinkPalette1" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette2" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette3" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette4" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette5" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette6" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette7" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette8" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette9" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette10" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette11" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette12" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette13" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette14" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette15" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette16" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette17" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette18" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette19" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette20" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette21" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette22" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette23" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette24" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette25" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette26" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette27" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette28" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette29" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette30" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette31" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette32" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette33" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette34" inherits="MTLinkPaletteSlotProto"/>
+               <CheckButton name="MTCooldownLinkPalette35" inherits="MTLinkPaletteSlotProto"/>
+            </Frames>                                                  
+         </Frame>                           
+      </Frames>
+   </Frame>-->
+
+   <Frame name="YesNoDialog" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Anchors>
+			<Anchor point="CENTER"/>            
+		</Anchors>
+      <Size>
+			<AbsDimension x="384" y="128"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+      <Layers>
+			<Layer level="ARTWORK">
+				<FontString name="YesNoPrompt" inherits="GameFontHighlight" justifyH="CENTER" justifyV="TOP" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="360" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+         <Frame>
+            <Size>
+      			<AbsDimension x="135" y="32"/>
+		      </Size>
+            <Anchors>
+			      <Anchor point="BOTTOM" relativeTo="YesNoDialog" reltivePoint="BOTTOM">
+                  <Offset>
+                     <AbsDimension x="0" y="16"/>
+                  </Offset>
+               </Anchor>
+		      </Anchors>
+            <Frames>
+               <Button name="MTYes" inherits="UIPanelButtonTemplate" text="Yes">
+                  <Anchors>
+                     <Anchor point="BOTTOMLEFT">
+                        <Offset>
+                           <AbsDimension x="0" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Size>
+                     <AbsDimension x="65" y="32"/>
+                  </Size>
+                  <Scripts>
+                     <OnLoad>
+                        this:SetText(MT_TXT_YES)
+                     </OnLoad>
+                     <OnClick>
+                        PlaySound("gsTitleOptionOK")
+                        this:GetParent():GetParent():Hide()
+                        gDialogFunc(true)
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="MTNo" inherits="UIPanelButtonTemplate" text="No">
+                  <Anchors>
+                     <Anchor point="LEFT" relativeTo="MTYes" relativePoint="RIGHT">
+                        <Offset>
+                           <AbsDimension x="5" y="0"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Size>
+                     <AbsDimension x="65" y="32"/>
+                  </Size>
+                  <Scripts>
+                     <OnLoad>
+                        this:SetText(MT_TXT_NO)
+                     </OnLoad>
+                     <OnClick>
+                        PlaySound("gsTitleOptionOK")
+                        this:GetParent():GetParent():Hide()
+                        gDialogFunc(false)
+                     </OnClick>
+                  </Scripts>
+               </Button>
+            </Frames>
+         </Frame>
+		</Frames>
+	</Frame>
+   <Button name="MTOptionsButton" parent="Minimap" frameStrata="LOW" enableMouse="true" hidden="false">
+      <Size>
+         <AbsDimension x="32" y="32"/>
+      </Size>
+      <Anchors>
+         <Anchor point="CENTER" relativeTo="Minimap" relativePoint="CENTER">
+            <Offset>
+               <AbsDimension x="-78" y="0"/>
+            </Offset>
+         </Anchor>
+      </Anchors>
+      <NormalTexture file="Interface\AddOns\MehTrinketeer\trinket_borderless">
+         <TexCoords left="0.1875" right="0.796875" top="0.1875" bottom="0.796875"/>
+         <Anchors>
+            <Anchor point="TOPLEFT">
+               <Offset>
+                  <AbsDimension x="8" y="-8"/>
+               </Offset>
+            </Anchor>
+         </Anchors>
+         <Size>
+            <AbsDimension x="18" y="18"/>
+         </Size>
+      </NormalTexture>
+		<PushedTexture file="Interface\AddOns\MehTrinketeer\trinket_borderless_down">
+         <TexCoords left="0.1875" right="0.796875" top="0.1875" bottom="0.796875"/>
+         <Anchors>
+            <Anchor point="TOPLEFT">
+               <Offset>
+                  <AbsDimension x="8" y="-8"/>
+               </Offset>
+            </Anchor>
+         </Anchors>
+         <Size>
+            <AbsDimension x="18" y="18"/>
+         </Size>
+      </PushedTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\MehTrinketeer\border_square_highlight">
+         <TexCoords left="0" right="0.671875" top="0" bottom="0.671875"/>
+         <Anchors>
+            <Anchor point="TOPLEFT">
+               <Offset>
+                  <AbsDimension x="1" y="-1"/>
+               </Offset>
+            </Anchor>
+         </Anchors>
+         <Size>
+            <AbsDimension x="32" y="32"/>
+         </Size>
+      </HighlightTexture>
+      <Layers>
+         <Layer level="OVERLAY">
+            <Texture name="texSquareBorder" file="Interface\AddOns\MehTrinketeer\border_square_final">            
+               <TexCoords left="0" right="0.671875" top="0" bottom="0.671875"/>
+               <Anchors>
+                  <Anchor point="TOPLEFT">
+                     <Offset>
+                        <AbsDimension x="2" y="-2"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+               <Size>
+                  <AbsDimension x="36" y="36"/>
+               </Size>
+            </Texture>
+         </Layer>
+      </Layers>
+      <Scripts>
+         <OnLoad>
+            this:RegisterForDrag("RightButton")            
+         </OnLoad>
+         <OnDragStart>
+            gRightDragActive = true
+            gCursorX, gCursorY = GetCursorPosition()
+         </OnDragStart>
+         <OnDragStop>
+            gRightDragActive = false
+         </OnDragStop>
+         <OnUpdate>
+            MTOptionsButtonUpdate(arg1)
+         </OnUpdate>
+         <OnClick>
+            PlaySound("igMiniMapZoomIn")
+            if MTOptionsFrame:IsVisible() then
+               MTOptionsFrame:Hide()
+            else
+               MTOptionsFrame:Show()
+            end
+         </OnClick>
+         <OnEnter>
+            GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT")
+            GameTooltip:AddLine("MehTrinketeer v"..gVersion)
+            GameTooltip:AddLine(MT_TXT_LEFT_CLICK_OPTIONS)
+            GameTooltip:AddLine(MT_TXT_RIGHT_CLICK_DRAG)
+            GameTooltip:Show()
+         </OnEnter>							
+         <OnLeave>
+            GameTooltip:Hide();
+         </OnLeave>
+      </Scripts>
+   </Button>
+   <Frame name="MTOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="225"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MTOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="350" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="lblMTOptions" inherits="GameFontNormal" text="MehTrinketeer Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MTOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+      <Frames>
+         <CheckButton name="MTOptionsCarrot" inherits="OptionsCheckButtonTemplate">
+            <Anchors>
+               <Anchor point="TOPLEFT">
+                  <Offset>
+                     <AbsDimension x="30" y="-35"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTOptionsCarrotText:SetText(MT_TXT_AUTO_EQUIP_CARROT)
+               </OnLoad>
+               <OnClick>
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>	
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTOptionsAD" inherits="OptionsCheckButtonTemplate">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTOptionsCarrot" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="0" y="-5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTOptionsADText:SetText(MT_TXT_ASK_ARGENT_DAWN)
+               </OnLoad>
+               <OnClick>
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>	
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTOptionsLock" inherits="OptionsCheckButtonTemplate">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTOptionsAD" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="0" y="-5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTOptionsLockText:SetText(MT_TXT_LOCK_MT_FRAME)
+               </OnLoad>
+               <OnClick>
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>	
+            </Scripts>
+         </CheckButton>
+         <CheckButton name="MTOptionsHideIcon" inherits="OptionsCheckButtonTemplate">
+            <Anchors>
+               <Anchor point="TOPLEFT" relativeTo="MTOptionsLock" relativePoint="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="0" y="-5"/>
+                  </Offset>
+               </Anchor>
+            </Anchors>
+            <Scripts>
+               <OnLoad>
+                  MTOptionsHideIconText:SetText(MT_TXT_HIDE_ICON)
+               </OnLoad>
+               <OnClick>
+                  if ( this:GetChecked() ) then
+                     PlaySound("igMainMenuOptionCheckBoxOn");
+                  else
+                     PlaySound("igMainMenuOptionCheckBoxOff");
+                  end
+               </OnClick>	
+            </Scripts>
+         </CheckButton>
+         <Button name="OptionsFrameOkay" inherits="OptionsButtonTemplate" text="Okay">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="MTOptionsFrame" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+               <OnLoad>
+                  this:SetText(MT_TXT_OKAY)
+               </OnLoad>
+					<OnClick>
+						PlaySound("gsTitleOptionOK")
+                  MTSaveOptions()
+						MTOptionsFrame:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+      </Frames>
+      <Scripts>
+         <OnLoad>
+            lblMTOptions:SetText(MT_TXT_MT_OPTIONS)
+         </OnLoad>
+      </Scripts>
+   </Frame>
+   <GameTooltip name="MTBuffTool" inherits="GameTooltipTemplate"/>
+   <GameTooltip name="MTActionButtonTool" inherits="GameTooltipTemplate"/>
+</Ui>                                        
+                                             
+                                             
+                                             
+                                             

@@ -1,0 +1,2542 @@
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Sam Lantinga (Blizzard Entertainment) -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MinesweeperFrame.lua"/>
+	<CheckButton name="MinesweeperButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
+				<FontString name="$parentState" inherits="GameFontNormal" hidden="true" justifyH="LEFT"/>
+				<FontString name="$parentDiscovered" inherits="GameFontNormal" hidden="true" justifyH="LEFT"/>
+				<FontString name="$parentNumber" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentXX" inherits="GameFontNormalLarge" justifyH="LEFT" text="X">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				Minesweeper_OnClick();
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="35" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	<Frame name="MinesweeperFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="450" y="520"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\AddOns\MiniGames\Skin\Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MinesweeperFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="MinesweeperTitle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MinesweeperScoreMiddle" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-70"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MinesweeperNameLeft" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-70" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MinesweeperScoreLeft" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-70" y="-65"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MinesweeperNameRight" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="68" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="MinesweeperScoreRight" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="68" y="-65"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Misc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtonLeft" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-50" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Minesweeper_UpdateBorders();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonRight" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="50" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Minesweeper_UpdateBorders();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ First Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton1_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-160" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton1_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton1_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Second Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton2_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton1_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton2_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton2_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Third Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton3_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton2_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton3_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton3_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 4th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton4_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton3_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton4_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton4_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 5th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton5_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton4_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton5_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton5_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 6th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton6_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton5_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton6_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton6_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 7th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton7_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton6_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton7_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton7_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 8th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton8_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton7_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton8_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton8_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 9th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButton9_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton8_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButton9_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButton9_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 10th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtona_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButton9_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtona_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtona_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 11th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtonb_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButtona_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonb_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonb_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 12th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtonc_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButtonb_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonc_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonc_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 13th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtond_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButtonc_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtond_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtond_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 14th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtone_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButtond_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtone_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtone_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 15th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtonf_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButtone_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtonf_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtonf_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ 16th Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="MinesweeperButtong_1" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MinesweeperButtonf_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_2" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_3" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_4" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_5" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_6" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_7" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_8" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_9" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_a" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_b" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_a" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_c" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_b" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_d" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_c" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_e" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_d" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_f" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_e" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="MinesweeperButtong_g" inherits="MinesweeperButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MinesweeperButtong_f" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+
+
+			<Button name="MinesweeperButtonQuit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-100" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Minesweeper_Quit_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalText inherits="GameFontHighlight" text="GAMES_QUIT"/>
+				<HighLightText inherits="GameFontHighlight" text="GAMES_QUIT"/>
+			</Button>
+			<Button name="MinesweeperButtonRestart" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="100" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Minesweeper_Restart_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalText inherits="GameFontHighlight" text="GAMES_RESTART"/>
+				<DisabledText inherits="GameFontHighlight" text="GAMES_RESTART"/>
+				<HighLightText inherits="GameFontHighlight" text="GAMES_RESTART"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				Minesweeper_OnLoad();
+			</OnShow>
+			<OnHide>
+				Minesweeper_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

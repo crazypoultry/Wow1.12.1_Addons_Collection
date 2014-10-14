@@ -1,0 +1,1009 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+    <Script file="localization.en.lua"/> 
+    <Script file="localization.de.lua"/> 
+    <Script file="localization.fr.lua"/> 
+    <Script file="localization.es.lua"/> 
+    <Script file="localization.cn.lua"/>
+    <Script file="localization.tw.lua"/>
+    <Script file="QuickHeal.lua"/> 
+    <Script file="QuickClick.lua"/>
+    <Script file="QuickHealDruid.lua"/>
+    <Script file="QuickHealPaladin.lua"/>
+    <Script file="QuickHealPriest.lua"/>
+    <Script file="QuickHealShaman.lua"/>	
+
+    <GameTooltip name="QuickHeal_ScanningTooltip" inherits="GameTooltipTemplate">
+        <Scripts>
+            <Onload>
+                this:SetOwner(this, "ANCHOR_NONE");
+            </Onload>
+        </Scripts>
+    </GameTooltip>
+
+    <!-- Message Frame for on-screen overheal warnings -->
+	<MessageFrame name="QuickHealOverhealStatusScreenCenter" displayDuration="5" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size><AbsDimension x="512" y="20"/></Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="-45"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<FontString inherits="ErrorFont" justifyH="CENTER"/>
+	</MessageFrame>
+
+    <!-- Optional Titan Panel Button -->
+	<Frame parent="UIParent" hide="true">
+        <Frames>
+            <Button name="TitanPanelQuickHealButton" inherits="TitanPanelIconTemplate" frameStrata="FULLSCREEN" toplevel="true">
+                <Scripts>
+                    <OnLoad>
+                        if TitanPanelButton_OnLoad then
+                            TitanPanelQuickHealButton_OnLoad();
+                            TitanPanelButton_OnLoad();
+                        end
+                    </OnLoad>
+                    <OnClick>
+                        if arg1 == "LeftButton" then
+                            QuickHeal_ToggleConfigurationPanel();
+                        end
+                        TitanPanelButton_OnClick(arg1);
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+
+    <!-- Tab button template -->
+    <Button name="QuickHeal_TabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+        <Scripts>
+            <OnClick>
+                getglobal("QuickHealConfigTab" .. QuickHealConfig.selectedTab .. "Frame"):Hide()
+                PanelTemplates_Tab_OnClick(QuickHealConfig);
+                getglobal(this:GetName() .. "Frame"):Show()
+                PlaySound("igCharacterInfoTab");
+            </OnClick>
+        </Scripts>
+    </Button>
+
+    <!-- Configuration Panel -->
+    <Frame name="QuickHealConfig" frameStrata="DIALOG" toplevel="true" parent="UIParent" hidden="true" movable="true" enableMouse="true">
+        <Size> <AbsDimension x="600" y="270"/></Size>
+        <Anchors> <Anchor point="CENTER" /></Anchors>
+        <Scripts>            
+            <OnLoad>
+                this:RegisterForDrag("LeftButton");
+  				PanelTemplates_SetNumTabs(this, 4);
+				PanelTemplates_SetTab(this, 1);
+                PanelTemplates_UpdateTabs(this)
+                QuickHeal_OnLoad();
+            </OnLoad> 
+            <OnEvent>QuickHeal_OnEvent()</OnEvent>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+            <OnHide>
+                QuickHealHealingBar:Hide();
+            </OnHide>
+            <OnShow>
+                QuickHealHealingBar:Show();
+            </OnShow>
+        </Scripts>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+            <TileSize><AbsValue val="32"/></TileSize>
+            <EdgeSize><AbsValue val="32"/></EdgeSize>
+            <BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5"/></BackgroundInsets>
+        </Backdrop>
+        <Layers>
+            <!-- Title -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextTitle" outline="NORMAL" inherits="GameFontNormalLarge" text="QuickHeal Configuration">
+					<Anchors><Anchor point="CENTER" relativePoint="TOP"><Offset><AbsDimension x="0" y="-30"/></Offset></Anchor></Anchors> 
+				</FontString>
+            </Layer>
+            <!-- Version string -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextVersion" outline="NORMAL" inherits="GameFontNormalSmall">
+					<Anchors><Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"><Offset><AbsDimension x="-15" y="15"/></Offset></Anchor></Anchors> 
+                    <FontHeight>
+            			<AbsValue val="8"/>
+		            </FontHeight>
+		            <Color r="1.0" g="1.0" b="1.0"/>
+				</FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- General Tab -->
+			<Button name="$parentTab1" inherits="QuickHeal_TabButtonTemplate" id="1" text="General">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="50" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+            <!-- SubGroup Setup Tab -->
+			<Button name="$parentTab2" inherits="QuickHeal_TabButtonTemplate" id="2" text="Subgroup Setup">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+            <!-- Class Priorities Tab -->
+			<Button name="$parentTab3" inherits="QuickHeal_TabButtonTemplate" id="3" text="Class Priorities">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab2" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+            <!-- Notification and Messages Tab -->
+			<Button name="$parentTab4" inherits="QuickHeal_TabButtonTemplate" id="4" text="Messages and Notification">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTab3" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+            <!-- Close Button -->
+			<Button name="QuickHealConfig_CloseButton" inherits="UIPanelButtonTemplate" text="OK">
+				<Size><AbsDimension x="90" y="25"/></Size>
+				<Anchors><Anchor point="CENTER" relativePoint="BOTTOM"><Offset><AbsDimension x="60" y="35"/></Offset></Anchor></Anchors>
+				<Scripts>
+				    <OnClick>
+                        QuickHeal_ToggleConfigurationPanel();
+                    </OnClick>
+				</Scripts>
+			</Button>
+
+            <!-- Default Button -->
+			<Button name="QuickHealConfig_DefaultButton" inherits="UIPanelButtonTemplate" text="Default">
+				<Size><AbsDimension x="90" y="25"/></Size>
+				<Anchors><Anchor point="CENTER" relativePoint="BOTTOM"><Offset><AbsDimension x="-60" y="35"/></Offset></Anchor></Anchors>
+				<Scripts>
+				    <OnClick>
+                        QuickHeal_SetDefaultParameters();
+                        QuickHealConfig:Hide();
+                        QuickHealConfig:Show();
+                    </OnClick>
+				</Scripts>
+			</Button>
+        </Frames>
+    </Frame>
+
+    <!-- General Options Frame -->
+	<Frame name="QuickHealConfigTab1Frame" frameStrata="DIALOG" toplevel="true" parent="QuickHealConfig" hidden="false">
+		<Size><AbsDimension x="600" y="270"/></Size>
+        <Anchors> <Anchor point="CENTER" /></Anchors>
+        <Layers>
+            <!-- Explanation Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_Explanation" justifyH="LEFT" justifyV="TOP" inherits="GameFontNormal" text="">
+                    <Size> <AbsDimension x="240" y="400"/> </Size>
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-105"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- RatioFull Slider -->
+			<Slider name="QuickHealConfig_RatioFullSlider" inherits="OptionsSliderTemplate">
+				<Size><AbsDimension x="240" y="16"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-70" /></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+   						this:SetMinMaxValues(0,100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+                        QuickHealVariables.RatioFull = this:GetValue()/100;
+                        getglobal(this:GetName() .. "Text"):SetText("General Healing Threshold: " .. this:GetValue() .. "%");
+                        QuickHealConfig_Explanation:SetText(QuickHeal_GetExplanation("RatioHealthy"));
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Will only heal targets with less than " .. this:GetValue() .. "% health.");
+                        end
+					</OnValueChanged>
+					<OnShow>
+                        this:SetValue(QuickHealVariables.RatioFull*100);
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Will only heal targets with less than " .. this:GetValue() .. "% health.");            
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+				</Scripts>
+			</Slider>
+
+            <!-- RatioHealthy Slider -->
+			<Slider name="QuickHealConfig_RatioHealthySlider" inherits="OptionsSliderTemplate">
+				<Size><AbsDimension x="240" y="16"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-70" /></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+   						this:SetMinMaxValues(0,100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+                        local _,PlayerClass = UnitClass('player');
+                        PlayerClass = string.upper(string.sub(PlayerClass,1,1)) .. string.lower(string.sub(PlayerClass,2));
+                        QuickHealVariables["RatioHealthy" .. PlayerClass] = this:GetValue()/100;
+                        getglobal(this:GetName() .. "Text"):SetText("Healthy Threshold: " .. this:GetValue() .. "%");
+                        QuickHealConfig_Explanation:SetText(QuickHeal_GetExplanation("RatioHealthy"));
+					</OnValueChanged>
+					<OnShow>
+                        this:SetValue(QuickHeal_ClassModule:GetRatioHealthy()*100);
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+            <!-- RatioForceself Slider -->
+			<Slider name="QuickHealConfig_RatioForceselfSlider" inherits="OptionsSliderTemplate">
+				<Size><AbsDimension x="240" y="16"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-120" /></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+   						this:SetMinMaxValues(0,100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+                        QuickHealVariables.RatioForceself = this:GetValue()/100;
+                        getglobal(this:GetName() .. "Text"):SetText("Self Preservation Threshold: " .. this:GetValue() .. "%");
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("If you have less than " .. this:GetValue() .. "% health, you will become the target of the heal.");
+                        end
+					</OnValueChanged>
+					<OnShow>
+                        this:SetValue(QuickHealVariables["RatioForceself"]*100);
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("If you have less than " .. this:GetValue().. "% health, you will become the target of the heal.");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+				</Scripts>
+			</Slider>
+
+            <!-- PetPriority Slider -->
+			<Slider name="QuickHealConfig_PetPrioritySlider" inherits="OptionsSliderTemplate">
+				<Size><AbsDimension x="132" y="16"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="140" y="-170" /></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+   						this:SetMinMaxValues(0,100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+                        QuickHealVariables.PetPriority = this:GetValue() / 100;
+                        getglobal(this:GetName() .. "Text"):SetText("Pet Priority: " .. this:GetValue() .. "%");
+					</OnValueChanged>
+					<OnShow>
+                        this:SetValue(QuickHealVariables.PetPriority * 100);
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+            <!-- TargetPriority Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonTargetPriority" inherits="OptionsCheckButtonTemplate" checked="false">
+                <!--Size><AbsDimension x="20" y="20"/></Size-->
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="30" y="-148"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Target Priority")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables.TargetPriority = true;
+                        else
+                            QuickHealVariables.TargetPriority = false;
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables.TargetPriority then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Check this option to give your target maximum priority");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
+            <!-- QuickClick Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonQuickClick" inherits="OptionsCheckButtonTemplate" checked="true">
+                <!--Size><AbsDimension x="20" y="20"/></Size-->
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="30" y="-178"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("QuickClick")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables.QuickClickEnabled = true;
+                            if type(QuickClick_Load) == "function" then QuickClick_Load() end
+                        else
+                            QuickHealVariables.QuickClickEnabled = false;
+                            if type(QuickClick_Unload) == "function" then QuickClick_Unload() end
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickClick_Load then
+                            if QuickHealVariables.QuickClickEnabled then
+                                this:SetChecked(true);
+                            else
+                                this:SetChecked(false);
+                            end
+                        else
+                            this:Hide();
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Check this option to enable healing with the mouse");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+        </Frames>
+    </Frame>
+
+    <!-- FilterRaidGroup Checkbutton Template -->
+    <CheckButton name="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" inherits="OptionsCheckButtonTemplate" virtual="true" checked="true">
+        <Size><AbsDimension x="20" y="20"/></Size>
+        <Scripts>
+            <onLoad>
+                getglobal(this:GetName().."Text"):SetText("Group " .. this:GetID())
+            </onLoad>
+            <onClick>
+                if this:GetChecked() then
+                    QuickHealVariables["FilterRaidGroup" .. this:GetID()] = false;
+                else
+                    QuickHealVariables["FilterRaidGroup" .. this:GetID()] = true;
+                end
+                if( this.tooltipShown ) then
+                    GameTooltip:SetText("Raid group " .. this:GetID() .. " will" .. (this:GetChecked() and " " or " not ") .. "be healed.")
+                end
+            </onClick>
+            <OnShow>
+                if QuickHealVariables["FilterRaidGroup" .. this:GetID()] then
+                    this:SetChecked(false);
+                else
+                    this:SetChecked(true);
+                end
+            </OnShow>
+            <OnEnter>
+                GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                GameTooltip:SetText("Raid group " .. this:GetID() .. " will" .. (this:GetChecked() and " " or " not ") .. "be healed.")
+                this.tooltipShown = true;
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+                this.tooltipShown = false;
+            </OnLeave>
+        </Scripts>
+    </CheckButton>
+
+    <!-- SubGroup Setup Frame -->
+	<Frame name="QuickHealConfigTab2Frame" frameStrata="DIALOG" toplevel="true" parent="QuickHealConfig" hidden="true">
+		<Size><AbsDimension x="600" y="270"/></Size>
+        <Anchors> <Anchor point="CENTER" /></Anchors>
+        <Layers>
+            <!-- FilterRaidGroup Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextFilterRaidGroup" inherits="GameFontNormal" text="Raid groups included in 'Subgroup':">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-55"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+            <!-- FilterNote Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextFilterNote" justifyH="LEFT" justifyV="TOP" inherits="GameFontNormal" text="Note: The 'Subgroup' is healed by the '/qh subgroup' command or 'Heal Subgroup' key binding.">
+                    <Size> <AbsDimension x="350" y="60"/> </Size>
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-163"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- FilterRaidGroup1 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup1CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="1" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-70"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup2 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup2CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="2" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="152" y="-70"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup3 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup3CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="3" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-90"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup4 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup4CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="4" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="152" y="-90"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup5 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup5CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="5" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-110"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup6 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup6CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="6" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="152" y="-110"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup7 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup7CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="7" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-130"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+            <!-- FilterRaidGroup8 Checkbutton -->
+            <CheckButton name="QuickHealConfig_FilterRaidGroup8CheckBox" inherits="QuickHealConfig_FilterRaidGroupCheckBoxTemplate" id="8" checked="true">
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="152" y="-130"></AbsDimension></Offset></Anchor></Anchors>
+            </CheckButton>
+        </Frames>
+    </Frame>
+
+    <!-- ClassPriority Slider Template -->
+    <Slider name="QuickHealConfig_ClassPrioritySliderTemplate" virtual="true" inherits="OptionsSliderTemplate">
+        <Size><AbsDimension x="132" y="16"/></Size>
+        <Scripts>
+            <OnLoad>
+                this:SetMinMaxValues(0,100);
+                this:SetValueStep(1);
+            </OnLoad>
+            <OnValueChanged>
+                QuickHealVariables["ClassPriority" .. this.Class] = this:GetValue() / 100;
+                getglobal(this:GetName() .. "Text"):SetText(this.Class .. " Priority: " .. this:GetValue() .. "%");
+            </OnValueChanged>
+            <OnShow>
+                local Classes = {"Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior"};
+                this.Class = Classes[tonumber(this:GetID())];
+                this:SetValue(QuickHealVariables["ClassPriority" .. this.Class] * 100);
+            </OnShow>
+        </Scripts>
+    </Slider>
+
+    <!-- Class Priorities Frame -->
+	<Frame name="QuickHealConfigTab3Frame" frameStrata="DIALOG" toplevel="true" parent="QuickHealConfig" hidden="true">
+		<Size><AbsDimension x="600" y="270"/></Size>
+        <Anchors> <Anchor point="CENTER" /></Anchors>
+        <Layers>
+        </Layers>
+        <Frames>
+            <Slider name="QuickHealConfig_ClassPrioritySlider1" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="1">
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-70" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider2" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="2">
+                <Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="-70" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider3" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="3">
+                <Anchors><Anchor point="TOPRIGHT"><Offset><AbsDimension x="-32" y="-70" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider4" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="4">
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-120" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider5" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="5">
+                <Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="-120" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider6" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="6">
+                <Anchors><Anchor point="TOPRIGHT"><Offset><AbsDimension x="-32" y="-120" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider7" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="7">
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-170" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider8" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="8">
+                <Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="-170" /></Offset></Anchor></Anchors>
+            </Slider>
+            <Slider name="QuickHealConfig_ClassPrioritySlider9" inherits="QuickHealConfig_ClassPrioritySliderTemplate" id="9">
+                <Anchors><Anchor point="TOPRIGHT"><Offset><AbsDimension x="-32" y="-170" /></Offset></Anchor></Anchors>
+            </Slider>
+        </Frames>
+    </Frame>
+
+    <!-- Messages and Notification Options Frame -->
+	<Frame name="QuickHealConfigTab4Frame" frameStrata="DIALOG" toplevel="true" parent="QuickHealConfig" hidden="true">
+		<Size><AbsDimension x="600" y="270"/></Size>
+        <Anchors> <Anchor point="CENTER" /></Anchors>
+        <Layers>
+            <!-- Notification Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextNotification" inherits="GameFontNormal" text="Healing Notifications:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-55"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+
+            <!-- NotificationChannelName Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextNotificationStyle" inherits="GameFontNormalSmall" text="Target Channel:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-114"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+            <!-- NotificationStyle Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextNotificationStyle" inherits="GameFontNormalSmall" text="Chat Style:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-144"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+
+            <!-- HealingBar Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextHealingBar" inherits="GameFontNormal" text="Healing Bar:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-165"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+
+            <!-- Message Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextMessage" inherits="GameFontNormal" text="Screen Messages:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-55"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+
+            <!-- MessageConfigure Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextMessageConfigure" inherits="GameFontNormalSmall" text="Configure:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-85"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+
+            <!-- OverhealMessage Text -->
+            <Layer level="ARTWORK">
+				<FontString name="QuickHealConfig_TextOverhealMessage" inherits="GameFontNormal" text="Overheal Messages:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-144"/></Offset></Anchor></Anchors>
+				</FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- NotificationWhisper Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonNotificationWhisper" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-70"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Whisper")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables.NotificationWhisper = true;
+                        else
+                            QuickHealVariables.NotificationWhisper = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Enable to deliver notifications by whisper to healing target.");
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables.NotificationWhisper then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Enable to deliver notifications by whisper to healing target.");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+            <!-- NotificationChannel Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonNotificationChannel" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-90"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Channel")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables["NotificationChannel"] = true;
+                        else
+                            QuickHealVariables["NotificationChannel"] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Enable to deliver notifications to the channel name entered below if it exists.");
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["NotificationChannel"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Enable to deliver notifications to the channel name entered below if it exists.");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+            <!-- NotificationParty Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonNotificationParty" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="152" y="-70"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Party")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables["NotificationParty"] = true;
+                        else
+                            QuickHealVariables["NotificationParty"] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Enable to deliver notifications to party chat when in a party.");
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["NotificationParty"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Enable to deliver notifications to party chat when in a party.");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+            <!-- NotificationRaid Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonNotificationRaid" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="152" y="-90"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Raid")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables["NotificationRaid"] = true;
+                        else
+                            QuickHealVariables["NotificationRaid"] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Enable to deliver notifications to raid chat when in a raid.");
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["NotificationRaid"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Enable to deliver notifications to raid chat when in a raid.");
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
+            <!-- NotificationStyle ComboBox -->
+   			<Button name="QuickHealConfig_ComboBoxNotificationStyle" inherits="UIDropDownMenuTemplate">
+                <Size><AbsDimension x="165" y="32"/></Size>
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="123" y="-135"/></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnShow>
+                        UIDropDownMenu_Initialize(this,QuickHeal_ComboBoxNotificationStyle_Fill);
+                        UIDropDownMenu_SetSelectedValue(this,QuickHealVariables["NotificationStyle"]);
+                    </OnShow>
+                </Scripts>
+    		</Button>
+
+            <!-- DisplayHealingBar Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonDisplayHealingBar" inherits="OptionsCheckButtonTemplate" checked="true">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="32" y="-182"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Display Healing Bar")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables.DisplayHealingBar = true;
+                        else
+                            QuickHealVariables.DisplayHealingBar = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Check this option to show the Healing Bar when casting a healing spell.");
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables.DisplayHealingBar then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Check this option to show the Healing Bar when casting a healing spell.")
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
+            <!-- MessageConfigure ComboBox -->
+   			<Button name="QuickHealConfig_ComboBoxMessageConfigure" inherits="UIDropDownMenuTemplate">
+                <Size><AbsDimension x="165" y="32"/></Size>
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="419" y="-76"/></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnShow>
+                        UIDropDownMenu_Initialize(this,QuickHeal_ComboBoxMessageConfigure_Fill);
+                        UIDropDownMenu_SetSelectedValue(this,"Healing");
+                    </OnShow>
+                </Scripts>
+    		</Button>
+
+            <!-- MessageScreenCenter Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonMessageScreenCenter" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-112"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Center of Screen")
+                    </onLoad>
+                    <onClick>
+                        local Config = UIDropDownMenu_GetSelectedValue(QuickHealConfig_ComboBoxMessageConfigure)
+                        if this:GetChecked() then
+                            QuickHealVariables["MessageScreenCenter" .. Config] = true;
+                        else
+                            QuickHealVariables["MessageScreenCenter" .. Config] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText(Config .. " messages are" .. (this:GetChecked() and " " or " not ") .. "delivered to center of screen.")
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["MessageScreenCenterHealing"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        local Config = UIDropDownMenu_GetSelectedValue(QuickHealConfig_ComboBoxMessageConfigure)
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText(Config .. " messages are" .. (this:GetChecked() and " " or " not ") .. "delivered to center of screen.")
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
+            <!-- MessageChatWindow Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonMessageChatWindow" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="448" y="-112"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Chat Window")
+                    </onLoad>
+                    <onClick>
+                        local Config = UIDropDownMenu_GetSelectedValue(QuickHealConfig_ComboBoxMessageConfigure)
+                        if this:GetChecked() then
+                            QuickHealVariables["MessageChatWindow" .. Config] = true;
+                        else
+                            QuickHealVariables["MessageChatWindow" .. Config] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText(Config .. " messages are" .. (this:GetChecked() and " " or " not ") .. "delivered to chat window.")
+                        end
+
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["MessageChatWindowHealing"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        local Config = UIDropDownMenu_GetSelectedValue(QuickHealConfig_ComboBoxMessageConfigure)
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText(Config .. " messages are" .. (this:GetChecked() and " " or " not ") .. "delivered to chat window.")
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+               </Scripts>
+            </CheckButton>
+
+            <!-- OverhealMessageScreenCenter Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonOverhealMessageScreenCenter" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-162"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Center of Screen")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables["OverhealMessageScreenCenter"] = true;
+                        else
+                            QuickHealVariables["OverhealMessageScreenCenter"] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Overheal status is" .. (this:GetChecked() and " " or " not ") .. "displayed at center of screen.")
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["OverhealMessageScreenCenter"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Overheal status is" .. (this:GetChecked() and " " or " not ") .. "displayed at center of screen.")
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
+            <!-- OverhealMessageHealingBar Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonOverhealMessageHealingBar" inherits="OptionsCheckButtonTemplate" checked="false">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="448" y="-162"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Above Healing Bar")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables["OverhealMessageCastingBar"] = true;
+                        else
+                            QuickHealVariables["OverhealMessageCastingBar"] = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("Overheal status is" .. (this:GetChecked() and " " or " not ") .. "displayed above the Healing Bar.")
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["OverhealMessageCastingBar"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("Overheal status is" .. (this:GetChecked() and " " or " not ") .. "displayed above the Healing Bar.")
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+               </Scripts>
+            </CheckButton>
+
+            <!-- OverhealMessagePlaySound Checkbutton -->
+            <CheckButton name="QuickHealConfig_CheckButtonOverhealMessagePlaySound" inherits="OptionsCheckButtonTemplate" checked="true">
+                <Size><AbsDimension x="20" y="20"/></Size>
+	            <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="328" y="-182"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <onLoad>
+                        getglobal(this:GetName().."Text"):SetText("Play Sound on Excessive Overheal")
+                    </onLoad>
+                    <onClick>
+                        if this:GetChecked() then
+                            QuickHealVariables.OverhealMessagePlaySound = true;
+                        else
+                            QuickHealVariables.OverhealMessagePlaySound = false;
+                        end
+                        if( this.tooltipShown ) then
+                            GameTooltip:SetText("A sound alert is" .. (this:GetChecked() and " " or " not ") .. "played in case of excessive overheal.")
+                        end
+                    </onClick>
+                    <OnShow>
+                        if QuickHealVariables["OverhealMessagePlaySound"] then
+                            this:SetChecked(true);
+                        else
+                            this:SetChecked(false);
+                        end
+					</OnShow>
+                    <OnEnter>
+                        GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText("A sound alert is" .. (this:GetChecked() and " " or " not ") .. "played in case of excessive overheal.")
+                        this.tooltipShown = true;
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                        this.tooltipShown = false;
+                    </OnLeave>
+                </Scripts>
+            </CheckButton>
+
+            <!-- NotificationChannelName EditBox -->
+            <EditBox name="QuickHealConfig_NotificationChannelNameEditBox" letters="80" inherits="InputBoxTemplate">
+	            <Size><AbsDimension x="125" y="32"></AbsDimension></Size>
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="146" y="-104"></AbsDimension></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnTextChanged>
+                        local no,name = GetChannelName(this:GetText());
+                        if no ~= 0 and name then
+                            QuickHealVariables["NotificationChannelName"] = name;
+                            this:SetTextColor(0,0.9,0);
+                            this:SetText(name);
+                        else
+                            QuickHealVariables["NotificationChannelName"] = this:GetText();
+                            this:SetTextColor(0.8,0.8,0.8);
+                        end
+                        this:HighlightText(0,0);
+                    </OnTextChanged>
+                    <OnShow>
+                        this:SetText("");
+                        this:SetText(QuickHealVariables["NotificationChannelName"]);
+                        this:HighlightText(0,0);
+                    </OnShow>
+                    <OnEscapePressed>
+                        QuickHeal_ToggleConfigurationPanel();
+                    </OnEscapePressed>
+                </Scripts>
+	            <FontString inherits="GameFontHighlightSmall">  </FontString>
+            </EditBox>
+        </Frames>
+    </Frame>
+</Ui>

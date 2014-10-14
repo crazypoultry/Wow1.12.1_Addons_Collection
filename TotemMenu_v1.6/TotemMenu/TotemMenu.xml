@@ -1,0 +1,497 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="localization.lua"/>
+<Script file="TotemMenu.lua"/>
+
+	<Frame name="TotemMenu_ScalingFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				TotemMenu_ScalingFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TotemMenu_IconDraggingFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				TotemMenu_IconDraggingFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<CheckButton name="TotemButtonTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+
+	<Button name="TotemMenuResizeTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnMouseDown>
+				TotemMenu_StartScaling(arg1)
+			</OnMouseDown>
+			<OnMouseUp>
+				TotemMenu_StopScaling(arg1)
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\TotemMenu\TotemMenu-ResizeGrip"/>
+		<HighlightTexture file="Interface\AddOns\TotemMenu\TotemMenu-ResizeGrip" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="TotemMenu_IconFrame" frameStrata="LOW" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<NormalTexture file="Interface\AddOns\TotemMenu\TotemMenu-Icon-Up"/>
+		<PushedTexture file="Interface\AddOns\TotemMenu\TotemMenu-Icon-Down"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+				this:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnDragStart>
+				this:LockHighlight()
+				TotemMenu_IconDraggingFrame:Show()
+			</OnDragStart>
+			<OnDragStop>
+				TotemMenu_IconDraggingFrame:Hide()
+				this:UnlockHighlight()
+			</OnDragStop>
+			<OnClick>
+				TotemMenu_IconFrame_OnClick(arg1)
+			</OnClick>
+		</Scripts>
+	</Button>
+
+
+	<Frame name="TotemMenuFrame" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="241" y="167" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop name="TotemMenubackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" 				 edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="2" right="2" top="2" bottom="2" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				TotemMenu_OnLoad();
+			</OnLoad>
+			<OnMouseDown>
+				TotemMenu_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				TotemMenu_OnMouseUp(arg1);
+			</OnMouseUp>
+			<OnEvent>
+				TotemMenu_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+		<Frames>
+			<Button name="TotemMenu_MainResizeButton" inherits="TotemMenuResizeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<CheckButton name="StoneSkinTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "EARTH_STONESKIN_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_StoneSkinTotem" />
+			</CheckButton>
+
+			<CheckButton name="EarthbindTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="StoneSkinTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "EARTH_BIND_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_StrengthOfEarthTotem02" />
+			</CheckButton>
+
+			<CheckButton name="StoneclawTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="EarthbindTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "EARTH_STONECLAW_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_StoneClawTotem" />
+			</CheckButton>
+
+			<CheckButton name="StrengthOfEarthTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="StoneclawTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "EARTH_STRENGTH_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_EarthBindTotem" />
+			</CheckButton>
+
+			<CheckButton name="TremorTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="StrengthOfEarthTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "EARTH_TREMOR_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_TremorTotem" />
+			</CheckButton>
+
+			<CheckButton name="TranquilAirTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TremorTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_TRANQUIL_AIR_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\INV_Staff_07" />
+			</CheckButton>
+
+			<CheckButton name="SearingTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="StoneSkinTotemButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "FIRE_SEARING_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Fire_SearingTotem" />
+			</CheckButton>
+
+			<CheckButton name="FireNovaTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SearingTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "FIRE_NOVA_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Fire_SealOfFire" />
+			</CheckButton>
+			
+			<CheckButton name="FrostResistTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FireNovaTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "FIRE_FROST_RESISTANCE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_FrostResistanceTotem_01" />
+			</CheckButton>
+
+			<CheckButton name="FlametongueTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FrostResistTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "FIRE_FLAMETONGUE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_GuardianWard" />
+			</CheckButton>
+
+			<CheckButton name="MagmaTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FlametongueTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "FIRE_MAGMA_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Fire_SelfDestruct" />
+			</CheckButton>
+
+			<CheckButton name="HealingStreamTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SearingTotemButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "WATER_HEALING_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\INV_Spear_04" />
+			</CheckButton>
+
+			<CheckButton name="PoisonCleansingTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealingStreamTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "WATER_POISON_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_PoisonCleansingTotem" />
+			</CheckButton>
+
+			<CheckButton name="ManaSpringTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PoisonCleansingTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "WATER_MANA_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_ManaRegenTotem" />
+			</CheckButton>
+
+			<CheckButton name="FireResistTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ManaSpringTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "WATER_FIRE_RESISTANCE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_FireResistanceTotem_01" />
+			</CheckButton>
+
+			<CheckButton name="DiseaseCleansingTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FireResistTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "WATER_DISEASE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_DiseaseCleansingTotem" />
+			</CheckButton>
+
+			<CheckButton name="ManaTideTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DiseaseCleansingTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "WATER_MANA_TIDE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Frost_SummonWaterElemental" />
+			</CheckButton>
+
+			<CheckButton name="GroundingTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="HealingStreamTotemButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_GROUNDING_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_GroundingTotem" />
+			</CheckButton>
+
+			<CheckButton name="NatureResistTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GroundingTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_NATURE_RESISTANCE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_NatureResistanceTotem" />
+			</CheckButton>
+
+			<CheckButton name="WindfuryTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NatureResistTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_WINDFURY_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_Windfury" />
+			</CheckButton>
+
+			<CheckButton name="SentryTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WindfuryTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_SENTRY_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_RemoveCurse" />
+			</CheckButton>
+
+			<CheckButton name="WindwallTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SentryTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_WINDWALL_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_EarthBind" />
+			</CheckButton>
+
+			<CheckButton name="GraceOfAirTotemButton" inherits="TotemButtonTemplate" virtual="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WindwallTotemButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Totem_OnClick(arg1, "AIR_GRACE_TOTEM");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_InvisibilityTotem" />
+			</CheckButton>
+
+		</Frames>
+	</Frame>
+</Ui>

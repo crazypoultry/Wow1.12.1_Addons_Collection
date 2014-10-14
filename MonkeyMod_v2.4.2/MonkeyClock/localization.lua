@@ -1,0 +1,11 @@
+-- English
+MONKEYCLOCK_TITLE			= "MonkeyClock";
+MONKEYCLOCK_VERSION			= "2.4";
+MONKEYCLOCK_TITLE_VERSION	= MONKEYCLOCK_TITLE .. " v" .. MONKEYCLOCK_VERSION;
+MONKEYCLOCK_DESCRIPTION		= "A simple movable clock.";
+MONKEYCLOCK_LOADED			= "|cffffff00" .. MONKEYCLOCK_TITLE .. " v" .. MONKEYCLOCK_VERSION .. " loaded";
+
+MONKEYCLOCK_CONFIRM_RESET	= "Okay to reset " .. MONKEYCLOCK_TITLE .. " settings to default values?";
+MONKEYCLOCK_CONFIRM_ALARM	= "The " .. MONKEYCLOCK_TITLE .. " alarm has gone off.";
+
+MONKEYCLOCK_SNOOZE			= "5 More Mins";

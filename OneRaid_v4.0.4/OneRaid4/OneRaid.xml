@@ -1,0 +1,371 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\UI.xsd">
+        
+    <Script file="OneRaid.lua"/>
+	
+	<GameTooltip name="OneRaid_Tooltip_Template" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+
+	<GameTooltip name="OneRaid_Cure_Tooltip" inherits="OneRaid_Tooltip_Template"/>
+	<GameTooltip name="OneRaid_Action_Tooltip" inherits="OneRaid_Tooltip_Template"/>
+	<GameTooltip name="OneRaid_SpellCast_Tooltip" inherits="OneRaid_Tooltip_Template"/>
+	<GameTooltip name="OneRaid_Durability_Tooltip" inherits="OneRaid_Tooltip_Template"/>
+
+	<Font name="OneRaid_MasterFront" virtual="true">
+		<Shadow>
+			<Color r="0" g="0" b="0"/>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+		</Shadow>
+		<Color r="1" g="1" b="1" />
+	</Font>
+	<Font name="OneRaid_NormalFontLargeOutline" inherits="OneRaid_MasterFront" outline="NORMAL" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="14" />
+		</FontHeight>
+	</Font>
+	<Font name="OneRaid_NormalFont" inherits="OneRaid_MasterFront" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="12" />
+		</FontHeight>
+	</Font>
+	<Font name="OneRaid_NormalFontSmall" inherits="OneRaid_MasterFront" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="10" />
+		</FontHeight>
+	</Font>
+	<Font name="OneRaid_NormalFontLarge" inherits="OneRaid_MasterFront" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="14" />
+		</FontHeight>
+	</Font>
+	<Font name="OneRaid_NormalFontOutline" inherits="OneRaid_MasterFront" outline="NORMAL" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="12" />
+		</FontHeight>
+	</Font>
+	<Font name="OneRaid_MessageFont" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="32"/>
+		</FontHeight>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Button name="OneRaid_Icon" parent="UIParent" enableMouse="true" enableKeyboard="true" movable="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\GossipFrame\HealerGossipIcon">
+					<Size>
+						<AbsDimension x="22" y="22" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-4" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size>
+						<AbsDimension x="52" y="52" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				ToggleDropDownMenu(1, nil, OneRaid_DropDown, this, 0, 0);
+			</OnMouseDown>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:ClearLines();
+				GameTooltip:AddLine("Øne Raid Options");
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Frame name="OneRaid_DropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-7" y="-25"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>OneRaid:DropDown_OnLoad();</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Button name="OneRaid_Button_Template" virtual="true">
+		<Size>
+			<AbsDimension x="80" y="24"/>
+		</Size>
+		
+		<Frames>
+			<Frame name="$parent_" setAllPoints="true">
+				<Backdrop bgFile="Interface\Addons\OneRaid4\textures\bg.tga" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="OneRaid_NormalFontOutline" setAllPoints="true" justifyH="CENTER" justifyV="MIDDLE"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>this:SetBackdropColor(.4, 0, 0, 1);</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter>getglobal(this:GetName() .. "_Text"):SetTextColor(.7, .7, .7, 1);</OnEnter>
+			<OnLeave>getglobal(this:GetName() .. "_Text"):SetTextColor(1, 1, 1, 1);</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Frame name="OneRaid_Dialog_Template" frameStrata="DIALOG" toplevel="true" parent="UIParent" enableMouse="true" movable="true" virtual="true" hidden="true" clampedToScreen="true">
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\ChatFrame\ChatFrameBackground" tile="false">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0" />
+			</BackgroundInsets>
+			<EdgeSize>
+				<AbsValue val="1" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parent_Header_Background" file="Interface\Addons\OneRaid4\textures\bg.tga">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Header_Text" inherits="OneRaid_NormalFontLarge" text="Window Title" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-9"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="OneRaid_Panel_Template" virtual="true">
+		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parent_Header_Background" file="Interface\Addons\OneRaid4\textures\bg.tga">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Header_Text" inherits="OneRaid_NormalFont" text="Window Title" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-11"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parent_OnLoad_Hack">
+				<Scripts>
+					<OnLoad>getglobal(this:GetParent():GetName() .. "_Header_Background"):SetVertexColor(.4, 0, 0, 1);</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<CheckButton name="OneRaid_CheckButton_Template" inherits="OptionsCheckButtonTemplate" virtual="true" hidden="false">
+		<Size>
+			<AbsDimension x="18" y="18"/>
+		</Size>
+		<HitRectInsets top="0" left="0" bottom="0" right="0"/>
+	</CheckButton>
+
+	<Button name="OneRaid_ColorPicker_Template" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+	</Button>
+
+	<MessageFrame name="OneRaid_Message_Frame" insertMode="BOTTOM" parent="UIParent" movable="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="1000" y="150"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="150"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="$parent_BackDrop">
+				<Size>
+					<AbsDimension x="1000" y="188"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\ChatFrame\ChatFrameBackground" tile="false">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</BackgroundInsets>
+					<EdgeSize>
+						<AbsValue val="1" />
+					</EdgeSize>
+				</Backdrop>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parent_Header_Background" file="Interface\Addons\OneRaid4\textures\bg.tga">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parent_Header_Text" inherits="OneRaid_NormalFontLarge" text="Window Title" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-9"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_MESSAGE_FRAME);
+						getglobal(this:GetName() .. "_Header_Background"):SetVertexColor(.4, 0, 0, 1);
+						this:SetBackdropColor(0, 0, 0, .75);
+						this:SetBackdropBorderColor(0, 0, 0, 0);
+					</OnLoad>
+					<OnMouseDown>
+						this:GetParent():StartMoving();
+					</OnMouseDown>
+					<OnMouseUp>
+						this:GetParent():StopMovingOrSizing();
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<FontString inherits="OneRaid_MessageFont" justifyH="CENTER"/>
+	</MessageFrame>
+	
+	<Frame name="OneRaid_Frame" hidden="false">
+		<Scripts>
+			<OnUpdate>OneRaid:OnUpdate(arg1);</OnUpdate>
+			<OnLoad>OneRaid:OnLoad();</OnLoad>
+			<OnEvent>OneRaid:OnEvent();</OnEvent>
+		</Scripts>
+	</Frame>
+	
+</Ui>

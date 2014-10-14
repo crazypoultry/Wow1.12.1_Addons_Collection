@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<!-- A base template for secure frames -->
+	<Frame name="InsecureFrameTemplate" virtual="true"/>
+
+	<!-- A button template for click-cast style action buttons -->
+	<Button name="InsecureActionButtonTemplate" inherits="InsecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				InsecureActionButton_OnClick(this, arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A variant of InsecureActionButtonTemplate used for unit buttons -->
+	<Button name="InsecureUnitButtonTemplate" inherits="InsecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				InsecureUnitButton_OnClick(this, arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- A header template that manages a 'state' which can be used 
+	     with the secure action templates to create a variety of
+	     interactive controls.
+		 See InsecureStateHeader.lua for details. -->
+	<Frame name="InsecureStateHeaderTemplate" inherits="InsecureFrameTemplate" virtual="true">
+		<Size x="2" y="2"/>
+		<Scripts>
+			<OnHide>
+				InsecureStateHeader_OnHide(this);
+			</OnHide>
+			<OnAttributeChanged>
+				InsecureStateHeader_OnAttributeChanged(this, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- Variant of the InsecureStateHeaderTemplate which drives state
+	     transitions when stance/shapeshift/actionbar changes occur. -->
+	<Frame name="InsecureStateDriverTemplate" inherits="InsecureStateHeaderTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				InsecureStateDriver_OnLoad(this);
+			</OnLoad>
+			<OnEvent>
+				InsecureStateDriver_OnEvent(this, event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Anchor/trigger buttons for a variety of drop down and pop up uses -->
+
+	<!-- Trigger from clicks -->
+	<Button name="InsecureAnchorButtonTemplate" inherits="InsecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				InsecureStateAnchor_RunChild(this, arg1, "onclickbutton");
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- Trigger from mouseover -->
+	<Frame name="InsecureAnchorEnterTemplate" inherits="InsecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				if ( motion ) then
+					this:SetAttribute("_entered", true);
+					InsecureStateAnchor_RunChild(this, "OnEnter", "onenterbutton");
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( motion and this:GetAttribute("_entered") ) then
+					this:SetAttribute("_entered", nil);
+					InsecureStateAnchor_RunChild(this, "OnLeave", "onleavebutton");
+				end
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<!-- Trigger from mouse up and down -->
+	<Frame name="InsecureAnchorUpDownTemplate" inherits="InsecureFrameTemplate" virtual="true">
+		<Scripts>
+			<OnMouseDown>
+				InsecureStateAnchor_RunChild(this, arg1, "onmousedownbutton");
+			</OnMouseDown>
+			<OnMouseUp>
+				InsecureStateAnchor_RunChild(this, button, "onmouseupbutton");
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- A frame used for managing party members -->
+	<Frame name="InsecurePartyHeaderTemplate" inherits="InsecureFrameTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				InsecurePartyHeader_OnLoad(this);
+			</OnLoad>
+			<OnEvent>
+				InsecurePartyHeader_OnEvent(this, event);
+			</OnEvent>
+			<OnShow>
+				InsecurePartyHeader_Update(this);
+			</OnShow>
+			<OnAttributeChanged>
+				InsecurePartyHeader_OnAttributeChanged(this, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+
+	<!-- A frame used for managing raid members in various ways -->
+	<Frame name="InsecureRaidGroupHeaderTemplate" inherits="InsecureFrameTemplate" hidden="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				InsecureRaidGroupHeader_OnLoad(this);
+			</OnLoad>
+			<OnEvent>
+				InsecureRaidGroupHeader_OnEvent(this, event);
+			</OnEvent>
+			<OnShow>
+				InsecureRaidGroupHeader_Update(this);
+			</OnShow>
+			<OnAttributeChanged>
+				InsecureRaidGroupHeader_OnAttributeChanged(this, name, value);
+			</OnAttributeChanged>
+		</Scripts>
+	</Frame>
+</Ui>

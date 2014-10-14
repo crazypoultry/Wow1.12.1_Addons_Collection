@@ -1,0 +1,33 @@
+﻿local L = AceLibrary("AceLocale-2.2"):new("FuBar_PerformanceFu")
+
+L:RegisterTranslations("frFR", function() return {
+	["Show framerate"] = "Afficher les images par secondes",
+	["Toggle whether to framerate"] = "Afficher ou masquer le compteur d'images par seconde",
+	["Show latency"] = "Afficher la latence",
+	["Toggle whether to latency (lag)"] = "Afficher ou masquer le compteur de latence (lag)",
+	["Show memory usage"] = "Afficher l'utilisation mémoire",
+	["Toggle whether to show current memory usage"] = "Afficher ou masquer le compteur d'utilisation mémoire",
+	["Show rate of increasing memory usage"] = "Afficher le taux d'augmentation de la mémoire",
+	["Toggle whether to show increasing rate of memory"] = "Afficher ou masquer le compteur du taux d'augmentation courant de la mémoire",
+	["Warn on garbage collection"] = "Alerter en cas de garbage collection",
+	["Toggle whether to warn on an upcoming garbage collection"] = "Obtenez ou non une alerte lors de l'imminence d'une garbage collection",
+	["Force garbage collection"] = "Forcer un garbage collection",
+	["Force a garbage collection to happen"] = "Forcer un garbage collection à se produire maintenant",
+	["Garbage collection occurred"] = "Garbage collection a eu lieu",
+	["Garbage collection in %s"] = "Garbage collection dans %s",
+	["Framerate:"] = "Images par seconde:",
+	["Network status"] = "Etat du réseau",
+	["Latency:"] = "Latence:",
+	["Bandwidth in:"] = "Bande passante entrante:",
+	["Bandwidth out:"] = "Bande passante sortante:",
+	["Memory usage"] = "Utilisation mémoire",
+	["Current memory:"] = "Mémoire utilisée courante:",
+	["Initial memory:"] = "Mémoire utilisée initiale:",
+	["Increasing rate:"] = "Taux d'augmentation:",
+	["Average increasing rate:"] = "Taux d'augmentation moyen:",
+	["Garbage collection"] = "Garbage collection",
+	["Threshold:"] = "Seuil:",
+	["Time to next:"] = "Temps avant prochain:",
+	
+	["AceConsole-options"] = {"/perffu", "/performancefu"},
+} end)

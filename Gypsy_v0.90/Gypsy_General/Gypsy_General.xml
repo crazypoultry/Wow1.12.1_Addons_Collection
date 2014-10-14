@@ -1,0 +1,208 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<!--
+	///////////////////////////////////////////////
+	//
+	//		Gypsy_General
+	//		GypsyVersion++2004.11.08++
+	//
+	//		Casting bar capsule, lag meter, and
+	//		other event calls
+	//
+	///////////////////////////////////////////////
+	-->
+	<Script file="localization.lua"/>
+	<Script file="Gypsy_General.lua"/>
+	<!-- General options changes without a dedicated frame get loaded here, also used for cast bar capsule OnUpdates -->
+	<Button name="Gypsy_GeneralLoads" frameStrata="LOW" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				Gypsy_GeneralLoadsOnLoad();
+			</OnLoad>
+			<OnEvent>
+				Gypsy_GeneralLoadsOnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				Gypsy_CastBarCapsuleOnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	<!-- Capsule frame to allow dragging of the casting bar -->
+	<Button name="Gypsy_CastBarCapsule" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+		<TitleRegion setAllPoints="true"/>
+		<Size>
+			<AbsDimension x="224" y="50"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				Gypsy_CastBarCapsuleOnLoad();
+			</OnLoad>
+			<OnEvent>
+				Gypsy_CastBarCapsuleOnEvent(event);
+			</OnEvent>
+		</Scripts>
+		<Frames>
+			<Button name="Gypsy_CastBarCapsuleArt" hidden="true">
+				<Size>
+					<AbsDimension x="224" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="Gypsy_CastBarCapsule" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Backdrop name="Gypsy_CastBarCapsuleBackdrop" bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<!-- Movement & configuration tab, near the top right corner -->
+						<Texture name="Gypsy_CastBarCapsuleTab" file="Interface\ChatFrame\ChatFrameTab">
+							<Size>
+								<AbsDimension x="64" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="Gypsy_CastBarCapsuleArt" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-4" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<!-- Text to place over tab -->
+						<FontString name="Gypsy_CastBarCapsuleTabLabel" inherits="GameFontNormalSmall" text="CastBar">
+							<Size>
+								<AbsDimension x="64" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="Gypsy_CastBarCapsuleTab" relativePoint="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="-4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+	</Button>
+	<!-- Frame to display lag meter graphics and execute scripting, anchored to the top right of the screen -->
+	<Frame name="Gypsy_PerformanceBarFrame" frameStrata="LOW" parent="MinimapBackdrop">
+		<Size>
+			<AbsDimension x="16" y="64"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="MinimapBackdrop" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="-15" y="85"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<!-- Added graphic to tie the lag meter into the minimap cluster -->
+			<Layer level="BACKGROUND">
+				<Texture name="Gypsy_PerformanceBarArt" file="Interface\AddOns\Gypsy_General\Gypsy_LagMeter.tga">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="44" y="-65"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="Gypsy_PerformanceBar" file="Interface\MainMenuBar\UI-MainMenuBar-PerformanceBar">
+					<Size>
+						<AbsDimension x="20" y="66"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="1" y="-58"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<!-- All scripting involved with displaying the correct meter color and tooltip text is contained in this file -->
+		<Scripts>
+			<OnLoad>
+				Gypsy_LagMeterOnLoad();
+				PERFORMANCEBAR_LOW_LATENCY = 200;
+				PERFORMANCEBAR_MEDIUM_LATENCY = 500;
+				PERFORMANCEBAR_UPDATE_INTERVAL = 10;
+				this.hover = nil;
+				this.updateInterval = 0;
+			</OnLoad>
+			<OnEvent>
+				Gypsy_LagMeterOnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				if (this.updateInterval > 0) then
+					this.updateInterval = this.updateInterval - arg1;
+				else
+					this.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+					local bandwidthIn, bandwidthOut, latency = GetNetStats();
+					if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+						Gypsy_PerformanceBar:SetVertexColor(1, 0, 0);
+					elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+						Gypsy_PerformanceBar:SetVertexColor(1, 1, 0);
+					else
+						Gypsy_PerformanceBar:SetVertexColor(0, 1, 0);
+					end
+					if (this.hover) then
+						GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
+						GameTooltip:SetText(MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR);
+					end
+				end
+				Gypsy_ToggleLagMeter();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<!-- Button frame used additionally to allow for tooltip display OnEnter, anchored also to the top right corner of the screen -->
+	<Button name="Gypsy_PerformanceBarFrameButton" parent="Gypsy_PerformanceBarFrame" frameStrata="HIGH">
+		<Size>
+			<AbsDimension x="20" y="66"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="1" y="-58"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnEnter>
+				Gypsy_PerformanceBarFrame.hover = 1;
+				local bandwidthIn, bandwidthOut, latency = GetNetStats();
+				GameTooltip:SetOwner(Gypsy_PerformanceBarFrame, "ANCHOR_BOTTOMLEFT");
+				GameTooltip:SetText(MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR);
+			</OnEnter>
+			<OnLeave>
+				Gypsy_PerformanceBarFrame.hover = nil;
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+</Ui>

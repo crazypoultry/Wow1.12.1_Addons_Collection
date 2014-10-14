@@ -1,0 +1,411 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="RadarOptions.lua"/>
+
+	<!-- TEMPLATES ==================================================== -->
+    <Button name="RadarColorButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentText" inherits="GameFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="LEFT" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <HitRectInsets>
+            <AbsInset left="0" right="-100" top="0" bottom="0" /> 
+        </HitRectInsets>
+        <Backdrop bgFile="Interface\AddOns\Radar\Images\BaseColor"> 
+			<BackgroundInsets>
+				<AbsInset left="6" right="7" top="7" bottom="8"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<NormalTexture file="Interface\AddOns\Radar\Images\NormalButton" />
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" /> 
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" /> 
+    </Button>
+	<!-- TEMPLATES ENDED ============================================== -->
+	
+	<Frame name="RadarOptionsFrame" toplevel="true" enableKeyboard="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="350" y="300"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="RadarOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Radar Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RadarOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+            <OnKeyDown>if (arg1 == "ESCAPE") then RadarOptions_Toggle(); end</OnKeyDown>
+        </Scripts>
+		<Frames>
+			
+			<CheckButton name="RadarOptionsBorderButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Show Border");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_ToggleBorderShow();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="RadarOptionsGuildButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="170" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Show Enemy Guild");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_ToggleGuildShow();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="RadarOptionsSoundButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Enable Sound");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_ToggleSound();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="RadarOptionsDebugButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="170" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Enable Debug");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_ToggleDebug();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="RadarOptionsHThreatColorButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("High Threat Color");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_SetColor("HThreat");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="RadarOptionsHThreatTimeButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="170" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					    RadarSlider_Toggle(1);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="RadarOptionsMThreatColorButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-125"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Medium Threat Color");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_SetColor("MThreat");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="RadarOptionsMThreatTimeButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="170" y="-125"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					    RadarSlider_Toggle(2);
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="RadarOptionsLThreatColorButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-150"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Low Threat Color");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_SetColor("LThreat");
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="RadarOptionsLThreatTimeButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="170" y="-150"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					    RadarSlider_Toggle(3);
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="RadarOptionsWindowColorButton" inherits="RadarColorButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-190"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Window Color");
+					</OnLoad>
+					<OnClick>
+					    RadarOptions_SetColor("Window");
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Slider name="RadarOptionsMaxSizeSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="180" y="-200" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(1,16);
+						this:SetValueStep(1);
+						getglobal(this:GetName().."Low"):SetText("1");
+                        getglobal(this:GetName().."High"):SetText("16");
+					</OnLoad>
+					<OnValueChanged>
+						RadarOptions_SetMaxSize(this:GetValue());
+						getglobal(this:GetName().."Text"):SetText("Window Size: " .. RadarOptions.Display.MaxSize);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Button name="RadarOptionsFrameDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RadarOptions_Toggle();
+					</OnClick>
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RadarOptions_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+
+
+
+
+	
+	<Frame name="RadarSliderFrame" toplevel="true" enableKeyboard="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="RadarSliderFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Threat Time">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RadarSliderFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+            <OnKeyDown>if (arg1 == "ESCAPE") then RadarSlider_Toggle(); end</OnKeyDown>
+        </Scripts>
+		<Frames>
+		    <Slider name="RadarSliderSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+					    RadarOptions_SliderChange(this:GetValue());
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			
+			<Button name="RadarSliderFrameDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					    RadarSlider_Toggle();
+					</OnClick>
+				</Scripts>
+			</Button>	
+		</Frames>
+		<Scripts>
+		</Scripts>
+	</Frame>
+	
+</Ui>

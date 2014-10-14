@@ -1,0 +1,122 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="PanzaPAW.lua"/>
+	<Frame name="PanzaPAWFrame" inherits="PanzaTemplateFrame">
+		<Size>
+			<AbsDimension x="250" y="510"/>
+		</Size>
+
+		<Frames>
+			<CheckButton name="cbxPanzaPAWEnable" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PanzaPAWFrame">
+						<Offset>
+							<AbsDimension x="20" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAW_CBX_ENABLE);
+					</OnLoad>
+					<OnEnter>
+						PA:PAW_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Whisper.enabled = not PASettings.Switches.Whisper.enabled;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAWResponse" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAWEnable">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAW_CBX_RESPONSE);
+					</OnLoad>
+					<OnEnter>
+						PA:PAW_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Whisper.feedback = not PASettings.Switches.Whisper.feedback;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="btnPanzaPAWDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PanzaPAWFrame">
+						<Offset>
+							<AbsDimension x="24" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PA:PAW_btnDone_OnClick()
+						if (PanzaTreeFrame:IsVisible()) then
+							PanzaTreeFrame:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+			<Button name="btnPanzaPAWDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="PanzaPAWFrame">
+						<Offset>
+							<AbsDimension x="-24" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PAW_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:PAW_Defaults();
+						PA:PAW_SetValues();
+						if (PanzaSTAFrame:IsVisible()) then
+							PanzaSTA_SetValues();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PA:PAW_OnLoad();
+				getglobal(this:GetName().."Title"):SetText(PANZA_PAW_TITLE);
+			</OnLoad>
+			<OnShow>
+				this:SetBackdropColor(0, 0, 0);
+				PA:PAW_OnShow();
+			</OnShow>
+			<OnHide>
+				PA:PAW_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,65 @@
+<Bindings>
+	<Binding name="CURE_DEBUFFS" header="ONERAID">
+		OneRaid:CureDebuffs();
+	</Binding>
+	<Binding name="ONERAID_PTT" runOnUp="true">
+		if (keystate == "up") then
+			OneRaid:AddonMessage("VOICE", "off");
+		else
+			OneRaid:AddonMessage("VOICE", "on");
+		end
+	</Binding>
+	<Binding name="TOGGLE_BUFFS">
+		for k, v in pairs(OneRaid_Options.UnitStyles) do
+			if (v.enableBuffToggle) then
+				if (not v.showBuffs and not v.showDebuffs) then
+					v.showBuffs = 1;
+					v.showDebuffs = 1;
+				elseif (v.showBuffs and v.showDebuffs) then
+					v.showBuffs = 1;
+					v.showDebuffs = nil;
+				elseif (v.showBuffs and not v.showDebuffs) then
+					v.showBuffs = nil;
+					v.showDebuffs = 1;
+				elseif (not v.showBuffs and v.showDebuffs) then
+					v.showBuffs = nil;
+					v.showDebuffs = nil;
+				end
+				for i, j in pairs(OneRaid.Group.frames) do
+					if (not j.inactive and j.style == k) then
+						if (OneRaid_Options.Groups[j.name].tankMonitor) then
+							for m, n in pairs(j.frames) do
+								for a = 1, 3 do
+									OneRaid.Unit:UpdateBuffs(n[a]);
+								end
+							end								
+						else
+							for m, n in pairs(j.frames) do
+								OneRaid.Unit:UpdateBuffs(n);
+							end
+						end
+					end
+				end
+			end
+		end
+	</Binding>
+	<Binding name="TOGGLE_GROUPS">
+		for k, v in pairs(OneRaid_Options.Groups) do
+		if (v.enableGroupToggle) then
+		if (v.hide) then
+		v.hide = nil;
+		else
+		v.hide = 1;
+		end
+		OneRaid.Group:Filter(getglobal("OneRaid_Group_" .. k));
+		if (OneRaid_Options.Groups[k].buffMonitor or OneRaid_Options.Groups[k].debuffMonitor) then
+		for i, j in pairs(getglobal("OneRaid_Group_" .. k).frames) do
+		OneRaid.Group:UpdateBuffs(getglobal("OneRaid_Group_" .. k), j.unit);
+		end
+		end
+		OneRaid.Group:SortFrame(getglobal("OneRaid_Group_" .. k));
+		OneRaid.Group:UpdateFrame(getglobal("OneRaid_Group_" .. k));
+		end
+		end
+	</Binding>
+</Bindings>

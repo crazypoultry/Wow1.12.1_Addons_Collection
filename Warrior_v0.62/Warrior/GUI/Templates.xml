@@ -1,0 +1,424 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+
+<!-- an entry in the class list -->
+<Frame name="WARRIORGUI_ClassSpellButtonTemplate" virtual="true">
+	<Size><AbsDimension x="355" y="32"/></Size>
+	<Frames>
+		<Button name="$parent_SpellButton">
+			<Size><AbsDimension x="28" y="28"/></Size>
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="$parent_Icon">
+						<Size><AbsDimension x="28" y="28"/></Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			<Scripts>
+				<OnLoad>
+					this:RegisterForDrag("LeftButton");
+				</OnLoad>
+				<OnClick>
+					WARRIORGUI_SpellButton_OnClick(this.spellID);
+					WARRIORGUI_SpellButton_DropZone(this.spellName);
+				</OnClick>
+				<OnDragStart>
+					WARRIORGUI_SpellButton_OnClick(this.spellID);
+				</OnDragStart>
+				<OnReceiveDrag>
+					WARRIORGUI_SpellButton_DropZone(this.spellName);
+				</OnReceiveDrag>
+				<OnEnter>
+					GameTooltip_SetDefaultAnchor(GameTooltip,UIParent);
+					GameTooltip:SetSpell(this.spellID,BOOKTYPE_SPELL);
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+			</Scripts>
+		</Button>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<!-- the white spell name -->
+			<FontString name="$parent_Text" inherits="WGUI_LargeFont" justifyH="LEFT">
+				<Size><AbsDimension x="200" y="18"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="35" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1" g="1" b="1"/>
+			</FontString>
+			
+			<!-- yellow rank text under the spell name -->
+			<FontString name="$parent_RankText" inherits="WGUI_NormalFont" justifyH="LEFT">
+				<Size><AbsDimension x="200" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Text" relativePoint="BOTTOMLEFT">
+						<Offset><AbsDimension x="0" y="8"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			if (this:GetID() > 1) then
+				this:SetPoint("TOP", "WARRIORGUI_ClassSpellButton_"..(this:GetID() - 1), "BOTTOM", 0, 0);
+			end
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<!-- an edit menu control template -->
+<Frame name="WARRIORGUI_EditMenuControlTemplate" virtual="true">
+	<Frames>
+		<Button name="$parent_Button">
+			<Size><AbsDimension x="36" y="36"/></Size>
+			<Anchors>
+				<Anchor point="LEFT" relativePoint="RIGHT">
+					<Offset><AbsDimension x="-17" y="3"/></Offset>
+				</Anchor>
+			</Anchors>
+			<HitRectInsets>
+				<AbsInset left="6" right="6" top="7" bottom="7"/>
+			</HitRectInsets>
+			<Scripts>
+				<OnClick>
+					WARRIORGUI_ShowMenu(1);
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Up"/>
+			<PushedTexture file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Down"/>
+			<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+			<HighlightTexture alphaMode="ADD" file="Interface\MainMenuBar\UI-MainMenu-ScrollDownButton-Highlight"/>
+		</Button>
+		<EditBox name="$parent_Setting" letters="30" autoFocus="false" inherits="InputBoxTemplate">
+			<Size><AbsDimension x="100" y="22"/></Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset><AbsDimension x="0" y="4"/></Offset>
+				</Anchor>
+				<Anchor point="RIGHT">
+					<Offset><AbsDimension x="0" y="4"/></Offset>
+				</Anchor>
+			</Anchors>
+			<FontString inherits="ChatFontNormal" font="Fonts\ARIALN.TTF">
+				<Color r="0" g="0" b="1"/>
+				<FontHeight>
+					<AbsValue val="12"/>
+				</FontHeight>
+			</FontString>
+			<Scripts>
+				<OnEscapePressed>
+					if (this:GetParent().prevvalue) then
+						this:SetText(this:GetParent().prevvalue);
+					else
+						this:SetText("");
+					end
+					this:ClearFocus();
+				</OnEscapePressed>
+				<OnEnterPressed>
+					if (this:GetParent().editFunc) then this:GetParent().editFunc(); end
+				</OnEnterPressed>
+			</Scripts>
+		</EditBox>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Label" inherits="WGUI_TinyFont">
+				<Color r="1.0" g="1.0" b="1.0"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="-4" y="4" /></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+</Frame>
+
+<!-- default backdrop -->
+<Frame name="WARRIORGUI_TooltipBackdropTemplate" hidden="false" frameStrata="BACKGROUND" virtual="true">
+	<Backdrop bgFile="Interface\AddOns\Warrior\Textures\PlainBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="3" right="3" top="3" bottom="3"/>
+		</BackgroundInsets>
+	</Backdrop>
+</Frame>
+
+<!-- drop down button template -->
+<Button name="WARRIORGUI_MenuOptionTemplate" virtual="true">
+	<Size><AbsDimension x="170" y="15"/></Size>
+	<HighlightTexture name="$parentHighlight" alphaMode="ADD" file="Interface\QuestFrame\UI-QuestTitleHighlight"/>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="$parent_Text" inherits="ChatFontNormal" font="Fonts\ARIALN.TTF">
+				<Color r="1.0" g="1.0" b="1.0"/>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset><AbsDimension x="3" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter>
+			this:GetParent().timer = nil;
+		</OnEnter>
+	</Scripts>
+</Button>
+
+<!-- drop down list template -->
+<Button name="WARRIORGUI_DropMenuTemplate" inherits="WARRIORGUI_TooltipBackdropTemplate" hidden="true"  frameStrata="FULLSCREEN" virtual="true">
+	<Size><AbsDimension x="10" y="10"/></Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Frames>
+		<Button name="$parent_Option1" inherits="WARRIORGUI_MenuOptionTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset><AbsDimension x="5" y="-5"/></Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="$parent_Option2" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option3" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option4" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option5" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option6" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option7" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option8" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option9" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option10" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option11" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option12" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option13" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option14" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option15" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option16" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option17" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option18" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option19" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option20" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option21" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option22" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option23" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option24" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option25" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option26" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option27" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option28" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option29" inherits="WARRIORGUI_MenuOptionTemplate"/>
+		<Button name="$parent_Option30" inherits="WARRIORGUI_MenuOptionTemplate"/>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(.1,.1,.1);
+			this.count = 30;
+		</OnLoad>
+		<OnEnter>
+			this.timer = nil;
+		</OnEnter>
+		<OnLeave>
+			this.timer = .5;
+		</OnLeave>
+		<OnHide>
+			this.timer = nil;
+		</OnHide>
+		<OnUpdate>
+			WARRIORGUI_MenuTimeout(arg1);
+		</OnUpdate>
+	</Scripts>
+</Button>
+
+<!-- keybinding template -->
+<Button name="WARRIORGUI_KeybindingTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+	<Size><AbsDimension x="40" y="20"/></Size>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="$parent_Text" inherits="ChatFontNormal" font="Fonts\ARIALN.TTF">
+				<Color r="1.0" g="1.0" b="1.0"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="11"/>
+				</FontHeight>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="$parent_OnKey" hidden="true">
+			<Scripts>
+				<OnKeyDown>
+					WARRIORGUI_KeyBindingButton_OnKeyDown();
+				</OnKeyDown>
+			</Scripts>
+		</Frame>
+	</Frames>
+	<NormalText inherits="GameFontHighlightSmall"/>
+	<DisabledText inherits="GameFontDisable"/>
+	<HighlightText inherits="GameFontHighlightSmall"/>
+	<Scripts>
+		<OnLoad>
+			this:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up");
+		</OnLoad>
+		<OnClick>
+			WARRIORGUI_KeybindingButton_OnClick(arg1);
+		</OnClick>
+	</Scripts>
+</Button>
+
+<!-- options slider template -->
+<Slider name="WARRIORGUI_OptionsSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
+	<Size>
+		<AbsDimension x="128" y="17"/>
+	</Size>
+	<HitRectInsets>
+		<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+	</HitRectInsets>
+	<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="8"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="8"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="3" right="3" top="6" bottom="6"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="$parentText" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentLow" inherits="GameFontHighlightSmall" text="LOW">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="2" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentHigh" inherits="GameFontHighlightSmall" text="HIGH">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+	</ThumbTexture>
+</Slider>
+
+<!-- slider template -->
+<Slider name="WARRIORGUI_SliderTemplate" inherits="WARRIORGUI_OptionsSliderTemplate" virtual="true">
+	<Size><AbsDimension x="130" y="20"/></Size>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="$parent_Label" inherits="GameFontNormal">
+				<Color r="1.0" g="1.0" b="1.0"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<EditBox name="$parent_Display" letters="4" autoFocus="false" inherits="InputBoxTemplate" justifyH="CENTER">
+			<Size><AbsDimension x="28" y="20"/></Size>
+			<Anchors>
+				<Anchor point="LEFT" relativePoint="RIGHT">
+					<Offset><AbsDimension x="5" y="0"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					this:SetTextColor(1,1,0);
+				</OnLoad>
+				<OnEscapePressed>
+					this:SetText(this:GetParent():GetValue());
+					this:ClearFocus();
+				</OnEscapePressed>
+				<OnEnterPressed>
+					WARRIORGUI_Slider_UpdateFromEditBox();
+				</OnEnterPressed>
+			</Scripts>
+		</EditBox>
+	</Frames>
+	<Scripts>
+		<OnShow>
+			this:SetValue(this.index());
+			getglobal(this:GetName().."_Display"):SetText(this:GetValue());
+		</OnShow>
+		<OnUpdate>
+			if (not this.minmaxset) then
+				this.minmaxset = 1;
+				local min, max = this:GetMinMaxValues();
+				getglobal(this:GetName().."Low"):SetText(min);
+				getglobal(this:GetName().."High"):SetText(max);
+			end
+		</OnUpdate>
+		<OnValueChanged>
+			WARRIORGUI_Slider_Update();
+		</OnValueChanged>
+	</Scripts>
+</Slider>
+
+<!-- check button template -->
+<CheckButton name="WARRIORGUI_CheckBoxTemplate" inherits="UICheckButtonTemplate" virtual="true">
+	<Size><AbsDimension x="24" y="24"/></Size>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="$parent_Label" inherits="WGUI_LargeFont">
+				<Color r="1.0" g="1.0" b="1.0"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+						<Offset><AbsDimension x="2" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnShow>
+			this:SetChecked(this.index());
+		</OnShow>
+		<OnClick>
+			WARRIORGUI_CheckBox_OnClick();
+		</OnClick>
+	</Scripts>
+</CheckButton>
+
+</Ui>

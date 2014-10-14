@@ -1,0 +1,268 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="EnchantingSell.lua" />
+	<Script file="EnchantingSell_Util.lua" />
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Script file="localization.cn.lua"/>
+	
+	<Frame name="EnchantingSell" hidden="false">
+		<Scripts>
+			<OnLoad>
+				ESell_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				ESell_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+
+	<!-- Minimap button -->		
+	<Button name="EnchantingSellMinimapButton" parent="Minimap" toplevel="true" frameStata="MEDIUM"  hidden="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="MinimapBackdrop" relativePoint="BOTTOM">
+				<Offset>
+<!--					<AbsDimension x="-51" y="60"/> --> <!-- (Cosmos) -->
+<!--					<AbsDimension x="-21" y="39"/> --> <!-- (kosList) -->
+<!--					<AbsDimension x="-21" y="5"/> -->
+<!--					<AbsDimension x="-71" y="146"/>  (SKMap) -->
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\AddOns\EnchantingSell\Icons\ESellMMButtonUp">
+					<Size>
+						<AbsDimension x="17" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>-->
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size>
+						<AbsDimension x="52" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>-->
+		<Scripts>
+			<OnClick>
+				ESell_Launch();
+			</OnClick>
+			<OnLoad>
+				this.tooltipText = MINIMAPBUTTON_TOOLTIP;
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:SetText(this.tooltipText);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>
+
+
+
+
+	<!-- MOVE TO A UTIL FRAME XML FILE
+		frame used to confirm an action with the user.  Has Yes, No, Cancel options
+			used in options frame, when user requests to 
+				1.  Load the default set of enchants
+				2.  Load the default set of reagents
+				3.  Reload all the data
+				4.  Change the selected enchanter/player
+	-->
+	<Frame name="EnchantingSell_ConfirmFrame"  toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="300" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_Msg" inherits="GameFontNormal" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="270" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>	 
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="10" right="10" top="10" bottom="10"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parent_YesButton" inherits="UIPanelButtonTemplate" text="YES">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="25" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EnchantingSell_ConfirmFrame.FunctionArg2 = nil;
+						EnchantingSell_ConfirmFrame:Hide();
+						if EnchantingSell_ConfirmFrame.FunctionArg1 then
+							EnchantingSell_ConfirmFrame.FunctionArg1();
+						end
+						EnchantingSell_ConfirmFrame.FunctionArg1 = nil;
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_NoButton" inherits="UIPanelButtonTemplate" text="NO">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EnchantingSell_ConfirmFrame.FunctionArg1 = nil;
+						EnchantingSell_ConfirmFrame:Hide();
+						if EnchantingSell_ConfirmFrame.FunctionArg2 then
+							EnchantingSell_ConfirmFrame.FunctionArg2();
+						end
+						EnchantingSell_ConfirmFrame.FunctionArg2 = nil;
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EnchantingSell_ConfirmFrame.FunctionArg1 = nil;
+						EnchantingSell_ConfirmFrame.FunctionArg2 = nil;						
+						EnchantingSell_ConfirmFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<!-- MOVE TO A UTIL FRAME XML FILE
+		Used to display a message to the user.  This is a popup type of message.  Similar to a browser javascript:alert() popup.
+		The mesage frame will remain displayed unless a holdTime is specified.
+			**The hold time should also be set however, otherwise the message will remain within the ScrollingMessageFrame until it is scrolled up past the lines specified in the frame, or until you exit the game.
+	-->
+	<MessageFrame name="EnchantingSell_Msg" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="450" y="60"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-122"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+		</Scripts>
+		<FontString inherits="ErrorFont" justifyH="CENTER"/>
+	</MessageFrame>
+
+	<!-- MOVE TO A UTIL FRAME XML FILE -->	
+	<FontString name="EnchantingSell_VerySmallFont" inherits="MasterFont" font="Fonts\ARIALN.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</FontString>
+	
+	<!-- MOVE TO A UTIL FRAME XML FILE -->	
+	<Frame name="EnchantingSell_Price_Template" virtual="true">
+		<Size>
+			<AbsDimension x="46" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentGold" inherits="EnchantingSell_VerySmallFont" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="18" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSilver" inherits="EnchantingSell_VerySmallFont" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="14" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGold" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCopper" inherits="EnchantingSell_VerySmallFont" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="14" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSilver" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Gold"):SetTextColor(MONEYCOLOR.Gold[1],MONEYCOLOR.Gold[2],MONEYCOLOR.Gold[3]);
+				getglobal(this:GetName().."Silver"):SetTextColor(MONEYCOLOR.Silver[1],MONEYCOLOR.Silver[2],MONEYCOLOR.Silver[3]);
+				getglobal(this:GetName().."Copper"):SetTextColor(MONEYCOLOR.Copper[1],MONEYCOLOR.Copper[2],MONEYCOLOR.Copper[3]);
+			</OnLoad>
+		</Scripts>		
+	</Frame>
+
+</Ui>

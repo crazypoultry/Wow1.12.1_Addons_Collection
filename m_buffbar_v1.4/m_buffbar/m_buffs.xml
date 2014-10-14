@@ -1,0 +1,1376 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<GameTooltip name="mbbTooltip1" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
+	<GameTooltip name="mbbTooltip2" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
+  <Script file="m_buffbar.lua"/>
+	<!--
+	///////////////////////////////////////////////
+	//
+	// Thanks to Gypsymod for the great templates
+	//
+	///////////////////////////////////////////////
+	-->
+	<!-- Buff display template to determine how the buff icon, name text and duration text, as well as the border are displayed. -->
+	<Button name="m_BuffButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="20"/>
+		</Size>
+		<!-- Background to color according to helpful/harmful -->
+		<Backdrop name="$parentBackdrop" bgFile="interface\Addons\m_buffbar\bar1" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="48"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="5" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Icon to the left of the buff button -->
+				<Texture name="$parentIcon" file="interface\icons\Spell_Frost_Frost">
+					<Size>
+						<AbsDimension x="29" y="29"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="6" y="23"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</Texture>
+				<!-- Buff Stacks -->
+				<FontString name="$parentStack" inherits="NumberFontNormal" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Blue buff border -->
+				<Texture name="$parentBuffBorder" file="Interface\AddOns\m_BuffBar\border1" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="4" y="23"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- buff name text -->
+				<FontString name="$parentBuffName" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="12"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="5" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- buff duration text -->
+				<FontString name="$parentDuration" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<!-- Changed font color -->
+					<Color r="1.0" g="0.82" b="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- buff Type text -->
+				<FontString name="$parentbuffTypeText" setAllPoints="true" inherits="MasterFont" font="Fonts\FRIZQT__.TTF">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<!-- Changed font color -->
+					<Color r="0" g="1.0" b="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<!-- Script events for each buff -->
+		<Scripts>
+			<OnEvent>
+			</OnEvent>
+			<OnUpdate>
+			</OnUpdate>
+			<OnMouseDown>
+				if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+					local tmpbuff = this:GetID();
+					local tmpid = buff_list[tmpbuff]['mid'];
+					CancelPlayerBuff(tmpid);
+				elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+					m_BuffFrameCapsule:StartMoving();
+					GameTooltip:Hide();
+       	elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+        	if(m_options:IsVisible()) then
+          	m_options:Hide();
+        	else
+          	m_options:Show();
+        	end
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				m_BuffFrameCapsule:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnEnter>
+				local tmpbuff = this:GetID();
+				if(buff_list[tmpbuff]) then
+					GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+					GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<!-- Buff frame capsule for movement -->
+	<Button name="m_BuffFrameCapsule" frameStrata="LOW" movable="true" parent="UIParent" hidden="false">
+		<TitleRegion setAllPoints="true"/>
+		<Size>
+			<AbsDimension x="71" y="382"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="MinimapCluster">
+				<Offset>
+					<AbsDimension x="-294" y="-2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Scripts>
+		</Scripts>
+		<Frames>
+			<!-- Frame to place buffs in, up to a max of 24, anchored to the bottom left of the Minimap	-->
+			<Frame name="m_BuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true" movable="true">
+				<Size>
+					<AbsDimension x="50" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="m_BuffFrameCapsule" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<!-- Actual buttons to display each buff, anchored off eachother -->
+				<Frames>
+					<Button name="m_BuffButton1" inherits="m_BuffButtonTemplate" id="1">					
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="21" y="-28"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton1a" id="1">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton1Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+
+										if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+											local tmpbuff = this:GetID();
+											local tmpid = buff_list[tmpbuff]['mid'];
+											CancelPlayerBuff(tmpid);
+										elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+											m_BuffFrameCapsule:StartMoving();
+											GameTooltip:Hide();
+						        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+						        	if(m_options:IsVisible()) then
+						          	m_options:Hide();
+						          else
+						          	m_options:Show();
+						          end
+										end
+
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>
+
+					
+					<Button name="m_BuffButton2" inherits="m_BuffButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton2a" id="2">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton2Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_BuffButton3" inherits="m_BuffButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton3a" id="3">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton3Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					<Button name="m_BuffButton4" inherits="m_BuffButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton4a" id="4">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton4Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_BuffButton5" inherits="m_BuffButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton5a" id="5">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton5Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					<Button name="m_BuffButton6" inherits="m_BuffButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton6a" id="6">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton6Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					<Button name="m_BuffButton7" inherits="m_BuffButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton7a" id="7">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton7Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					
+					
+					<Button name="m_BuffButton8" inherits="m_BuffButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton8a" id="8">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton8Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					<Button name="m_BuffButton9" inherits="m_BuffButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton9a" id="9">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton9Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					
+					<Button name="m_BuffButton10" inherits="m_BuffButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton10a" id="10">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton10Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					
+					<Button name="m_BuffButton11" inherits="m_BuffButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton11a" id="11">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton11Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					<Button name="m_BuffButton12" inherits="m_BuffButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton12a" id="12">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton12Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					<Button name="m_BuffButton13" inherits="m_BuffButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton13a" id="13">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton13Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					<Button name="m_BuffButton14" inherits="m_BuffButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton14a" id="14">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton14Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					
+					<Button name="m_BuffButton15" inherits="m_BuffButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton15a" id="15">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton15Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					
+					<Button name="m_BuffButton16" inherits="m_BuffButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_BuffButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-36" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_BuffButton16a" id="16">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_BuffButton16Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (arg1 == "RightButton" and not IsShiftKeyDown()) then
+										local tmpbuff = this:GetID();
+										local tmpid = buff_list[tmpbuff]['mid'];
+										CancelPlayerBuff(tmpid);
+									elseif (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_BuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_BuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(buff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(buff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+				</Frames>
+				<!-- Scripts to run for the entire buff bar -->
+				<Scripts>
+      		<OnLoad>
+      			m_buffbar_onload();
+					</OnLoad>
+      		<OnEvent>
+      			m_buffbar_onevent(event);
+					</OnEvent>
+					<OnUpdate>
+						m_update(arg1);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+	<!-- Dedicated tooltip for buffs, gets used in the GameTooltipTemplate frame scripts -->
+	<GameTooltip name="BTooltip" hidden="true" parent="m_BuffFrame" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	<GameTooltip name="mbbTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
+</Ui>

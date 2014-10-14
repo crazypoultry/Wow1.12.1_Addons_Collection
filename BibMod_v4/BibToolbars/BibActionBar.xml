@@ -1,0 +1,530 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="BibActionBar.lua"/>
+	
+	<Button name="BibDragButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+		</Anchors>
+		<NormalTexture file="Interface\AddOns\BibToolbars\BibModDragTab"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset><AbsDimension x="0" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:GetParent():SetMovable(true);
+			</OnLoad>
+			<OnMouseDown>
+				this:GetParent():StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				this:GetParent():StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibActionBarDragButtonTemplate" inherits="BibDragButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:GetParent():SetMovable(true);
+				getglobal(this:GetName().."Text"):SetText(gsub(this:GetParent():GetName(), "BibActionBar", ""));
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<Button name="$parentRotateAttachment">
+				<NormalTexture file="Interface\AddOns\BibToolbars\BibModRotateButton"/>
+				<HighlightTexture file="Interface\AddOns\BibToolbars\BibModRotateButtonHighlight"/>
+				<Size><AbsDimension x="16" y="16"/></Size>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="0" y="-3"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BibRotateActionBar(this:GetParent():GetParent():GetName());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Button>
+	
+	
+	<Frame name="BibActionBarTemplate" virtual="true" toplevel="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("CINEMATIC_STOP");
+				BibActionBarCount = BibActionBarCount + 1;
+				SetHashedSaveValue("ActionBarOrientations", this:GetName(), 12);
+			</OnLoad>
+			<OnEvent>
+				if(event == "VARIABLES_LOADED") then
+					BibActionBarsInitialized = BibActionBarsInitialized + 1;
+					if(BibActionBarCount == BibActionBarsInitialized) then
+						AllBibActionBarsLoaded = true;
+					end
+				end
+				RedrawBibActionBar(this:GetName());
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BibActionBarManagement">
+		<Scripts>
+			 <OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("ACTIONBAR_SHOWGRID");
+				this:RegisterEvent("ACTIONBAR_HIDEGRID");
+				this.RedrawActionBars = {};
+				this.allActionBarsLoaded = false;
+			 </OnLoad>
+			 <OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					RemoveMainActionBar();
+				else
+					RedrawAllBibActionBars();
+				end
+			</OnEvent>
+			<OnUpdate>
+				if (this.ActionBarRedrawTriggered and AllBibActionBarsLoaded) then
+					this.ActionBarRedrawTriggered = false;
+					for key, value in this.RedrawActionBars do
+						if(this.RedrawActionBars[key] == true) then
+							this.RedrawActionBars[key] = false;
+							LayoutBibActionBar(key);
+						end
+					end
+				end
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BibActionBar1" inherits="BibActionBarTemplate" parent="UIParent" id="1">
+		<Size><AbsDimension x="1" y="1"/></Size>
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="380"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton1" inherits="BibActionBarButtonTemplate" id="1"/>
+			<CheckButton name="BibActionButton2" inherits="BibActionBarButtonTemplate" id="2"/>
+			<CheckButton name="BibActionButton3" inherits="BibActionBarButtonTemplate" id="3"/>	
+			<CheckButton name="BibActionButton4" inherits="BibActionBarButtonTemplate" id="4"/>
+			<CheckButton name="BibActionButton5" inherits="BibActionBarButtonTemplate" id="5"/>
+			<CheckButton name="BibActionButton6" inherits="BibActionBarButtonTemplate" id="6"/>
+			<CheckButton name="BibActionButton7" inherits="BibActionBarButtonTemplate" id="7"/>
+			<CheckButton name="BibActionButton8" inherits="BibActionBarButtonTemplate" id="8"/>
+			<CheckButton name="BibActionButton9" inherits="BibActionBarButtonTemplate" id="9"/>
+			<CheckButton name="BibActionButton10" inherits="BibActionBarButtonTemplate" id="10"/>
+			<CheckButton name="BibActionButton11" inherits="BibActionBarButtonTemplate" id="11"/>
+			<CheckButton name="BibActionButton12" inherits="BibActionBarButtonTemplate" id="12"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="BibActionBar2" inherits="BibActionBarTemplate" parent="UIParent" id="2">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="342"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton13" inherits="BibActionBarButtonTemplate" id="13"/>	
+			<CheckButton name="BibActionButton14" inherits="BibActionBarButtonTemplate" id="14"/>
+			<CheckButton name="BibActionButton15" inherits="BibActionBarButtonTemplate" id="15"/>
+			<CheckButton name="BibActionButton16" inherits="BibActionBarButtonTemplate" id="16"/>
+			<CheckButton name="BibActionButton17" inherits="BibActionBarButtonTemplate" id="17"/>
+			<CheckButton name="BibActionButton18" inherits="BibActionBarButtonTemplate" id="18"/>
+			<CheckButton name="BibActionButton19" inherits="BibActionBarButtonTemplate" id="19"/>
+			<CheckButton name="BibActionButton20" inherits="BibActionBarButtonTemplate" id="20"/>
+			<CheckButton name="BibActionButton21" inherits="BibActionBarButtonTemplate" id="21"/>
+			<CheckButton name="BibActionButton22" inherits="BibActionBarButtonTemplate" id="22"/>
+			<CheckButton name="BibActionButton23" inherits="BibActionBarButtonTemplate" id="23"/>
+			<CheckButton name="BibActionButton24" inherits="BibActionBarButtonTemplate" id="24"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="BibActionBar3" inherits="BibActionBarTemplate" parent="UIParent" id="3">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="304"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton25" inherits="BibActionBarButtonTemplate" id="25"/>	
+			<CheckButton name="BibActionButton26" inherits="BibActionBarButtonTemplate" id="26"/>
+			<CheckButton name="BibActionButton27" inherits="BibActionBarButtonTemplate" id="27"/>
+			<CheckButton name="BibActionButton28" inherits="BibActionBarButtonTemplate" id="28"/>
+			<CheckButton name="BibActionButton29" inherits="BibActionBarButtonTemplate" id="29"/>
+			<CheckButton name="BibActionButton30" inherits="BibActionBarButtonTemplate" id="30"/>
+			<CheckButton name="BibActionButton31" inherits="BibActionBarButtonTemplate" id="31"/>
+			<CheckButton name="BibActionButton32" inherits="BibActionBarButtonTemplate" id="32"/>
+			<CheckButton name="BibActionButton33" inherits="BibActionBarButtonTemplate" id="33"/>
+			<CheckButton name="BibActionButton34" inherits="BibActionBarButtonTemplate" id="34"/>
+			<CheckButton name="BibActionButton35" inherits="BibActionBarButtonTemplate" id="35"/>
+			<CheckButton name="BibActionButton36" inherits="BibActionBarButtonTemplate" id="36"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="BibActionBar4" inherits="BibActionBarTemplate" parent="UIParent" id="4">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="266"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton37" inherits="BibActionBarButtonTemplate" id="37"/>	
+			<CheckButton name="BibActionButton38" inherits="BibActionBarButtonTemplate" id="38"/>
+			<CheckButton name="BibActionButton39" inherits="BibActionBarButtonTemplate" id="39"/>
+			<CheckButton name="BibActionButton40" inherits="BibActionBarButtonTemplate" id="40"/>
+			<CheckButton name="BibActionButton41" inherits="BibActionBarButtonTemplate" id="41"/>
+			<CheckButton name="BibActionButton42" inherits="BibActionBarButtonTemplate" id="42"/>
+			<CheckButton name="BibActionButton43" inherits="BibActionBarButtonTemplate" id="43"/>
+			<CheckButton name="BibActionButton44" inherits="BibActionBarButtonTemplate" id="44"/>
+			<CheckButton name="BibActionButton45" inherits="BibActionBarButtonTemplate" id="45"/>
+			<CheckButton name="BibActionButton46" inherits="BibActionBarButtonTemplate" id="46"/>
+			<CheckButton name="BibActionButton47" inherits="BibActionBarButtonTemplate" id="47"/>
+			<CheckButton name="BibActionButton48" inherits="BibActionBarButtonTemplate" id="48"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="BibActionBar5" inherits="BibActionBarTemplate" parent="UIParent" id="5">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="228"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton49" inherits="BibActionBarButtonTemplate" id="49"/>	
+			<CheckButton name="BibActionButton50" inherits="BibActionBarButtonTemplate" id="50"/>
+			<CheckButton name="BibActionButton51" inherits="BibActionBarButtonTemplate" id="51"/>
+			<CheckButton name="BibActionButton52" inherits="BibActionBarButtonTemplate" id="52"/>
+			<CheckButton name="BibActionButton53" inherits="BibActionBarButtonTemplate" id="53"/>
+			<CheckButton name="BibActionButton54" inherits="BibActionBarButtonTemplate" id="54"/>
+			<CheckButton name="BibActionButton55" inherits="BibActionBarButtonTemplate" id="55"/>
+			<CheckButton name="BibActionButton56" inherits="BibActionBarButtonTemplate" id="56"/>
+			<CheckButton name="BibActionButton57" inherits="BibActionBarButtonTemplate" id="57"/>
+			<CheckButton name="BibActionButton58" inherits="BibActionBarButtonTemplate" id="58"/>
+			<CheckButton name="BibActionButton59" inherits="BibActionBarButtonTemplate" id="59"/>
+			<CheckButton name="BibActionButton60" inherits="BibActionBarButtonTemplate" id="60"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>	
+	</Frame>
+
+	<Frame name="BibActionBar6" inherits="BibActionBarTemplate" parent="UIParent" id="6">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="190"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton61" inherits="BibActionBarButtonTemplate" id="61"/>
+			<CheckButton name="BibActionButton62" inherits="BibActionBarButtonTemplate" id="62"/>	
+			<CheckButton name="BibActionButton63" inherits="BibActionBarButtonTemplate" id="63"/>
+			<CheckButton name="BibActionButton64" inherits="BibActionBarButtonTemplate" id="64"/>
+			<CheckButton name="BibActionButton65" inherits="BibActionBarButtonTemplate" id="65"/>
+			<CheckButton name="BibActionButton66" inherits="BibActionBarButtonTemplate" id="66"/>
+			<CheckButton name="BibActionButton67" inherits="BibActionBarButtonTemplate" id="67"/>
+			<CheckButton name="BibActionButton68" inherits="BibActionBarButtonTemplate" id="68"/>
+			<CheckButton name="BibActionButton69" inherits="BibActionBarButtonTemplate" id="69"/>
+			<CheckButton name="BibActionButton70" inherits="BibActionBarButtonTemplate" id="70"/>
+			<CheckButton name="BibActionButton71" inherits="BibActionBarButtonTemplate" id="71"/>
+			<CheckButton name="BibActionButton72" inherits="BibActionBarButtonTemplate" id="72"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="BibActionBar7" inherits="BibActionBarTemplate" parent="UIParent" id="7">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="152"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton73" inherits="BibActionBarButtonTemplate" id="73"/>	
+			<CheckButton name="BibActionButton74" inherits="BibActionBarButtonTemplate" id="74"/>
+			<CheckButton name="BibActionButton75" inherits="BibActionBarButtonTemplate" id="75"/>	
+			<CheckButton name="BibActionButton76" inherits="BibActionBarButtonTemplate" id="76"/>
+			<CheckButton name="BibActionButton77" inherits="BibActionBarButtonTemplate" id="77"/>
+			<CheckButton name="BibActionButton78" inherits="BibActionBarButtonTemplate" id="78"/>
+			<CheckButton name="BibActionButton79" inherits="BibActionBarButtonTemplate" id="79"/>
+			<CheckButton name="BibActionButton80" inherits="BibActionBarButtonTemplate" id="80"/>
+			<CheckButton name="BibActionButton81" inherits="BibActionBarButtonTemplate" id="81"/>
+			<CheckButton name="BibActionButton82" inherits="BibActionBarButtonTemplate" id="82"/>
+			<CheckButton name="BibActionButton83" inherits="BibActionBarButtonTemplate" id="83"/>
+			<CheckButton name="BibActionButton84" inherits="BibActionBarButtonTemplate" id="84"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+	
+	<Frame name="BibActionBar8" inherits="BibActionBarTemplate" parent="UIParent" id="8">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="114"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton85" inherits="BibActionBarButtonTemplate" id="85"/>	
+			<CheckButton name="BibActionButton86" inherits="BibActionBarButtonTemplate" id="86"/>
+			<CheckButton name="BibActionButton87" inherits="BibActionBarButtonTemplate" id="87"/>	
+			<CheckButton name="BibActionButton88" inherits="BibActionBarButtonTemplate" id="88"/>
+			<CheckButton name="BibActionButton89" inherits="BibActionBarButtonTemplate" id="89"/>
+			<CheckButton name="BibActionButton90" inherits="BibActionBarButtonTemplate" id="90"/>
+			<CheckButton name="BibActionButton91" inherits="BibActionBarButtonTemplate" id="91"/>
+			<CheckButton name="BibActionButton92" inherits="BibActionBarButtonTemplate" id="92"/>
+			<CheckButton name="BibActionButton93" inherits="BibActionBarButtonTemplate" id="93"/>
+			<CheckButton name="BibActionButton94" inherits="BibActionBarButtonTemplate" id="94"/>
+			<CheckButton name="BibActionButton95" inherits="BibActionBarButtonTemplate" id="95"/>
+			<CheckButton name="BibActionButton96" inherits="BibActionBarButtonTemplate" id="96"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+	
+	<Frame name="BibActionBar9" inherits="BibActionBarTemplate" parent="UIParent" id="9">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="76"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton97" inherits="BibActionBarButtonTemplate" id="97"/>	
+			<CheckButton name="BibActionButton98" inherits="BibActionBarButtonTemplate" id="98"/>
+			<CheckButton name="BibActionButton99" inherits="BibActionBarButtonTemplate" id="99"/>	
+			<CheckButton name="BibActionButton100" inherits="BibActionBarButtonTemplate" id="100"/>
+			<CheckButton name="BibActionButton101" inherits="BibActionBarButtonTemplate" id="101"/>
+			<CheckButton name="BibActionButton102" inherits="BibActionBarButtonTemplate" id="102"/>
+			<CheckButton name="BibActionButton103" inherits="BibActionBarButtonTemplate" id="103"/>
+			<CheckButton name="BibActionButton104" inherits="BibActionBarButtonTemplate" id="104"/>
+			<CheckButton name="BibActionButton105" inherits="BibActionBarButtonTemplate" id="105"/>
+			<CheckButton name="BibActionButton106" inherits="BibActionBarButtonTemplate" id="106"/>
+			<CheckButton name="BibActionButton107" inherits="BibActionBarButtonTemplate" id="107"/>
+			<CheckButton name="BibActionButton108" inherits="BibActionBarButtonTemplate" id="108"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+	
+	<Frame name="BibActionBar10" inherits="BibActionBarTemplate" parent="UIParent" id="10">
+		<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="-230" y="38"/></Offset></Anchor></Anchors>
+		<Frames>
+			<CheckButton name="BibActionButton109" inherits="BibActionBarButtonTemplate" id="109"/>	
+			<CheckButton name="BibActionButton110" inherits="BibActionBarButtonTemplate" id="110"/>
+			<CheckButton name="BibActionButton111" inherits="BibActionBarButtonTemplate" id="111"/>	
+			<CheckButton name="BibActionButton112" inherits="BibActionBarButtonTemplate" id="112"/>
+			<CheckButton name="BibActionButton113" inherits="BibActionBarButtonTemplate" id="113"/>
+			<CheckButton name="BibActionButton114" inherits="BibActionBarButtonTemplate" id="114"/>
+			<CheckButton name="BibActionButton115" inherits="BibActionBarButtonTemplate" id="115"/>
+			<CheckButton name="BibActionButton116" inherits="BibActionBarButtonTemplate" id="116"/>
+			<CheckButton name="BibActionButton117" inherits="BibActionBarButtonTemplate" id="117"/>
+			<CheckButton name="BibActionButton118" inherits="BibActionBarButtonTemplate" id="118"/>
+			<CheckButton name="BibActionButton119" inherits="BibActionBarButtonTemplate" id="119"/>
+			<CheckButton name="BibActionButton120" inherits="BibActionBarButtonTemplate" id="120"/>
+			<Button name="$parentDragButton" inherits="BibActionBarDragButtonTemplate"/>
+		</Frames>
+	</Frame>
+
+	<Button name="BibPetActionBarDragButton" inherits="BibDragButtonTemplate" parent="PetActionBarFrame" frameStrata="MEDIUM">
+		<Scripts>
+			<OnLoad>
+				PetActionBarFrame:SetMovable(true);
+				PetActionBarFrame:SetHeight(33);
+				PetActionBarFrame:SetWidth(330);
+				PetActionBarFrame:SetFrameStrata("MEDIUM");
+				if(not PetActionBarFrame:IsUserPlaced()) then
+					PetActionBarFrame:ClearAllPoints();
+					PetActionBarFrame:SetPoint("TOPLEFT", "UIParent", "BOTTOM", -220, 414);
+				end
+				BibConstructPetBar();		
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Frame name="BibPetActionBarBackground" frameStrata="MEDIUM" frameLevel="1" parent="PetActionBarFrame">
+		<Layers><Layer><Texture><Color r="0" g="0" b="0" a="0.3"/></Texture></Layer></Layers>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Size><AbsDimension x="330" y="33"/></Size>
+	</Frame>
+	
+	<Button name="BibShapeshiftActionBarDragButton" inherits="BibDragButtonTemplate" parent="ShapeshiftBarFrame">
+		<Scripts>
+			<OnLoad>
+				ShapeshiftBarFrame:SetHeight(38);
+				ShapeshiftBarFrame:SetWidth(114);
+				ShapeshiftBarLeft:Hide();
+				ShapeshiftBarMiddle:Hide();
+				ShapeshiftBarRight:Hide();
+				ShapeshiftBarFrame:SetMovable(true);
+				if(not ShapeshiftBarFrame:IsUserPlaced()) then	
+					ShapeshiftBarFrame:ClearAllPoints();
+					ShapeshiftBarFrame:SetPoint("TOPLEFT", "UIParent", "BOTTOM", -220, 420);
+				end
+				ConstructBibShapeshiftBar();
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Frame name="BibShapeshiftActionBarBackground" frameLevel="3" parent="ShapeshiftBarFrame">
+		<Layers><Layer><Texture><Color r="0" g="0" b="0" a="0.3"/></Texture></Layer></Layers>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Size><AbsDimension x="114" y="40"/></Size>
+	</Frame>
+	
+	<Button name="BibMicroBarDragButton" inherits="BibDragButtonTemplate" parent="MainMenuBarArtFrame">
+		<Scripts>
+			<OnLoad>
+				MainMenuBarArtFrame:ClearAllPoints();
+				MainMenuBarArtFrame:SetHeight(35);
+				MainMenuBarArtFrame:SetWidth(237);
+				MainMenuBarArtFrame:SetMovable(true);
+				if(not MainMenuBarArtFrame:IsUserPlaced()) then
+					MainMenuBarArtFrame:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOM", 400, 0);
+				end
+				ConstructBibMicroBar();
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<Frame name="BibMicroBarBackground" frameLevel="3" parent="MainMenuBarArtFrame">
+				<Layers><Layer><Texture><Color r="0" g="0" b="0" a="1"/></Texture></Layer></Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Size><AbsDimension x="237" y="35"/></Size>
+			</Frame>
+			<Frame name="BibPerformanceBarFrame" parent="MainMenuBarArtFrame">
+				<Size>
+					<AbsDimension x="16" y="33"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="220" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="BibPerformanceBar" file="Interface\AddOns\BibToolbars\BibPerformanceBar"/>		
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						PERFORMANCEBAR_LOW_LATENCY = 200;
+						PERFORMANCEBAR_MEDIUM_LATENCY = 500;
+						PERFORMANCEBAR_UPDATE_INTERVAL = 10;
+						this.hover = nil;
+						this.updateInterval = 0;
+					</OnLoad>
+					<OnUpdate>
+						if (this.updateInterval > 0) then
+							this.updateInterval = this.updateInterval - 1;
+						else
+							this.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+							local bandwidthIn, bandwidthOut, latency = GetNetStats();
+							if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+								BibPerformanceBar:SetVertexColor(1, 0, 0);									
+							elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+								BibPerformanceBar:SetVertexColor(1, 1, 0);
+							else
+								BibPerformanceBar:SetVertexColor(0, 1, 0);
+							end
+							if (this.hover) then
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR);
+							end
+						end
+					</OnUpdate>
+					<OnEnter>
+						this.hover = 1;
+						local bandwidthIn, bandwidthOut, latency = GetNetStats();
+						GameTooltip:SetOwner(BibPerformanceBarFrame, "ANCHOR_RIGHT");
+						GameTooltip:SetText(MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR);
+					</OnEnter>
+					<OnLeave>
+						this.hover = nil;
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+	
+	<Button name="BibMenuDragButton" inherits="BibDragButtonTemplate" parent="BibMenu">
+		<Scripts>
+			<OnLoad>
+				BibMenu:SetMovable(true);
+				if(not BibMenu:IsUserPlaced()) then
+					BibMenu:ClearAllPoints();
+					BibMenu:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOM", 400, 72);
+				end
+			</OnLoad>
+		</Scripts>
+	</Button>	
+	
+	<CheckButton name="BibBagSlotButtonTemplate" inherits="BagSlotButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				PaperDollItemSlotButton_OnLoad();
+				this:RegisterEvent("BAG_UPDATE");
+				this.isBag = 1;
+				oldbutton = getglobal("Character"..strsub(this:GetName(),10));
+				oldbutton:Hide();
+				oldbutton:ClearAllPoints();
+				oldbutton:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, -100);
+				setglobal(oldbutton:GetName(), this);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	
+	<Frame name="BibBagButtonsBar" toplevel="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="200" y="37"/>
+		</Size>
+		<Anchors><Anchor point="BOTTOMLEFT" relativePoint="BOTTOM"><Offset><AbsDimension x="400" y="35"/></Offset></Anchor></Anchors>
+		<Scripts>
+			<OnLoad>
+				MainMenuBarBackpackButton:ClearAllPoints();
+				CharacterBag0Slot:ClearAllPoints();
+				CharacterBag1Slot:ClearAllPoints();
+				CharacterBag2Slot:ClearAllPoints();
+				CharacterBag3Slot:ClearAllPoints();
+				KeyRingButton:ClearAllPoints();
+				
+				MainMenuBarBackpackButton:SetParent(this);
+				CharacterBag0Slot:SetParent(this);
+				CharacterBag1Slot:SetParent(this);
+				CharacterBag2Slot:SetParent(this);
+				CharacterBag3Slot:SetParent(this);
+				KeyRingButton:SetParent(this);
+				
+				MainMenuBarBackpackButton:SetWidth(37);
+				MainMenuBarBackpackButton:SetHeight(37);
+				CharacterBag0Slot:SetWidth(37);
+				CharacterBag0Slot:SetHeight(37);
+				CharacterBag1Slot:SetWidth(37);
+				CharacterBag1Slot:SetHeight(37);
+				CharacterBag2Slot:SetWidth(37);
+				CharacterBag2Slot:SetHeight(37);
+				CharacterBag3Slot:SetWidth(37);
+				CharacterBag3Slot:SetHeight(37);
+				KeyRingButton:SetWidth(16);
+				KeyRingButton:SetHeight(37);
+				
+				MainMenuBarBackpackButton:SetPoint("TOPRIGHT", this:GetName(), "TOPRIGHT");
+				CharacterBag0Slot:SetPoint("RIGHT", "MainMenuBarBackpackButton", "LEFT");
+				CharacterBag1Slot:SetPoint("RIGHT", "CharacterBag0Slot", "LEFT");
+				CharacterBag2Slot:SetPoint("RIGHT", "CharacterBag1Slot", "LEFT");
+				CharacterBag3Slot:SetPoint("RIGHT", "CharacterBag2Slot", "LEFT");
+				KeyRingButton:SetPoint("RIGHT", "CharacterBag3Slot", "LEFT");
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<Button name="BibBagButtonsBarDragButton" inherits="BibDragButtonTemplate"/>
+		</Frames>	
+	</Frame>
+	
+	<!-- Add the resizers for the BibToolbars. This stuff will only have an effect if BibWindowMods
+	     is also running -->
+	<Button name="BibToolbarResizer" inherits="BibResizerTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset><AbsDimension x="7" y="-7"/></Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="BibActionBar1Resizer" inherits="BibToolbarResizer" parent="BibActionBar1"/>
+	<Button name="BibActionBar2Resizer" inherits="BibToolbarResizer" parent="BibActionBar2"/>
+	<Button name="BibActionBar3Resizer" inherits="BibToolbarResizer" parent="BibActionBar3"/>
+	<Button name="BibActionBar4Resizer" inherits="BibToolbarResizer" parent="BibActionBar4"/>
+	<Button name="BibActionBar5Resizer" inherits="BibToolbarResizer" parent="BibActionBar5"/>
+	<Button name="BibActionBar6Resizer" inherits="BibToolbarResizer" parent="BibActionBar6"/>
+	<Button name="BibActionBar7Resizer" inherits="BibToolbarResizer" parent="BibActionBar7"/>
+	<Button name="BibActionBar8Resizer" inherits="BibToolbarResizer" parent="BibActionBar8"/>
+	<Button name="BibActionBar9Resizer" inherits="BibToolbarResizer" parent="BibActionBar9"/>
+	<Button name="BibActionBar10Resizer" inherits="BibToolbarResizer" parent="BibActionBar10"/>
+	<Button name="BibBagButtonsBarResizer" inherits="BibToolbarResizer" parent="BibBagButtonsBar"/>
+	<Button name="BibMenuResizer" inherits="BibToolbarResizer" hidden="true" parent="BibMenu"/>
+	<Button name="BibPetActionBarFrameResizer" frameStrata="MEDIUM" inherits="BibToolbarResizer" hidden="true" parent="PetActionBarFrame"/>
+	<Button name="BibShapeshiftBarFrameResizer" inherits="BibToolbarResizer" hidden="true" parent="ShapeshiftBarFrame"/>
+	<Button name="BibMicroBarResizer" inherits="BibToolbarResizer" frameLevel="5" hidden="true" parent="MainMenuBarArtFrame"/>
+</Ui>

@@ -1,0 +1,191 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="BibWindowModTemplates.lua"/>
+	
+	<Button name="BibDragBarTemplate" virtual="true" frameLevel="5">
+		<Scripts>
+			<OnLoad>
+				this:GetParent():SetMovable(true);
+			</OnLoad>
+			<OnMouseDown>
+				this:GetParent():StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				this:GetParent():StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibResizerTemplate" virtual="true" frameLevel="4">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Layers><Layer><Texture file="Interface\AddOns\BibWindowMods\BibResizeTab"/></Layer></Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				BibResizerList[BibResizerListSize] = this;
+				BibResizerListSize = BibResizerListSize + 1;
+			</OnLoad>
+			<OnEvent>
+				if(event == "VARIABLES_LOADED") then
+					this.lastscale = GetHashedSaveValue("BibResizerScales", this:GetName());
+				end
+			</OnEvent>
+			<OnMouseDown>
+				local parent = this:GetParent();
+				this.anchorX = parent:GetEffectiveScale() * parent:GetLeft();
+				this.anchorY = parent:GetEffectiveScale() * parent:GetTop();
+				local cursorX, cursorY = GetCursorPosition();
+				this.startW = cursorX - this.anchorX;
+				this.startH = this.anchorY - cursorY;
+				this.startScale = parent:GetEffectiveScale();
+				this.scaling = true;
+			</OnMouseDown>
+			<OnMouseUp>
+				this.scaling = false;
+				local parent = this:GetParent();
+				this:GetParent():StartMoving();
+				this:GetParent():StopMovingOrSizing();
+			</OnMouseUp>
+			<OnClick>
+				if(IsControlKeyDown()) then
+					LastDoubleClickedResizer = this;
+			
+					local scale_range = BIB_MAX_SCALE - BIB_MIN_SCALE;
+					local ratio = (this:GetParent():GetEffectiveScale() - BIB_MIN_SCALE) / scale_range;
+					local percent = BibRound(ratio * 100);
+			
+					BibShowPopupFrameAtCursor(BibScaleEditBox);
+					BibScaleEditBox:SetText(percent);
+					BibScaleEditBox:HighlightText();
+					BibScaleEditBox:SetFocus();
+				end
+			</OnClick>
+			<OnUpdate>
+				--This handles the updating of the resize value as a drag tab is dragges
+				if(this.scaling == true) then
+					local parent = this:GetParent();
+					parent:Raise();
+					local cursorX, cursorY = GetCursorPosition();
+					local newW = cursorX-this.anchorX;
+					local newH = this.anchorY-cursorY;
+					local Xratio = newW / this.startW;
+					local Yratio = newH / this.startH;
+					local usedratio;
+					
+					if (Xratio > Yratio) then
+						usedratio = Xratio;
+					else
+						usedratio = Yratio;
+					end
+					
+					local newratio = this.startScale * usedratio;
+					if (newratio >= BIB_MIN_SCALE and BIB_MAX_SCALE >= newratio) then
+						this.rescaleTriggered = true;
+						this.lastscale = newratio;
+					end
+				end
+			</OnUpdate>
+		</Scripts>
+	</Button>
+	
+	<Frame name="BibResizersManager">
+		<Scripts>
+			<OnUpdate>
+				local resizer;
+				for i = 0, BibResizerListSize - 1 do
+					resizer = BibResizerList[i];
+
+					--This part handles the actual resizing of a frame after a resize has been triggered
+					if(resizer.lastscale and math.abs(resizer:GetParent():GetEffectiveScale() - resizer.lastscale) > .0001) then
+						local parent = resizer:GetParent();
+						
+						local parentLeft = parent:GetLeft();
+						local parentTop = parent:GetTop();
+						if(not(parentLeft == nil or parentTop == nil)) then
+							resizer.anchorX = parent:GetEffectiveScale() * parent:GetLeft();
+							resizer.anchorY = parent:GetEffectiveScale() * parent:GetTop();
+							if(resizer.rescaleTriggered) then
+								ScaleFrame(parent, resizer.anchorX, resizer.anchorY, resizer.lastscale);
+								SetHashedSaveValue("BibResizerScales", resizer:GetName(), resizer.lastscale);
+							else
+								parent:SetScale(resizer.lastscale / parent:GetParent():GetEffectiveScale());
+							end
+							resizer.rescaleTriggered = false;
+						end
+					end
+				end
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<EditBox name="BibScaleEditBox" autoFocus="false" numeric="true" letters="3" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="25" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+					<Size>
+						<AbsDimension x="25" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="30" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="20" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.90703125" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentPercent" text="%" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset><AbsDimension x="10" y="-8"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnterPressed>
+				local percent = this:GetNumber();
+				
+				if(percent > 100) then
+					message("You must choose a percentage from 0% to 100%");
+					return;
+				end
+			
+				this:ClearFocus();
+				this:Hide();
+	
+				LastDoubleClickedResizer.lastscale = BIB_MIN_SCALE + ((percent / 100) * (BIB_MAX_SCALE - BIB_MIN_SCALE));		
+				LastDoubleClickedResizer.rescaleTriggered = true;
+			</OnEnterPressed>
+			<OnEscapePressed>
+				this:ClearFocus();
+				this:Hide();
+			</OnEscapePressed>
+		</Scripts>	
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+</Ui>

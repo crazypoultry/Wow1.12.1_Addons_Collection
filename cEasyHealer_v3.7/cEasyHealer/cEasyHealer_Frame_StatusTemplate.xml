@@ -1,0 +1,83 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<Script file="cEasyHealer.lua"/>
+
+	<Button name="cEasyHealer_Frame_StatusTemplate" frameStrata="HIGH" virtual="true" hidden="false" parent="cEasyHealer_Frame_Main">
+		<Size>
+			<AbsDimension x="125" y="18"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="cEasyHealer_Frame_Main"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" justifyH="LEFT" justifyV="TOP" hidden="false" inherits="GameFontNormal" text="empty">
+					<Size>
+						<AbsDimension x="125" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+					</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.nickname = "empty0name";
+				getglobal(this:GetName().."Text"):SetText( "empty0text" );
+			</OnLoad>
+			<OnEnter>
+				if( UnitIsPlayer(this.id) )
+				then
+					local rankName, rankNumber = GetPVPRankInfo( UnitPVPRank(this.id) );	
+					GameTooltip:SetOwner( this, "ANCHOR_BOTTOMLEFT" );
+					
+					local cR = 1;
+					local cG = 1;
+					local cB = 1;
+					local color = RAID_CLASS_COLORS[string.upper(UnitClass(this.id))];
+					if ( color )
+					then
+						cR = color.r;
+						cG = color.g;
+						cB = color.b;
+					end
+
+					if( rankName )
+					then
+						GameTooltip:SetText( rankName .. " " .. UnitName(this.id) .. "\n" .. UnitLevel(this.id) .. " " .. UnitRace(this.id).. " " .. UnitClass(this.id), cR, cG, cB, 1 );
+					else
+						--ChatFrame1:AddMessage( "weeee? " .. UnitName(this.id) .. " " .. UnitLevel(this.id) );
+						-- if its a pet, it comes here
+						GameTooltip:SetText( UnitName(this.id) .. "\n" .. UnitLevel(this.id) .. " " .. UnitRace(this.id).. " " .. UnitClass(this.id), cR, cG, cB, 1 );
+					end
+				end
+			</OnEnter>							
+			<OnLeave>
+				if( UnitIsPlayer(this.id) )
+				then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+			<OnClick>
+
+				if( SpellStopCasting() ~= nil )
+				then
+
+					ChatFrame1:AddMessage( "|cffF63A00cEasyHealer: Aborting current spellcast.|r" );
+
+				else
+
+					cEasyHealer_Function_CastOnTarget( this.nickname );
+
+				end
+			
+			</OnClick>
+		</Scripts>
+	</Button>
+
+</Ui>

@@ -1,0 +1,969 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+<Button name = "StatCompareButtonTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="16" y="16"/>
+	</Size>
+	<Scripts>
+		<OnLeave>
+			GameTooltip:Hide()
+		</OnLeave>
+	</Scripts>
+</Button>
+
+<CheckButton name="StatCompareOptCheckTemplate" inherits="UICheckButtonTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="20" y="20"/>
+	</Size>
+	<Scripts>
+		<OnClick>
+			StatCompareOptCheck_OnClick()
+		</OnClick>
+	</Scripts>
+</CheckButton>
+
+<Button name="StatCompareOptTabTemplate" inherits="UIPanelButtonGrayTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="70" y="32"/>
+	</Size>
+	<Scripts>
+		<OnClick>
+			StatCompareOptTab_OnClick();
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Frame name="StatCompareOptFrame" toplevel="true" frameStrata="HIGH" enableMouse="true" movable="true" parent="UIParent" hidden="ture">
+	<Size>
+		<AbsDimension x="400" y="420" />
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Backdrop name="StatCompareOptbackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4" />
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="16" />
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="16" />
+		</EdgeSize>
+	</Backdrop>
+
+	<Layers>
+		<Layer level = "BACKGROUND">
+			<FontString name="SCOptTitle" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_OPTIONS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="24" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+
+	<Frames>
+		<Button name="StatCompareOptCloseButton" inherits="StatCompareButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-8" y="-8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<NormalTexture file="Interface\AddOns\StatCompare\SCButtons-Up">
+				<TexCoords left="0" right="0.245" top="0" bottom="0.245"/>
+			</NormalTexture>
+			<PushedTexture file="Interface\AddOns\StatCompare\SCButtons-Down">
+				<TexCoords left="0" right="0.245" top="0" bottom="0.245"/>
+			</PushedTexture>
+			<Scripts>
+				<OnClick>
+					PlaySound("GAMEGENERICBUTTONPRESS")
+					StatCompareOptFrame_Hide()
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="StatCompareOptTab1" inherits="StatCompareOptTabTemplate" text="STATCOMPARE_BASIC_CONFIG" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="24" y="6"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="StatCompareOptTab2" inherits="StatCompareOptTabTemplate" text="STATCOMPARE_ADVANCE_CONFIG" id="2">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="StatCompareOptTab1" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="2" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+
+		<Button name="StatCompareOkButton" inherits="GameMenuButtonTemplate" text="STATCOMPARE_OK">
+			<Size>
+				<AbsDimension x="50" y="24"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-16" y="8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					StatCompareOptFrame_Hide()
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Frame name="StatCompareOptSubFrame1" toplevel="true" enableMouse="true" parent="StatCompareOptFrame" hidden="true">
+			<Size>
+				<AbsDimension x="394" y="252"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="8" y="-24"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level = "BACKGROUND">
+					<FontString name="StatCompareOptListViewLabel" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_IN_LIST">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="0.85" g="0.85" b="0.85"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListSTR" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_STR">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOptListViewLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListAGI" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_AGI">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListSTR" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListSTA" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_STA">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListAGI" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListINT" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_INT">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListSTA" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListSPI" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_SPI">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListINT" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListArmor" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_ARMOR">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListSPI" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListEnArmor" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_ENARMOR">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListArmor" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListDR" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_DR">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListEnArmor" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListArcaneRes" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_ARCANERES">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListDR" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListFireRes" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_FIRERES">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListArcaneRes" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListNatureRes" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_NATURERES">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListFireRes" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListFrostRes" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_FROSTRES">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListNatureRes" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListShadowRes" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_SHADOWRES">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListFrostRes" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListDetarRes" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_DETARRES">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListShadowRes" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListFishing" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_FISHING">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListDetarRes" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListMining" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_MINING">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListFishing" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListHerbalism" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_HERBALISM">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListMining" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListSkinning" inherits="GameFontNormal" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_SKINNING">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListHerbalism" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+
+					<FontString name="StatCompareOpt_ListDefense" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_DEFENSE">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListSTR" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="132" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListBlock" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_BLOCK">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListDefense" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListToBlock" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_TOBLOCK">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListBlock" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListDodge" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_DODGE">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListToBlock" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListParry" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_PARRY">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListDodge" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListAP" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_AP">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListParry" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListCrit" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_CRIT">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListAP" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListRAP" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_RAP">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListCrit" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListRCrit" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_RCRIT">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListRAP" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListToHit" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_TOHIT">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListRCrit" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListHealthRegen" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_HEALTHREGEN">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListToHit" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListManaRegen" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_MANAREGEN">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListHealthRegen" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListManaRegenSPI" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_MANAREGENSPI">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListManaRegen" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListHealth" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_HEALTH">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListManaRegenSPI" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+					<FontString name="StatCompareOpt_ListMana" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="STATCOMPARE_DISPLAY_MANA">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="StatCompareOpt_ListHealth" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Color r="1.0" g="1.0" b="1.0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+
+			<Frames>
+					<Checkbutton name="ShowSTR" checked="true" inherits="StatCompareOptCheckTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListSTR" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowAGI" checked="true" inherits="StatCompareOptCheckTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListAGI" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowSTA" checked="true" inherits="StatCompareOptCheckTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListSTA" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowINT" checked="true" inherits="StatCompareOptCheckTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListINT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowSPI" checked="true" inherits="StatCompareOptCheckTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListSPI" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowArmor" checked="true" inherits="StatCompareOptCheckTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListArmor" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowEnArmor" checked="true" inherits="StatCompareOptCheckTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListEnArmor" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowDR" checked="true" inherits="StatCompareOptCheckTemplate" id="18">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListDR" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowArcaneRes" checked="true" inherits="StatCompareOptCheckTemplate" id="19">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListArcaneRes" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowFireRes" checked="true" inherits="StatCompareOptCheckTemplate" id="20">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListFireRes" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowNatureRes" checked="true" inherits="StatCompareOptCheckTemplate" id="21">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListNatureRes" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowFrostRes" checked="true" inherits="StatCompareOptCheckTemplate" id="22">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListFrostRes" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowShadowRes" checked="true" inherits="StatCompareOptCheckTemplate" id="23">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListShadowRes" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowDetarRes" checked="true" inherits="StatCompareOptCheckTemplate" id="24">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListDetarRes" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowFishing" checked="true" inherits="StatCompareOptCheckTemplate" id="25">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListFishing" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowMining" checked="true" inherits="StatCompareOptCheckTemplate" id="26">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListMining" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowHerbalism" checked="true" inherits="StatCompareOptCheckTemplate" id="27">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListHerbalism" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowSkinning" checked="true" inherits="StatCompareOptCheckTemplate" id="28">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListSkinning" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowDefense" checked="true" inherits="StatCompareOptCheckTemplate" id="29">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListDefense" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowBlock" checked="true" inherits="StatCompareOptCheckTemplate" id="30">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListBlock" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowToBlock" checked="true" inherits="StatCompareOptCheckTemplate" id="31">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListToBlock" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowDodge" checked="true" inherits="StatCompareOptCheckTemplate" id="32">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListDodge" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowParry" checked="true" inherits="StatCompareOptCheckTemplate" id="33">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListParry" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowAP" checked="true" inherits="StatCompareOptCheckTemplate" id="34">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListAP" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowCrit" checked="true" inherits="StatCompareOptCheckTemplate" id="35">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListCrit" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowRAP" checked="true" inherits="StatCompareOptCheckTemplate" id="36">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListRAP" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowRCrit" checked="true" inherits="StatCompareOptCheckTemplate" id="37">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListRCrit" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowToHit" checked="true" inherits="StatCompareOptCheckTemplate" id="38">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListToHit" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowHealthRegen" checked="true" inherits="StatCompareOptCheckTemplate" id="39">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListHealthRegen" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowManaRegen" checked="true" inherits="StatCompareOptCheckTemplate" id="40">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListManaRegen" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowManaRegenSPI" checked="true" inherits="StatCompareOptCheckTemplate" id="41">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListManaRegenSPI" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowHealth" checked="true" inherits="StatCompareOptCheckTemplate" id="42">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListHealth" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+					<Checkbutton name="ShowMana" checked="true" inherits="StatCompareOptCheckTemplate" id="43">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="StatCompareOpt_ListMana" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="1" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Checkbutton>
+			</Frames>
+		</Frame>
+		
+		<Frame name="StatCompareOptSubFrame2" toplevel="true" enableMouse="true" parent="StatCompareOptFrame" hidden="true">
+			<Size>
+				<AbsDimension x="394" y="252"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="8" y="-24"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Frames>
+			<CheckButton name="StatCompareShowBuffBonusOpt" inherits="OptionsCheckButtonTemplate">		
+				<Anchors>
+				  <Anchor point="BOTTOM" relative="StatCompareOptSubFrame2" relativePoint="BOTTOM">
+					<Offset>
+					  <AbsDimension x="-150" y="50"/>
+					</Offset>
+				  </Anchor>
+				</Anchors>
+				<Scripts>
+				  <OnLoad>
+					getglobal(this:GetName().."Text"):SetText(STATCOMPARE_SHOW_BUFFBONUS);
+				  </OnLoad>
+				  <OnClick>
+					StatCompareShowBuffBonusOpt_OnClick();
+				  </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="StatCompareShowSelfFrameOpt" inherits="OptionsCheckButtonTemplate">		
+				<Anchors>
+				  <Anchor point="BOTTOM" relative="StatCompareShowBuffBonusOpt" relativePoint="BOTTOM">
+					<Offset>
+					  <AbsDimension x="-150" y="70"/>
+					</Offset>
+				  </Anchor>
+				</Anchors>
+				<Scripts>
+				  <OnLoad>
+					getglobal(this:GetName().."Text"):SetText(STATCOMPARE_SHOW_SELFFRAME);
+				  </OnLoad>
+				  <OnClick>
+					StatCompareShowSelfFrameOpt_OnClick();
+				  </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="StatCompareShowMinimapOpt" inherits="OptionsCheckButtonTemplate">		
+				<Anchors>
+				  <Anchor point="BOTTOM" relative="StatCompareShowSelfFrameOpt" relativePoint="BOTTOM">
+					<Offset>
+					  <AbsDimension x="-150" y="92"/>
+					</Offset>
+				  </Anchor>
+				</Anchors>
+				<Scripts>
+				  <OnLoad>
+					getglobal(this:GetName().."Text"):SetText(STATCOMPARE_SHOW_MINIMAP_BUTTON);
+				  </OnLoad>
+				  <OnClick>
+					StatCompareShowMinimapOpt_OnClick();
+				  </OnClick>
+				</Scripts>
+			  </CheckButton>
+				<Slider name="StatCompareMinimapPosSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="290" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relative="StatCompareShowMinimapOpt" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(STATCOMPARE_MINIMAPBUTTONPOS);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 360);
+						this:SetValueStep(1);
+						this.tooltipText = STATCOMPARE_MINIMAPBUTTON_POS_TOOLTIP;
+					</OnLoad>
+					<OnShow>
+						local where = StatCompare_GetSetting("MinimapButtonPosition");
+						if (where) then
+							this:SetValue(where);
+						end
+					</OnShow>
+					<OnValueChanged>
+						where = this:GetValue();
+						getglobal(this:GetName().."Text"):SetText(STATCOMPARE_MINIMAPBUTTONPOS .. " - "..this:GetValue().."\194\176");
+						StatCompare_SetSetting("MinimapButtonPosition", where);
+						StatCompareMinimapButton_UpdatePosition();
+					</OnValueChanged>
+				</Scripts>
+				</Slider>
+			</Frames>
+		</Frame>
+	</Frames>
+</Frame>
+
+<Frame name="StatCompareMinimapFrame" parent="Minimap" frameStrata="MEDIUM" enableMouse="true" hidden="false">
+	<Size>
+		<AbsDimension x="29" y="32"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+			<Offset>
+				<AbsDimension x="2" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Button name="StatCompareMinimapButton">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					this.tooltip = STATCOMPARE_TOOLTIP_MINIMAP;
+					this:SetFrameLevel(5);
+					this:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+				</OnLoad>
+				<OnClick>
+						if(arg1 == "RightButton") then
+							if(StatCompareSetsFrame) then
+								if(StatCompareSetsFrame:IsVisible()) then
+									StatCompareSetsFrame:Hide();
+								else
+									StatCompareSetsFrame:Show();
+								end
+							end
+						else
+							StatCompare_Toggle();
+						end
+				</OnClick>
+				<OnEnter> 
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+					GameTooltip:SetText(this.tooltip);
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+			</Scripts>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="$parentTexture" file="Interface\Icons\Spell_Holy_Heal">
+						<Size>
+							<AbsDimension x="21" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+						<Size>
+							<AbsDimension x="56" y="56"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+			</Layers>
+		</Button>
+	</Frames>
+</Frame>
+</Ui>

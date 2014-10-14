@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="mailMinimap.lua"/>
+
+	<Frame name="minimapMail_Icon" frameStrata="TOP" parent="Minimap" hidden="false" Alpha="0.75">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+				<Anchor point="BOTTOMRIGHT"/>
+<!-- 					<Offset>
+						<AbsDimension x="14" y="-47"/>
+					</Offset>
+				</Anchor> -->
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\AddOns\mailMinimap\mailMinimap">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				MiniMapMailFrame:SetScript("OnEvent", nil);
+				MiniMapMailFrame:Hide();
+				this:RegisterEvent("UPDATE_PENDING_MAIL");
+				this:SetFrameLevel(this:GetFrameLevel()+1)
+			</OnLoad>
+			<OnEvent>
+				if ( event == "UPDATE_PENDING_MAIL" ) then
+					if ( HasNewMail() ) then
+						minimapMail_Icon:Show();
+					else
+						minimapMail_Icon:Hide();
+					end
+				end	
+			</OnEvent>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT");
+				GameTooltip:SetText(HAVE_MAIL);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+</Ui>

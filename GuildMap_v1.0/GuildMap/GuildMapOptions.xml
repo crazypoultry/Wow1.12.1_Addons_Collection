@@ -1,0 +1,213 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+	<Script file="GuildMapOptions.lua"/>
+	
+	<Frame name="GuildMapOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="360" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal" text="GuildMap">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentVersionText" inherits="GameFontNormalSmall" text="wow@docbru.de">
+					<Color r="1" g="1" b="1" a="1"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="20" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>				
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."HeaderText"):SetText("GuildMap " .. GUILDMAP_VERSION);
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<Button name="$parentCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GuildMap_Cancel_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCancel" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GuildMap_OK_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>			
+			
+
+			<CheckButton name="$parentDisplayArrowsCB" hidden="false" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Scripts>
+					<OnLoad>				
+						getglobal(this:GetName().."Text"):SetText(GUILDMAP_TEXT_MINIMAP_ARROWS);
+					</OnLoad>
+					<OnClick>
+						GuildMap_DisplayArrowsCB_OnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			
+			<Slider name="$parentArrowDistanceSL" minValue="70" maxValue="2000" valueStep="1" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<!--<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentDisplayArrowsCB">-->
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentDisplayArrowsCBText">
+						<Offset>
+							<AbsDimension x="20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>			
+				<Size>
+					<AbsDimension x="160" y="17"/>
+				</Size>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(GUILDMAP_TEXT_WITHIN_DISTANCE);
+						getglobal(this:GetName().."Low"):SetText(GUILDMAP_TEXT_NEAR);
+						getglobal(this:GetName().."High"):SetText(GUILDMAP_TEXT_FAR);
+					</OnLoad>
+					<OnValueChanged>
+						GuildMap_ArrowDistanceSL_OnValueChanged();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			
+			<Frame name="$parentIconLeftMouseDD" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-110"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="GUILDMAP_TEXT_LEFT_MB">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentDescription" inherits="GameFontNormal" text="GUILDMAP_TEXT_ON_ICON_CLICK">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$parentLabel">
+									<Offset>
+										<AbsDimension x="-20" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(this, GuildMap_IconLeftMouseDDInitialize);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="$parentIconRightMouseDD" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIconLeftMouseDD">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="GUILDMAP_TEXT_RIGHT_MB">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(this, GuildMap_IconRightMouseDDInitialize);
+					</OnLoad>
+				</Scripts>
+			</Frame>			
+			
+		</Frames>
+	</Frame>
+</Ui>

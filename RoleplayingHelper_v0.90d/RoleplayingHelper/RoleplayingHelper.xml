@@ -1,0 +1,1214 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="RoleplayingHelper_Emotes.lua"/>
+
+<Script file="localization.lua"/>
+<Script file="localization.de.lua"/>
+
+<Script file="RoleplayingHelper.lua"/>
+
+<Script file="RoleplayingHelper_SlashCommands.lua"/>
+<Script file="RoleplayingHelper_ReplaceKeywords.lua"/>
+<Script file="RoleplayingHelper_Menu.lua"/>
+<Script file="RoleplayingHelper_Other.lua"/>
+
+<Script file="Interface\AddOns\RoleplayingHelper\English\RInsult.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\REmote.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\ANY.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\DWARF.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\GNOME.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\HUMAN.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\NIGHTELF.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\ORC.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\TAUREN.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\TROLL.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\UNDEAD.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\DRUID.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\HUNTER.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\MAGE.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\PALADIN.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\PRIEST.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\ROGUE.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\SHAMAN.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\WARLOCK.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\English\WARRIOR.lua"/>
+
+<!-- Localization files -->
+<!-- (Currently disabled, I don't know if they work any longer) -->
+
+<!--
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\RInsult.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\REmote.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\ANY.de.lua"/>
+
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\DWARF.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\GNOME.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\HUMAN.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\NIGHTELF.de.lua"/>
+
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\ORC.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\TAUREN.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\TROLL.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\UNDEAD.de.lua"/>
+
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\DRUID.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\HUNTER.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\MAGE.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\PALADIN.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\PRIEST.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\ROGUE.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\SHAMAN.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\WARLOCK.de.lua"/>
+<Script file="Interface\AddOns\RoleplayingHelper\Deutsch\WARRIOR.de.lua"/>
+-->
+
+	<Frame name="RPHelper" hidden="true">
+		<Frames>
+			<GameTooltip name="RPHelper_Tooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" parent="UIParent">
+			</GameTooltip>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RP_OnLoad();
+				RPHelper_Tooltip:SetOwner(this, "ANCHOR_NONE")
+			</OnLoad>
+			<OnEvent>
+				RP_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+ 	<Frame name="RPConfigFrame" toplevel="true" parent="UIParent" movable="true" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames,"RPConfigFrame");
+				this:RegisterForDrag("LeftButton");
+				UIPanelWindows["RPConfigFrame"] = { area = "left", pushable = 5, whileDead = 1 };
+			</OnLoad>
+			
+			<OnShow> RPConfigFrame_OnShow(); </OnShow>
+
+			<OnUpdate> RPConfigFrame_OnUpdate(); </OnUpdate>
+
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+
+		<Size><AbsDimension x="250" y="460"/></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+	
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="280" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="13"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="Roleplaying Helper">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="LastRPText" inherits="GameFontNormalSmall" text="Last RP was:">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent">
+							<Offset><AbsDimension y="-80"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FontStringRPLanguage" inherits="GameFontNormal" text="Language">
+				  <Anchors>
+				      <Anchor point="TOP" relativeTo="$parentButtonRPLanguage">
+				      </Anchor>
+				  </Anchors>
+        </FontString>
+        <FontString name="FontStringRPHVersion" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+              <Offset><AbsDimension x="15" y="17"/></Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight><AbsValue val="8"/></FontHeight>
+          <Color r="1" g="1" b="1" a="0.5"/>
+        </FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<CheckButton name="$parentCheckButtonOn" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Enable"); </OnLoad>
+					<OnClick> RPOnOffSwitch() </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="$parentButtonAdvanced" inherits="OptionsButtonTemplate" text="Events">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="LastRPText">
+					<Offset><AbsDimension y="-60"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPConfigFrame_RPAdvancedButton(); </OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentButtonRPSpells" inherits="OptionsButtonTemplate" text="Spells">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parentButtonAdvanced">
+					<Offset><AbsDimension y="-40"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPConfigFrame_RPSpellsButton(); </OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentButtonRPLists" inherits="OptionsButtonTemplate" text="Phrase Lists">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parentButtonRPSpells">
+					<Offset><AbsDimension y="-40"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPConfigFrame_RPListsButton(); </OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentButtonRPLanguage" inherits="OptionsButtonTemplate" text="Language">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parentButtonRPLists">
+					 <Offset><AbsDimension y="-50"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPConfigFrame_RPLanguageButton(); </OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-12" y="12"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> HideUIPanel(RPConfigFrame); HideUIPanel(RPListFrame); HideUIPanel(RPSpellsFrame); HideUIPanel(RPEventsFrame); </OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+ 	</Frame>
+
+<!-- RPListFrame -->
+ 	<Frame name="RPListFrame" toplevel="true" parent="UIParent" movable="true" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames,"RPListFrame");
+				this:RegisterForDrag("LeftButton");
+				UIPanelWindows["RPListFrame"] = { area = "left", pushable = 4, whileDead = 1 };
+			</OnLoad>
+			
+			<OnShow> RPListFrame_OnShow(); </OnShow>
+
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+
+		<Size><AbsDimension x="399" y="460"/></Size>
+	
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="280" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="13"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="Phrase Lists">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<CheckButton name="$parentCheckButtonANY" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+					<Offset><AbsDimension x="-30" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Any (Generic)"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonDWARF" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Dwarf"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonGNOME" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-60"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Gnome"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonHUMAN" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-90"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Human"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonNIGHTELF" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-120"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Night Elf"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonORC" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-150"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Orc"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonTAUREN" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-180"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Tauren"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonTROLL" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-210"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Troll"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonUNDEAD" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="-75" y="-240"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Undead"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+
+
+			<CheckButton name="$parentCheckButtonDRUID" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Druid"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonHUNTER" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-60"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Hunter"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonMAGE" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-90"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Mage"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonPALADIN" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-120"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Paladin"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonPRIEST" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-150"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Priest"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonROGUE" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-180"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Rogue"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonSHAMAN" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-210"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Shaman"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonWARLOCK" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-240"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Warlock"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonWARRIOR" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonANY">
+					<Offset><AbsDimension x="75" y="-270"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Warrior"); </OnLoad>
+					<OnClick> RPListUpdate() </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonSPELLS" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent">
+					<Offset><AbsDimension x="-105" y="75"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Continue to RP Spells"); </OnLoad>
+					<OnClick> RPList_CheckButtonSPELLS() </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="$parentButtonResetTraits" inherits="OptionsButtonTemplate" text="Reset Defaults">
+				<Size><AbsDimension x="120" y="30"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="80" y="30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPDefaults( "traits" ); HideUIPanel(RPListFrame); ShowUIPanel(RPListFrame); </OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+ 	</Frame>
+
+<!-- RPSpellsFrame -->
+
+ 	<Frame name="RPSpellsFrame" toplevel="true" parent="UIParent" movable="true" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames,"RPSpellsFrame");
+				this:RegisterForDrag("LeftButton");
+				UIPanelWindows["RPSpellsFrame"] = { area = "left", pushable = 4, whileDead = 1 };
+			</OnLoad>
+			
+			<OnShow> RPSpellsFrame_OnShow(); </OnShow>
+
+			<OnUpdate> RPSpellsFrame_OnUpdate(); </OnUpdate>
+
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+
+		<Size><AbsDimension x="399" y="460"/></Size>
+	
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="280" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="13"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="Spells">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+
+				<!-- Most of the following are handled in RoleplayingHelper_Menu.lua -->
+				<FontString name="$parentTextDelay" inherits="GameFontNormal" text="Delay"/>
+				<FontString name="$parentTextChance" inherits="GameFontNormal" text="Chance"/>
+
+				<FontString name="$parentFontString1" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString2" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString3" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString4" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString5" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString6" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString7" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString8" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString9" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString10" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString11" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString12" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString13" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString14" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString15" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString16" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString17" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString18" inherits="GameFontNormal" text=""/>
+
+				<FontString name="$parentFontStringCountdown1" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown2" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown3" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown4" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown5" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown6" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown7" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown8" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown9" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown10" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown11" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown12" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown13" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown14" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown15" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown16" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown17" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown18" inherits="GameFontNormal" text=""/>
+
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButtonDelay1" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay2" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay3" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay4" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay5" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay6" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay7" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay8" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay9" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay10" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay11" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay12" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay13" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay14" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay15" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay16" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay17" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay18" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+
+			<Button name="$parentButtonChance1" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance2" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance3" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance4" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance5" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance6" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance7" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance8" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance9" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance10" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance11" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance12" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance13" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance14" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance15" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance16" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance17" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance18" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPSpellsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+
+			<EditBox name="$parentEditBox1" letters="20" historyLines="0" autoFocus="false" hidden="true">
+				<FontString inherits="GameFontNormal"></FontString>
+				<Scripts>
+					<OnShow> this:SetFocus(); </OnShow>
+  					<OnEscapePressed> RPSpellsFrame_EditBox_Escape(); </OnEscapePressed>
+  					<OnEnterPressed> RPSpellsFrame_EditBox_Enter(); </OnEnterPressed> 
+  					<OnClick> this:SetFocus(); </OnClick> 
+  					<OnEditFocusLost> RPSpellsFrame_EditBox_Enter(); </OnEditFocusLost> 
+  				</Scripts>
+  			</EditBox>
+
+			<Button name="$parentButtonPrevious" inherits="OptionsButtonTemplate" text="Previous">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="35"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPSpellsFrameSetupSpellPage( "Previous" )</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonNext" inherits="OptionsButtonTemplate" text="Next">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPSpellsFrameSetupSpellPage( "Next" )</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonSpellsToShow" inherits="OptionsButtonTemplate" text="-">
+				<Size><AbsDimension x="120" y="23"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="10" y="-20"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPSpellsFrame_ButtonSpellsToShow_OnClick() </OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonResetSpells" inherits="OptionsButtonTemplate" text="Reset Defaults">
+				<Size><AbsDimension x="120" y="30"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="260" y="15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPDefaults( "spells" ); RP_SpellPage = 1; HideUIPanel(RPSpellsFrame); ShowUIPanel(RPSpellsFrame); </OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+<!-- RPEventsFrame -->
+
+ 	<Frame name="RPEventsFrame" toplevel="true" parent="UIParent" movable="true" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames,"RPEventsFrame");
+				this:RegisterForDrag("LeftButton");
+				UIPanelWindows["RPEventsFrame"] = { area = "left", pushable = 4, whileDead = 1 };
+			</OnLoad>
+			
+			<OnShow> RPEventsFrame_OnShow(); </OnShow>
+
+			<OnUpdate> RPEventsFrame_OnUpdate(); </OnUpdate>
+
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+
+		<Size><AbsDimension x="399" y="460"/></Size>
+	
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="280" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="13"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="Events">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+
+				<!-- Most of the following are handled in RoleplayingHelper_Menu.lua -->
+				<FontString name="$parentTextDelay" inherits="GameFontNormal" text="Delay"/>
+				<FontString name="$parentTextChance" inherits="GameFontNormal" text="Chance"/>
+
+				<FontString name="$parentFontString1" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString2" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString3" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString4" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString5" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString6" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString7" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString8" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString9" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString10" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString11" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString12" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString13" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString14" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString15" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString16" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString17" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontString18" inherits="GameFontNormal" text=""/>
+
+				<FontString name="$parentFontStringCountdown1" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown2" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown3" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown4" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown5" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown6" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown7" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown8" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown9" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown10" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown11" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown12" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown13" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown14" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown15" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown16" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown17" inherits="GameFontNormal" text=""/>
+				<FontString name="$parentFontStringCountdown18" inherits="GameFontNormal" text=""/>
+
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButtonDelay1" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay2" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay3" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay4" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay5" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay6" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay7" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay8" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay9" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay10" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay11" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay12" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay13" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay14" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay15" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay16" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay17" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay18" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+
+			<Button name="$parentButtonChance1" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance2" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance3" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance4" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance5" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance6" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance7" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance8" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance9" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance10" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance11" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance12" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance13" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance14" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance15" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance16" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance17" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance18" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPEventsFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+
+			<EditBox name="$parentEditBox1" letters="20" historyLines="0" autoFocus="false" hidden="true">
+				<FontString inherits="GameFontNormal"></FontString>
+				<Scripts>
+					<OnShow> this:SetFocus(); </OnShow>
+  					<OnEscapePressed> RPEventsFrame_EditBox_Escape(); </OnEscapePressed>
+  					<OnEnterPressed> RPEventsFrame_EditBox_Enter(); </OnEnterPressed> 
+  					<OnClick> this:SetFocus(); </OnClick> 
+  					<OnEditFocusLost> RPEventsFrame_EditBox_Enter(); </OnEditFocusLost> 
+  				</Scripts>
+  			</EditBox>
+
+			<Button name="$parentButtonEventsToShow" inherits="OptionsButtonTemplate" text="-">
+				<Size><AbsDimension x="120" y="23"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="10" y="-20"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPEventsFrame_ButtonSpellsToShow_OnClick() </OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonPrevious" inherits="OptionsButtonTemplate" text="Previous">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="35"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPEventsFrameSetupEventsPage( "Previous" )</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonNext" inherits="OptionsButtonTemplate" text="Next">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPEventsFrameSetupEventsPage( "Next" )</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonResetSpells" inherits="OptionsButtonTemplate" text="Reset Defaults">
+				<Size><AbsDimension x="120" y="30"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="260" y="15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> RPDefaults( "events" ); RP_EventsPage = 1; HideUIPanel(RPEventsFrame); ShowUIPanel(RPEventsFrame); </OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+
+ 	<Frame name="RPTimerFrame" toplevel="true" parent="UIParent" movable="false" hidden="true" enableMouse="false">
+		<Scripts>
+			<OnShow> </OnShow>
+
+			<OnUpdate> RPTimerFrameOnUpdate(); </OnUpdate>
+		</Scripts>
+	</Frame>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- TESTING THE ScrollFrame -->
+ 	<Frame name="RPLeftHandFrame" toplevel="true" parent="UIParent" movable="true" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames,"RPLeftHandFrame");
+				this:RegisterForDrag("LeftButton");
+				UIPanelWindows["RPLeftHandFrame"] = { area = "left", pushable = 4, whileDead = 1 };
+			</OnLoad>
+			
+			<OnShow>  </OnShow>
+
+			<OnUpdate>  </OnUpdate>
+
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+
+		<Size><AbsDimension x="399" y="460"/></Size>
+	
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="280" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="13"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="Events">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+
+			<ScrollFrame name="RPScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="356" y="428"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="RPScrollChildFrame" enableMouse="true">
+						<Size>
+							<AbsDimension x="330" y="400"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow> RPScrollChildFrame_OnShow(); </OnShow>
+						</Scripts>
+						<Frames>
+
+			<Button name="$parentButtonDelay1" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay2" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay3" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay4" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay5" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay6" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay7" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay8" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay9" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay10" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay11" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay12" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay13" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay14" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay15" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay16" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay17" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay18" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay19" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay20" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay21" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay22" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay23" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay24" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay25" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay26" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay27" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay28" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay29" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay30" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay31" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay32" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay33" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay34" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay35" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay36" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay37" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay38" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay39" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay40" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay41" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay42" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay43" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay44" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay45" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay46" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay47" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay48" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay49" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay50" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay51" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay52" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay53" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay54" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay55" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay56" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay57" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay58" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay59" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay60" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay61" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay62" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay63" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay64" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay65" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay66" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay67" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay68" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay69" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay70" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay71" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay72" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay73" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay74" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay75" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay76" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay77" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay78" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay79" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay80" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay81" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay82" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay83" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay84" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay85" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay86" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay87" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay88" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay89" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay90" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay91" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay92" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay93" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay94" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay95" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay96" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay97" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay98" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay99" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonDelay100" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+
+
+
+			<Button name="$parentButtonChance1" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance2" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance3" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance4" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance5" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance6" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance7" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance8" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance9" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance10" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance11" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance12" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance13" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance14" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance15" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance16" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance17" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance18" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance19" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance20" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance21" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance22" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance23" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance24" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance25" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance26" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance27" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance28" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance29" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance30" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance31" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance32" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance33" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance34" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance35" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance36" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance37" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance38" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance39" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance40" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance41" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance42" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance43" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance44" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance45" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance46" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance47" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance48" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance49" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance50" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance51" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance52" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance53" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance54" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance55" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance56" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance57" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance58" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance59" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance60" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance61" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance62" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance63" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance64" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance65" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance66" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance67" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance68" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance69" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance70" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance71" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance72" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance73" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance74" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance75" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance76" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance77" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance78" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance79" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance80" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance81" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance82" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance83" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance84" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance85" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance86" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance87" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance88" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance89" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance90" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance91" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance92" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance93" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance94" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance95" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance96" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance97" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance98" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance99" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+			<Button name="$parentButtonChance100" inherits="OptionsButtonTemplate" text="-"> <Scripts><OnClick> RPScrollFrame_Button_OnClick(); </OnClick></Scripts> </Button>
+
+
+
+
+
+
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+	</Frame>
+
+</Ui>

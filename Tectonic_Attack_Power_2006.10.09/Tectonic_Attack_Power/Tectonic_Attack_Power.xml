@@ -1,0 +1,52 @@
+<Ui>
+<Frame name="AttackFrame" parent="UIParent" movable="true">
+		<Size x="90" y="30"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	<Backdrop name="TectonicAttackBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+	</Backdrop>		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="AttackText" font="GameFontNormalLarge">
+					<Color r="1" g="1" b="0" a="1" />
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	<Scripts>
+		<OnLoad>
+			this:RegisterEvent("UNIT_ATTACK_POWER")
+			this:RegisterEvent("PLAYER_LOGIN")
+			SlashCmdList["MoveAttack"]=function() local f=AttackFrame f:EnableMouse(f.lock) f.lock = not f.lock end
+			SLASH_MoveAttack1 = "/moveattack"
+		</OnLoad>
+		<OnEvent>
+			local p,b,d=UnitAttackPower("player")
+			AttackText:SetText("AP: "..(p+(b or 0)-(n or 0)))
+		</OnEvent>
+		<OnMouseDown>
+			if not this.lock then
+			this:StartMoving()
+			end
+		</OnMouseDown>
+		<OnMouseUp>
+			this:StopMovingOrSizing()
+		</OnMouseUp>
+	</Scripts>
+</Frame>
+</Ui>

@@ -1,0 +1,985 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+<Script file="RecipeBookOptions.lua"/> 
+<!-- Tab Button Template -->
+	<Button name="RecipeBook_OptionsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(RecipeBook_OptionsFrame);
+				RecipeBook_OptionsFrame_OnShow();
+			</OnClick>
+		</Scripts>
+	</Button>
+<!-- Dropdown Menu Template 
+<Frame name = "RecipeBook_OptionsShareDropDownTemplate" inherits = "UIDropDownMenuTemplate" enableMouse = "true">
+	<Layers>
+		<Layer level = "BACKGROUND">
+			<FontString name = "$parentText" inherits = "GameFontNormalSmall">
+				<Anchors>
+					<Anchor point = "BOTTOMLEFT" relativePoint = "TOPLEFT">
+						<Offset>
+							<AbsDimension x = "21" y = "0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnShow>RecipeBookOptions_DD_OnShow(this:GetName());</OnShow>
+		<OnClick>RecipeBookOptions_DD_OnClick(this:GetName());</OnClick>
+	</Scripts>
+</Frame> -->
+
+
+<!-- Colour Picker Template
+<Button name="RecipeBook_OptionsFrameColorTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="24" y="24"/>
+	</Size>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="$parent_SwatchBg">
+				<Size>
+					<AbsDimension x="14" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1.0" g="1.0" b="1.0"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnClick>
+			RecipeBook_OpenColorPicker(this:GetParent());
+		</OnClick>
+		<OnEnter>
+			getglobal(this:GetName().."_SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		</OnEnter>
+		<OnLeave>
+			getglobal(this:GetName().."_SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+		</OnLeave>
+	</Scripts>
+	<NormalTexture name="$parent_NormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+</Button>
+-->
+	
+<!--RecipeBook_OptionsFrame -->
+	<Frame name="RecipeBook_OptionsFrame" frameStrata="BACKGROUND" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x = "550" y = "350"/>
+		</Size>
+		<Anchors>
+			<Anchor point = "CENTER">
+				<Offset>
+					<AbsDimension x = "0" y = "20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile = "Interface\DialogFrame\UI-DialogBox-Background" edgeFile = "Interface\DialogFrame\UI-DialogBox-Border" tile = "true">
+			<BackgroundInsets>
+				<AbsInset left = "11" right = "12" top = "12" bottom = "11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val = "32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val = "32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name = "RecipeBook_OptionsFrameHeader" file = "Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x = "520" y = "64"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "TOP">
+							<Offset>
+								<AbsDimension x = "0" y = "12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="RecipeBook_OptionsFrame_TitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+<!-- Ok, Cancel, Defaults buttons -->
+			<Button name = "RecipeBookOptions_BUT_Defaults" inherits = "GameMenuButtonTemplate" text = "DEFAULTS">
+				<Size>
+					<AbsDimension x = "100" y = "21"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x = "16" y = "16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						RecipeBookOptions_SetDefaultOptions();
+						RecipeBook_OptionsFrame:Hide();
+						RecipeBook_OptionsFrame:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name = "RecipeBookOptions_BUT_NewDefaults" inherits = "GameMenuButtonTemplate" text = "Make Default">
+				<Size>
+					<AbsDimension x = "120" y = "21"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "LEFT" relativeTo = "RecipeBookOptions_BUT_Defaults" relativePoint = "RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						RecipeBookOptions_NewDefaultOptions();
+						RecipeBook_OptionsFrame:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name = "RecipeBookOptions_BUT_Cancel" inherits = "GameMenuButtonTemplate" text = "CANCEL">
+				<Size>
+					<AbsDimension x = "100" y = "21"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x = "-16" y = "16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(RecipeBook_OptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name = "RecipeBookOptions_BUT_Okay" inherits = "GameMenuButtonTemplate" text = "OKAY">
+				<Size>
+					<AbsDimension x = "100" y = "21"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "RIGHT" relativeTo = "RecipeBookOptions_BUT_Cancel" relativePoint = "LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						RecipeBookOptions_CommitOptions();
+						HideUIPanel(RecipeBook_OptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+<!-- General Options -->
+			<Frame name = "RecipeBookOptions_GeneralFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level = "OVERLAY">
+						<FontString name = "RecipeBookOptions_OutputText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_OUTPUT">
+							<Anchors>
+								<Anchor point = "TOPLEFT">
+									<Offset>
+										<AbsDimension x = "25" y = "-135"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_ShowRecipeText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_SHOWCATEGORIES">
+							<Anchors>
+								<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_OutputText">
+									<Offset>
+										<AbsDimension x = "0" y = "-45"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FactionText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_FACTION">
+							<Anchors>
+								<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_ShowRecipeText" relativePoint = "BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x = "0" y = "-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name = "RecipeBookOptions_CBX_DisplayToggle" inherits="UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "35" y = "35"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT">
+								<Offset>
+									<AbsDimension x = "25" y = "-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad> getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_DISPLAYTOGGLE_TEXT); </OnLoad>
+							<OnShow>
+								if RecipeBookOptions_GetOption("Status") then this:SetChecked(1) else this:SetChecked(0) end;
+							</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									RecipeBookOptions_CheckboxClick("Status", "On")
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									RecipeBookOptions_CheckboxClick("Status", "Off" )
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_SelfDisplayToggle" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "35" y = "35"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_DisplayToggle">
+								<Offset>
+									<AbsDimension x = "0" y = "-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_SELFDISPLAYTOGGLE_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("ShowSelf") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("ShowSelf", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("ShowSelf", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_BankDisplayToggle" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "35" y = "35"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_SelfDisplayToggle" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "0" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_BANKDISPLAYTOGGLE_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("Banked") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("Banked", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("Banked", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>                   
+					<CheckButton name = "RecipeBookOptions_CBX_OutputTooltip" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_OutputText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "10" y = "-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_OUTPUTTOOLTIP_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("Tooltip") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("Tooltip", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("Tooltip", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_OutputChatFrame" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_OutputTooltip" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "-0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_OUTPUTCHATFRAME_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("ChatFrame") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("ChatFrame", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("ChatFrame", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_ShowKnown" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_ShowRecipeText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "19" y = "-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_KNOW_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("Known") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("Known", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("Known", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_ShowLearnable" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_ShowKnown" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_LEARN_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("CanLearn") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("CanLearn", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("CanLearn", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_ShowWillLearn" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_ShowLearnable" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_WILLLEARN_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("WillLearn") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("WillLearn", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("WillLearn", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_SameFaction" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FactionText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "19" y = "-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_SAMEFACTION_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("SameFaction") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("SameFaction", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("SameFaction", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_OppositeFaction" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_SameFaction" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "-0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_OPPOSITEFACTION_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("OtherFaction") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("OtherFaction", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("OtherFaction", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+<!-- Data Collection Options -->
+			<Frame name = "RecipeBookOptions_CollectionFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name = "RecipeBookOptions_AutoTrackText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_AUTOTRACK">
+							<Anchors>
+								<Anchor point = "TOPLEFT">
+									<Offset>
+										<AbsDimension x = "25" y = "-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name = "RecipeBookOptions_CBX_TrackSelf" inherits = "UIOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point = "TOPLEFT">
+								<Offset>
+									<AbsDimension x = "25" y = "-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_TRACKSELF_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("TrackSelf") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("TrackSelf", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("TrackSelf", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_AutoBank" inherits = "UIOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_AutoTrackText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "10" y = "-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_AUTOBANK_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("AutoBank") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("AutoBank", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("AutoBank", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_AutoBag" inherits = "UIOptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_AutoBank" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "-0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_AUTOBAGS_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("AutoBags") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("AutoBags", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("AutoBags", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+<!-- Sharing Options -->
+			<Frame name = "RecipeBookOptions_SharingFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name = "RecipeBookOptions_ShareText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_SHARE">
+							<Anchors>
+								<Anchor point = "TOPLEFT">
+									<Offset>
+										<AbsDimension x = "25" y = "-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FriendsShowRecipeText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_SHOWCATEGORIES">
+							<Anchors>
+								<Anchor point = "BOTTOMLEFT" relativeTo = "RecipeBookOptions_ShareText" relativePoint = "TOPLEFT">
+									<Offset>
+										<AbsDimension x = "0" y = "-75"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FriendsFactionText" inherits = "GameFontNormal" text = "RECIPEBOOK_CONFIG_TEXT_FACTION">
+							<Anchors>
+								<Anchor point = "BOTTOMLEFT" relativeTo = "RecipeBookOptions_FriendsShowRecipeText" relativePoint = "TOPLEFT">
+									<Offset>
+										<AbsDimension x = "0" y = "-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name = "RecipeBookOptions_CBX_FriendsDisplayToggle" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "35" y = "35"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT">
+								<Offset>
+									<AbsDimension x = "25" y = "-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_FRIENDSDISPLAYTOGGLE_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("FriendShow") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("FriendShow", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("FriendShow", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>                   
+					<Frame name = "RecipeBookOptions_DD_FriendShare" inherits = "UIDropDownMenuTemplate" enableMouse = "true">
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_ShareText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "5" y = "-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level = "BACKGROUND">
+								<FontString name = "$parentLabel" inherits = "GameFontNormalSmall" text = "RECIPEBOOK_DD_FRIENDSHARE">
+									<Anchors>
+										<Anchor point = "BOTTOMLEFT" relativePoint = "TOPLEFT">
+											<Offset>
+												<AbsDimension x = "21" y = "0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								RecipeBookOptions_DD_FriendShare_OnLoad();
+							</OnShow>
+							<OnClick>RecipeBookOptions_DD_FriendShare_OnClick();</OnClick>
+						</Scripts>
+					</Frame>
+					<Frame name = "RecipeBookOptions_DD_GuildShare" inherits = "UIDropDownMenuTemplate" enableMouse = "true">
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_DD_FriendShare" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "20" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level = "BACKGROUND">
+								<FontString name = "$parentLabel" inherits = "GameFontNormalSmall" text = "RECIPEBOOK_DD_GUILDSHARE">
+									<Anchors>
+										<Anchor point = "BOTTOMLEFT" relativePoint = "TOPLEFT">
+											<Offset>
+												<AbsDimension x = "21" y = "0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>RecipeBookOptions_DD_GuildShare_OnLoad();</OnShow>
+							<OnClick>RecipeBookOptions_DD_GuildShare_OnClick();</OnClick>
+						</Scripts>
+					</Frame>
+					<Frame name = "RecipeBookOptions_DD_OtherShare" inherits = "UIDropDownMenuTemplate" enableMouse = "true">
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_DD_GuildShare" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "20" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level = "BACKGROUND">
+								<FontString name = "$parentLabel" inherits = "GameFontNormalSmall" text = "RECIPEBOOK_DD_OTHERSHARE">
+									<Anchors>
+										<Anchor point = "BOTTOMLEFT" relativePoint = "TOPLEFT">
+											<Offset>
+												<AbsDimension x = "21" y = "0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>RecipeBookOptions_DD_OtherShare_OnLoad();</OnShow>
+							<OnClick>RecipeBookOptions_DD_OtherShare_OnClick();</OnClick>
+						</Scripts>
+					</Frame>
+					<CheckButton name = "RecipeBookOptions_CBX_FriendsShowKnown" inherits = "OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FriendsShowRecipeText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "19" y = "-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_KNOW_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("FriendKnown") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("FriendKnown", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("FriendKnown", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_FriendsShowLearnable" inherits = "OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_FriendsShowKnown" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_LEARN_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("FriendCanLearn") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("FriendCanLearn", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("FriendCanLearn", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_FriendsShowWillLearn" inherits = "OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_FriendsShowLearnable" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_WILLLEARN_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("FriendWillLearn") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("FriendWillLearn", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("FriendWillLearn", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_FriendsSameFaction" inherits = "OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FriendsFactionText" relativePoint = "BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x = "19" y = "-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_SAMEFACTION_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("FriendSameFaction") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("FriendSameFaction", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("FriendSameFaction", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name = "RecipeBookOptions_CBX_FriendsOppositeFaction" inherits = "OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "24" y = "24"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_CBX_FriendsSameFaction" relativePoint = "TOPRIGHT">
+								<Offset>
+									<AbsDimension x = "128" y = "-0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_OPPOSITEFACTION_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("FriendOtherFaction") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("FriendOtherFaction", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("FriendOtherFaction", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+<!-- Auction Options -->
+			<Frame name = "RecipeBookOptions_AuctionFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level = "BACKGROUND">
+						<FontString name = "RecipeBookOptions_FS_ColorAltsCanLearn" inherits = "GameFontNormalSmall" text ="RECIPEBOOK_AUCCOLOR_ALTSCANLEARN">
+							<Anchors>
+								<Anchor point = "TOPLEFT">
+									<Offset>
+										<AbsDimension x = "30" y = "-100"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FS_ColorAltsWillLearn" inherits = "GameFontNormalSmall" text ="RECIPEBOOK_AUCCOLOR_ALTSWILLLEARN">
+							<Anchors>
+								<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FS_ColorAltsCanLearn">
+									<Offset>
+										<AbsDimension x = "0" y = "-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FS_ColorYouWillLearn" inherits = "GameFontNormalSmall" text ="RECIPEBOOK_AUCCOLOR_YOUWILLLEARN">
+							<Anchors>
+								<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FS_ColorAltsWillLearn">
+									<Offset>
+										<AbsDimension x = "0" y = "-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FS_ColorNoAltsCanLearn" inherits = "GameFontNormalSmall" text ="RECIPEBOOK_AUCCOLOR_NOALTSCANLEARN">
+							<Anchors>
+								<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FS_ColorYouWillLearn">
+									<Offset>
+										<AbsDimension x = "0" y = "-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name = "RecipeBookOptions_FS_ColorAllAltsKnow" inherits = "GameFontNormalSmall" text ="RECIPEBOOK_AUCCOLOR_ALLALTSKNOW">
+							<Anchors>
+								<Anchor point = "TOPLEFT" relativeTo = "RecipeBookOptions_FS_ColorNoAltsCanLearn">
+									<Offset>
+										<AbsDimension x = "0" y = "-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name = "RecipeBookOptions_CBX_AuctionDisplayToggle" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "35" y = "35"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPLEFT">
+								<Offset>
+									<AbsDimension x = "25" y = "-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_AUCTIONDISPLAYTOGGLE_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("ColorAuctions") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("ColorAuctions", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("ColorAuctions", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>                   
+					<CheckButton name = "RecipeBookOptions_CBX_AuctionBlackBankedToggle" inherits = "UIOptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x = "35" y = "35"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBookOptions_CBX_AuctionDisplayToggle" relativePoint = "BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_AUCTIONBLACKBANKEDTOGGLE_TEXT);</OnLoad>
+							<OnShow>if RecipeBookOptions_GetOption("BlackBanked") then this:SetChecked(1) else this:SetChecked(0) end;</OnShow>
+							<OnClick>
+								if ( this:GetChecked() ) then
+								RecipeBookOptions_CheckboxClick("BlackBanked", "On")
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+								RecipeBookOptions_CheckboxClick("BlackBanked", "Off"  )
+								PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>      
+				</Frames>
+				<Scripts>
+					<OnShow> 
+						RecipeBookOptions_ColorOptionText();
+					</OnShow>
+				</Scripts>
+			</Frame>
+<!-- Tab buttons themselves -->
+			<Button name="RecipeBook_OptionsFrameTab1" inherits="RecipeBook_OptionsFrameTabTemplate" id="1" text="RECIPEBOOK_CONFIG_TAB_GENERAL">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="14" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="RecipeBook_OptionsFrameTab2" inherits="RecipeBook_OptionsFrameTabTemplate" id="2" text="RECIPEBOOK_CONFIG_TAB_BANKING">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RecipeBook_OptionsFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="RecipeBook_OptionsFrameTab3" inherits="RecipeBook_OptionsFrameTabTemplate" id="3" text="RECIPEBOOK_CONFIG_TAB_SHARING">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RecipeBook_OptionsFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="RecipeBook_OptionsFrameTab4" inherits="RecipeBook_OptionsFrameTabTemplate" id="4" text="RECIPEBOOK_CONFIG_TAB_AUCTION">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RecipeBook_OptionsFrameTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RecipeBook_OptionsFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				RecipeBook_OptionsFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				RecipeBook_OptionsFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

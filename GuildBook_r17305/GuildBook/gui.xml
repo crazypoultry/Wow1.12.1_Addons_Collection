@@ -1,0 +1,608 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Button name="GuildBookButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="18" y="18"/>
+		</Size>
+		<NormalTexture file="Interface\AddOns\GuildBook\Buttons">
+			<TexCoords left=".25" right=".375" top=".375" bottom=".5"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\AddOns\GuildBook\Buttons" alphaMode="ADD">
+			<TexCoords left=".125" right=".25" top=".25" bottom=".375"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter>
+				GuildBook.Tooltip()
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnClick>
+				GuildBook.OnClick()
+			</OnClick>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Button>
+	<Frame name="GuildBookFrame" hidden="true" movable="true" resizable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="500" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="GuildBookFramePath" font="GameFontHighlightSmall" justifyH="LEFT" text="GuildBookKB">
+					<Size>
+						<AbsDimension x="75" y="20"/>
+					</Size>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentContentFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-20"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="3" right="3" top="6" bottom="6" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16" />
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="9" />
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<ScrollFrame name="$parentContentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-26" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture file="Interface\ChatFrame\ChatFrameBackground">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentContentScrollFrame" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+										<Anchor point="BOTTOMRIGHT" relativeTo="$parentContentScrollFrame" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="23" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Gradient>
+										<MinColor r="0.1" g="0.1" b="0.1"/>
+										<MaxColor r="0" g="0" b="0"/>
+									</Gradient>
+								</Texture>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<SimpleHTML name="GuildBookHTMLContent" multiLine="true" maxLines="9" letters="4096" nonspacewrap="true" spacing="1" autoFocus="false">
+								<Size>
+									<AbsDimension x="100" y="100"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT"/>
+								</Anchors>
+								<Scripts>
+									<OnSizeChanged>
+										GuildBookHTMLContent:SetText(GuildBookHTMLContent:GetText())
+										GuildBookHTMLContent:GetParent():UpdateScrollChildRect()
+										local scrollBar = getglobal(GuildBookHTMLContent:GetParent():GetName().."ScrollBar")
+										local min, max = scrollBar:GetMinMaxValues()
+										if ( max > 0 and (this.max ~= max) ) then
+											this.max = max
+											scrollBar:SetValue(max)
+										end
+									</OnSizeChanged>
+									<OnHyperlinkClick>
+										GuildBook.HyperLinkClicked(arg1)
+									</OnHyperlinkClick>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</SimpleHTML>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(.1,.1,.1,1)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<!-- Grip in lower-right corner used to resize window -->
+			<Button name="$parentResizeGrip">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<AbsDimension x="-1" y="-1"/>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\Buttons">
+					<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\AddOns\GuildBook\Buttons">
+					<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+				</PushedTexture>
+				<HighlightTexture file="Interface\AddOns\GuildBook\Buttons" alphaMode="ADD">
+					<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+				</HighlightTexture>
+				<Scripts>
+					<OnMouseDown>
+						GuildBookFrame:StartSizing()
+					</OnMouseDown>
+					<OnMouseUp>
+						GuildBookFrame:StopMovingOrSizing()
+						GuildBookHTMLContent:SetWidth(GuildBookFrame:GetWidth()-50)
+						GuildBookFramePath:SetWidth(GuildBookFrame:GetWidth()-170)
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<!-- Titlebar buttons -->
+			<Button name="GuildBookClose" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\close.tga"/>
+			</Button>
+			<Button name="GuildBookFramePin" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBookClose" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\pin.tga"/>
+			</Button>
+			<Button name="GuildBookEncrypt" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBookFramePin" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\padlock.tga"/>
+			</Button>
+			<Button name="GuildBookDelete" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBookEncrypt" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\Buttons">
+					<TexCoords left=".25" right=".375" top="0" bottom=".125"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\AddOns\GuildBook\Buttons">
+					<TexCoords left=".375" right=".5" top="0" bottom=".125"/>
+				</PushedTexture>
+			</Button>		
+			<Button name="GuildBookEdit" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBookDelete" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\edit.tga"/>
+			</Button>
+			<Button name="GuildBookNew" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildBookEdit" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\new.tga"/>
+			</Button>		
+			<Button name="GuildBookBackButton" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\left.tga"/>
+				<PushedTexture file="Interface\AddOns\GuildBook\buttons\left-pushed.tga"/>
+			</Button>
+			<Button name="GuildBookUpButton" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBookBackButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\up.tga"/>
+				<PushedTexture file="Interface\AddOns\GuildBook\buttons\up-pushed.tga"/>
+			</Button>
+			<Button name="GuildBookForwardButton" inherits="GuildBookButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildBookUpButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\GuildBook\buttons\right.tga"/>
+				<PushedTexture file="Interface\AddOns\GuildBook\buttons\right-pushed.tga"/>
+			</Button>
+			<!-- the editing frame-->
+			<Frame name="GuildBookFrameEditFrame" movable="true" resizable="true" enableMouse="true" toplevel="true" hidden="true">
+				<Size>
+					<AbsDimension x="300" y="200"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16" />
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16" />
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<Frame name="GuildBookFrameNameBoxFrame">
+						<Size>
+							<AbsDimension x="100" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="0" right="0" top="0" bottom="0" />
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16" />
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16" />
+							</EdgeSize>
+						</Backdrop>
+						<Frames>
+							<EditBox name="GuildBookFrameNameBox" multiLine="false" maxLines="1" letters="4096" spacing="1" autoFocus="false">
+								<Size>
+									<AbsDimension x="100" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged>
+										GuildBook.OnTextChanged()
+									</OnTextChanged>
+									<OnEscapePressed>
+										this:ClearFocus()
+									</OnEscapePressed>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</Frames>
+					</Frame>
+					<Frame name="GuildBookFrameTaglineBoxFrame">
+						<Size>
+							<AbsDimension x="100" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildBookFrameNameBox" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="-4" right="4" top="4" bottom="4" />
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16" />
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16" />
+							</EdgeSize>
+						</Backdrop>
+						<Frames>
+							<EditBox name="GuildBookFrameTaglineBox" multiLine="false" maxLines="1" letters="4096" spacing="1" autoFocus="false">
+								<Size>
+									<AbsDimension x="100" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged>
+										GuildBook.OnTextChanged()
+									</OnTextChanged>
+									<OnEscapePressed>
+										this:ClearFocus();
+									</OnEscapePressed>
+								</Scripts>
+								<FontString inherits="GameFontHighlight"/>
+							</EditBox>
+						</Frames>
+					</Frame>
+					<Frame name="GuildBookEditFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="8" y="-20"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6" />
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16" />
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="9" />
+							</EdgeSize>
+						</Backdrop>
+						<Frames>
+							<ScrollFrame name="GuildBookEditScrollFrame" inherits="UIPanelScrollFrameTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="6" y="-12"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-26" y="8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<!-- Entire purpose of this layer is to do a gradient for the gutter -->
+								<Layers>
+									<Layer level="BORDER">
+										<Texture file="Interface\ChatFrame\ChatFrameBackground">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeTo="GuildBookEditScrollFrame" relativePoint="TOPRIGHT">
+													<Offset>
+														<AbsDimension x="0" y="0"/>
+													</Offset>
+												</Anchor>
+												<Anchor point="BOTTOMRIGHT" relativeTo="GuildBookEditScrollFrame" relativePoint="BOTTOMRIGHT">
+													<Offset>
+														<AbsDimension x="23" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+											<Gradient>
+												<MinColor r="0.1" g="0.1" b="0.1"/>
+												<MaxColor r="0" g="0" b="0"/>
+											</Gradient>
+										</Texture>
+									</Layer>
+								</Layers>
+								<!-- Basically copy/pasted from MacroFrame -->
+								<ScrollChild>
+									<EditBox name="GuildBookEditBox" multiLine="true" maxLines="9" letters="4096" nonspacewrap="true" spacing="1" autoFocus="false">
+										<Size>
+											<AbsDimension x="100" y="100"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+											<Anchor point="BOTTOMRIGHT"/>
+										</Anchors>
+										<Scripts>
+											<OnTextChanged>
+												GuildBook.OnTextChanged()
+											</OnTextChanged>
+											<OnEscapePressed>
+												this:ClearFocus();
+											</OnEscapePressed>
+										</Scripts>
+										<FontString inherits="GameFontHighlight"/>
+									</EditBox>
+								</ScrollChild>
+							</ScrollFrame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropColor(.1,.1,.1,1)
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<!-- FocusGrabber is just an overlay to set focus since multiline EditBoxes vary in size -->
+					<Button name="GuildBookFocusGrabber">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildBookEditFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="8" y="-8"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildBookEditFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GuildBookEditBox:SetFocus()
+							</OnClick>
+						</Scripts>
+					</Button>
+
+					<!-- Grip in lower-right corner used to resize window -->
+					<Button name="GuildBookEditResizeGrip">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<AbsDimension x="-1" y="-1"/>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\GuildBook\Buttons">
+							<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+						</NormalTexture>
+						<PushedTexture file="Interface\AddOns\GuildBook\Buttons">
+							<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+						</PushedTexture>
+						<HighlightTexture file="Interface\AddOns\GuildBook\Buttons" alphaMode="ADD">
+							<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+						</HighlightTexture>
+						<Scripts>
+							<OnMouseDown>
+								GuildBookFrameEditFrame:StartSizing()
+							</OnMouseDown>
+							<OnMouseUp>
+								GuildBookFrameEditFrame:StopMovingOrSizing()
+								GuildBookEditBox:SetWidth(GuildBookFrameEditFrame:GetWidth()-50)
+								GuildBookEditFramePath:SetWidth(GuildBookFrameEditFrame:GetWidth() - 100)
+								GuildBookFrameTaglineBoxFrame:SetWidth(GuildBookFrameEditFrame:GetWidth()-175)
+								GuildBookFrameTaglineBox:SetWidth(GuildBookFrameEditFrame:GetWidth()-185)
+							</OnMouseUp>
+						</Scripts>
+					</Button>
+
+					<!-- Titlebar buttons -->
+					<Button name="GuildBookEditClose" inherits="GuildBookButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\GuildBook\buttons\close.tga"/>
+					</Button>
+					<Button name="GuildBookSave" inherits="GuildBookButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildBookEditClose" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\GuildBook\buttons\save.tga"/>
+					</Button>		
+					<Button name="GuildBookPreview" inherits="GuildBookButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="GuildBookSave" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\GuildBook\Buttons.blp">
+							<TexCoords left="0" right=".125" top=".25" bottom=".375"/>
+						</NormalTexture>
+					</Button>		
+					<Button name="GuildBookUndo" inherits="GuildBookButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="8" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\GuildBook\buttons\undo.tga"/>
+					</Button>		
+				</Frames>
+				<Scripts>
+					<OnDragStart>
+						this:StartMoving()
+					</OnDragStart>
+					<OnDragStop>
+						this:StopMovingOrSizing()
+					</OnDragStop>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				GuildBook.OnLoad()
+			</OnLoad>
+			<OnShow>
+				GuildBook.OnShow()
+			</OnShow>
+			<OnEvent>
+				GuildBook.OnEvent(event,arg1)
+			</OnEvent>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+</Ui>

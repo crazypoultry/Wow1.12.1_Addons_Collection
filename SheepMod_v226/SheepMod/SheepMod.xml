@@ -1,0 +1,2103 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="SheepMod.lua"/>	
+	<Script file="localization.lua"/>
+	<CheckButton name="SM_OptionsTickBox" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Size><AbsDimension x="20" y="20"/></Size>
+		<Scripts>
+			<OnShow>
+				SheepMod.InitMainCheckButton();
+			</OnShow>
+			<OnClick>
+				SheepMod.ClickMainCheckButton();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Frame name="SheepModFrame" parent="UIParent" toplevel="true" hidden="true" frameStrata="LOW" enableMouse="true" movable="true">
+		<Scripts>
+			<OnLoad>
+				SheepMod.OnLoad();
+			</OnLoad>
+			<OnEvent>
+				SheepMod.OnEvent(event, arg1);
+			</OnEvent>
+			<OnEscapePressed>
+				SheepModFrame:Hide();
+			</OnEscapePressed>
+		</Scripts>
+		<Size><AbsDimension x="524" y="312"/></Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize><AbsValue val="16" /></EdgeSize>
+			<TileSize><AbsValue val="16" /></TileSize>
+			<BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Title" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="305" y="40" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset><AbsDimension x="0" y="10"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Fontstring name="$parent_Title_Text" inherits="GameFontNormal" text="Turkeyii's Sheep Mod" justifyH="CENTER">
+					<Size><AbsDimension x="300" y="30" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_Title">
+							<Offset><AbsDimension x="0" y="3" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+				<FontString name="SM_PolyLocationString" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
+					<Size>
+						<AbsDimension x="421" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+							<Offset><Absdimension x="10" y="33"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SM_TypeStringUI" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
+					<Size>
+						<AbsDimension x="500" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="SM_PolyLocationString">
+							<Offset><Absdimension x="0" y="3"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SM_LanguageString" inherits="GameFontNormal" justifyH="LEFT" justifyV="CENTER">
+					<Size>
+						<AbsDimension x="500" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="SM_TypeStringUI">
+							<Offset><Absdimension x="0" y="3"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="SM_EnableMod" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+						<Offset><AbsDimension x="10" y="-20"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						if SheepModOptions[Realm][Player].Enabled then
+							getglobal(this:GetName().."Text"):SetTextColor(0, 1, 0);
+						else
+							getglobal(this:GetName().."Text"):SetTextColor(1, 0, 0);
+						end
+						SheepMod.InitMainCheckButton();
+					</OnShow>
+					<OnClick>
+						SheepMod.ClickMainCheckButton();
+						if SheepModOptions[Realm][Player].Enabled then
+							getglobal(this:GetName().."Text"):SetTextColor(0, 1, 0);
+						else
+							getglobal(this:GetName().."Text"):SetTextColor(1, 0, 0);
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SM_TimerBox" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_EnableMod"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_Resheep" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_TimerBox"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_ResheepAnimal" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_Resheep"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_Players" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_ResheepAnimal"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_FFAPvP" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_Players"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_MC" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_FFAPvP"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						if SheepModOptions[Realm][Player].MCed == 2 then
+							getglobal(this:GetName().."Text"):SetText(format(sm_button_mcandname, SheepModOptions[Realm][Player].MCName));
+						else
+							getglobal(this:GetName().."Text"):SetText(sm_button_mc);
+						end
+						if SheepModOptions[Realm][Player].MCed == false then
+							SM_SetMCName:SetText(sm_string_set_player)
+						end
+						SheepMod.InitMainCheckButton();
+					</OnShow>
+					<OnClick>
+						SheepMod.ClickMainCheckButton();
+						if SheepModOptions[Realm][Player].MCed == true then
+							SheepModOptions[Realm][Player].MCed = "All valid players"
+						end
+						SheepModOptions[Realm][Player].MCName = ""
+						SM_SetMCName:SetText(sm_string_set_player)
+						getglobal(this:GetName().."Text"):SetText(sm_button_mc);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SM_MCEmote" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_MC">
+						<Offset><AbsDimension x="15" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_MCWarning" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_MCEmote"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_MCIgnoreZone" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_MCWarning"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_MCRank" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_MCIgnoreZone"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_ResistEmote" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_MCRank">
+						<Offset><AbsDimension x="-15" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_ResistZone" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_ResistEmote">
+						<Offset><AbsDimension x="15" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_PvPWarning" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_ResistZone">
+						<Offset><Absdimension x="-15" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_TimedSheep" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_PvPWarning"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SM_StopCasting" inherits="SM_OptionsTickBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="SM_TimedSheep"/>
+				</Anchors>
+			</CheckButton>
+			<Button name="$parent_Exit" inherits="UIPanelButtonTemplate" text="X">
+				<Size><AbsDimension x="16" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+						<Offset><AbsDimension x="-5" y="-3.5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>this:GetParent():Hide();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SM_GoToHelp" inherits="UIPanelButtonTemplate" text="Help">
+				<Size><AbsDimension x="66" y="24"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent">
+						<Offset><AbsDimension x="-5" y="5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepModFrame:Hide();SheepMod_HelpFrame:Show();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SM_ChangeToSpecials" inherits="UIPanelButtonTemplate" text="Edit special zones and units">
+				<Size><AbsDimension x="262" y="24"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+						<Offset><AbsDimension x="3" y="5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.ShowSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SM_SetDefaultsInitial" inherits="UIPanelButtonTemplate" text="Set Defaults">
+				<Size>
+					<AbsDimension x="100" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SM_ChangeToSpecials">
+						<Offset>
+							<Absdimension x="-6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.SetDefaults(1)</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SM_SetDefaultsConfirm" inherits="UIPanelButtonTemplate" hidden="true" text="Confirm Defaults">
+				<Size>
+					<AbsDimension x="100" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="SM_SetDefaultsInitial">
+						<Offset>
+							<Absdimension x="-4" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.SetDefaults(2)</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SM_SetMCName" inherits="UIPanelButtonTemplate" text="Set Player">
+				<Size>
+					<AbsDimension x="115" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_MC">
+						<Offset>
+							<AbsDimension x="509" y="-1.25"/>	<!-- The x-coordinate is 15 less than the frame width. -->
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.SetMCName_Click()</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="SM_EditBoxMCName" letters="25" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MC">
+						<Offset>
+							<AbsDimension x="290" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="95" y="17"/>
+				</Size>
+				<Scripts>
+					<OnEscapePressed>
+						SheepMod.change_main_escape();
+					</OnEscapePressed>
+					<OnEnterPressed>
+						SheepMod.change_mcname_enter();
+					</OnEnterPressed>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="91" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="SM_EditBoxMCNameFrance" letters="25" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MC">
+						<Offset>
+							<AbsDimension x="254" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="133" y="17"/>
+				</Size>
+				<Scripts>
+					<OnEscapePressed>
+						SheepMod.change_main_escape();
+					</OnEscapePressed>
+					<OnEnterPressed>
+						SheepMod.change_mcname_enter();
+					</OnEnterPressed>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="129" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="SM_EditBoxMCNameSpain" letters="25" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MC">
+						<Offset>
+							<AbsDimension x="280" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="105" y="17"/>
+				</Size>
+				<Scripts>
+					<OnEscapePressed>
+						SheepMod.change_main_escape();
+					</OnEscapePressed>
+					<OnEnterPressed>
+						SheepMod.change_mcname_enter();
+					</OnEnterPressed>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="101" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="SM_EditBoxMCNameGermany" letters="25" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MC">
+						<Offset>
+							<AbsDimension x="325" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="61" y="17"/>
+				</Size>
+				<Scripts>
+					<OnEscapePressed>
+						SheepMod.change_main_escape();
+					</OnEscapePressed>
+					<OnEnterPressed>
+						SheepMod.change_mcname_enter();
+					</OnEnterPressed>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="57" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Button name="SM_MCRankDropDown" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MCRank">
+						<Offset>
+							<AbsDimension x="190" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.MCRankDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_MCRankDropDownFrance" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MCRank">
+						<Offset>
+							<AbsDimension x="247.5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.MCRankDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_MCRankDropDownSpain" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MCRank">
+						<Offset>
+							<AbsDimension x="156" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.MCRankDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_MCRankDropDownGermany" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_MCRank">
+						<Offset>
+							<AbsDimension x="183" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.MCRankDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownA" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="86" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownA_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownAFrance" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="156" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownA_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownASpain" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="112" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownA_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownAGermany" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="74.5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownA_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownB" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="330" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownB_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownBFrance" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="413" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownB_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownBSpain" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="369" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownB_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TimedDropDownBGermany" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_TimedSheep">
+						<Offset>
+							<AbsDimension x="258.5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TimedDropDownB_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_RefreshMain" inherits="UIPanelButtonTemplate" text="Refresh">
+				<Size>
+					<AbsDimension x="90" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_PolyLocationString">
+						<Offset>
+							<AbsDimension x="509" y="-1"/>	<!-- The x-coordinate is 15 less than the frame width. -->
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.ShowUI()</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SM_TypeDropDown" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_TypeStringUI">
+						<Offset>
+							<AbsDimension x="420" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TypeDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TypeDropDownFrance" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_TypeStringUI">
+						<Offset>
+							<AbsDimension x="506" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TypeDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TypeDropDownSpain" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_TypeStringUI">
+						<Offset>
+							<AbsDimension x="387" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TypeDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_TypeDropDownGermany" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_TypeStringUI">
+						<Offset>
+							<AbsDimension x="357" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.TypeDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_LanguageDropDownFrance" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_LanguageString">
+						<Offset>
+							<AbsDimension x="469" y="3.5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.LanguageDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_LanguageDropDownSpain" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_LanguageString">
+						<Offset>
+							<AbsDimension x="437" y="3.5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.LanguageDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_LanguageDropDownGermany" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="SM_LanguageString">
+						<Offset>
+							<AbsDimension x="438" y="3.5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.LanguageDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_NefDropDown" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_PolyLocationString">
+						<Offset>
+							<AbsDimension x="58" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.NefDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_NefDropDownFrance" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_PolyLocationString">
+						<Offset>
+							<AbsDimension x="68" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.NefDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_NefDropDownSpain" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_PolyLocationString">
+						<Offset>
+							<AbsDimension x="101" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.NefDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+			<Button name="SM_NefDropDownGermany" hidden="true" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SM_PolyLocationString">
+						<Offset>
+							<AbsDimension x="57" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>SheepMod.NefDropDown_OnLoad();</OnLoad> 
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<EditBox name="SM_EditBoxTemplate" letters="100" historyLines="0" hidden="true" virtual="true">
+		<Scripts>
+			<OnEscapePressed>
+				SheepMod.change_special_escape();
+			</OnEscapePressed>
+			<OnEnterPressed>
+				SheepMod.change_special_enter();
+			</OnEnterPressed>
+		</Scripts>
+		<Size>
+			<AbsDimension x="112" y="17"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="29"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-11" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="112" y="29"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="29"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	<Frame name="SheepModFrameDisallowedZones" parent="UIParent" toplevel="false" hidden="true">
+		<Size><AbsDimension x="620" y="277"/></Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Intro" inherits="GameFontNormal" text="sm_zone_list" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="200" y="40"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="10" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Intro" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String1" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String3" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String2" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String4" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String3" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String5" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String4" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String6" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String5" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String7" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String6" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String8" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String7" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String9" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String8" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String10" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String9" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parent_EditBox1" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String1" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change1" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String1" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox2" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String2" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change2" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String2" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox3" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String3" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change3" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String3" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox4" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String4" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change4" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String4" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox5" hidden="false" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String5" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change5" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String5" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox6" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String6" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change6" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String6" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox7" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String7" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change7" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String7" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox8" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String8" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change8" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String8" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox9" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String9" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change9" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String9" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox10" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change10" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String10" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Change11" hidden="true" inherits="GameMenuButtonTemplate" text="Add">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Change10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.end_add_click();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Down" hidden="false" inherits="GameMenuButtonTemplate" text="Down">
+				<Size><AbsDimension x="66" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="66" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedZones";SM_UIData.Page[SM_VariableName]=SM_UIData.Page[SM_VariableName]+1;SheepMod.UpdateSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Up" hidden="false" inherits="GameMenuButtonTemplate" text="Up">
+				<Size><AbsDimension x="66" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedZones"SM_UIData.Page[SM_VariableName]=SM_UIData.Page[SM_VariableName]-1;SheepMod.UpdateSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="SheepModFrameDisallowedMobs" parent="UIParent" toplevel="false" hidden="true">
+		<Size><AbsDimension x="550" y="277"/></Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Intro" inherits="GameFontNormal" text="sm_disallowed_list" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="200" y="40"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SheepModFrameDisallowedZones_Intro" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Intro" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String1" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String3" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String2" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String4" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String3" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String5" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String4" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String6" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String5" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String7" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String6" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String8" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String7" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String9" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String8" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String10" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String9" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parent_EditBox1" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String1" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change1" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String1" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox2" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String2" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change2" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String2" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox3" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String3" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change3" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String3" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox4" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String4" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change4" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String4" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox5" hidden="false" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String5" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change5" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String5" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox6" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String6" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change6" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String6" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedMobs";SM_Number=6;SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox7" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String7" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change7" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String7" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedMobs";SM_Number=7;SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox8" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String8" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change8" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String8" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedMobs";SM_Number=8;SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox9" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String9" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change9" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String9" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedMobs";SM_Number=9;SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox10" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change10" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String10" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Change11" hidden="true" inherits="GameMenuButtonTemplate" text="Add">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Change10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.end_add_click();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Down" hidden="false" inherits="GameMenuButtonTemplate" text="Down">
+				<Size><AbsDimension x="66" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="66" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedMobs";SM_UIData.Page[SM_VariableName]=SM_UIData.Page[SM_VariableName]+1;SheepMod.UpdateSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Up" hidden="false" inherits="GameMenuButtonTemplate" text="Up">
+				<Size><AbsDimension x="66" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="DisallowedMobs"SM_UIData.Page[SM_VariableName]=SM_UIData.Page[SM_VariableName]-1;SheepMod.UpdateSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="SheepModFrameStickyMobs" parent="UIParent" toplevel="false" hidden="true">
+		<Size><AbsDimension x="550" y="277"/></Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Intro" inherits="GameFontNormal" text="sm_sticky_list" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="200" y="40"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SheepModFrameDisallowedMobs_Intro" relativePoint="TOPRIGHT">
+							<Offset>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String1" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Intro" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String2" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String1" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String3" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String2" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String4" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String3" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String5" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String4" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String6" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String5" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String7" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String6" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String8" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String7" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String9" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String8" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_String10" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
+					<Size><AbsDimension x="131" y="17"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_String9" relativePoint="BOTTOMLEFT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parent_EditBox1" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String1" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change1" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String1" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox2" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String2" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change2" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String2" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox3" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String3" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change3" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String3" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox4" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String4" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change4" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String4" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox5" hidden="false" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String5" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change5" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String5" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox6" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String6" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change6" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String6" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox7" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String7" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change7" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String7" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox8" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String8" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change8" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String8" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox9" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String9" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change9" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String9" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="$parent_EditBox10" inherits="SM_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="TOPLEFT">
+						<Offset><Absdimension x="4" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_Change10" hidden="false" inherits="GameMenuButtonTemplate" text="Edit">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_String10" relativePoint="LEFT">
+						<Offset>
+							<Absdimension x="131" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.change_special_click();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Change11" hidden="true" inherits="GameMenuButtonTemplate" text="Add">
+				<Size><AbsDimension x="60" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Change10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.end_add_click();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Down" hidden="false" inherits="GameMenuButtonTemplate" text="Down">
+				<Size><AbsDimension x="66" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="66" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="StickyMobs";SM_UIData.Page[SM_VariableName]=SM_UIData.Page[SM_VariableName]+1;SheepMod.UpdateSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Up" hidden="false" inherits="GameMenuButtonTemplate" text="Up">
+				<Size><AbsDimension x="66" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_String10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<Absdimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SM_VariableName="StickyMobs"SM_UIData.Page[SM_VariableName]=SM_UIData.Page[SM_VariableName]-1;SheepMod.UpdateSpecialUI();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="SheepMod_SpecialsFrame" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true">
+		<Size><AbsDimension x="620" y="277"/></Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize><AbsValue val="16" /></EdgeSize>
+			<TileSize><AbsValue val="16" /></TileSize>
+			<BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Title" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="305" y="40" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset><AbsDimension x="0" y="10" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Fontstring name="$parent_Title_Text" inherits="GameFontNormal" text="Turkeyii's Sheep Mod" justifyH="CENTER">
+					<Size><AbsDimension x="300" y="30" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_Title">
+							<Offset><AbsDimension x="0" y="3" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_Exit" inherits="UIPanelButtonTemplate" text="X">
+				<Size><AbsDimension x="16" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+						<Offset><AbsDimension x="-5" y="-5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepModFrameDisallowedZones:Hide();SheepModFrameDisallowedMobs:Hide();SheepModFrameStickyMobs:Hide();SheepMod_SpecialsFrame:Hide();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_GoToMainOptions" inherits="UIPanelButtonTemplate" text="Return to main options">
+				<Size><AbsDimension x="170" y="24"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+						<Offset><AbsDimension x="5" y="5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod.ShowUI();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="SheepMod_HelpFrame" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true">
+		<Size><AbsDimension x="562" y="194"/></Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize><AbsValue val="16" /></EdgeSize>
+			<TileSize><AbsValue val="16" /></TileSize>
+			<BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5" /></BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Title" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="380" y="40"/></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset><AbsDimension x="0" y="10" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Fontstring name="$parent_Title_Text" inherits="GameFontNormal" text="Turkeyii's Sheep Mod: Help" justifyH="CENTER">
+					<Size><AbsDimension x="370" y="30" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_Title">
+							<Offset><AbsDimension x="0" y="3" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+				<Fontstring name="$parent_Intro" inherits="GameFontNormal" text="|cffff0000Error!|r" justifyH="CENTER" justifyv="CENTER">
+					<Size><AbsDimension x="560" y="10" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_Title">
+							<Offset><AbsDimension x="0" y="-27" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+				<Fontstring name="$parent_TextVersion" inherits="GameFontNormal" text="|cffff0000Error!|r" justifyH="LEFT" justifyv="BOTTOM">
+					<Size><AbsDimension x="545" y="10" /></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+							<Offset><AbsDimension x="10" y="-33" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+				<Fontstring name="$parent_Text1" inherits="GameFontNormal" text="|cffff0000Error!|r" justifyH="LEFT">
+					<Size><AbsDimension x="545" y="63" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent_TextVersion"/>
+					</Anchors>
+				</Fontstring>
+				<Fontstring name="$parent_Text2" inherits="GameFontNormal" text="|cffff0000Error!|r" justifyH="LEFT">
+					<Size><AbsDimension x="545" y="50" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent_Text1"/>
+					</Anchors>
+				</Fontstring>
+				<Fontstring name="$parent_Text3" inherits="GameFontNormal" text="|cffff0000Error!|r" justifyH="LEFT">
+					<Size><AbsDimension x="545" y="30" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent_Text2"/>
+					</Anchors>
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_Exit" inherits="UIPanelButtonTemplate" text="X">
+				<Size><AbsDimension x="16" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+						<Offset><AbsDimension x="-5" y="-3.5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>SheepMod_HelpFrame:Hide();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="SM_TimerFrame" parent="UIParent" hidden="true" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true">
+		<Scripts>
+			<OnUpdate>SheepMod.OnUpdate();</OnUpdate>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Icon" file="Interface\Icons\Spell_Nature_Polymorph">
+					<Size><AbsDimension x="45" y="45"/></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset><AbsDimension x="0" y="0" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Fontstring name="$parent_Number" inherits="GameFontNormal" text="28.7" justifyH="CENTER" justifyv="BOTTOM">
+					<Size><AbsDimension x="40" y="10" /></Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent_Icon">
+							<Offset><AbsDimension x="0" y="-3" /></Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+				<Texture name="$parentMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="16" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="$parent_Number" relativePoint="BOTTOM">
+							<Offset><AbsDimension x="0" y="-9"/></Offset>
+						</Anchor>						
+					</Anchors>
+					<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentMiddle" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_Exit" inherits="UIPanelButtonTemplate" frameStrata="TOOLTIP" text="X" hidden="true">
+				<Size><AbsDimension x="16" y="17"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent_Icon">
+						<Offset><AbsDimension x="0" y="1"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>this:Show();SM_TimerFrame_IconButton:Hide();</OnEnter>
+					<OnLeave>this:Hide();SM_TimerFrame_IconButton:Show();</OnLeave>
+					<OnClick>this:Hide();SM_TimerFrame:Hide();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_IconButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent_Icon"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_Icon"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						SM_TimerFrame_Exit:Show();
+						GameTooltip:SetOwner(this, "ANCHOR_TOP");
+						GameTooltip:SetText(format(sm_timer_rightclick, tostring(SheepModOptions.Temp.SheepName)));
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						SM_TimerFrame_Exit:Hide();
+					</OnLeave>
+					<OnMouseDown>
+						if arg1 == "RightButton" then
+							TargetByName(SheepModOptions.Temp.SheepName);
+						else
+							this:GetParent():StartMoving();
+						end
+					</OnMouseDown>
+					<OnMouseUp>this:GetParent():StopMovingOrSizing();</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Size>
+			<AbsDimension x="45" y="74"/>
+		</Size>
+		<Anchors>
+			<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="UIParent">
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<TitleRegion setAllPoints="true"/>
+	</Frame>
+ </Ui>

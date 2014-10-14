@@ -1,0 +1,1110 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<Script file="Yule.lua"/>
+
+	<!-- core frame -->
+	<Frame name="YuleFrame" parent="UIParent" hidden="true">
+		<Scripts>
+			<OnLoad>
+				Yule:OnLoad();
+			</OnLoad>
+			<OnEvent>
+				Yule:OnEvent(event, arg1);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Checkbox option template -->
+	<CheckButton name="YuleOptionTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this.setting = YuleOptions[this:GetID()].s;
+				getglobal(this:GetName().."Text"):SetText(YuleOptions[this:GetID()].t);
+			</OnLoad>
+			<OnShow>
+				if Yule.tab then
+					this:SetChecked(YuleConfig.frames[Yule.tab][this.setting]);
+				end
+			</OnShow>
+			<OnClick>
+				if Yule.tab then
+					YuleConfig.frames[Yule.tab][this.setting] = this:GetChecked();
+				end
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	
+	<!-- Checkbox generic option template -->
+	<CheckButton name="YuleGenericOptionTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this.setting = YuleGenericOptions[this:GetID()].s;
+				getglobal(this:GetName().."Text"):SetText(YuleGenericOptions[this:GetID()].t);
+			</OnLoad>
+			<OnShow>
+				this:SetChecked(YuleConfig[this.setting]);
+			</OnShow>
+			<OnClick>
+				YuleConfig[this.setting] = this:GetChecked();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<!-- Side tab template -->
+	<CheckButton name="YuleChatFrameTabTemplate" virtual="true" hidden="false">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Label"):SetText(strchar(strbyte("A")+this:GetID()-1));
+			</OnLoad>
+			<OnClick>
+				Yule.tab = this:GetID();
+				Yule:UpdateTabs();
+			</OnClick>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	
+	<!-- chat frame edit box template -->
+	<EditBox name="YuleMenuChatFrameEditBoxTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
+		<Size><AbsDimension x="80" y="32"/></Size>
+		<Scripts>
+			<OnEnterPressed>
+				this:ClearFocus();
+			</OnEnterPressed>
+			<OnEscapePressed>
+				this:ClearFocus();
+			</OnEscapePressed>
+			<OnEditFocusLost>
+				if YuleConfig then
+					YuleConfig.frames[this:GetID()].chatframe = tonumber(this:GetText());
+					Yule:UpdateTabs();
+				end
+			</OnEditFocusLost>
+		</Scripts>
+		<FontString inherits="ChatFontNormal" bytes="256"/>
+	</EditBox>
+
+	<!-- Menu frame -->
+	<Frame name="YuleMenuFrame" enableMouse="true" movable="true" hidden="true" parent="UIParent">
+
+		<Size>
+			<AbsDimension x="264" y="424"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="BORDER">
+
+				<Texture name="$parentHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="175" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="6" y="-120"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="75" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentHorizontalBarLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentMenuBar" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentMenuTitle" inherits="GameFontNormal" text="Yule">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentMenuBar">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+
+			<!-- close button -->
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 4);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<!-- tabs -->
+			<CheckButton name="$parentTab1" inherits="YuleChatFrameTabTemplate" id="1">
+				<Anchors><Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="-4" y="-135"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<CheckButton name="$parentTab2" inherits="YuleChatFrameTabTemplate" id="2">
+				<Anchors><Anchor point="TOP" relativeTo="$parentTab1" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="0" y="-16"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<CheckButton name="$parentTab3" inherits="YuleChatFrameTabTemplate" id="3">
+				<Anchors><Anchor point="TOP" relativeTo="$parentTab2" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="0" y="-16"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<CheckButton name="$parentTab4" inherits="YuleChatFrameTabTemplate" id="4">
+				<Anchors><Anchor point="TOP" relativeTo="$parentTab3" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="0" y="-16"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<CheckButton name="$parentTab5" inherits="YuleChatFrameTabTemplate" id="5">
+				<Anchors><Anchor point="TOP" relativeTo="$parentTab4" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="0" y="-16"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<CheckButton name="$parentTab6" inherits="YuleChatFrameTabTemplate" id="6">
+				<Anchors><Anchor point="TOP" relativeTo="$parentTab5" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="0" y="-16"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<!-- player/pet -->
+			<Button name="$parentPlayerPet" inherits="UIPanelButtonTemplate" text="Player/Pet">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="13" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Show();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- party -->
+			<Button name="$parentParty" inherits="UIPanelButtonTemplate" text="Party">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayerPet" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Show();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- friendly players -->
+			<Button name="$parentFriendlyPlayers" inherits="UIPanelButtonTemplate" text="Friendly Players">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayerPet" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Show();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<!-- hostile players -->
+			<Button name="$parentHostilePlayers" inherits="UIPanelButtonTemplate" text="Hostile Players">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendlyPlayers" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Show();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<!-- creatures -->
+			<Button name="$parentCreatures" inherits="UIPanelButtonTemplate" text="Creatures">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentFriendlyPlayers" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Show();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<!-- misc -->
+			<Button name="$parentMisc" inherits="UIPanelButtonTemplate" text="Misc">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCreatures" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Show();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- custom 1 -->
+			<Button name="$parentCustom1" inherits="UIPanelButtonTemplate" text="Custom 1">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCreatures" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Show();
+						YuleMenuFrameCustom2Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- custom 2 -->
+			<Button name="$parentCustom2" inherits="UIPanelButtonTemplate" text="Custom 2">
+				<Size>
+					<AbsDimension x="120" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCustom1" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						YuleMenuFramePlayerPetFrame:Hide();
+						YuleMenuFramePartyFrame:Hide();
+						YuleMenuFrameFriendlyPlayersFrame:Hide();
+						YuleMenuFrameHostilePlayersFrame:Hide();
+						YuleMenuFrameCreaturesFrame:Hide();
+						YuleMenuFrameMiscFrame:Hide();
+						YuleMenuFrameCustom1Frame:Hide();
+						YuleMenuFrameCustom2Frame:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Frame name="$parentPlayerPetFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="Your...">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-134"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="GameFontNormal" text="Your Pets'...">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="140" y="-134"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="YuleMenuOption1" inherits="YuleOptionTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-149"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption2" inherits="YuleOptionTemplate" id="2">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption1" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption3" inherits="YuleOptionTemplate" id="3">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption2" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption4" inherits="YuleOptionTemplate" id="4">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption3" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption5" inherits="YuleOptionTemplate" id="5">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption4" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption6" inherits="YuleOptionTemplate" id="6">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption5" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption7" inherits="YuleOptionTemplate" id="7">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption6" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption8" inherits="YuleOptionTemplate" id="8">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption7" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption9" inherits="YuleOptionTemplate" id="9">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption8" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption10" inherits="YuleOptionTemplate" id="10">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption9" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption11" inherits="YuleOptionTemplate" id="11">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption10" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+
+					<CheckButton name="YuleMenuOption12" inherits="YuleOptionTemplate" id="12">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="135" y="-149"/></Offset>
+						</Anchor></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption13" inherits="YuleOptionTemplate" id="13">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption12" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption14" inherits="YuleOptionTemplate" id="14">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption13" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption15" inherits="YuleOptionTemplate" id="15">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption14" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption16" inherits="YuleOptionTemplate" id="16">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption15" relativePoint="BOTTOMLEFT">
+							<Offset><AbsDimension x="0" y="-48"/></Offset>
+						</Anchor></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption17" inherits="YuleOptionTemplate" id="17">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption16" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption18" inherits="YuleOptionTemplate" id="18">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption17" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption19" inherits="YuleOptionTemplate" id="19">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption18" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption20" inherits="YuleOptionTemplate" id="20">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption19" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<Frame name="$parentPartyFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="Your Party Members'...">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-134"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="YuleMenuOption21" inherits="YuleOptionTemplate" id="21">
+						<Anchors><Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="15" y="-149"/></Offset>
+						</Anchor></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption22" inherits="YuleOptionTemplate" id="22">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption21" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption23" inherits="YuleOptionTemplate" id="23">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption22" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption24" inherits="YuleOptionTemplate" id="24">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption23" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption25" inherits="YuleOptionTemplate" id="25">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption24" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption26" inherits="YuleOptionTemplate" id="26">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption25" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption27" inherits="YuleOptionTemplate" id="27">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption26" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption28" inherits="YuleOptionTemplate" id="28">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption27" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption29" inherits="YuleOptionTemplate" id="29">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption28" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentFriendlyPlayersFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="Friendly Players'...">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-134"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="YuleMenuOption30" inherits="YuleOptionTemplate" id="30">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-149"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption31" inherits="YuleOptionTemplate" id="31">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption30" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption32" inherits="YuleOptionTemplate" id="32">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption31" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption33" inherits="YuleOptionTemplate" id="33">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption32" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption34" inherits="YuleOptionTemplate" id="34">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption33" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption35" inherits="YuleOptionTemplate" id="35">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption34" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption36" inherits="YuleOptionTemplate" id="36">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption35" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption37" inherits="YuleOptionTemplate" id="37">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption36" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption38" inherits="YuleOptionTemplate" id="38">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption37" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentHostilePlayersFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="Hostile Players'...">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-134"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="YuleMenuOption39" inherits="YuleOptionTemplate" id="39">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-149"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption40" inherits="YuleOptionTemplate" id="40">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption39" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption41" inherits="YuleOptionTemplate" id="41">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption40" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption42" inherits="YuleOptionTemplate" id="42">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption41" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption43" inherits="YuleOptionTemplate" id="43">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption42" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption44" inherits="YuleOptionTemplate" id="44">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption43" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption45" inherits="YuleOptionTemplate" id="45">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption44" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption46" inherits="YuleOptionTemplate" id="46">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption45" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption47" inherits="YuleOptionTemplate" id="47">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption46" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption48" inherits="YuleOptionTemplate" id="48">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption47" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption49" inherits="YuleOptionTemplate" id="49">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption48" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption50" inherits="YuleOptionTemplate" id="50">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption47" relativePoint="TOPLEFT">
+							<Offset><AbsDimension x="125" y="0"/></Offset>
+						</Anchor></Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<Frame name="$parentCreaturesFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormal" text="Creatures'...">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-134"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="YuleMenuOption51" inherits="YuleOptionTemplate" id="51">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-149"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption52" inherits="YuleOptionTemplate" id="52">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption51" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption53" inherits="YuleOptionTemplate" id="53">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption52" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption54" inherits="YuleOptionTemplate" id="54">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption53" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption55" inherits="YuleOptionTemplate" id="55">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption54" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption56" inherits="YuleOptionTemplate" id="56">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption55" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption57" inherits="YuleOptionTemplate" id="57">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption56" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption58" inherits="YuleOptionTemplate" id="58">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption57" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption59" inherits="YuleOptionTemplate" id="59">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption58" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption60" inherits="YuleOptionTemplate" id="60">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleMenuOption59" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentMiscFrame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentFSA" inherits="GameFontNormal" text="Chat Frame A">
+							<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="40" y="-260"/></Offset>
+							</Anchor></Anchors>
+						</FontString>
+						<FontString name="$parentFSB" inherits="GameFontNormal" text="Chat Frame B">
+							<Anchors><Anchor point="TOPLEFT" relativeTo="$parentFSA" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor></Anchors>
+						</FontString>
+						<FontString name="$parentFSC" inherits="GameFontNormal" text="Chat Frame C">
+							<Anchors><Anchor point="TOPLEFT" relativeTo="$parentFSB" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor></Anchors>
+						</FontString>
+						<FontString name="$parentFSD" inherits="GameFontNormal" text="Chat Frame D">
+							<Anchors><Anchor point="TOPLEFT" relativeTo="$parentFSC" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor></Anchors>
+						</FontString>
+						<FontString name="$parentFSE" inherits="GameFontNormal" text="Chat Frame E">
+							<Anchors><Anchor point="TOPLEFT" relativeTo="$parentFSD" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor></Anchors>
+						</FontString>
+						<FontString name="$parentFSF" inherits="GameFontNormal" text="Chat Frame F">
+							<Anchors><Anchor point="TOPLEFT" relativeTo="$parentFSE" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor></Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="YuleGenericMenuOption1" inherits="YuleGenericOptionTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-135"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleGenericMenuOption2" inherits="YuleGenericOptionTemplate" id="2">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleGenericMenuOption1" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleGenericMenuOption3" inherits="YuleGenericOptionTemplate" id="3">
+						<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="135" y="-135"/></Offset></Anchor></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleGenericMenuOption4" inherits="YuleGenericOptionTemplate" id="4">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleGenericMenuOption3" relativePoint="BOTTOMLEFT">
+							<Offset><AbsDimension x="10" y="0"/></Offset>
+						</Anchor></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleGenericMenuOption5" inherits="YuleGenericOptionTemplate" id="5">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleGenericMenuOption4" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleGenericMenuOption6" inherits="YuleGenericOptionTemplate" id="6">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleGenericMenuOption5" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+					<CheckButton name="YuleGenericMenuOption7" inherits="YuleGenericOptionTemplate" id="7">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="YuleGenericMenuOption6" relativePoint="BOTTOMLEFT"/></Anchors>
+					</CheckButton>
+
+					<EditBox name="$parentEB1" inherits="YuleMenuChatFrameEditBoxTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentFSA" relativePoint="RIGHT">
+								<Offset><AbsDimension x="10" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if IsShiftKeyDown() then -- nothing
+								else YuleMenuFrameMiscFrameEBB:SetFocus(); end
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentEB2" inherits="YuleMenuChatFrameEditBoxTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEB1" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if IsShiftKeyDown() then YuleMenuFrameMiscFrameEB1:SetFocus();
+								else YuleMenuFrameMiscFrameEB3:SetFocus(); end
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentEB3" inherits="YuleMenuChatFrameEditBoxTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEB2" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if IsShiftKeyDown() then YuleMenuFrameMiscFrameEB2:SetFocus();
+								else YuleMenuFrameMiscFrameEB4:SetFocus(); end
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentEB4" inherits="YuleMenuChatFrameEditBoxTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEB3" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if IsShiftKeyDown() then YuleMenuFrameMiscFrameEB3:SetFocus();
+								else YuleMenuFrameMiscFrameEB5:SetFocus(); end
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentEB5" inherits="YuleMenuChatFrameEditBoxTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEB4" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if IsShiftKeyDown() then YuleMenuFrameMiscFrameEB4:SetFocus();
+								else YuleMenuFrameMiscFrameEB6:SetFocus(); end
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentEB6" inherits="YuleMenuChatFrameEditBoxTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentEB5" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>
+								if IsShiftKeyDown() then YuleMenuFrameMiscFrameEB5:SetFocus(); end
+							</OnTabPressed>
+						</Scripts>
+					</EditBox>
+					
+					<Button name="$parentIdentify" inherits="UIPanelButtonTemplate" text="Identify">
+						<Size>
+							<AbsDimension x="120" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset><AbsDimension x="0" y="12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								for i = 1, 10 do
+									if getglobal("ChatFrame"..i) then
+										getglobal("ChatFrame"..i):AddMessage("This is Chat Frame "..i);
+									end
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentCustom1Frame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<EditBox name="$parentUnitNameBox" autoFocus="false">
+						<Size>
+							<AbsDimension x="240" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="18" y="-132"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBorder" file="Interface\ChatFrame\UI-ChatInputBorder">
+									<Size>
+										<AbsDimension x="240" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="-6" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed>
+								if this:GetText() == "" then
+									YuleConfig.custom1 = nil;
+								else
+									YuleConfig.custom1 = this:GetText();
+								end
+								YuleMenuFrameCustom1:SetText(YuleConfig.custom1 or "Custom 1");
+								this:ClearFocus();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								this:SetText(YuleConfig.custom1 or "");
+								this:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal" bytes="256"/>
+					</EditBox>
+
+					<CheckButton name="YuleMenuOption61" inherits="YuleOptionTemplate" id="61">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-163"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption62" inherits="YuleOptionTemplate" id="62">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="YuleMenuOption61" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption63" inherits="YuleOptionTemplate" id="63">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="YuleMenuOption62" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentCustom2Frame" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<EditBox name="$parentUnitNameBox" autoFocus="false">
+						<Size>
+							<AbsDimension x="240" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="18" y="-132"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBorder" file="Interface\ChatFrame\UI-ChatInputBorder">
+									<Size>
+										<AbsDimension x="240" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="-6" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed>
+								if this:GetText() == "" then
+									YuleConfig.custom2 = nil;
+								else
+									YuleConfig.custom2 = this:GetText();
+								end
+								YuleMenuFrameCustom2:SetText(YuleConfig.custom2 or "Custom 2");
+								this:ClearFocus();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								this:SetText(YuleConfig.custom2 or "");
+								this:ClearFocus();
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="ChatFontNormal" bytes="256"/>
+					</EditBox>
+
+					<CheckButton name="YuleMenuOption64" inherits="YuleOptionTemplate" id="64">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-163"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption65" inherits="YuleOptionTemplate" id="65">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="YuleMenuOption64" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="YuleMenuOption66" inherits="YuleOptionTemplate" id="66">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="YuleMenuOption65" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				-- Make frame closable with escape key
+				tinsert(UISpecialFrames, "YuleMenuFrame");
+			</OnLoad>
+			<OnShow>
+				if Yule then
+					YuleMenuFrameMenuTitle:SetText("Yule "..Yule.version);
+					Yule:UpdateTabs();
+				end
+			</OnShow>
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" ) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = nil;
+				end
+			</OnMouseUp>
+		</Scripts>
+
+	</Frame>
+
+</Ui>

@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Files -->
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Script file="HealingEstimator.lua"/>
+	<Script file="HealingEstimatorTargetEngine.lua"/>
+
+	<!-- Event Frame -->
+	<Frame name="HealingEstimator" parent="UIParent" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="206" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-150"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBarBG" file="Interface\TargetingFrame\UI-StatusBar">
+					<Size>
+						<AbsDimension x="200" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentFlash" alphamode="ADD" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
+					<Size>
+						<AbsDimension x="200" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentHealFlash" alphamode="ADD" file="Interface\TargetingFrame\UI-StatusBar" hidden="true">
+					<Size>
+						<AbsDimension x="200" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentFlash" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+
+				<!-- Text on top of the bar -->
+				<FontString name="$parentText" inherits="GameFontHighlight" text="Test">
+					<Size>
+						<AbsDimension x="200" y="20"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+				
+				<Texture name="$parentLeftStop" file="Interface\TargetingFrame\BarFill2">
+					<Size>
+						<AbsDimension x="3" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentBarBG" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightStop" file="Interface\TargetingFrame\BarFill2">
+					<Size>
+						<AbsDimension x="3" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentBarBG" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<StatusBar name="$parentBar">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.0" g="1.0" b="0.0"/>
+				<Scripts>
+					<OnLoad>this:SetFrameLevel(this:GetFrameLevel() - 1);</OnLoad>
+				</Scripts>
+			</StatusBar>
+			
+			<StatusBar name="$parentHealingBar">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="1.0" b="0.0"/>
+				<Scripts>
+					<OnLoad>this:SetFrameLevel(this:GetFrameLevel() - 1);</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad>HealingEstimator_OnLoad();</OnLoad>
+			<OnEvent>HealingEstimator_OnEvent(event);</OnEvent>
+			<OnUpdate>HealingEstimator_OnUpdate(arg1);</OnUpdate>
+			
+			<!-- Moving possible with shift pressed -->
+			<OnMouseUp>
+				if( arg1 == "LeftButton" and this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if( arg1 == "LeftButton" and HealingEstimator_CanMove() ) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+ 				if( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+ 				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<GameTooltip name="HealingEstimatorTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
+	
+</Ui>

@@ -1,0 +1,186 @@
+<!-- Linoleum v2.0 -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="DruidHelper.lua"/>
+	<GameTooltip name="DHHiddenTip" frameStrata="TOOLTIP" inherits="GameTooltipTemplate"/> 
+	<Button name="DHDragButtonTemplate" virtual="true" movable="true" frameStrata="DIALOG" toplevel="true">
+	<Scripts>
+		<OnMouseDown>this:StartMoving()</OnMouseDown>
+		<OnMouseUp>this:StopMovingOrSizing()</OnMouseUp>
+	</Scripts>
+	<Size>
+		<AbsDimension x="15" y="15"/>
+	</Size>
+	<NormalTexture name="$parentTex" file="Interface\AddOns\DruidHelper\BibModDragTab"/>
+	</Button>
+	
+	<Button name="DHMarkTemp" virtual="true">
+		<Size>
+			<AbsDimension x="18" y="18"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\AddOns\DruidHelper\Spell_Nature_RegenerationG" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+			</OnLoad>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, this);
+				GameTooltip:ClearLines();
+				GameTooltip:SetText("Mark");
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				GameTooltip:SetAlpha(1);
+			</OnLeave>
+			<OnClick>
+				DHelper_DoMarks();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="DHGiftTemp" virtual="true">
+		<Size>
+			<AbsDimension x="18" y="18"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\AddOns\DruidHelper\Spell_Nature_Regeneration" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+			</OnLoad>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, this);
+				GameTooltip:ClearLines();
+				GameTooltip:SetText("Gift");
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				GameTooltip:SetAlpha(1);
+			</OnLeave>
+			<OnClick>
+				DHelper_DoGifts();
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Button name="DHMainTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="85" y="23"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="3" bottom="3"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+			  <FontString name="$parentText" inherits="GameFontNormalSmall" nonspacewrap="true" text="" justifyH="LEFT">
+				  <Size>
+					<AbsDimension x="85" y="14"/>
+				  </Size>
+				  <Anchors>
+					<Anchor point="LEFT">
+					  <Offset>
+						<AbsDimension x="4" y="1"/>
+					  </Offset>
+					</Anchor>
+				  </Anchors>
+				  <Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentMark" inherits="DHMarkTemp"><Anchors><Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT"><Offset><AbsDimension x="0" y="-1"/></Offset></Anchor></Anchors></Button>
+			<Button name="$parentGift" inherits="DHGiftTemp"><Anchors><Anchor point="LEFT" relativeTo="$parentMark" relativePoint="RIGHT"/><Offset><AbsDimension x="1" y="0"/></Offset></Anchors></Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+			</OnLoad>
+			<OnClick>
+				DHelper_TargetPerson();
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="DHBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="FOREGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" nonspacewrap="true" text="" justifyH="CENTER">
+					<Size><AbsDimension x="100" y="12"/></Size><Anchors><Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="100" y="14"/>
+				</Size>
+				<Anchors><Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER"/></Anchors>
+				<OnLoad>
+					this:SetMinMaxValues(0,1);
+					this:SetValue(0);
+					this:SetFrameLevel(0);
+					this:GetParent():SetFrameLevel(1);
+				</OnLoad>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1" g="1" b="1" a="1"/>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	
+	<Frame name="DruidHelper" parent="UIParent">
+		<Frames>
+			<Button name="DHDragButton" inherits="DHDragButtonTemplate"><Anchors><Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"/></Anchors></Button>
+			<Button name="DHwindow1" inherits="DHMainTemplate" id="1"><Anchors><Anchor point="LEFT" relativeTo="DHDragButton" relativePoint="RIGHT"/></Anchors></Button>
+			<Button name="DHwindow2" inherits="DHMainTemplate" id="2"><Anchors><Anchor point="TOPLEFT" relativeTo="DHwindow1" relativePoint="BOTTOMLEFT"><Offset x="0" y="2"/></Anchor></Anchors></Button>
+			<Button name="DHwindow3" inherits="DHMainTemplate" id="3"><Anchors><Anchor point="TOPLEFT" relativeTo="DHwindow2" relativePoint="BOTTOMLEFT"><Offset x="0" y="2"/></Anchor></Anchors></Button>
+			
+			<Button name="DHBarDragButton" inherits="DHDragButtonTemplate"><Anchors><Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"/></Anchors></Button>
+			<Frame name="DHBar1" inherits="DHBarTemplate"><Anchors><Anchor point="LEFT" relativeTo="DHBarDragButton" relativePoint="RIGHT"/></Anchors></Frame>
+			<Frame name="DHBar2" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar1" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar3" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar2" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar4" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar3" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar5" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar4" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar6" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar5" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar7" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar6" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar8" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar7" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar9" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar8" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar10" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar9" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar11" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar10" relativePoint="BOTTOM"/></Anchors></Frame>
+			<Frame name="DHBar12" inherits="DHBarTemplate"><Anchors><Anchor point="TOP" relativeTo="DHBar11" relativePoint="BOTTOM"/></Anchors></Frame>
+		</Frames>
+	</Frame>
+	
+	<Frame name="DruidHelperScripts">
+		<Scripts>
+			<OnLoad>
+				DHelper_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				DHelper_OnEvent(event, arg1, arg2, arg3);
+			</OnEvent>
+			<OnUpdate>
+				DHelper_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

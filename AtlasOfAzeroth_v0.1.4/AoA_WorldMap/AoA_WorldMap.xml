@@ -1,0 +1,1012 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	
+	<!-- Main Script -->
+	<Script file="AoA_WorldMap.lua"/>
+	
+	<!-- ========= -->
+	<!-- Templates -->
+	<!-- ========= -->
+	
+	<Frame name="AoAWorldMapDataFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+			
+				<Texture name="$parentTexTL" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0" bottom="0.5"/>
+				</Texture>
+				<Texture name="$parentTexTR" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1.0" top="0" bottom="0.5"/>
+				</Texture>
+				<Texture name="$parentTexTM" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTL" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexTR" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0" bottom="0.5"/>
+				</Texture>
+				
+				<Texture name="$parentTexBL" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0.5" bottom="0"/>
+				</Texture>
+				<Texture name="$parentTexBR" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1.0" top="0.5" bottom="0"/>
+				</Texture>
+				<Texture name="$parentTexBM" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexBL" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBR" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0.5" bottom="0"/>
+				</Texture>
+				
+				<Texture name="$parentTexML" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTL" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBL" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0.4" bottom="0.6"/>
+				</Texture>
+				<Texture name="$parentTexMM" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTM" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBM" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0.4" bottom="0.6"/>
+				</Texture>
+				<Texture name="$parentTexMR" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTR" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBR" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1.0" top="0.4" bottom="0.6"/>
+				</Texture>
+				
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="AoAWorldMapUnitTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this.unit = "party"..this:GetID();
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
+			<OnEnter>
+				AoAWorldMapUnit_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AoAWorldMapRaidUnitTemplate" inherits="AoAWorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\AddOns\\AoA_WorldMap\\images\\UnitPin-Raid");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AoAWorldMapPartyUnitTemplate" inherits="AoAWorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\AddOns\\AoA_WorldMap\\images\\UnitPin-Party");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AoAWorldMapPlayerTemplate" inherits="AoAWorldMapUnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this.unit = "player";
+				this:SetFrameLevel(this:GetFrameLevel() + 50);
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\AddOns\\AoA_WorldMap\\images\\UnitPin-Player");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AoAWorldMapFlagTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="AoAWorldMapCorpseTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
+					<TexCoords left="0.875" right="1.0" top="0" bottom="0.125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnEnter>
+				local x, y = this:GetCenter();
+				local parentX, parentY = this:GetParent():GetCenter();
+				if ( x > parentX ) then
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				GameTooltip:SetText(TEXT(CORPSE_RED));
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<!-- ========= -->
+	<!-- MainFrame -->
+	<!-- ========= -->
+	<Frame name="AoAWorldMapFrame" parent="AoAModuleFrame" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+			
+				<!-- Map Texture Tiles -->
+  			<Texture name="AoAWorldMapDetailTile1">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT">
+  					<Offset>
+  						<AbsDimension x="0" y="0"/>
+  					</Offset>
+  				</Anchor>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile2">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile1" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile3">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile2" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile4">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile3" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>	
+  			<Texture name="AoAWorldMapDetailTile5">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile1" relativePoint="BOTTOMLEFT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile6">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile5" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile7">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile6" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile8">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile7" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile9">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile5" relativePoint="BOTTOMLEFT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile10">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile9" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile11">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile10" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAWorldMapDetailTile12">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAWorldMapDetailTile11" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+				
+			</Layer>
+  		<Layer level="OVERLAY">
+			
+  			<Texture name="AoAWorldMapHighlight" alphaMode="ADD" hidden="true">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT"/>
+  				</Anchors>
+  			</Texture>
+				
+  			<FontString name="AoAWorldMapFrameAreaLabel" inherits="GameFontHighlightLarge">
+  				<Anchors>
+  					<Anchor point="TOP">
+  						<Offset>
+  							<AbsDimension x="20" y="-20"/>
+  						</Offset>
+  					</Anchor>
+  				</Anchors>
+  			</FontString>
+				
+  			<FontString name="AoAWorldMapFrameAreaDescription" inherits="GameFontHighlight">
+  				<Anchors>
+  					<Anchor point="TOP" relativeTo="AoAWorldMapFrameAreaLabel" relativePoint="BOTTOM">
+  						<Offset>
+  							<AbsDimension x="0" y="0"/>
+  						</Offset>
+  					</Anchor>
+  				</Anchors>
+  			</FontString>
+  			
+  		</Layer>
+		</Layers>
+		<Frames>
+			
+			<!-- Continent/Zone DropDown -->
+			<Frame name="AoAWorldMapContinentDropDown" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="50" y="33"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						AoAWMapContinentsDropDown_OnLoad();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="AoAWorldMapZoneDropDown" inherits="UIDropDownMenuTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="AoAWorldMapContinentDropDown" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-33" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						AoAWMapZoneDropDown_OnLoad();
+					</OnShow>
+					<OnEvent>
+						if ( event == "WORLD_MAP_UPDATE" ) then
+							if ( this:IsVisible() ) then
+								AoAWMapContinentsDropDown_OnLoad();
+								AoAWMap_UpdateContinentDropDownText();
+								AoAWMapZoneDropDown_OnLoad();
+								AoAWMap_UpdateZoneDropDownText();
+							end
+							return;
+						end
+					</OnEvent>
+				</Scripts>
+			</Frame>
+			
+			<!-- Follow Button -->
+			<Frame name="AoAWorldMapFollow" enableMouse="true">
+				<Size>
+					<AbsDimension x="1" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="31"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AoAWorldMapFollowRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="AoAWorldMapFollowLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="AoAWorldMapFollowMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AoAWorldMapFollowLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="AoAWorldMapFollowRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="AoAWorldMapFollowHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AoAWorldMapFollowLeft" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="AoAWorldMapFollowRight" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="AoAWorldMapFollowButton">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="AoAWorldMapFollowButtonText" inherits="GameFontHighlightSmall" text="AOA_WORLDMAP_FOLLOW">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="-5" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								AoAWMapFollowButton_OnShow();
+							</OnShow>
+							<OnClick>
+								local curCont = GetCurrentMapContinent();
+								local curZone = GetCurrentMapZone();
+								AoAWMapFollowButton_OnClick();
+								if (curCont ~= GetCurrentMapContinent()) or (curZone ~= GetCurrentMapZone()) then
+									PlaySound("igQuestLogOpen");
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+  				<OnEnter>
+  					AoAWorldMapFollowHighlight:Show();
+  				</OnEnter>
+  				<OnLeave>
+  					AoAWorldMapFollowHighlight:Hide();
+  				</OnLeave>
+					<OnShow>
+						local textWidth = AoAWorldMapFollowButtonText:GetStringWidth()
+						this:SetWidth(12 + 5 + textWidth + 20 + 12);
+					</OnShow>
+					<OnMouseUp>
+						local curCont = GetCurrentMapContinent();
+						local curZone = GetCurrentMapZone();
+						SetMapToCurrentZone();
+						if (curCont ~= GetCurrentMapContinent()) or (curZone ~= GetCurrentMapZone()) then
+							PlaySound("igQuestLogOpen");
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			
+			<!-- Filter Button -->
+			<Frame name="AoAWorldMapFilter" enableMouse="true">
+				<Size>
+					<AbsDimension x="1" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="AoAWorldMapFollow" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AoAWorldMapFilterRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="AoAWorldMapFilterLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="AoAWorldMapFilterMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="AoAWorldMapFilterRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="AoAWorldMapFilterHighlight" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterLeft" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="0"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="AoAWorldMapFilterRight" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<FontString name="AoAWorldMapFilterButtonText" inherits="GameFontHighlightSmall" text="AOA_WORLDMAP_FILTER">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="15" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+  				<OnEnter>
+  					AoAWorldMapFilterHighlight:Show();
+  				</OnEnter>
+  				<OnLeave>
+  					AoAWorldMapFilterHighlight:Hide();
+  				</OnLeave>
+					<OnShow>
+						local textWidth = AoAWorldMapFilterButtonText:GetStringWidth()
+						this:SetWidth(12 + 5 + textWidth + 20 + 12);
+					</OnShow>
+					<OnMouseUp>
+						if(AoAWorldMapFilterFrame:IsVisible()) then
+							AoAWorldMapFilterFrame:Hide();
+						else
+							HideDropDownMenu(1);
+							AoAWorldMapFilterFrame:Show();
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			
+			<!-- WorldMapButton -->
+			<Button name="AoAWorldMapButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+<!--
+					<Frame name="AtlasEnhTabWorldMapTaxi" inherits="AtlasEnhTabWorldMapTaxiTemplate"/>
+-->
+					<Frame name="AoAWorldMapRaid1" inherits="AoAWorldMapRaidUnitTemplate" id="1"/>
+					<Frame name="AoAWorldMapRaid2" inherits="AoAWorldMapRaidUnitTemplate" id="2"/>
+					<Frame name="AoAWorldMapRaid3" inherits="AoAWorldMapRaidUnitTemplate" id="3"/>
+					<Frame name="AoAWorldMapRaid4" inherits="AoAWorldMapRaidUnitTemplate" id="4"/>
+					<Frame name="AoAWorldMapRaid5" inherits="AoAWorldMapRaidUnitTemplate" id="5"/>
+					<Frame name="AoAWorldMapRaid6" inherits="AoAWorldMapRaidUnitTemplate" id="6"/>
+					<Frame name="AoAWorldMapRaid7" inherits="AoAWorldMapRaidUnitTemplate" id="7"/>
+					<Frame name="AoAWorldMapRaid8" inherits="AoAWorldMapRaidUnitTemplate" id="8"/>
+					<Frame name="AoAWorldMapRaid9" inherits="AoAWorldMapRaidUnitTemplate" id="9"/>
+					<Frame name="AoAWorldMapRaid10" inherits="AoAWorldMapRaidUnitTemplate" id="10"/>
+					<Frame name="AoAWorldMapRaid11" inherits="AoAWorldMapRaidUnitTemplate" id="11"/>
+					<Frame name="AoAWorldMapRaid12" inherits="AoAWorldMapRaidUnitTemplate" id="12"/>
+					<Frame name="AoAWorldMapRaid13" inherits="AoAWorldMapRaidUnitTemplate" id="13"/>
+					<Frame name="AoAWorldMapRaid14" inherits="AoAWorldMapRaidUnitTemplate" id="14"/>
+					<Frame name="AoAWorldMapRaid15" inherits="AoAWorldMapRaidUnitTemplate" id="15"/>
+					<Frame name="AoAWorldMapRaid16" inherits="AoAWorldMapRaidUnitTemplate" id="16"/>
+					<Frame name="AoAWorldMapRaid17" inherits="AoAWorldMapRaidUnitTemplate" id="17"/>
+					<Frame name="AoAWorldMapRaid18" inherits="AoAWorldMapRaidUnitTemplate" id="18"/>
+					<Frame name="AoAWorldMapRaid19" inherits="AoAWorldMapRaidUnitTemplate" id="19"/>
+					<Frame name="AoAWorldMapRaid20" inherits="AoAWorldMapRaidUnitTemplate" id="20"/>
+					<Frame name="AoAWorldMapRaid21" inherits="AoAWorldMapRaidUnitTemplate" id="21"/>
+					<Frame name="AoAWorldMapRaid22" inherits="AoAWorldMapRaidUnitTemplate" id="22"/>
+					<Frame name="AoAWorldMapRaid23" inherits="AoAWorldMapRaidUnitTemplate" id="23"/>
+					<Frame name="AoAWorldMapRaid24" inherits="AoAWorldMapRaidUnitTemplate" id="24"/>
+					<Frame name="AoAWorldMapRaid25" inherits="AoAWorldMapRaidUnitTemplate" id="25"/>
+					<Frame name="AoAWorldMapRaid26" inherits="AoAWorldMapRaidUnitTemplate" id="26"/>
+					<Frame name="AoAWorldMapRaid27" inherits="AoAWorldMapRaidUnitTemplate" id="27"/>
+					<Frame name="AoAWorldMapRaid28" inherits="AoAWorldMapRaidUnitTemplate" id="28"/>
+					<Frame name="AoAWorldMapRaid29" inherits="AoAWorldMapRaidUnitTemplate" id="29"/>
+					<Frame name="AoAWorldMapRaid30" inherits="AoAWorldMapRaidUnitTemplate" id="30"/>
+					<Frame name="AoAWorldMapRaid31" inherits="AoAWorldMapRaidUnitTemplate" id="31"/>
+					<Frame name="AoAWorldMapRaid32" inherits="AoAWorldMapRaidUnitTemplate" id="32"/>
+					<Frame name="AoAWorldMapRaid33" inherits="AoAWorldMapRaidUnitTemplate" id="33"/>
+					<Frame name="AoAWorldMapRaid34" inherits="AoAWorldMapRaidUnitTemplate" id="34"/>
+					<Frame name="AoAWorldMapRaid35" inherits="AoAWorldMapRaidUnitTemplate" id="35"/>
+					<Frame name="AoAWorldMapRaid36" inherits="AoAWorldMapRaidUnitTemplate" id="36"/>
+					<Frame name="AoAWorldMapRaid37" inherits="AoAWorldMapRaidUnitTemplate" id="37"/>
+					<Frame name="AoAWorldMapRaid38" inherits="AoAWorldMapRaidUnitTemplate" id="38"/>
+					<Frame name="AoAWorldMapRaid39" inherits="AoAWorldMapRaidUnitTemplate" id="39"/>
+					<Frame name="AoAWorldMapRaid40" inherits="AoAWorldMapRaidUnitTemplate" id="40"/>
+					
+					<Frame name="AoAWorldMapFlag1" inherits="AoAWorldMapFlagTemplate" id="1"/>
+					<Frame name="AoAWorldMapFlag2" inherits="AoAWorldMapFlagTemplate" id="2"/>
+					
+					<Frame name="AoAWorldMapCorpse" inherits="AoAWorldMapCorpseTemplate"/>
+					
+					<Frame name="AoAWorldMapParty1" inherits="AoAWorldMapPartyUnitTemplate" id="1"/>
+					<Frame name="AoAWorldMapParty2" inherits="AoAWorldMapPartyUnitTemplate" id="2"/>
+					<Frame name="AoAWorldMapParty3" inherits="AoAWorldMapPartyUnitTemplate" id="3"/>
+					<Frame name="AoAWorldMapParty4" inherits="AoAWorldMapPartyUnitTemplate" id="4"/>
+					
+					<Frame name="AoAWorldMapPlayer" inherits="AoAWorldMapPlayerTemplate" id="0"/>
+					
+					<Model name="AoAWorldMapPing" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.5" hidden="true">
+						<Size>
+							<AbsDimension x="66" y="66"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.fadeOut = nil;
+								this:SetSequence(0);
+							</OnLoad>
+						</Scripts>
+					</Model>
+					
+					<Frame name="AoAWorldMapCursorPos" inherits="AoAWorldMapDataFrameTemplate">
+						<Size>
+							<AbsDimension x="100" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="5" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDesc" inherits="GameFontNormalSmall" text="AOA_WORLDMAP_CURSORPOS">
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentText" inherits="GameFontHighlightSmall" text="100,100">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentDesc" relativePoint="BOTTOM"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name="AoAWorldMapPlayerPos" inherits="AoAWorldMapDataFrameTemplate">
+						<Size>
+							<AbsDimension x="100" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDesc" inherits="GameFontNormalSmall" text="AOA_WORLDMAP_PLAYERPOS">
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentText" inherits="GameFontHighlightSmall" text="100,100">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentDesc" relativePoint="BOTTOM"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnMouseUp>
+						AoAWMapButton_OnClick(arg1);
+					</OnMouseUp>
+					<OnUpdate>
+						AoAWMapButton_OnUpdate(arg1);
+					</OnUpdate>
+				</Scripts>
+			</Button>
+		
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() - 2);
+				AoAWMap_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				AoAWMap_OnEvent();
+			</OnEvent>
+			<OnShow>
+				AoAWMap_OnShow();
+			</OnShow>
+			<OnHide>
+				AoAWMap_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
+	
+	<!-- ============= -->
+	<!-- Filter Frame -->
+	<!-- ============= -->
+	<Button	name="AoAWorldMapFilterButtonTemplate"	virtual="true">
+		<Size>
+			<AbsDimension	x="145"	y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight"	alphaMode="ADD"	hidden="true">
+					<Anchors>
+						<Anchor	point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset><AbsDimension	x="-20"	y="0"/></Offset>
+						</Anchor>
+						<Anchor	point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+					<Size>
+						<AbsDimension	x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor	point="LEFT">
+							<Offset><AbsDimension	x="-25"	y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				AoAWMapFilter_OnClick(this:GetID());
+				this:GetParent():Hide();
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."Highlight"):Show();
+				this:GetParent().isCounting = nil;
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."Highlight"):Hide();
+				this:GetParent().showTimer = 2;
+				this:GetParent().isCounting = 1;
+			</OnLeave>
+		</Scripts>
+		<ButtonText name="$parentNormalText"/>
+		<NormalFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<HighlightFont inherits="GameFontHighlightSmall" justifyH="LEFT"/>
+		<DisabledFont inherits="GameFontDisableSmall" justifyH="LEFT"/>
+	</Button>
+	
+	<Frame name="AoAWorldMapFilterFrame" toplevel="true" frameStrata="FULLSCREEN" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension	x="200"	y="96"/>
+		</Size>
+  	<Anchors>
+  		<Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilter" relativePoint="BOTTOMLEFT">
+  			<Offset>
+  				<AbsDimension x="-10" y="0"/>
+  			</Offset>
+			</Anchor>
+  	</Anchors>
+		<Frames>
+			<Frame name="$parentBackdrop" setAllPoints="true">
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+			</Frame>
+			
+			<Button	name="AoAWorldMapFilterFrameButton1" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="1">
+				<Anchors>
+					<Anchor	point="TOPLEFT"	relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension	x="40" y="-15"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton2" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="2">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton1" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton3" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="3">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton2" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton4" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="4">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton3" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton5" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="5">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton4" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton6" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="6">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton5" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton7" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="7">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton6" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton8" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="8">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton7" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton9" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="9">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton8" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton10" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="10">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton9" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			
+			<Button	name="AoAWorldMapFilterFrameButton11" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="11">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton10" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton12" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="12">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton11" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton13" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="13">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton12" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton14" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="14">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton13" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton15" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="15">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton14" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton16" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="16">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton15" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton17" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="17">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton16" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton18" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="18">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton17" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton19" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="19">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton18" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton20" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="20">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton19" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			
+			<Button	name="AoAWorldMapFilterFrameButton21" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="21">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton20" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton22" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="22">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton21" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton23" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="23">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton22" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton24" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="24">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton23" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton25" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="25">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton24" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton26" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="26">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton25" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton27" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="27">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton26" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton28" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="28">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton27" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton29" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="29">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton28" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton30" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="30">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton29" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			
+			<Button	name="AoAWorldMapFilterFrameButton31" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="31">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton30" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton32" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="32">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton31" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton33" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="33">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton32" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton34" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="34">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton33" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton35" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="35">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton34" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton36" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="36">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton35" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton37" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="37">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton36" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton38" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="38">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton37" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton39" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="39">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton38" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			<Button	name="AoAWorldMapFilterFrameButton40" hidden="false" inherits="AoAWorldMapFilterButtonTemplate" id="40">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AoAWorldMapFilterFrameButton39" relativePoint="BOTTOMLEFT"/></Anchors>
+			</Button>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+			<OnEnter>
+				this.isCounting = nil;
+			</OnEnter>
+			<OnLeave>
+				this.showTimer = 2;
+				this.isCounting = 1;
+			</OnLeave>
+			<OnShow>
+				AoAWMapFilter_Init();
+			</OnShow>
+			<OnUpdate>
+				AoAWMapFilter_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>		
+	</Frame>
+	
+</Ui>

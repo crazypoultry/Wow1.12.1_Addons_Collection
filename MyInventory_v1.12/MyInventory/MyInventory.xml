@@ -1,0 +1,430 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="localization.lua"/> 
+	<Script file="localization.de.lua"/> 
+	<Script file="MyInventory.lua"/> 
+	<Button name="MyInventoryFrameItemButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+		<Frames>
+			<Model name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				MyInventoryFrameItemButton_OnClick(arg1);
+			</OnClick>
+			<OnLoad>
+				MyInventoryFrameItemButton_OnLoad();
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnEnter>
+				MyInventoryFrameItemButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				MyInventoryFrameItemButton_OnLeave();
+			</OnLeave>
+			<OnHide>
+				if ( this.hasStackSplit and (this.hasStackSplit == 1) ) then
+					StackSplitFrame:Hide();
+				end
+			</OnHide>
+			<OnDragStart>
+				MyInventoryFrameItemButton_OnClick("LeftButton", 1);
+			</OnDragStart>
+			<OnReceiveDrag>
+				MyInventoryFrameItemButton_OnClick("LeftButton", 1);
+			</OnReceiveDrag>
+			<OnUpdate>
+				MyInventoryFrameItemButton_OnUpdate(arg1);
+			</OnUpdate>
+	</Scripts>
+	</Button>
+	<CheckButton name="MyInventoryBagButtonTemplate" inherits="BagSlotButtonTemplate" hidden="false" virtual="true">
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+		<Scripts>
+			<OnEnter>
+				MyInventory_BagButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				MyInventory_BagButton_OnLeave();
+			</OnLeave>
+			<OnLoad>
+				this.isBag = 1;
+				local getBag = getglobal("Character"..strsub(this:GetName(),10));
+				this:SetID(getBag:GetID());
+				PaperDollItemSlotButton_OnLoad();
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				MyInventory_BagButton_OnClick();
+			</OnClick>
+			<OnDragStart>
+				MyInventory_BagButton_OnDragStart();
+			</OnDragStart>
+			<OnReceiveDrag>
+				MyInventory_BagButton_OnReceiveDrag();
+			</OnReceiveDrag>
+		</Scripts>
+	</CheckButton>
+	<Frame name="MyInventoryAnchorFrame" parent="UIParent" hidden="false" movable="true">
+		<Size><AbsDimension x="1" y="1"/></Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" >
+				<Offset><AbsDimension x="0" y="50"/></Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="MyInventoryFrame" parent="UIParent" toplevel="false" movable="true" resizable="true" enableMouse="true" hidden="true" framestrata="high">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeto="MyInventoryAnchorFrame" relativePoint="BOTTOMRIGHT" >
+				<Offset><AbsDimension x="0" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets><AbsInset left="5" right="5" top="5" bottom="5"/></BackgroundInsets>
+			<TileSize><AbsValue val="16"/></TileSize>
+			<EdgeSize><AbsValue val="16"/></EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentPortrait" hidden="true" file="Interface\AddOns\MyInventory\Skin\Backpack" > <!--   -->
+					<Size><AbsDimension x="58" y="58"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="-7" y="2"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentTextureTopLeft" file="Interface\AddOns\MyInventory\Skin\TopLeft" hidden="true">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="-67" y="60"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextureTopRight" file="Interface\AddOns\MyInventory\Skin\TopRight" hidden="true">
+					<Size><AbsDimension x="64" y="128"/></Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"> 
+							<Offset><AbsDimension x="36" y="60"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextureTopCenter" file="Interface\AddOns\MyInventory\Skin\TopCenter" hidden="true">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentTextureTopLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureTopRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentTextureBottomLeft" file="Interface\AddOns\MyInventory\Skin\BottomLeft" hidden="true">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset><AbsDimension x="-67" y="-60"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextureBottomRight" file="Interface\AddOns\MyInventory\Skin\BottomRight" hidden="true">
+					<Size><AbsDimension x="64" y="128"/></Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"> 
+							<Offset><AbsDimension x="36" y="-60"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextureBottomCenter" file="Interface\AddOns\MyInventory\Skin\BottomCenter" hidden="true">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextureBottomLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTextureBottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentTextureLeft" file="Interface\AddOns\MyInventory\Skin\Left" hidden="true">
+					<Size><AbsDimension x="64" y="128"/></Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTextureTopLeft" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureBottomLeft" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextureRight" file="Interface\AddOns\MyInventory\Skin\Right" hidden="true">
+					<Size><AbsDimension x="64" y="128"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextureTopRight" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentTextureBottomRight" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTextureCenter" file="Interface\AddOns\MyInventory\Skin\Center" hidden="true">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTextureTopCenter" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="TOPRIGHT" relativeTo="$parentTextureTopCenter" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentTextureBottomCenter" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureBottomCenter" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="7" y="-10"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSlots" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset><AbsDimension x="7" y="10"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-5" y="8"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parentItem1" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem2" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem3" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem4" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem5" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem6" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem7" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem8" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem9" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem10" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem11" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem12" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem13" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem14" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem15" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem16" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem17" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem18" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem19" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem20" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem21" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem22" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem23" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem24" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem25" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem26" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem27" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem28" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem29" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem30" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem31" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem32" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem33" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem34" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem35" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem36" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem37" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem38" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem39" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem40" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem41" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem42" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem43" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem44" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem45" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem46" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem47" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem48" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem49" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem50" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem51" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem52" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem53" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem54" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem55" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem56" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem57" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem58" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem59" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem60" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem61" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem62" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem63" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem64" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem65" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem66" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem67" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem68" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem69" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem70" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem71" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem72" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem73" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem74" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem75" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem76" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem77" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem78" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem79" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem80" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem81" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem82" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem83" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem84" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem85" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem86" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem87" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem88" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem89" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem90" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem91" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem92" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem93" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem94" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem95" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem96" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem97" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem98" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem99" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem100" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem101" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem102" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem103" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem104" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem105" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem106" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem107" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem108" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Button name="$parentItem109" inherits="MyInventoryFrameItemButtonTemplate"/>
+			<Frame name="MyInventoryBagButtonsBar" hidden="false">
+				<Size><AbsDimension x="190" y="37"/></Size>
+				<Anchors>
+					<Anchor point="TOP"><Offset><AbsDimension x="0" y="-28"/></Offset></Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="MyInventoryBackpackButton" inherits="ItemButtonTemplate" id="0" hidden="false">
+						<CheckedTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+						<HighlightTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+						<Size><AbsDimension x="37" y="37"/></Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeto="MyInventoryBagButtonsBar" relativepoint="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MyInventoryBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up");
+							</OnLoad>
+							<OnClick>
+								MyInventory_Backpack_OnClick();
+							</OnClick>
+							<OnReceiveDrag>
+								PutItemInBackpack();
+							</OnReceiveDrag>
+							<OnEnter>
+								MyInventory_Backpack_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								MyInventory_Backpack_OnLeave();
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="MyInventoBag0Slot" inherits="MyInventoryBagButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeto="MyInventoryBackpackButton" relativepoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MyInventoBag1Slot" inherits="MyInventoryBagButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeto="MyInventoBag0Slot" relativepoint="RIGHT">
+								<Offset><AbsDimension x="2" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MyInventoBag2Slot" inherits="MyInventoryBagButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeto="MyInventoBag1Slot" relativepoint="RIGHT">
+								<Offset><AbsDimension x="2" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MyInventoBag3Slot" inherits="MyInventoryBagButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeto="MyInventoBag2Slot" relativepoint="RIGHT">
+								<Offset><AbsDimension x="2" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentLockButton" inherits="UIPanelCloseButton">
+				<NormalTexture name="MILockNormalTexture" file="Interface\AddOns\MyInventory\Skin\LockButton-Unlocked-Up"/>
+				<PushedTexture name="MILockPushedTexture" file="Interface\AddOns\MyInventory\Skin\LockButton-Locked-Down"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT">
+						<Offset><Absdimension x="10" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MyInventory_Toggle_Option("Lock");
+						MyInventoryFrame_UpdateLook(MyInventory_GetBagsTotalSlots());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentHideBagsButton" inherits="UIPanelCloseButton">
+				<NormalTexture name="MIHideBagsNormalTexture" file="Interface\AddOns\MyInventory\Skin\MinimizeButton-Up"/>
+				<PushedTexture name="MIHideBagsPushedTexture" file="Interface\AddOns\MyInventory\Skin\MinimizeButton-Down"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentLockButton" relativePoint="LEFT">
+						<Offset><Absdimension x="15" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MyInventory_Toggle_Option("BagView");
+						MyInventoryFrame_UpdateLook(MyInventory_GetBagsTotalSlots());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				MyInventoryFrame_OnEvent(event);
+			</OnEvent>
+			<OnLoad>
+				MyInventoryFrame_OnLoad();
+			</OnLoad>
+			<OnHide>
+				MyInventoryFrame_OnHide();
+			</OnHide>
+			<OnShow>
+				MyInventoryFrame_OnShow();
+			</OnShow>
+			<OnMouseDown>
+				MyInventoryFrame_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				MyInventoryFrame_OnMouseUp(arg1);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

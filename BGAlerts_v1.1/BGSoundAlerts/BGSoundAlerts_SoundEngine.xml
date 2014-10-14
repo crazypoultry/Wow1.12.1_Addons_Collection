@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+<Script file="BGSoundAlerts_SoundEngine.lua"/>
+<Script file="BGSoundAlerts_SoundLengths.lua"/>
+
+<Frame name="BGSoundAlerts_WorldStateUpdater" hidden="false">
+	<Size x="50" y="50"/>
+	<Anchors>
+		<Anchor point="TOPLEFT"/>
+	</Anchors>
+	<Scripts>
+		<OnLoad>
+			this:RegisterEvent("UPDATE_BATTLEFIELD_SCORE");
+		</OnLoad>
+		<OnEvent>
+			BGSoundAlerts_NewScoreReceived();
+		</OnEvent>
+		<OnUpdate>
+			if (GetRealZoneText() == "Warsong Gulch") or (GetRealZoneText() == "Arathi Basin") or (GetRealZoneText() == "Alterac Valley") or (GetRealZoneText() == "Eye of the Storm") then
+				if (not WorldStateScoreFrame:IsVisible()) then
+					-- Request new data
+					RequestBattlefieldScoreData();
+				end
+			else
+				BGSoundAlerts_FirstBloodPlayer = nil;
+			end
+		</OnUpdate>
+	</Scripts>
+</Frame>
+
+<Frame name="BGSoundAlerts_SoundEngineUpdater" parent="WorldFrame" enableMouse="false">
+	<Anchors>
+		<Anchor point="TOPLEFT"/>
+	</Anchors>
+	<Size>
+		<AbsDimension x="5" y="5"/>
+	</Size>
+	<Scripts>
+		<OnLoad>this.TimeSinceLastUpdate = 0; this:RegisterEvent("VOICE_PLATE_START"); this:RegisterEvent("VOICE_PLATE_STOP");</OnLoad>
+		<OnEvent>BGSoundAlerts_SoundEngineEvent(event,arg1,arg2);</OnEvent>
+		<OnUpdate>BGSoundAlerts_UpdateSoundEngine(arg1)</OnUpdate>
+	</Scripts>
+</Frame>
+
+<Frame name="BGSoundAlerts_KillBonusUpdater" parent="WorldFrame" enableMouse="false">
+	<Anchors>
+		<Anchor point="TOPLEFT"/>
+	</Anchors>
+	<Size>
+		<AbsDimension x="5" y="5"/>
+	</Size>
+	<Scripts>
+		<OnLoad>this.TimeSinceLastUpdate = 0; this:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH");</OnLoad>
+		<OnEvent>BGSoundAlerts_ApplyKillBonus(arg1);</OnEvent>
+		<OnUpdate>BGSoundAlerts_UpdateKillBonus(arg1);</OnUpdate>
+	</Scripts>
+</Frame>
+
+<Frame name="BGSoundAlerts_ABScoreUpdater" parent="WorldFrame" enableMouse="false">
+	<Anchors>
+		<Anchor point="TOPLEFT"/>
+	</Anchors>
+	<Size>
+		<AbsDimension x="5" y="5"/>
+	</Size>
+	<Scripts>
+		<OnLoad>this.TimeSinceLastUpdate = 0;</OnLoad>
+		<OnUpdate>BGSoundAlerts_UpdateABScore(arg1)</OnUpdate>
+	</Scripts>
+</Frame>
+
+</Ui>

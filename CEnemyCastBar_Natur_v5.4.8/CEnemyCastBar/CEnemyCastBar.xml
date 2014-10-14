@@ -1,0 +1,1150 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+  <Script file="localized_code.USEU.lua"/>
+  <Script file="localized_code.ASIA.lua"/>
+  <Script file="localized_code.unknown.lua"/>
+  <Script file="CEnemyCastBar.lua"/>
+  <Script file="localization.lua"/>
+  <Script file="localization.de.lua"/>
+  <Script file="localization.fr.lua"/>
+  <Script file="localization.tw.lua"/>
+  <Script file="custom_localization.lua"/>
+  <Button name="CarniEnemyCastBarTemplate" virtual="true" hidden="true" movable="true" enableMouse="true">
+				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="6" right="6" top="2" bottom="12"/>
+					</BackgroundInsets>
+				</Backdrop>
+    <TitleRegion setAllPoints="true"/>
+    <Size>
+      <AbsDimension x="206" y="26"/>
+    </Size>
+    <!-- Slap it smack in the middle of the screen where it can be seen -->
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="50" y="-500" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+        <Layers>
+          <Layer level="BACKGROUND">
+            <!-- Icon -->
+		<!-- Dimension + Point set in CEnemyCastBar_FlipBars() Function! -->
+            <Texture name="$parent_Icon" file="Interface\Icons\Spell_Holy_Renew" hidden="true">
+              <Size>
+                <AbsDimension x="16" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+	            <Offset>
+	              <AbsDimension x="-12" y="5"/>
+	            </Offset>
+          	</Anchor>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+
+    <Layers>
+      <Layer level="OVERLAY">
+        <FontString name="$parent_Text" inherits="GameFontHighlight">
+          <Size>
+            <AbsDimension x="185" y="14"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP"/>
+          </Anchors>
+        </FontString>
+	<FontString name="$parent_CastTimeText" inherits="GameFontHighlight" text="">
+		<FontHeight>
+			<AbsValue val="14"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Anchors>
+		  <Anchor point="LEFT">
+			  <Offset>
+				  <AbsDimension x="205" y="5.5"/>
+			  </Offset>
+		  </Anchor>
+	    </Anchors>
+	</FontString>
+        <!-- Steal the casting bar's border -->
+        <Texture name="$parent_Border" file="Interface\Tooltips\UI-StatusBar-Border">
+          <Size>
+            <AbsDimension x="205" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="2"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+
+    <Frames>
+      <!-- Status bar to update duration visually -->
+      <StatusBar name="$parent_StatusBar">
+        <Size>
+          <AbsDimension x="195" y="13"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOP">
+            <Offset>
+              <AbsDimension x="0" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <!-- The "spark" adds pizzaz to the head of the status bar -->
+            <Texture name="$parent_Spark" alphaMode="ADD" file="Interface\CastingBar\UI-CastingBar-Spark">
+              <Size>
+                <AbsDimension x="32" y="32"/>
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER"/>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <BarTexture file="Interface\AddOns\CEnemyCastBar\Images\bartexture"/>
+        <BarColor r="1.0" g="0.7" b="0.0"/>
+        <Scripts>
+          <OnLoad>
+            this:SetFrameLevel(this:GetFrameLevel() - 1);
+          </OnLoad>
+        </Scripts>
+      </StatusBar>
+    </Frames>
+    <Scripts>
+		<OnUpdate> CEnemyCastBar_OnUpdate(); </OnUpdate>
+    </Scripts>
+  </Button>
+
+<Button name="FauxTargetBtnTemplate" inherits="UIPanelButtonTemplate" virtual="true" hidden="true" alpha="0">
+	<Size>
+		<AbsDimension x="205" y="20"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOPLEFT">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+	     <OnLoad>
+	       this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	     </OnLoad>
+		<OnClick>
+			if (IsShiftKeyDown()) then
+				if (arg1 == "LeftButton") then
+					CEnemyCastBar_HideBar(this:GetID());
+				elseif (arg1 == "RightButton") then
+					CEnemyCastBar_HideBar(this:GetID(), true);
+				end
+
+			elseif (IsAltKeyDown() and arg1 == "LeftButton") then
+				CEnemyCastBar_Handler("clear");
+
+			elseif (arg1 == "LeftButton") then
+				CEnemyCastBar_TargetPlayer(this:GetID());
+
+			end
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Frame name="CarniEnemyCastBarFrame" parent="UIParent" frameStrata="MEDIUM" toplevel="false" movable="false" enableMouse="false">
+	<Size>
+		<AbsDimension x="0" y="0"/>
+	</Size>
+
+  <Frames>
+	<Button name="Carni_ECB_1" inherits="CarniEnemyCastBarTemplate" id="1">
+		<Anchors>
+			<Anchor point="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-30" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn1" inherits="FauxTargetBtnTemplate" id="1" text="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_1" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_2" inherits="CarniEnemyCastBarTemplate" id="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_1" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn2" inherits="FauxTargetBtnTemplate" id="2" text="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_2" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_3" inherits="CarniEnemyCastBarTemplate" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_2" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn3" inherits="FauxTargetBtnTemplate" id="3" text="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_3" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_4" inherits="CarniEnemyCastBarTemplate" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_3" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn4" inherits="FauxTargetBtnTemplate" id="4" text="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_4" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_5" inherits="CarniEnemyCastBarTemplate" id="5">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_4" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn5" inherits="FauxTargetBtnTemplate" id="5" text="5">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_5" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_6" inherits="CarniEnemyCastBarTemplate" id="6">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_5" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn6" inherits="FauxTargetBtnTemplate" id="6" text="6">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_6" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_7" inherits="CarniEnemyCastBarTemplate" id="7">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_6" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn7" inherits="FauxTargetBtnTemplate" id="7" text="7">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_7" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_8" inherits="CarniEnemyCastBarTemplate" id="8">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_7" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn8" inherits="FauxTargetBtnTemplate" id="8" text="8">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_8" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_9" inherits="CarniEnemyCastBarTemplate" id="9">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_8" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn9" inherits="FauxTargetBtnTemplate" id="9" text="9">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_9" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_10" inherits="CarniEnemyCastBarTemplate" id="10">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_9" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn10" inherits="FauxTargetBtnTemplate" id="10" text="10">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_10" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_11" inherits="CarniEnemyCastBarTemplate" id="11">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_10" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn11" inherits="FauxTargetBtnTemplate" id="11" text="11">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_11" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_12" inherits="CarniEnemyCastBarTemplate" id="12">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_11" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn12" inherits="FauxTargetBtnTemplate" id="12" text="12">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_12" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_13" inherits="CarniEnemyCastBarTemplate" id="13">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_12" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn13" inherits="FauxTargetBtnTemplate" id="13" text="13">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_13" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_14" inherits="CarniEnemyCastBarTemplate" id="14">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_13" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn14" inherits="FauxTargetBtnTemplate" id="14" text="14">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_14" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_15" inherits="CarniEnemyCastBarTemplate" id="15">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_14" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn15" inherits="FauxTargetBtnTemplate" id="15" text="15">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_15" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_16" inherits="CarniEnemyCastBarTemplate" id="16">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_15" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn16" inherits="FauxTargetBtnTemplate" id="16" text="16">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_16" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_17" inherits="CarniEnemyCastBarTemplate" id="17">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_16" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn17" inherits="FauxTargetBtnTemplate" id="17" text="17">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_17" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_18" inherits="CarniEnemyCastBarTemplate" id="18">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_17" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn18" inherits="FauxTargetBtnTemplate" id="18" text="18">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_18" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_19" inherits="CarniEnemyCastBarTemplate" id="19">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_18" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn19" inherits="FauxTargetBtnTemplate" id="19" text="19">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_19" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Carni_ECB_20" inherits="CarniEnemyCastBarTemplate" id="20">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_19" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="FauxTargetBtn20" inherits="FauxTargetBtnTemplate" id="20" text="20">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Carni_ECB_20" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+  </Frames>
+	<Scripts>
+		<OnLoad> CEnemyCastBar_OnLoad(); </OnLoad>
+		<OnEvent> CEnemyCastBar_OnEvent(event);	</OnEvent>
+	</Scripts>
+</Frame>
+
+
+	<!-- ================================================================== -->
+	<!-- The FPSBar frame -->
+	<Frame name="CECB_FPSBarFreeFrame" parent="UIParent" frameStrata="HIGH" toplevel="false" movable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+	  <Frames>
+	
+		<Button name="CECB_FPSBarFree" inherits="CarniEnemyCastBarTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="UIParent">
+							<Offset>
+								<AbsDimension x="50" y="-550" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this:Hide();
+							getglobal(this:GetName().."_StatusBar_Spark"):Hide();
+							--this:SetAlpha(0.8);
+						</OnLoad>
+					</Scripts>
+		    <Scripts>
+				<OnUpdate> CEnemyCastBar_FPSBar_OnUpdate(); </OnUpdate>
+		    </Scripts>
+		</Button>
+	
+	  </Frames>
+	</Frame>
+
+	<!-- ================================================================== -->
+	<!-- The CTRA Channel Parser frame -->
+	<Frame name="CECBCTRAParserFrame" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="450" y="240" />
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="50" y="-100" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<TitleRegion setAllPoints="true"/>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="450" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="NECB - AddOn Channel Parser">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+
+			<!-- Parser Buttons -->
+		        <Button name="$parentX" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+		            <Anchors>
+		                <Anchor point="CENTER" relativePoint="TOPRIGHT">
+		                    <Offset>
+		                        <AbsDimension x="-20" y="-20"/>
+		                    </Offset>
+		                </Anchor>
+		            </Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_Handler("parser");
+					</OnClick>
+				</Scripts>
+		        </Button>
+
+				<Button name="$parentUPArrow">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-94" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+
+						<OnLoad>
+							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+							this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+						</OnLoad>
+						<OnUpdate>
+							CEnemyCastBar_ParserButton_OnUpdate(arg1);
+						</OnUpdate>
+						<OnClick>
+							if ( this:GetButtonState() == "PUSHED" ) then
+								this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+							else
+								PlaySound("igChatScrollDown");
+								CEnemyCastBar_ParserOnClick("up");
+							end
+						</OnClick>
+
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+
+				<Button name="$parentDOWNArrow">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentUPArrow">
+							<Offset>
+								<AbsDimension x="40" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+							this:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+						</OnLoad>
+						<OnUpdate>
+							CEnemyCastBar_ParserButton_OnUpdate(arg1);
+						</OnUpdate>
+						<OnClick>
+							if ( this:GetButtonState() == "PUSHED" ) then
+								this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+							else
+								PlaySound("igChatScrollDown");
+								CEnemyCastBar_ParserOnClick("down");
+							end
+						</OnClick>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+
+				<Frame name="$parentLine" inherits="OptionFrameBoxTemplate">
+					<Size>
+						<AbsDimension x="34" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentUPArrow">
+							<Offset>
+								<AbsDimension x="13" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString name="$parentText" inherits="GameFontHighlightSmall" text="" justifyV="TOP" justifyH="LEFT">
+							          <Size>
+							            <AbsDimension x="30" y="10"/>
+							          </Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="7" y="-4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+
+						<!-- Faux Text to detect length of new line -->
+						<Layer level="ARTWORK">
+							<FontString name="CECBParserFauxText" inherits="GameFontHighlightSmall" text="" hidden="true" justifyV="TOP" justifyH="LEFT">
+							          <Size>
+							            <AbsDimension x="" y=""/>
+							          </Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnLoad>
+							this:SetBackdropBorderColor(0.4, 0.4, 0.4, 1.0);
+							this:SetBackdropColor(0.1, 0.1, 0.1);
+						</OnLoad>
+					</Scripts>
+				</Frame>
+
+				<Button name="$parentBOTTOMArrow">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDOWNArrow">
+							<Offset>
+								<AbsDimension x="18" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture name="$parentFlash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnClick>
+							PlaySound("igChatBottom");
+							CEnemyCastBar_ParserOnClick(0);
+						</OnClick>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+
+			<!-- Parser TextFrame -->
+			<Frame name="$parentBG" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="430" y="210"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" text="" justifyV="TOP" justifyH="LEFT">
+						          <Size>
+						            <AbsDimension x="" y="200"/> <!-- Length will be reduced by a standalone routine! -->
+						          </Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4, 0.0);
+						this:SetBackdropColor(0.1, 0.1, 0.1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+		</Frames>
+
+	</Frame>
+
+
+	<!-- ================================================================== -->
+	<!-- MiniMap button -->
+	<Frame name="CECBMiniMapButtonFrame" parent="Minimap" frameStrata="MEDIUM" enableMouse="true" hidden="false">
+		<Frames>
+			<Button name="CECBMiniMapButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "Natur EnemyCastBar";
+						this:SetFrameLevel(5);
+					</OnLoad>
+					<OnClick>
+						CEnemyCastBar_Handler("");
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						GameTooltip:SetText(this.tooltip);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\AddOns\CEnemyCastBar\Images\CECBButton"/>
+					</Layer>
+				</Layers>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<!-- ================================================================== -->
+	<!-- The GC frame -->
+	<Frame name="CECBGCFrame" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="280" y="110" />
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="50" y="-100" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<TitleRegion setAllPoints="true"/>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="250" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="NECB - GC Info">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<!-- GC TextFrame -->
+			<Frame name="$parentBG" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="260" y="80"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" text="" justifyV="TOP" justifyH="CENTER">
+						          <Size>
+						            <AbsDimension x="250" y="80"/>
+						          </Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4, 0.0);
+						this:SetBackdropColor(0.1, 0.1, 0.1);
+					</OnLoad>
+					<OnUpdate> CECB_GCInfo_OnUpdate(); </OnUpdate>
+				</Scripts>
+			</Frame>
+
+		        <Button name="$parentX" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+		            <Anchors>
+		                <Anchor point="CENTER" relativePoint="TOPRIGHT">
+		                    <Offset>
+		                        <AbsDimension x="-20" y="-20"/>
+		                    </Offset>
+		                </Anchor>
+		            </Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_Handler("gcinfo");
+					</OnClick>
+				</Scripts>
+		        </Button>
+
+		</Frames>
+
+	</Frame>
+
+	<!-- ================================================================== -->
+	<!-- The HELP frame -->
+	<Frame name="CECBHELPFrame" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="450" y="400" /> <!--y size set through mainlua -->
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="50" y="-100" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<TitleRegion setAllPoints="true"/>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="NECB - HELP">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<!-- HELP TextFrame -->
+			<Frame name="$parentBG" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="430" y="370"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" text="" justifyV="TOP" justifyH="LEFT">
+						          <Size>
+						            <AbsDimension x="420" y="360"/>
+						          </Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4, 0.0);
+						this:SetBackdropColor(0.1, 0.1, 0.1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+		        <Button name="$parentX" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+		            <Anchors>
+		                <Anchor point="CENTER" relativePoint="TOPRIGHT">
+		                    <Offset>
+		                        <AbsDimension x="-20" y="-20"/>
+		                    </Offset>
+		                </Anchor>
+		            </Anchors>
+		        </Button>
+
+			<Button name="$parentWhisper" inherits="UIPanelButtonTemplate" text="Whisper old versions of NECB to update!" hidden="true">
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontHighlightSmall"/>
+				<DisabledFont inherits="GameFontDisableSmall"/>
+			        <Size>
+			            <AbsDimension x="230" y="16"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_InternalHandler("WhisperToObsolete");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+
+	</Frame>
+
+	<!-- ================================================================== -->
+	<!-- Faux Frame for Timings -->
+	<Frame name="CECBFauxFrame" parent="UIParent" frameStrata="LOW" enableMouse="false">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+		<Frames>
+			<Button name="$parentButton">
+				<Size>
+					<AbsDimension x="0" y="0"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="UIParent">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:Hide();
+					</OnLoad>
+					<OnUpdate>
+						CEnemyCastBar_FauxUpdater();
+					</OnUpdate>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+</Ui>

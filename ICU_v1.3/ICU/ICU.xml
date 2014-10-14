@@ -1,0 +1,326 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="ICU.lua"/>
+
+	<!-- The main ICU frame -->
+	<Frame name="ICU_Frame">
+		<Scripts>
+			<OnLoad>
+				ICU_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				ICU_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- A button template, to be inherited by each button -->
+	<Frame name="ICU_PopupButtonTemplate" virtual="true">
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Size>
+			<AbsDimension x="30" y="28"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentButtonPortraitIcon">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentButtonClassIcon">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentButtonPortraitIcon">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentButtonRankIcon">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton" frameStrata="ARTWORK">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+				<NormalText inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentClassIcon">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalText>
+				<HighlightText inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentClassIcon">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</HighlightText>
+				<DisabledText inherits="GameFontDisable">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentClassIcon">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</DisabledText>
+				
+				<Scripts>
+					<OnClick>
+						ICU_ButtonClick();
+					</OnClick>
+				
+				</Scripts>
+			</Button>
+			<StatusBar name="$parentButtonBar" inherits="TextStatusBar" frameStrata="ARTWORK">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentButtonClassIcon">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarColor r="0" g="0.8" b="0" a="0.7" />
+				<!--<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLeftText" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="10" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRightText" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>					
+				</Layers> !-->
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 100);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="$parentButtonBGBar" inherits="TextStatusBar" frameStrata="ARTWORK">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP" relativeTo="$parentButtonBar">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarColor r="0" g="0.8" b="0" a="0.25"/>
+			</StatusBar>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<!-- The popup menu -->
+	<Frame name="ICU_Popup" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<!--
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop> !-->
+
+		<!-- Within the popup menu, the clickable buttons which to display text -->
+		<Frames>
+			<!-- Button 1 -->
+			<Frame name="ICU_PopupButton1" inherits="ICU_PopupButtonTemplate" id="1" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 2 -->
+			<Frame name="ICU_PopupButton2" inherits="ICU_PopupButtonTemplate" id="2" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 3 -->
+			<Frame name="ICU_PopupButton3" inherits="ICU_PopupButtonTemplate" id="3" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 4 -->
+			<Frame name="ICU_PopupButton4" inherits="ICU_PopupButtonTemplate" id="4" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 5 -->
+			<Frame name="ICU_PopupButton5" inherits="ICU_PopupButtonTemplate" id="5" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 6 -->
+			<Frame name="ICU_PopupButton6" inherits="ICU_PopupButtonTemplate" id="6" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 7 -->
+			<Frame name="ICU_PopupButton7" inherits="ICU_PopupButtonTemplate" id="7" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 8 -->
+			<Frame name="ICU_PopupButton8" inherits="ICU_PopupButtonTemplate" id="8" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 9 -->
+			<Frame name="ICU_PopupButton9" inherits="ICU_PopupButtonTemplate" id="9" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Frame 10 -->
+			<Frame name="ICU_PopupButton10" inherits="ICU_PopupButtonTemplate" id="10" ICU_DATA="">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ICU_PopupButton9" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				<!-- This makes the dialog look like a normal tooltip -->
+				this:SetBackdropBorderColor( TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b );
+				this:SetBackdropColor( TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b );
+			</OnLoad>
+			<OnUpdate>
+				ICU_Popup_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+
+	</Frame>
+	<Frame name="ICU_UpdateFrame">
+		<Scripts>
+			<OnUpdate>
+				ICU_MouseOverUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

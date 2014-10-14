@@ -1,0 +1,682 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<!-- Main Script -->
+	<Script file="CritRecord.lua"/>
+	<Script file="localization.lua"/>
+	<Script file="CritRecordConfig.lua"/>
+	<Script file="CritRecordMessageParser.lua"/>
+
+	<!-- Main Frame -->
+	<Frame name="CritRecordFrame" enableMouse="false" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				CritRecord:OnLoad();
+			</OnLoad>
+			<OnEvent>
+				CritRecord:OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				CritRecord:OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="CritRecordConfigFrame" frameStrata="DIALOG" parent="UIParent" hidden="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="300" y="312"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="CritRecordConfig_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Crit Record">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CritRecordConfig_Header">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="CritRecordConfig_ViewRecordsButton" inherits="UIPanelButtonTemplate" text="View All Records">
+				<Size>
+					<AbsDimension x="160" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CritRecordConfig_GeneralButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_DamageButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_HealingButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_ViewRecordsButton:SetTextColor(1, 1, 1);
+						CritRecordConfigFrame_GeneralFrame:Hide();
+						CritRecordConfigFrame_HealingFrame:Hide();
+						CritRecordConfigFrame_DamageFrame:Hide();
+						CritRecordConfig_ViewRecordsScrollFrame:Show();
+						CritRecordConfig_UpdateViewRecords();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CritRecordConfig_DamageButton" inherits="UIPanelButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(CritRecord.LOCAL.ConfigDamage);
+					</OnLoad>
+					<OnClick>
+						CritRecordConfig_GeneralButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_DamageButton:SetTextColor(1, 1, 1);
+						CritRecordConfig_HealingButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_ViewRecordsButton:SetTextColor(1, .82, 0);
+						CritRecordConfigFrame_GeneralFrame:Hide();
+						CritRecordConfigFrame_HealingFrame:Hide();
+						CritRecordConfigFrame_DamageFrame:Show();
+						CritRecordConfig_ViewRecordsScrollFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CritRecordConfig_GeneralButton" inherits="UIPanelButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CritRecordConfig_DamageButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(CritRecord.LOCAL.ConfigGeneral);
+					</OnLoad>
+					<OnClick>
+						CritRecordConfig_GeneralButton:SetTextColor(1, 1, 1);
+						CritRecordConfig_DamageButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_HealingButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_ViewRecordsButton:SetTextColor(1, .82, 0);
+						CritRecordConfigFrame_DamageFrame:Hide();
+						CritRecordConfigFrame_HealingFrame:Hide();
+						CritRecordConfigFrame_GeneralFrame:Show();
+						CritRecordConfig_ViewRecordsScrollFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CritRecordConfig_HealingButton" inherits="UIPanelButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CritRecordConfig_DamageButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="6" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(CritRecord.LOCAL.ConfigHealing);
+					</OnLoad>
+					<OnClick>
+						CritRecordConfig_GeneralButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_DamageButton:SetTextColor(1, .82, 0);
+						CritRecordConfig_HealingButton:SetTextColor(1, 1, 1);
+						CritRecordConfig_ViewRecordsButton:SetTextColor(1, .82, 0);
+						CritRecordConfigFrame_DamageFrame:Hide();
+						CritRecordConfigFrame_GeneralFrame:Hide();
+						CritRecordConfigFrame_HealingFrame:Show();
+						CritRecordConfig_ViewRecordsScrollFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="CritRecordConfig_CloseXButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CritRecordConfigFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<ScrollFrame name="CritRecordConfig_ViewRecordsScrollFrame" inherits="UIPanelScrollFrameTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="224" y="168"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="-12" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="CritRecordConfig_ViewRecordsScrollChildFrame" enableMouse="true">
+						<Size>
+							<AbsDimension x="224" y="168"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+							<FontString name="CritRecordConfig_ViewRecordsText" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" nonspacewrap="true" text="" enableMouse="true" autoFocus="true">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(CritRecordConfig_ViewRecordsScrollFrame);
+									</OnTextChanged>
+									<OnCursorChanged>
+										ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+									</OnCursorChanged>
+									<OnUpdate>
+										ScrollingEdit_OnUpdate(CritRecordConfig_ViewRecordsScrollFrame);
+									</OnUpdate>
+									<OnTabPressed>
+									</OnTabPressed>
+									<OnEscapePressed>
+										this:ClearFocus();
+									</OnEscapePressed>
+									<OnClick>
+									</OnClick>
+								</Scripts>
+							</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+
+			<CheckButton parent="CritRecordConfig_ViewRecordsScrollFrame" name="CritRecordConfig_General_CheckShortReview" inherits="OptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_ViewRecordsScrollFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Text"):SetText("Short Review (no Details)");
+					</OnLoad>
+					<OnShow>
+						getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["ShortReview"]);
+					</OnShow>
+					<OnClick>
+						CritRecordConfig_OnClickCheck(this:GetName());
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Frame name="CritRecordConfigFrame_GeneralFrame" hidden="true" setAllPoints="true">
+				<Frames>
+					<CheckButton name="CritRecordConfig_General_CheckEnableAddon" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_GeneralButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-6"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigEnableAddon);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["EnableAddon"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_General_CheckEnableTooltips" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_General_CheckEnableAddon">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigEnableTooltips);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["EnableTooltips"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_General_CheckReportNewCrits" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_General_CheckEnableTooltips">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigReportNewCrits);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["ReportNewCrits"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_General_CheckReportInChat" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_General_CheckReportNewCrits">
+								<Offset>
+									<AbsDimension x="24" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigReportInChat);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["ReportInChat"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_General_CheckReportOnScreen" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_General_CheckReportInChat">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigReportOnScreen);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["ReportOnScreen"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_General_CheckEnableBGCrits" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_General_CheckReportOnScreen">
+								<Offset>
+									<AbsDimension x="-24" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigEnableBGCrits);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["EnableBGCrits"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_General_CheckTakeScreenshots" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_General_CheckEnableBGCrits">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTakeScreenshots);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["General"]["TakeScreenshots"]);
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
+								GameTooltip:AddLine("|cFFCC3333Warning");
+								GameTooltip:AddLine("|cFFFFFFFFThis feature may cause your computer to lag|nnoticably while a screenshot is captured");
+								GameTooltip:Show();
+							</OnEnter>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="CritRecordConfigFrame_DamageFrame" parent="CritRecordConfigFrame" hidden="true" setAllPoints="true">
+				<Frames>
+					<CheckButton name="CritRecordConfig_Damage_CheckRecordCrits" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_GeneralButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-6"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigDamageRecordCrits);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Damage"]["RecordCrits"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Damage_CheckCountTrivial" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Damage_CheckRecordCrits">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigCountTrivial);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Damage"]["CountTrivial"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Damage_CheckTooltipTargetInfo" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Damage_CheckCountTrivial">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipTargetInfo);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Damage"]["TooltipTargetInfo"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Damage_CheckTooltipLevelRaceClass" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Damage_CheckTooltipTargetInfo">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipLevelRaceClass);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Damage"]["TooltipLevelRaceClass"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Damage_CheckTooltipLocation" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Damage_CheckTooltipLevelRaceClass">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipLocation);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Damage"]["TooltipLocation"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Damage_CheckTooltipDateTime" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Damage_CheckTooltipLocation">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipDateTime);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Damage"]["TooltipDateTime"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="CritRecordConfigFrame_HealingFrame" parent="CritRecordConfigFrame" hidden="true" setAllPoints="true">
+				<Frames>
+					<CheckButton name="CritRecordConfig_Healing_CheckRecordCrits" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_GeneralButton" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-6"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigHealingRecordCrits);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Healing"]["RecordCrits"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Healing_CheckCountTrivial" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Healing_CheckRecordCrits">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigCountTrivial);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Healing"]["CountTrivial"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Healing_CheckTooltipTargetInfo" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Healing_CheckCountTrivial">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipTargetInfo);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Healing"]["TooltipTargetInfo"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Healing_CheckTooltipLevelRaceClass" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Healing_CheckTooltipTargetInfo">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipLevelRaceClass);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Healing"]["TooltipLevelRaceClass"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Healing_CheckTooltipLocation" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Healing_CheckTooltipLevelRaceClass">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipLocation);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Healing"]["TooltipLocation"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="CritRecordConfig_Healing_CheckTooltipDateTime" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CritRecordConfig_Healing_CheckTooltipLocation">
+								<Offset>
+									<AbsDimension x="0" y="-24"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(CritRecord.LOCAL.ConfigTooltipDateTime);
+							</OnLoad>
+							<OnShow>
+								getglobal(this:GetName()):SetChecked(CritRecordOptions["Healing"]["TooltipDateTime"]);
+							</OnShow>
+							<OnClick>
+								CritRecordConfig_OnClickCheck(this:GetName());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CritRecordConfig_OnLoad();
+				CritRecordConfig_GeneralButton:GetScript("OnClick");
+			</OnLoad>
+			<OnShow>
+				CritRecordConfig_UpdateCheckAbilities();
+			</OnShow>
+			<OnUpdate>
+				CritRecordConfig_UpdateViewRecords();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+</Ui>

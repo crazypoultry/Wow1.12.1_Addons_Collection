@@ -1,0 +1,577 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="localization.lua"/>
+
+	<Slider name="MerchantSafeList_SliderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="0"/>
+		</Size>
+		<Frames>
+			<Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = this:GetParent();
+						parent:SetValue(parent:GetValue() - 1);
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = this:GetParent();
+						parent:SetValue(parent:GetValue() + 1);
+						PlaySound("UChatScrollButton");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged>
+				this:GetParent():SetVerticalScroll(arg1);
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	<ScrollFrame name="MerchantSafeList_ScrollFrameTemplate" virtual="true">
+		<Frames>
+			<Slider name="$parentScrollBar" inherits="MerchantSafeList_SliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="-16"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="6" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."ScrollBar"):SetValueStep(1);
+			</OnLoad>
+			<OnVerticalScroll>
+				local scrollbar = getglobal(this:GetName().."ScrollBar");
+				local val = scrollbar:GetValue()
+				local min, max = scrollbar:GetMinMaxValues();
+
+				if arg1 == min then
+					getglobal(scrollbar:GetName().."ScrollUpButton"):Disable();
+				else
+		   			getglobal(scrollbar:GetName().."ScrollUpButton"):Enable();
+				end
+				if scrollbar:GetValue() == max then
+					getglobal(scrollbar:GetName().."ScrollDownButton"):Disable();
+				else
+					getglobal(scrollbar:GetName().."ScrollDownButton"):Enable();
+				end
+				
+				MerchantSafeList_OnScroll(this);
+			</OnVerticalScroll>
+		</Scripts>
+	</ScrollFrame>
+
+	<Button name="MerchantSafeList_ListButtonTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="140" y="16"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnClick>
+				MerchantSafeList_ListButton_OnClick(this);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="MerchantSafeList_ListBoxTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="90"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<Color r="0" g="0" b="0"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentHighlight" hidden="true">
+				<Size>
+					<AbsDimension x="140" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentButton1" inherits="MerchantSafeList_ListButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton2" inherits="MerchantSafeList_ListButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton3" inherits="MerchantSafeList_ListButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton4" inherits="MerchantSafeList_ListButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton5" inherits="MerchantSafeList_ListButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="$parentScrollFrame" inherits="MerchantSafeList_ScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="-2"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."HighlightTexture"):SetVertexColor(0.75, 0.75, 0.25);
+				MerchantSafeList_ListBox_OnLoad(this);
+			</OnLoad>
+			<OnShow>
+				MerchantSafeList_ListBox_OnShow(this);
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MerchantSafeList_DropdownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="90" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MerchantSafeList_OPTIONS_QUALITYDROP">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				MerchantSafeList_Dropdown_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MerchantSafeList_Divider" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="320" y="40"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension y="40"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeaderText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLine" file="Interface\HelpFrame\HelpFrameDivider">
+					<Size>
+						<AbsDimension x="320" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension y="7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.3125" bottom="0.625" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				MerchantSafeList_DividerOnShow(this);
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MerchantSafeList_Options" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="340" y="280"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MerchantSafeList_OptionsHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="MerchantSafeList_OPTIONS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MerchantSafeList_OptionsHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlight" text="MerchantSafeList_VERSION">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-12" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="MerchantSafeList_Options_Close" inherits="GameMenuButtonTemplate" text="MerchantSafeList_OPTIONS_CLOSE">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MerchantSafeList_Options_Reset" inherits="GameMenuButtonTemplate" text="MerchantSafeList_OPTIONS_RESET">
+				<Size>
+					<AbsDimension x="55" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-12" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MerchantSafeList_ResetButton();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Frame name="MerchantSafeList_Divider_Items" inherits="MerchantSafeList_Divider">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<CheckButton name="MerchantSafeList_Options_Enable" hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="MerchantSafeList_OPTIONS_ENABLE">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Scripts>
+					<OnShow>
+						if MerchantSafeList_Save.Enable then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+					<OnClick>
+						if this:GetChecked() == 1 then
+							MerchantSafeList_Save.Enable = true;
+						else
+							MerchantSafeList_Save.Enable = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame name="MerchantSafeList_Arrange_ListBox" inherits="MerchantSafeList_ListBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-75"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="MerchantSafeList_Quality_Dropdown" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="90" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantSafeList_Arrange_ListBox" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MerchantSafeList_OPTIONS_QUALITYDROP">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						MerchantSafeList_Quality_Dropdown_OnShow();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Button name="MerchantSafeList_Arrange_Delete" inherits="GameMenuButtonTemplate" text="MerchantSafeList_OPTIONS_DELETE">
+				<Size>
+					<AbsDimension x="70" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="MerchantSafeList_Arrange_ListBox" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="41"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MerchantSafeList_DeleteArrangeButton();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="MerchantSafeList_Arrange_AddTextInput" inherits="InputBoxTemplate" autoFocus="false">
+				<Size>
+					<AbsDimension x="190" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantSafeList_Arrange_ListBox" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnTabPressed>
+						this:ClearFocus();
+					</OnTabPressed>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+					</OnEditFocusLost>
+					<OnEnterPressed>
+						this:ClearFocus();
+						MerchantSafeList_AddArrangeButton();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+			</EditBox>
+			<Button name="MerchantSafeList_Arrange_Add" inherits="GameMenuButtonTemplate" text="MerchantSafeList_OPTIONS_ADD">
+				<Size>
+					<AbsDimension x="70" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantSafeList_Arrange_Delete" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MerchantSafeList_AddArrangeButton();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MerchantSafeList_Arrange_AddByCursor" inherits="GameMenuButtonTemplate" text="MerchantSafeList_OPTIONS_ADDBC">
+				<Size>
+					<AbsDimension x="125" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MerchantSafeList_Arrange_AddTextInput" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-7" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MerchantSafeList_AddBCArrangeButton();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MerchantSafeList_Arrange_DeleteByCursor" inherits="GameMenuButtonTemplate" text="MerchantSafeList_OPTIONS_DELETEBC">
+				<Size>
+					<AbsDimension x="125" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MerchantSafeList_Arrange_AddByCursor" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MerchantSafeList_DeleteBCArrangeButton();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				UIPanelWindows["ABOptionsPane"] = {area = "center", pushable = 0};
+			</OnLoad>
+			<OnHide>
+				-- Check if the options frame was opened by myAddOns
+				if(MYADDONS_ACTIVE_OPTIONSFRAME == this) then
+					ShowUIPanel(myAddOnsFrame);
+				end
+				MerchantSafeList_OnHide();
+			</OnHide>
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" ) then
+					this:StartMoving();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( arg1 == "LeftButton" ) then
+					this:StopMovingOrSizing();
+				end
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,495 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+	<Frame name="CryolysisProvisionMenu" frameStrata="DIALOG" movable="false" enableMouse="true" parent="CryolysisGeneralFrame">
+		<Size>
+			<AbsDimension x="350" y="452"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="CryolysisGeneralFrame"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CryolysisProvisionsInventory_Section" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="0.5" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisProvisionSort_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisProvisionDestroy_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisProvisionsCount_Section" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="0.5" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-145"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisRestock_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="55" y="-135"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisRestockConfirm_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="70" y="-155"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider name="CryolysisBag_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="4" valueStep="1" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(5-this:GetValue());
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(5-this:GetValue());
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseUp>
+						GameTooltip:SetText(5-this:GetValue());
+						CryolysisConfig.ProvisionContainer = 4-this:GetValue();
+						Cryolysis_ProvisionSwitch("MOVE");
+					</OnMouseUp>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisButton_Slider" inherits="OptionsSliderTemplate" minValue="1" maxValue="5" valueStep="1" virtual="true">
+				<Size>
+					<AbsDimension x="140" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-60" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						if this:GetValue() == 1 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Consume);
+						elseif this:GetValue() == 2 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Evocation);
+						elseif this:GetValue() == 3 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Polymorph);
+						elseif this:GetValue() == 4 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Manastone);
+						elseif this:GetValue() == 5 then
+							GameTooltip:SetText(CRYOLYSIS_SPELL_TABLE[7].Name);
+						end
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() == 1 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Consume);
+						elseif this:GetValue() == 2 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Evocation);
+						elseif this:GetValue() == 3 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Polymorph);
+						elseif this:GetValue() == 4 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Button.Manastone);	
+						elseif this:GetValue() == 5 then
+							GameTooltip:SetText(CRYOLYSIS_SPELL_TABLE[7].Name);
+						end
+						CryolysisConfig.Button = this:GetValue();
+						</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisCountType_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="8" valueStep="1" virtual="true">
+				<Size>
+					<AbsDimension x="140" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-75" y="-55"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						if this:GetValue() == 0 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.None);
+						elseif this:GetValue() == 1 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Provision);
+						elseif this:GetValue() == 2 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Provision2);
+						elseif this:GetValue() == 3 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Health);
+						elseif this:GetValue() == 4 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.HealthPercent);
+						elseif this:GetValue() == 5 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Mana);
+						elseif this:GetValue() == 6 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.ManaPercent);
+						elseif this:GetValue() == 7 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Manastone);
+						else
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Evocation);
+						end
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() == 0 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.None);
+						elseif this:GetValue() == 1 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Provision);
+						elseif this:GetValue() == 2 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Provision2);
+						elseif this:GetValue() == 3 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Health);
+						elseif this:GetValue() == 4 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.HealthPercent);
+						elseif this:GetValue() == 5 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Mana);
+						elseif this:GetValue() == 6 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.ManaPercent);
+						elseif this:GetValue() == 7 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Manastone);
+						else
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Count.Evocation);
+						end
+						CryolysisConfig.CountType = this:GetValue();
+						</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisCircle_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="4" valueStep="1" virtual="true">
+				<Size>
+					<AbsDimension x="140" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-75" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						if this:GetValue() == 0 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.None);
+						elseif this:GetValue() == 1 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.HP);
+						elseif this:GetValue() == 2 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.Mana);
+						elseif this:GetValue() == 3 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.Manastone);
+						else
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.Evocation);
+						end
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() == 0 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.None);
+						elseif this:GetValue() == 1 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.HP);
+						elseif this:GetValue() == 2 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.Mana);
+						elseif this:GetValue() == 3 then
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.Manastone);
+						else
+							GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Circle.Evocation);
+						end
+						CryolysisConfig.Circle = this:GetValue();
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<Slider name="CryolysisFood_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" virtual="true">
+				<Size>
+					<AbsDimension x="140" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="75" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue().."%");
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() ~= CryolysisConfig.HPLimit then
+							GameTooltip:SetText(this:GetValue().."%");
+							CryolysisConfig.HPLimit = this:GetValue();
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisDrink_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1" virtual="true">
+				<Size>
+					<AbsDimension x="140" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="75" y="-55"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>	
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue().."%");
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() ~= CryolysisConfig.MPLimit then
+							GameTooltip:SetText(this:GetValue().."%");
+							CryolysisConfig.MPLimit = this:GetValue();
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+
+
+
+			<Slider name="CryolysisTeleport_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="60" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="75" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="85" y="35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue());
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseUp>
+						GameTooltip:SetText(this:GetValue());
+						CryolysisConfig.RestockTeleport = this:GetValue();
+					</OnMouseUp>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisPortal_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="60" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="75" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="85" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue());
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseUp>
+						GameTooltip:SetText(this:GetValue());
+						CryolysisConfig.RestockPortals = this:GetValue();
+					</OnMouseUp>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisPowder_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="60" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="75" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisProvisionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="85" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue());
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseUp>
+						GameTooltip:SetText(this:GetValue());
+						CryolysisConfig.RestockPowder = this:GetValue();
+					</OnMouseUp>
+				</Scripts>
+			</Slider>
+
+
+			<CheckButton name="CryolysisProvisionSort_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.ProvisionSort = true;
+						else
+							CryolysisConfig.ProvisionSort = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CryolysisProvisionDestroy_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.ProvisionDestroy = true;
+						else
+							CryolysisConfig.ProvisionDestroy = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CryolysisRestock_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-130"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.Restock = true;
+						else
+							CryolysisConfig.Restock = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CryolysisRestockConfirm_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisProvisionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="45" y="-150"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.RestockConfirm = true;
+						else
+							CryolysisConfig.RestockConfirm = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+		</Frames>
+     		<Scripts>
+        		<OnLoad>
+				HideUIPanel(CryolysisProvisionMenu);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

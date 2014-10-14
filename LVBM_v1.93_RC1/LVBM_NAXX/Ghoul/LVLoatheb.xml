@@ -1,0 +1,238 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="LVBMLoathebFrameDrag" parent="UIParent" frameStrata="MEDIUM" hidden="true" topLevel="true" enableMouse="true" movable="true">
+		<Size>
+			<AbsDimension x="100" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="150" y="-50"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontNormalSmall" text="Loatheb">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetUserPlaced(1);				
+			</OnLoad>
+			<OnMouseDown>
+				if arg1 == "LeftButton" and not LVBM.AddOns.Loatheb.Options.FrameLocked then
+					this:StartMoving();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+				if arg1 == "RightButton" then
+					UIDropDownMenu_Initialize(LVBMLoathebMenu, LVBM.AddOns.Loatheb.InitializeMenu, "MENU");
+					ToggleDropDownMenu(1, nil, LVBMLoathebMenu, "LVBMLoathebMenu", 30, 50);
+				end
+			</OnMouseUp>
+			<OnShow>
+				if not LVBM.AddOns.Loatheb.HealersSorted then
+					SendAddonMessage("LVBMLOATHEB", "REQLIST", "RAID");
+				end
+				LVBM.AddOns.Loatheb.OnEvent("UpdateHealerFrame", 0);
+			</OnShow>			
+		</Scripts>
+	</Frame>
+	<Frame name="LVBMLoathebUpdate" hidden="false">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("CHAT_MSG_ADDON");
+				this:RegisterEvent("PLAYER_LOGIN");
+				this:RegisterEvent("RAID_ROSTER_UPDATE");
+			</OnLoad>
+			<OnEvent>
+				LVBM.AddOns.Loatheb.OnEvent(event, arg1)
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="LVBMLoathebHealerTemplate" frameStrata="MEDIUM" virtual="true">
+		<Size>
+			<AbsDimension x="200" y="20"/>
+		</Size>
+		<Frames>
+			<StatusBar name="$parentBar">
+				<Size>
+					<AbsDimension x="190" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.3"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentName" inherits="GameFontNormalSmall" text="Healer x">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="1" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentCooldown" inherits="GameFontNormalSmall" text="LVBM_LOATHEB_NO_CD">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-1" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentBorder">
+						<Size>
+							<AbsDimension x="198" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset>
+									<AbsDimension x="-5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture name="$parentTextureNormal" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder"/>				
+					</Button>
+				</Frames>
+				<BarTexture name="$parentTextureBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 60);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+	</Frame>
+	<Frame name="LVBMLoathebEditBoxTemplate" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="30" y="20"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<EditBox name="$parentEditBox" numeric="true">
+				<Size>
+					<AbsDimension x="30" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="6" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="ChatFontNormal"></FontString>
+				<Scripts>
+					<OnLoad>
+						this:SetMaxLetters(2);
+					</OnLoad>
+				</Scripts>
+			</EditBox>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor(0, 0, 0, 0.4);
+			</OnLoad>
+			<OnShow>
+				getglobal(this:GetName().."EditBox"):SetText("");
+				if LVBM.AddOns.Loatheb.HealersSorted then
+					getglobal(this:GetName().."EditBox"):SetText(LVBM.AddOns.Loatheb.Healers[this:GetID()].Sort);
+				else
+					getglobal(this:GetName().."EditBox"):SetText(this:GetID());
+				end
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Button name="LVBMLoathebButton" hidden="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				local i = 1;
+				LVBMLoathebFrameDrag.ConfigMode = false;
+				while getglobal("LVBMLoathebHealerFrame"..i.."EditBox") and getglobal("LVBMLoathebHealerFrame"..i.."EditBox"):IsShown() do
+					if LVBM.AddOns.Loatheb.Healers[i] then
+						LVBM.AddOns.Loatheb.Healers[i].Sort = tonumber(getglobal("LVBMLoathebHealerFrame"..i.."EditBoxEditBox"):GetNumber()) or 99;
+					end
+					getglobal("LVBMLoathebHealerFrame"..i.."EditBox"):Hide();
+					i = i + 1;
+				end
+				LVBM.AddOns.Loatheb.HealersSorted = true;
+				if LVBM.Rank >= 1 then
+					LVBM.AddOns.Loatheb.OnEvent("SendHealList");
+				end
+				for index, value in pairs(LVBM.AddOns.Loatheb.Healers) do
+					if value and value.Sort == 0 then
+						LVBM.AddOns.Loatheb.DeletedHealers[value.Name] = true;
+						table.remove(LVBM.AddOns.Loatheb.Healers, index);
+					elseif value and value.Sort ~= 0 and LVBM.AddOns.Loatheb.DeletedHealers[value.Name] then
+						LVBM.AddOns.Loatheb.DeletedHealers[value.Name] = nil;
+					end
+				end
+				LVBM.AddOns.Loatheb.OnEvent("RAID_ROSTER_UPDATE");
+				this:Hide();
+			</OnClick>
+		</Scripts>
+		<NormalTexture inherits="DialogButtonNormalTexture"/>
+		<PushedTexture inherits="DialogButtonPushedTexture"/>
+		<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+		<ButtonText text="LVBM_LOATHEB_SET_HEAL_ROTATION"/>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightFont inherits="GameFontHighlightSmall"/>
+	</Button>
+	<Frame name="LVBMLoathebMenu" parent="LVBMLoathebFrameDrag" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeto="LVBMLoathebFrameDrag">
+				<Offset>
+					<AbsDimension x="0" y="-50"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+</Ui>

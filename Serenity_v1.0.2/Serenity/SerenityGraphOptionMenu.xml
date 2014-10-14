@@ -1,0 +1,352 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+	<Frame name="SerenityGraphOptionMenu" frameStrata="DIALOG" movable="false" enableMouse="true" parent="SerenityGeneralFrame">
+		<Size>
+			<AbsDimension x="350" y="452"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="SerenityGeneralFrame"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">	
+				<FontString name="SerenityShowConcentration_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SerenityIconsLock_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SerenityLock_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SerenityBuffMenu_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-140"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="SerenitySpellMenu_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-170"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider name="SerenityButtonRotate_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="360" valueStep="18" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue());
+					</OnEnter>
+					<OnValueChanged>
+						SerenityConfig.SerenityAngle = this:GetValue();
+						local x, y = SerenityButton:GetCenter();
+						GameTooltip:SetText(this:GetValue());
+						Serenity_UpdateButtonsScale();
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="SerenityButtonScale_Slider" inherits="OptionsSliderTemplate" minValue="50" maxValue="150" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>	
+					<OnEnter>
+						NBx, NBy = SerenityButton:GetCenter();
+						NBx = NBx * (SerenityConfig.SerenityButtonScale / 100);
+						NBy = NBy * (SerenityConfig.SerenityButtonScale / 100);
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue().." %");
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() ~= SerenityConfig.SerenityButtonScale then
+							SerenityButton:ClearAllPoints();
+							GameTooltip:SetText(this:GetValue().." %");
+							SerenityConfig.SerenityButtonScale = this:GetValue();
+							SerenityButton:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", NBx / (SerenityConfig.SerenityButtonScale / 100), NBy / (SerenityConfig.SerenityButtonScale / 100));
+							SerenityButton:SetScale(SerenityConfig.SerenityButtonScale / 100);
+							Serenity_UpdateButtonsScale();
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="SerenityStoneScale_Slider" inherits="OptionsSliderTemplate" minValue="50" maxValue="150" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>	
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue().."%");
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() ~= SerenityConfig.SerenityStoneScale then
+							GameTooltip:SetText(this:GetValue().."%");
+							SerenityConfig.SerenityStoneScale = this:GetValue();
+							SerenityPotionButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityDrinkButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityDispelButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityLeftSpellButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityMiddleSpellButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityRightSpellButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityBuffMenuButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenityMountButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							SerenitySpellMenuButton:SetScale(SerenityConfig.SerenityStoneScale / 100);
+							Serenity_UpdateButtonsScale();
+							Serenity_CreateMenu();
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<CheckButton name="SerenityIconsLock_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-75"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							SerenityConfig.SerenityLockServ = true;
+							Serenity_ClearAllPoints();
+							Serenity_UpdateButtonsScale();
+							Serenity_NoDrag();
+							if not SerenityConfig.NoDragAll then
+								SerenityButton:RegisterForDrag("LeftButton");
+								SerenitySpellTimerButton:RegisterForDrag("LeftButton");
+							end
+						else
+							SerenityConfig.SerenityLockServ = false;
+							Serenity_ClearAllPoints();
+							SerenityDrinkButton:SetPoint("CENTER", "UIParent", "CENTER", -121,-100);
+							SerenityPotionButton:SetPoint("CENTER", "UIParent", "CENTER", -87,-100);
+							SerenityDispelButton:SetPoint("CENTER", "UIParent", "CENTER", -53,-100);
+							SerenityLeftSpellButton:SetPoint("CENTER", "UIParent", "CENTER", -17,-100);
+							SerenityMiddleSpellButton:SetPoint("CENTER", "UIParent", "CENTER", 17,-100);
+							SerenityRightSpellButton:SetPoint("CENTER", "UIParent", "CENTER", 53,-100);
+							SerenityBuffMenuButton:SetPoint("CENTER", "UIParent", "CENTER", 87,-100);
+							SerenityMountButton:SetPoint("CENTER", "UIParent", "CENTER", 121,-100);
+							SerenitySpellMenuButton:SetPoint("CENTER", "UIParent", "CENTER", 155,-100);
+							Serenity_Drag();
+							SerenityConfig.NoDragAll = false;
+							SerenityLock_Button:SetChecked(false);
+							SerenityButton:RegisterForDrag("LeftButton");
+							SerenitySpellTimerButton:RegisterForDrag("LeftButton");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SerenityLock_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-95"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							Serenity_NoDrag();
+							SerenityButton:RegisterForDrag("");
+							SerenitySpellTimerButton:RegisterForDrag("");
+							SerenityConfig.NoDragAll = true;
+						else
+							if not SerenityConfig.SerenityLockServ then
+								Serenity_Drag();
+							end
+							SerenityButton:RegisterForDrag("LeftButton");
+							SerenitySpellTimerButton:RegisterForDrag("LeftButton");
+							SerenityConfig.NoDragAll = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SerenityBuffMenu_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-135"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							SerenityConfig.BuffMenuPos = -34;
+						else
+							SerenityConfig.BuffMenuPos = 34;
+						end
+						Serenity_CreateMenu();							
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="SerenityBuffMenuAnchor_Slider" inherits="OptionsSliderTemplate" minValue="-50" maxValue="50" valueStep="2" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-30" y="65"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(SERENITY_CONFIGURATION.Anchor.Text);
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+						if SerenityConfig.BuffMenuAnchor ~= this:GetValue() then
+							SerenityConfig.BuffMenuAnchor = this:GetValue();
+							if SerenityPrivate.BuffMenuShow then
+								Serenity_BuffMenu("LeftButton");
+							end
+							Serenity_BuffMenu("LeftButton");
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<CheckButton name="SerenitySpellMenu_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-165"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							SerenityConfig.SpellMenuPos = -34;
+						else
+							SerenityConfig.SpellMenuPos = 34;
+						end
+						Serenity_CreateMenu();						
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="SerenitySpellMenuAnchor_Slider" inherits="OptionsSliderTemplate" minValue="-50" maxValue="50" valueStep="2" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="SerenityGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-30" y="35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(SERENITY_CONFIGURATION.Anchor.Text);
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+						if SerenityConfig.SpellMenuAnchor ~= this:GetValue() then
+							SerenityConfig.SpellMenuAnchor = this:GetValue();
+							if  SerenityPrivate.SpellMenuShow then
+								Serenity_SpellMenu("LeftButton");
+							end
+							Serenity_SpellMenu("LeftButton");
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+		</Frames>
+     		<Scripts>
+        		<OnLoad>
+				HideUIPanel(SerenityGraphOptionMenu);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

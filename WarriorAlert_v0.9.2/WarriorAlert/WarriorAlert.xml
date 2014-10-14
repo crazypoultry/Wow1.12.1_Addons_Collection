@@ -1,0 +1,690 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+	<Script file="localization.lua"/>
+	<Script file="WarriorAlert.lua"/> 
+
+	<Frame name="WarriorAlert">
+		<Scripts> 
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnUpdate>
+				WarriorAlert_CheckCooldowns(arg1);
+			</OnUpdate>
+			<OnEvent> 
+				if (event == "VARIABLES_LOADED") then
+					WarriorAlert_Init();
+				end
+				
+				if(event == "UNIT_RAGE") then
+					WarriorAlert_MortalStrike();
+					WarriorAlert_Bloodthirst();
+				end
+
+				if(event == "UNIT_HEALTH" or event == "UNIT_RAGE") then
+					WarriorAlert_Execute();
+				end
+				
+				if(event == "PLAYER_TARGET_CHANGED") then
+					WarriorAlert_TargetChanged();
+				end
+				
+				if(event == "CHAT_MSG_COMBAT_SELF_MISSES" or event == "CHAT_MSG_SPELL_SELF_DAMAGE") then
+					WarriorAlert_Overpower(arg1);
+				end
+				
+				if(event == "CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES") then
+					WarriorAlert_Revenge(arg1);
+				end
+				
+				if(event == "ACTIONBAR_UPDATE_COOLDOWN") then
+					WarriorAlert_MortalStrike();
+				end
+				
+				if(event == "ADDON_LOADED" and arg1 == "WarriorAlert") then
+					WarriorAlert_Loaded();
+				end
+
+				if(event == "SPELL_UPDATE_COOLDOWN") then
+					WarriorAlert_Instant();
+				end
+				
+				if(event == "ACTIONBAR_SLOT_CHANGED") then
+					WarriorAlert_GetSlots(arg1);
+				end
+				
+				if(event == "PLAYER_REGEN_DISABLED") then
+					WarriorAlert_LookupActions();
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+   
+	<MessageFrame name="WarriorAlert_MessageFrame" insertMode="TOP" parent="UIParent" frameStrata="LOW" toplevel="true" enableMouse="false" movable="true">
+		<Size><AbsDimension x="512" y="80"/></Size>
+		<Anchors>
+			<Anchor point="CENTER"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+		</Anchors>
+		<FontString inherits="NumberFontNormalHuge" justifyH="CENTER">
+		</FontString>
+
+		<Scripts>
+			<OnLoad>
+				this:SetTimeVisible(1);
+			</OnLoad>
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+	</MessageFrame>
+
+	<Frame name="WarriorAlert_ConfigFrame" 
+		toplevel="true" parent="UIParent" frameStrata="DIALOG" 
+		hidden="true" enableMouse="true" movable="true">
+		<Size><AbsDimension x="650" y="420"/></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+		
+		<Scripts>
+			<OnLoad>
+ 				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+		</Scripts>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
+			edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+
+
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="0" y="0"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="384" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="WARRIORALERT_CONF_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent">
+						<Offset><AbsDimension x="0" y="-3"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+
+	<!-- OVERPOWER CONFIG FRAME START -->
+			<Frame name="WarriorAlert_ConfigOverpowerFrame">
+				<Size>
+					<AbsDimension x="300" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer>
+                		<FontString inherits="GameFontHighlight" text="WARRIORALERT_CONF_TITLE_OVERPOWER">
+                    	<Anchors>
+                        	<Anchor point="TOPLEFT">
+                            	<Offset>
+                                	<AbsDimension x="5" y="13"/>
+                            	</Offset>
+                        	</Anchor>
+                    	</Anchors>
+                		</FontString>
+					</Layer>
+				</Layers>
+				
+			</Frame>
+	<!-- OVERPOWER CONFIG FRAME END -->
+
+	<!-- MORTAL STRIKE CONFIG FRAME START -->
+			<Frame name="WarriorAlert_ConfigMortalStrikeFrame">
+				<Size>
+					<AbsDimension x="300" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigOverpowerFrame">
+						<Offset>
+							<AbsDimension x="0" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer>
+                		<FontString inherits="GameFontHighlight" text="WARRIORALERT_CONF_TITLE_MORTALSTRIKE">
+                    	<Anchors>
+                        	<Anchor point="TOPLEFT">
+                            	<Offset>
+                                	<AbsDimension x="5" y="13"/>
+                            	</Offset>
+                        	</Anchor>
+                    	</Anchors>
+                		</FontString>
+					</Layer>
+				</Layers>
+				
+			</Frame>
+	<!-- MORTAL STRIKE CONFIG FRAME END -->
+
+	<!-- EXECUTE CONFIG FRAME START -->
+			<Frame name="WarriorAlert_ConfigExecuteFrame">
+				<Size>
+					<AbsDimension x="300" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigMortalStrikeFrame">
+						<Offset>
+							<AbsDimension x="0" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer>
+                		<FontString inherits="GameFontHighlight" text="WARRIORALERT_CONF_TITLE_EXECUTE">
+                    	<Anchors>
+                        	<Anchor point="TOPLEFT">
+                            	<Offset>
+                                	<AbsDimension x="5" y="13"/>
+                            	</Offset>
+                        	</Anchor>
+                    	</Anchors>
+                		</FontString>
+					</Layer>
+				</Layers>
+				
+			</Frame>
+	<!-- EXECUTE CONFIG FRAME END -->
+
+	<!-- REVENGE CONFIG FRAME START -->
+			<Frame name="WarriorAlert_ConfigRevengeFrame">
+				<Size>
+					<AbsDimension x="300" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigOverpowerFrame">
+						<Offset>
+							<AbsDimension x="310" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer>
+                		<FontString inherits="GameFontHighlight" text="WARRIORALERT_CONF_TITLE_REVENGE">
+                    	<Anchors>
+                        	<Anchor point="TOPLEFT">
+                            	<Offset>
+                                	<AbsDimension x="5" y="13"/>
+                            	</Offset>
+                        	</Anchor>
+                    	</Anchors>
+                		</FontString>
+					</Layer>
+				</Layers>
+				
+			</Frame>
+	<!-- REVENGE CONFIG FRAME END -->
+	
+	<!-- BLOODTHIRST CONFIG FRAME START -->
+			<Frame name="WarriorAlert_ConfigBloodthirstFrame">
+				<Size>
+					<AbsDimension x="300" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigRevengeFrame">
+						<Offset>
+							<AbsDimension x="0" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer>
+                		<FontString inherits="GameFontHighlight" text="WARRIORALERT_CONF_TITLE_BLOODTHIRST">
+                    	<Anchors>
+                        	<Anchor point="TOPLEFT">
+                            	<Offset>
+                                	<AbsDimension x="5" y="13"/>
+                            	</Offset>
+                        	</Anchor>
+                    	</Anchors>
+                		</FontString>
+					</Layer>
+				</Layers>
+				
+			</Frame>
+	<!-- BLOODTHIRST CONFIG FRAME END -->
+	
+	<!-- OVERPOWER BOX BUTTONS START -->
+			<CheckButton name="WarriorAlert_CBShowMessage1" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigOverpowerFrame">
+					<Offset><AbsDimension x="2" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBSHOWMESSAGE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Overpower", "Message"); </OnClick>
+				</Scripts>
+			</CheckButton>
+		
+			<CheckButton name="WarriorAlert_CBPlaySound1" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage1">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBPLAYSOUND); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Overpower", "Sound"); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBattleStance1" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage1">
+					<Offset><AbsDimension x="140" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBATTLESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Overpower", 1); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="WarriorAlert_CBDefensiveStance1" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBBattleStance1">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBDEFENSIVESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Overpower", 2); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBerserkerStance1" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBDefensiveStance1">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBERSERKERSTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Overpower", 3); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+	<!-- OVERPOWER BOX BUTTONS END -->
+
+	<!-- MORTAL STRIKE BOX BUTTONS START -->
+			<CheckButton name="WarriorAlert_CBShowMessage2" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigMortalStrikeFrame">
+					<Offset><AbsDimension x="2" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBSHOWMESSAGE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("MortalStrike", "Message"); </OnClick>
+				</Scripts>
+			</CheckButton>
+		
+			<CheckButton name="WarriorAlert_CBPlaySound2" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage2">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBPLAYSOUND); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("MortalStrike", "Sound"); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBattleStance2" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage2">
+					<Offset><AbsDimension x="140" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBATTLESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("MortalStrike", 1); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="WarriorAlert_CBDefensiveStance2" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBBattleStance2">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBDEFENSIVESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("MortalStrike", 2); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBerserkerStance2" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBDefensiveStance2">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBERSERKERSTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("MortalStrike", 3); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+	<!-- MORTAL STRIKE BOX BUTTONS END -->
+
+	<!-- EXECUTE BOX BUTTONS START -->
+			<CheckButton name="WarriorAlert_CBShowMessage3" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigExecuteFrame">
+					<Offset><AbsDimension x="2" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBSHOWMESSAGE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Execute", "Message"); </OnClick>
+				</Scripts>
+			</CheckButton>
+		
+			<CheckButton name="WarriorAlert_CBPlaySound3" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage3">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBPLAYSOUND); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Execute", "Sound"); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBattleStance3" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage3">
+					<Offset><AbsDimension x="140" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBATTLESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Execute", 1); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="WarriorAlert_CBDefensiveStance3" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBBattleStance3">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBDEFENSIVESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Execute", 2); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBerserkerStance3" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBDefensiveStance3">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBERSERKERSTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Execute", 3); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+	<!-- EXECUTE BOX BUTTONS END -->
+
+	<!-- REVENGE BOX BUTTONS START -->
+			<CheckButton name="WarriorAlert_CBShowMessage4" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigRevengeFrame">
+					<Offset><AbsDimension x="2" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBSHOWMESSAGE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Revenge", "Message"); </OnClick>
+				</Scripts>
+			</CheckButton>
+		
+			<CheckButton name="WarriorAlert_CBPlaySound4" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage4">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBPLAYSOUND); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Revenge", "Sound"); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBattleStance4" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage4">
+					<Offset><AbsDimension x="140" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBATTLESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Revenge", 1); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="WarriorAlert_CBDefensiveStance4" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBBattleStance4">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBDEFENSIVESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Revenge", 2); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBerserkerStance4" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBDefensiveStance4">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBERSERKERSTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Revenge", 3); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+	<!-- REVENGE BOX BUTTONS END -->
+
+	<!-- BLOODTHIRST BOX BUTTONS START -->
+			<CheckButton name="WarriorAlert_CBShowMessage5" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_ConfigBloodthirstFrame">
+					<Offset><AbsDimension x="2" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBSHOWMESSAGE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Bloodthirst", "Message"); </OnClick>
+				</Scripts>
+			</CheckButton>
+		
+			<CheckButton name="WarriorAlert_CBPlaySound5" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage5">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBPLAYSOUND); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Bloodthirst", "Sound"); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBattleStance5" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBShowMessage5">
+					<Offset><AbsDimension x="140" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBATTLESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Bloodthirst", 1); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="WarriorAlert_CBDefensiveStance5" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBBattleStance5">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBDEFENSIVESTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Bloodthirst", 2); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="WarriorAlert_CBBerserkerStance5" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WarriorAlert_CBDefensiveStance5">
+					<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(WARRIORALERT_CONF_CBBERSERKERSTANCE); </OnLoad>
+					<OnClick> WarriorAlert_CheckboxClick("Bloodthirst", 3); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+	<!-- BLOODTHIRST BOX BUTTONS END -->
+
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="WARRIORALERT_CONF_CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOM">
+					<Offset><AbsDimension x="-12" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>WarriorAlert_ConfigFrame:Hide();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<GameTooltip name="WarriorAlert_Tooltip" inherits="GameTooltipTemplate">
+		<Scripts>
+			<Onload>
+				this:SetOwner(this, "ANCHOR_NONE");
+			</Onload>
+		</Scripts>
+	</GameTooltip>
+</Ui>

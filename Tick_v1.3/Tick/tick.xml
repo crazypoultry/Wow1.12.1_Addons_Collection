@@ -1,0 +1,1399 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+<Script file="config.lua"/>
+<Script file="locals.lua"/>
+<Script file="locals_en.lua"/>
+<Script file="locals_de.lua"/>
+<Script file="locals_fr.lua"/>
+<Script file="tick.lua"/>
+
+<Frame name="TickScriptFrame" hidden="false">
+	<Scripts>
+		<OnLoad>
+			Tick_OnLoad();
+			elapsed = 0;
+		</OnLoad>
+		<OnEvent>
+			Tick_OnEvent();
+		</OnEvent>
+		<OnUpdate>
+			Tick_OnUpdate(arg1);
+		</OnUpdate>
+	</Scripts>
+</Frame>
+
+<GameTooltip name="TickBuffTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+	<Scripts>
+		<OnLoad>
+			this:SetOwner(UIParent, "ANCHOR_NONE")
+		</OnLoad>
+	</Scripts>
+</GameTooltip> 	
+
+<Frame name="TickBar" parent="UIParent" hidden="false" movable="true">
+	<Size>
+		<AbsDimension x="116" y="22"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="5" right="5" top="5" bottom="5"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Frames>
+		<StatusBar name="TickStatusBar" frameStrata="BACKGROUND">
+			<Size>
+				<AbsDimension x="106" y="14"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="-4"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="OVERLAY">
+					<Texture name="TickSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+		</StatusBar>
+		<Frame name="TickTextureStatusBarBackground" frameStrata="BACKGROUND">
+			<Size>
+				<AbsDimension x="116" y="22"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Backdrop bgFile="interface\characterframe\ui-party-background">
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Scripts>
+				<OnLoad>
+					this:SetFrameLevel(2);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+		<Frame name="TickBarEnergy" frameStrata="BACKGROUND">
+			<Size>
+				<AbsDimension x="100" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="-10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Frames>
+				<StatusBar name="TickStatusBarEnergy" frameStrata="BACKGROUND">
+					<Size>
+						<AbsDimension x="91" y="9"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</StatusBar>
+			</Frames>
+			<Scripts>
+				<OnLoad>
+					TickStatusBarEnergy:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
+					TickStatusBarEnergy:SetStatusBarColor(0.7,0.7,0);
+					this:SetFrameLevel(1);
+					TickStatusBarEnergy:SetFrameLevel(0);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+		<Frame name="TickTextureStatusBarEnergyBackground" parent="TickBarEnergy" frameStrata="BACKGROUND">
+			<Size>
+				<AbsDimension x="102" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Backdrop bgFile="interface\characterframe\ui-party-background">
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Scripts>
+				<OnLoad>
+					this:SetFrameLevel(0);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="TickBarText" inherits="GameFontHighlight">
+				<Size>
+					<AbsDimension x="116" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer>
+			<FontString name="TickBarTestText" inherits="GameFontNormalSmall" justifyH="CENTER">
+				<Size>
+					<AbsDimension x="100" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnMouseDown>
+			if( arg1 == "LeftButton" and Tick_Opts.locked == 0 ) then
+				this:StartMoving();
+			end
+			if ( arg1 == "RightButton" ) then
+				Tick_ShowHideOptions();
+			end
+		</OnMouseDown>
+		<OnMouseUp>
+			if( arg1 == "LeftButton" ) then
+				this:StopMovingOrSizing();
+			end
+		</OnMouseUp>
+		<OnEnter>
+			Tick_UpdateText("force");
+		</OnEnter>
+		<OnLeave>
+			getglobal("TickBarText"):SetText("");
+		</OnLeave>
+	</Scripts>
+</Frame>
+
+<Frame name="TickOptionsFrame" parent="UIParent" hidden="true" movable="true">
+	<Size>
+		<AbsDimension x="300" y="200"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Backdrop bgFile="interface\characterframe\ui-party-background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="5" right="5" top="5" bottom="5"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Scripts>
+ 		<OnMouseDown>
+ 			if( arg1 == "LeftButton" ) then
+ 				this:StartMoving();
+ 			end
+ 		</OnMouseDown>
+ 		<OnMouseUp>
+ 			if( arg1 == "LeftButton" ) then
+ 				this:StopMovingOrSizing();
+ 			end
+ 		</OnMouseUp>
+	</Scripts>
+	<Frames>
+		<Button name="TickSaveButton" inherits="OptionsButtonTemplate" text="TICK_CLOSE_BUTTON">
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-12" y="12"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					Tick_ShowHideOptions();
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Button name="TickOptionsPageDown" inherits="TickTabButtonTemplate">
+			<Size>
+				<AbsDimension x="20" y="20"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-7" y="-5"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					Tick_ChangeTab(-1);
+				</OnClick>
+			</Scripts>
+			<PushedTexture />
+			<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled" />
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up" />
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down" />
+		</Button>
+		<Button name="TickOptionsPageUp" inherits="OptionsButtonTemplate">
+			<Size>
+				<AbsDimension x="20" y="20"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-27" y="-5"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					Tick_ChangeTab(1);
+				</OnClick>
+			</Scripts>
+			<PushedTexture />
+			<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled" />
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up" />
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down" />
+		</Button>
+
+		<Frame name="TickOptsTabFrame1" setAllPoints="true">
+			<Frames>
+				<CheckButton name="TickButton4" inherits="OptionsCheckButtonTemplate" id="4">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-35"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+							Tick_UpdateText();
+							if ( Tick_CheckOpts[4].enabled == 1 ) then
+								Tick_Children("show",5,6,15,16);
+							else
+								getglobal("TickBarText"):SetText("");
+								Tick_Children("hide",5,6,15,16);
+							end
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_UpdateText();
+							if ( Tick_CheckOpts[4].enabled == 1 ) then
+								Tick_Children("show",5,6,15,16);
+							else
+								getglobal("TickBarText"):SetText("");
+								Tick_Children("hide",5,6,15,16);
+							end
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton5" inherits="OptionsCheckButtonTemplate" id="5">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton4" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton15" inherits="OptionsCheckButtonTemplate" id="15">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton5" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton16" inherits="OptionsCheckButtonTemplate" id="16">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton15" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton6" inherits="OptionsCheckButtonTemplate" id="6">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton16" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<Slider name="TickTextSizePicker" enableMouse="true" valueStep="1" minValue="10" maxValue="20" orientation="HORIZONTAL" inherits="OptionsSliderTemplate">
+					<Size>
+						<AbsDimension x="80" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-18" y="-140"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							getglobal(this:GetName().."High"):SetText("");
+							getglobal(this:GetName().."Low"):SetText("");
+							this:SetValue(Tick_Opts.textSize);
+						</OnShow>
+						<OnValueChanged>
+							Tick_ChangeFontSize(this:GetValue());
+						</OnValueChanged>
+					</Scripts>
+				</Slider>
+				<EditBox name="TickBarTextEdit" letters="30" autoFocus="false" multiLine="false" inherits="InputBoxTemplate">
+					<Size>
+						<AbsDimension x="100" y="32"></AbsDimension>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton6" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="12" y="-20"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							this:ClearFocus();
+							this:SetText(Tick_Opts.barText);
+						</OnShow>
+						<OnEscapePressed>
+							if ( this.oldvals ) then
+								this:SetText(this.oldvals);
+							end
+							this:ClearFocus();
+						</OnEscapePressed>
+						<OnEnterPressed>
+							if ( this:GetText() == "" ) then
+								this:SetText(this.oldvals);
+							else
+								Tick_Opts.barText = this:GetText();
+								Tick_UpdateText();
+							end
+							this:ClearFocus();
+						</OnEnterPressed>
+						<OnEditFocusGained>
+							this:SetFocus();
+							this.oldvals = this:GetText();
+						</OnEditFocusGained>
+					</Scripts>
+					<Layers>
+						<Layer>
+							<FontString inherits="GameFontNormalSmall" text="TICK_BAR_TEXT_HEADER" justifyH="CENTER">
+								<Anchors>
+									<Anchor point="BOTTOM" relativePoint="TOP">
+										<Offset>
+											<AbsDimension y="0" x="-6"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<FontString inherits="GameFontNormalSmall" justifyH="LEFT">
+					</FontString>
+				</EditBox>
+				<CheckButton name="TickButton26" inherits="OptionsCheckButtonTemplate" id="26">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickBarTextEdit" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-5" y="3"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<Button name="TickBarTextColorPicker" inherits="OptionsButtonTemplate">
+					<Size>
+						<AbsDimension x="25" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="TickBarTextColorText" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-1"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this.whenindex = "textColor";
+						</OnLoad>
+						<OnClick>
+							Tick_CPClick();
+						</OnClick>
+					</Scripts>
+					<PushedTexture />
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled" />
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up" />
+					<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down" />
+				</Button>
+				<Button name="TickBarShadowTextColorPicker" inherits="OptionsButtonTemplate">
+					<Size>
+						<AbsDimension x="25" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="TickBarShadowTextColorText" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-1"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this.whenindex = "textShadowColor";
+						</OnLoad>
+						<OnClick>
+							Tick_CPClick();
+						</OnClick>
+					</Scripts>
+					<PushedTexture />
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled" />
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up" />
+					<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down" />
+				</Button>
+				<CheckButton name="TickButton20" inherits="OptionsCheckButtonTemplate" id="20">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickBarShadowTextColorPicker" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+			</Frames>
+			<Layers>
+				<Layer>
+					<FontString name="TickBarTextColorText" inherits="GameFontNormalSmall" justifyH="LEFT">
+						<Size>
+							<AbsDimension x="100" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+					<FontString name="TickBarShadowTextColorText" inherits="GameFontNormalSmall" justifyH="LEFT">
+						<Size>
+							<AbsDimension x="100" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="-55"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					getglobal("TickBarTextColorText"):SetText(TICK_BAR_TEXT_COLOR_HEADER);
+					getglobal("TickBarShadowTextColorText"):SetText(TICK_BAR_TEXT_SHADOW_COLOR_HEADER);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+
+		<Frame name="TickOptsTabFrame2" setAllPoints="true">
+			<Layers>
+				<Layer>
+					<FontString name="TickBarColorText" inherits="GameFontNormalSmall" justifyH="LEFT">
+						<Size>
+							<AbsDimension x="100" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="39" y="-34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<CheckButton name="TickButton7" inherits="OptionsCheckButtonTemplate" id="7">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-110"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							if ( Tick_CheckOpts[7].enabled == 1 ) then
+								TickSpark:Hide();
+							else
+								TickSpark:Show();
+							end
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton18" inherits="OptionsCheckButtonTemplate" id="18">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton7" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton27" inherits="OptionsCheckButtonTemplate" id="27">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton18" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							if ( Tick_CheckOpts[27].enabled == 1 ) then
+								TickBarEnergy:Show();
+							else
+								TickBarEnergy:Hide();
+							end
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<EditBox name="TickBarHeightEdit" letters="4" autoFocus="false" multiLine="false" inherits="InputBoxTemplate">
+					<Size>
+						<AbsDimension x="27" y="32"></AbsDimension>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton27" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="7" y="1"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							this:ClearFocus();
+							this:SetText(Tick_Opts.barHeight);
+						</OnShow>
+						<OnEscapePressed>
+							if ( this.oldvals ) then
+								this:SetText(this.oldvals);
+							end
+							this:ClearFocus();
+						</OnEscapePressed>
+						<OnEnterPressed>
+							if ( this:GetText() == "" ) then
+								this:SetText(this.oldvals);
+							else
+								local height = tonumber(this:GetText());
+								if ( type(height) == "number" ) then
+									if ( height >= 0 ) then
+										Tick_Opts.barHeight= this:GetText();
+										Tick_ChangeDimensions(this:GetText(),Tick_Opts.barWidth)
+									else
+										this:SetText(this.oldvals);
+									end
+								else
+									this:SetText(this.oldvals);
+								end
+							end
+							this:ClearFocus();
+						</OnEnterPressed>
+						<OnEditFocusGained>
+							this:SetFocus();
+							this.oldvals = this:GetText();
+						</OnEditFocusGained>
+					</Scripts>
+					<Layers>
+						<Layer>
+							<FontString inherits="GameFontNormalSmall" text="x" justifyH="CENTER">
+								<Anchors>
+									<Anchor point="CENTER" relativePoint="CENTER">
+										<Offset>
+											<AbsDimension y="1" x="20"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<FontString inherits="GameFontNormalSmall" justifyH="LEFT">
+					</FontString>
+				</EditBox>
+				<EditBox name="TickBarWidthEdit" letters="4" autoFocus="false" multiLine="false" inherits="InputBoxTemplate">
+					<Size>
+						<AbsDimension x="27" y="32"></AbsDimension>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton27" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="54" y="1"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							this:ClearFocus();
+							this:SetText(Tick_Opts.barWidth);
+						</OnShow>
+						<OnEscapePressed>
+							if ( this.oldvals ) then
+								this:SetText(this.oldvals);
+							end
+							this:ClearFocus();
+						</OnEscapePressed>
+						<OnEnterPressed>
+							if ( this:GetText() == "" ) then
+								this:SetText(this.oldvals);
+							else
+								local width = tonumber(this:GetText());
+								if ( type(width) == "number" ) then
+									if ( width >= 0 ) then
+										Tick_Opts.barWidth = this:GetText();
+										Tick_ChangeDimensions(Tick_Opts.barHeight,this:GetText())
+									else
+										this:SetText(this.oldvals);
+									end
+								else
+									this:SetText(this.oldvals);
+								end
+							end
+							this:ClearFocus();
+						</OnEnterPressed>
+						<OnEditFocusGained>
+							this:SetFocus();
+							this.oldvals = this:GetText();
+						</OnEditFocusGained>
+					</Scripts>
+					<FontString inherits="GameFontNormalSmall" justifyH="LEFT">
+					</FontString>
+				</EditBox>
+				<StatusBar name="TickExampleStatusBar">
+					<Size>
+						<AbsDimension x="120" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this:SetFrameLevel(this:GetFrameLevel() - 1)
+						</OnLoad>
+					</Scripts>
+				</StatusBar>
+				<Button name="TickBarColorPicker" inherits="OptionsButtonTemplate">
+					<Size>
+						<AbsDimension x="25" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-30"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this.whenindex = "barColor";
+						</OnLoad>
+						<OnClick>
+							Tick_CPClick();
+						</OnClick>
+					</Scripts>
+					<PushedTexture />
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Disabled" />
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up" />
+					<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down" />
+				</Button>
+				<Slider name="TickTexturePicker" enableMouse="true" valueStep="1" minValue="0" maxValue="1" orientation="HORIZONTAL" inherits="OptionsSliderTemplate">
+					<Size>
+						<AbsDimension x="100" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-65"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							getglobal(this:GetName().."High"):SetText("");
+							getglobal(this:GetName().."Low"):SetText("");
+							this:SetValue(Tick_Opts.useTexture);
+						</OnShow>
+						<OnValueChanged>
+							Tick_ChangeBarTexture(this:GetValue());
+						</OnValueChanged>
+					</Scripts>
+				</Slider>
+				<CheckButton name="TickButton25" inherits="OptionsCheckButtonTemplate" id="25">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-80" y="-77"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<Slider name="TickSoundPicker" enableMouse="true" valueStep="1" minValue="0" maxValue="1" orientation="HORIZONTAL" inherits="OptionsSliderTemplate">
+					<Size>
+						<AbsDimension x="80" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-18" y="-55"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							getglobal(this:GetName().."High"):SetText("");
+							getglobal(this:GetName().."Low"):SetText("");
+							this:SetValue(Tick_Opts.useSound);
+						</OnShow>
+						<OnValueChanged>
+							Tick_ChangeSound(this:GetValue());
+							if ( this:GetValue() == 0 ) then
+								Tick_Children("hide",25);
+							else
+								Tick_Children("show",25);
+							end
+						</OnValueChanged>
+					</Scripts>
+				</Slider>
+				<Slider name="TickScalePicker" enableMouse="true" valueStep="0.25" minValue="0.25" maxValue="3.00" orientation="HORIZONTAL" inherits="OptionsSliderTemplate">
+					<Size>
+						<AbsDimension x="80" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-18" y="-110"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							getglobal(this:GetName().."High"):SetText("");
+							getglobal(this:GetName().."Low"):SetText("");
+							this:SetValue(Tick_Opts.barScale);
+						</OnShow>
+						<OnValueChanged>
+							Tick_ChangeScale(this:GetValue());
+						</OnValueChanged>
+					</Scripts>
+				</Slider>
+				<Slider name="TickOpacityPicker" enableMouse="true" valueStep="2" minValue="0" maxValue="100" orientation="HORIZONTAL" inherits="OptionsSliderTemplate">
+					<Size>
+						<AbsDimension x="80" y="17" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-18" y="-140"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							getglobal(this:GetName().."High"):SetText("");
+							getglobal(this:GetName().."Low"):SetText("");
+							this:SetValue(Tick_Opts.barOpacity);
+						</OnShow>
+						<OnValueChanged>
+							Tick_ChangeBarOpacity(this:GetValue());
+						</OnValueChanged>
+					</Scripts>
+				</Slider>
+			</Frames>
+			<Scripts>
+				<OnLoad>
+					getglobal("TickBarColorText"):SetText(TICK_BAR_COLOR_HEADER);
+				</OnLoad>
+			</Scripts>
+		</Frame>
+
+		<Frame name="TickOptsTabFrame3" setAllPoints="true">
+			<Layers>
+				<Layer>
+					<FontString name="TickBarCatFormOnly" inherits="GameFontNormalSmall" justifyH="LEFT">
+						<Size>
+							<AbsDimension x="100" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-35" y="-125"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<CheckButton name="TickButton14" inherits="OptionsCheckButtonTemplate" id="14">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-35"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="TickButton1" inherits="OptionsCheckButtonTemplate" id="1">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton14" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton2" inherits="OptionsCheckButtonTemplate" id="2">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton1" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="TickButton9" inherits="OptionsCheckButtonTemplate" id="9">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton2" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-10" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="TickButton10" inherits="OptionsCheckButtonTemplate" id="10">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton9" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="TickButton11" inherits="OptionsCheckButtonTemplate" id="11">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton10" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="TickButton12" inherits="OptionsCheckButtonTemplate" id="12">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton11" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="TickButton13" inherits="OptionsCheckButtonTemplate" id="13">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton12" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton3" inherits="OptionsCheckButtonTemplate" id="3">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-120" y="-35"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							if ( Tick_CheckOpts[3].enabled == 1 ) then
+								TickBar:EnableMouse(0);
+							else
+								TickBar:EnableMouse(1);
+							end
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton21" inherits="OptionsCheckButtonTemplate" id="21">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton3" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+							if ( Tick_CheckOpts[21].enabled == 1 ) then
+								Tick_Children("show",22,23,24);
+							else
+								Tick_Children("hide",22,23,24);
+							end
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							if ( Tick_CheckOpts[21].enabled == 1 ) then
+								Tick_Children("show",22,23,24);
+							else
+								Tick_Children("hide",22,23,24);
+							end
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton22" inherits="OptionsCheckButtonTemplate" id="22">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton21" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton23" inherits="OptionsCheckButtonTemplate" id="23">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton22" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_SwitchState();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton24" inherits="OptionsCheckButtonTemplate" id="24">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton23" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="TickButton8" inherits="OptionsCheckButtonTemplate" id="8">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TickButton3" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-87"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnShow>
+							Tick_CheckOnShow();
+						</OnShow>
+						<OnClick>
+							Tick_CheckOnClick();
+							Tick_MiscOptions();
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+			</Frames>
+			<Scripts>
+				<OnLoad>
+					local _,engClass =  UnitClass("player");
+					if ( engClass == "DRUID" ) then
+						getglobal("TickBarCatFormOnly"):SetText(TICK_MISC_DRUID_ONLY);
+					else
+						getglobal("TickBarCatFormOnly"):SetText("");
+					end
+				</OnLoad>
+			</Scripts>
+		</Frame>
+
+		<Frame>
+			<Size>
+				<AbsDimension x="300" y="30"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Layers>
+				<Layer>
+					<FontString name="TickBarLogoText" inherits="GameFontHighlight" justifyH="LEFT">
+						<Size>
+							<AbsDimension x="300" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnShow>
+					getglobal("TickBarLogoText"):SetText(Tick_Opts.logoText);
+				</OnShow>
+			</Scripts>
+		</Frame>
+		<StatusBar name="TickHeaderBar">
+			<Size>
+				<AbsDimension x="295" y="22"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="-4"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					this:SetFrameLevel(this:GetFrameLevel() - 1)
+				</OnLoad>
+			</Scripts>
+			<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+			<BarColor r="0.0" g="0.5" b="1.0"/>
+		</StatusBar>
+	</Frames>
+</Frame>
+</Ui>

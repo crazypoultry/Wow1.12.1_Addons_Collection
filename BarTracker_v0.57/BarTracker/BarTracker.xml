@@ -1,0 +1,488 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="BarTracker.lua"/>
+
+	<!-- Frame to handle all core events -->
+	<Frame name="BarTracker_MainFrame" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				BarTracker_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				BarTracker_OnEvent();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Frame to handle output -->
+	<Frame name="BarTracker_OutputFrameTemplate" parent="UIParent" toplevel="true" frameStrata="MEDIUM" enableMouse="true" movable="true" resizable="true" clamped="true" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Size>
+			<AbsDimension x="192" y="256"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>	
+			<Layer level="OVERLAY">
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parent_Slider" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-4"/></Offset>
+					</Anchor>
+					<Anchor point="RIGHT">
+						<Offset><AbsDimension x="-26" y="0"/></Offset>
+					</Anchor>
+					<Anchor point="BOTTOM">
+						<Offset><AbsDimension x="0" y="4"/></Offset>
+					</Anchor>
+					<Anchor point="LEFT">
+						<Offset><AbsDimension x="4" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="$parent_ScrollContainer">
+						<Anchors>	
+							<Anchor point="TOP">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="RIGHT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOM">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="LEFT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer name="$parent_ScrollLayerBars" level="ARTWORK">
+							</Layer>
+							<Layer name="$parent_ScrollLayerText" level="OVERLAY">
+							</Layer>
+						</Layers>
+						<Frames>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			
+			<Frame name="$parent_Menu" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Scripts>
+					<OnLoad>
+						BarTracker_Menu_Load();
+					</OnLoad>
+				</Scripts>
+				<Anchors>
+ 					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="BarTracker_OutputFrame0" inherits="BarTracker_OutputFrameTemplate">
+		<Scripts>
+			<OnMouseDown>
+				BarTracker_FrameMouseDown();
+				if arg1 == "LeftButton" and (not BarTracker_Transforming) then
+					local mx, my = GetCursorPosition();
+					local y = BarTracker_OutputFrame0:GetTop() - BarTracker_vBorder/2;
+					local scaleL, scaleW;
+					scaleL = BarTracker_OutputFrame0:GetScale();
+					scaleW = UIParent:GetScale();
+					my = my/scaleW;
+					y = y*scaleL
+					y = (my - y)/scaleL;
+					local heightScale;
+					if BarTracker_Settings["TimeScale"] > 0 then
+						heightScale = BarTracker_Settings["TimeScale"];
+					else
+						heightScale = (BarTracker_OutputFrame0:GetHeight()-BarTracker_vBorder)/
+							(BarTracker_Log["EndTimeStamp"]-BarTracker_Log["StartTimeStamp"]+1);
+					end;
+
+					BarTracker_ScrollToTime(-y/heightScale);
+					BarTracker_LogViewer:Show();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if(arg1 == "LeftButton") then
+					this:StopMovingOrSizing();
+					BarTracker_FrameResizing();
+					BarTracker_Transforming = false;
+				end
+			</OnMouseUp>
+			<OnSizeChanged>
+				--BarTracker_FrameResizing();
+			</OnSizeChanged>
+			<OnEnter>
+				--BarTracker_OnMouseEnter();
+			</OnEnter>
+			<OnLeave>
+				--BarTracker_OnMouseLeave();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BarTracker_FullscreenFrame" inherits="BarTracker_OutputFrameTemplate" hidden="true" movable="false" resizable="false" frameStrata="FULLSCREEN">
+		<Scripts>
+			<OnLoad>
+				table.insert(UISpecialFrames,this:GetName());
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BarTracker_LogViewer" parent="UIParent" movable="true" resizable="true" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Size>
+			<AbsDimension x="640" y="480"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>	
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Count" inherits="GameFontNormal" text="0/0" justifyH="LEFT">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-12" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				table.insert(UISpecialFrames,this:GetName());
+			</OnLoad>
+			<OnShow>
+				BarTracker_LogViewUpdate();
+			</OnShow>
+			<OnMouseDown>
+				BarTracker_FrameMouseDown();
+			</OnMouseDown>
+			<OnMouseUp>
+				if(arg1 == "LeftButton") then
+					this:StopMovingOrSizing();
+					BarTracker_LogViewUpdate();
+				end
+			</OnMouseUp>
+			<OnSizeChanged>
+				--BarTracker_LogViewUpdate();
+			</OnSizeChanged>
+		</Scripts>
+		<Frames>
+			<EditBox name="$parent_Edit" letters="128" historyLines="8" autoFocus="true">
+				<Backdrop bgFile="Interface/Tooltips/UI-Tooltip-Background" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="2" bottom="2" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16" />
+					</TileSize>
+				</Backdrop>
+				<Size>
+					<AbsDimension x="380" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="56" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontNormal" text="Filter:" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-12" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+		
+					</Layer>
+				</Layers>
+				<Scripts>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+				<Scripts>
+					<OnShow>
+						BarTracker_LogViewUpdate();
+					</OnShow>
+					<OnEnterPressed>
+						BarTracker_LogFilter = this:GetText();
+						BarTracker_FilterLog(BarTracker_Log["Combatlog"], BarTracker_LogFilter);
+						BarTracker_LogViewUpdate();
+						this:AddHistoryLine(BarTracker_LogFilter);
+					</OnEnterPressed>
+					<OnTextChanged>
+						BarTracker_LogFilter = this:GetText();
+						BarTracker_FilterLog(BarTracker_Log["Combatlog"], BarTracker_LogFilter);
+						BarTracker_LogViewUpdate();
+					</OnTextChanged>
+					<OnEscapePressed>
+						this:GetParent():Hide();
+						--this:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+			</EditBox>
+		<ScrollFrame name="$parent_ScrollFrame" inherits="FauxScrollFrameTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="4" y="-28"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-26" y="4"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+			</Layers>
+			<Scripts>
+				<OnVerticalScroll>
+					FauxScrollFrame_OnVerticalScroll(BarTracker_LogFrameLineHeight, BarTracker_LogViewUpdate);
+				</OnVerticalScroll>
+			</Scripts>
+		</ScrollFrame>
+		</Frames>
+	</Frame>
+
+	<Button name="BarTracker_LogLineFrameTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				BarTracker_LogViewer_Edit:AddHistoryLine(BarTracker_LogFilter);
+				BarTracker_LogViewer_Edit:SetText("");
+				BarTracker_LogFilter = "";
+				BarTracker_FilterLog(BarTracker_Log["Combatlog"], BarTracker_LogFilter);
+				BarTracker_ScrollToTime(this.time);
+			</OnClick>
+		</Scripts>
+		<Layers>	
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Text" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="64" y="-4"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-100" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Time" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Color r="1" g="1" b="1"/>
+					<Size>
+						<AbsDimension x="52" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Health" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Color r="0" g="1" b="0"/>
+					<Size>
+						<AbsDimension x="44" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-96" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Power" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Color r="0" g="0.5" b="1"/>
+					<Size>
+						<AbsDimension x="44" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-48" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<GameTooltip name="BarTracker_Tooltip" inherits="GameTooltipTemplate" parent="BarTracker_OutputFrame0" clamped="true">
+		<Anchors>
+ 			<Anchor point="TOPLEFT" relativeTo="BarTracker_OutputFrame0"/>
+		</Anchors>
+		<Scripts>
+		</Scripts>
+	</GameTooltip>
+	<GameTooltip name="BarTracker_TooltipLog" inherits="GameTooltipTemplate" parent="BarTracker_OutputFrame0" clamped="true">
+		<Anchors>
+ 			<Anchor point="TOPLEFT" relativeTo="BarTracker_OutputFrame0" relativePoint="TOPRIGHT"/>
+		</Anchors>
+		<Scripts>
+		</Scripts>
+	</GameTooltip>
+
+	<Frame name="BarTracker_StoreName" hidden="true" parent="UIParent" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="400" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<EditBox name="$parent_Edit" letters="128" historyLines="0" autoFocus="true">
+				<Size>
+					<AbsDimension x="380" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" text="Name:" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-12" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="16" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="1" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.9375" top="0" bottom="1.0"/>
+				</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+				<Scripts>
+					<OnShow>
+						if BarTracker_StoreName_Edit:GetText() == "" then
+							BarTracker_StoreName_Edit:SetText("UntitledFight");
+						end;
+					</OnShow>
+					<OnEnterPressed>
+						BarTracker_StoreLog(BarTracker_StoreName_Edit:GetText());
+						BarTracker_StoreName:Hide();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						BarTracker_StoreName:Hide();
+					</OnEscapePressed>
+				</Scripts>
+			</EditBox>
+			<Button name="$parent_StoreButton" inherits="UIPanelButtonTemplate" text="OK">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="390" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						BarTracker_StoreLog(BarTracker_StoreName_Edit:GetText());
+						BarTracker_StoreName:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				table.insert(UISpecialFrames,"BarTracker_StoreName");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,750 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+
+<Script file="DiscordMiniPanels.lua"/>
+<Script file="DiscordMiniInventory.lua"/>
+
+<CheckButton name="DMIN_ItemButtonTemplate" virtual="true">
+	<Size><AbsDimension x="28" y="28"/></Size>
+	<Frames>
+		<Model name="$parent_Cooldown" inherits="CooldownFrameTemplate" scale=".7">
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString name="$parentCount" inherits="NumberFontNormal">
+						<Color r="1" g="1" b="0"/>
+						<FontHeight>
+							<AbsValue val="14"/>
+						</FontHeight>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Model>
+	</Frames>
+	<Layers>
+		<Layer level="BORDER">
+			<Texture name="$parent_Border">
+				<Size><AbsDimension x="30" y="30"/></Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Color r="1" g="1" b="1"/>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<Texture name="$parent_Icon">
+				<Size><AbsDimension x="28" y="28"/></Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Count" inherits="NumberFontNormal">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Color r="1" g="1" b="1"/>
+				<FontHeight>
+					<AbsValue val="14"/>
+				</FontHeight>
+			</FontString>
+		</Layer>
+	</Layers>
+	<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+	<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	<Scripts>
+		<OnLoad>
+			this:RegisterForDrag("LeftButton");
+			this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		</OnLoad>
+		<OnClick>
+			DMIN_ItemButton_OnClick(arg1);
+		</OnClick>
+		<OnDragStart>
+			DMIN_ItemButton_OnClick("LeftButton", 1);
+		</OnDragStart>
+		<OnReceiveDrag>
+			DMIN_ItemButton_OnClick("LeftButton", 1);
+		</OnReceiveDrag>
+		<OnEnter>
+			DMIN_ItemButton_OnEnter(this);
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+			ResetCursor();
+		</OnLeave>
+		<OnUpdate>
+			DMIN_ItemButton_OnUpdate(arg1);
+		</OnUpdate>
+	</Scripts>
+</CheckButton>
+
+<Frame name="DMIN_ScrollButtonTemplate" virtual="true">
+	<Size><AbsDimension x="255" y="30"/></Size>
+	<Frames>
+		<CheckButton name="$parent_ItemButton_1" inherits="DMIN_ItemButtonTemplate">
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+		</CheckButton>
+		<CheckButton name="$parent_ItemButton_2" inherits="DMIN_ItemButtonTemplate"/>
+		<CheckButton name="$parent_ItemButton_3" inherits="DMIN_ItemButtonTemplate"/>
+		<CheckButton name="$parent_ItemButton_4" inherits="DMIN_ItemButtonTemplate"/>
+		<CheckButton name="$parent_ItemButton_5" inherits="DMIN_ItemButtonTemplate"/>
+		<CheckButton name="$parent_ItemButton_6" inherits="DMIN_ItemButtonTemplate"/>
+		<CheckButton name="$parent_ItemButton_7" inherits="DMIN_ItemButtonTemplate"/>
+		<CheckButton name="$parent_ItemButton_8" inherits="DMIN_ItemButtonTemplate"/>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Name" font="Fonts\ARIALN.TTF" outline="THICK" justifyH="LEFT">
+				<Size><AbsDimension x="175" y="15"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="35" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1" g="1" b="1"/>
+				<FontHeight>
+					<AbsValue val="11"/>
+				</FontHeight>
+			</FontString>
+			<FontString name="$parent_Type" font="Fonts\ARIALN.TTF" outline="THIN" justifyH="LEFT">
+				<Size><AbsDimension x="200" y="15"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="38" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+				<Color r="1" g=".82" b="0"/>
+			</FontString>
+			<FontString name="$parent_Rarity" font="Fonts\ARIALN.TTF" outline="THIN" justifyH="RIGHT">
+				<Size><AbsDimension x="200" y="15"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset><AbsDimension x="-5" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+				<Color r="1" g="1" b="1"/>
+			</FontString>
+			<FontString name="$parent_Location" font="Fonts\ARIALN.TTF" outline="THIN" justifyH="RIGHT">
+				<Size><AbsDimension x="200" y="15"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-5" y="2"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+				<Color r=".4" g=".4" b=".4"/>
+			</FontString>
+			<Texture name="$parent_Border">
+				<Size><AbsDimension x="260" y="1"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="-5" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			if (this:GetID() > 1) then
+				this:SetPoint("TOP", "DMIN_ScrollButton_"..(this:GetID() - 1), "BOTTOM", 0, 0);
+			end
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<Button name="DMIN_MenuOptionTemplate" frameStrata="DIALOG" virtual="true">
+	<Size><AbsDimension x="100" y="15"/></Size>
+	<HighlightTexture name = "$parentHighlight" alphaMode="ADD" file="Interface\QuestFrame\UI-QuestTitleHighlight"/>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString inherits="GameFontNormal" name="$parent_Text">
+				<Color r="1.0" g="1.0" b="1.0"/>
+				<Anchors><Anchor point="LEFT"/></Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnClick>
+			DMIN_Settings.sortBy = this.value;
+			DMIN_SortByButton:SetText(DMIN_TEXT.SortBy..DMIN_TEXT[DMIN_Settings.sortBy]);
+			DMIN_Update_ItemList();
+			DMIN_ScrollFrame_Update();
+			DMIN_DropMenu:Hide();
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Button name="DiscordMiniInventoryFrame" movable="true" hidden="true" parent="UIParent" frameStrata="HIGH">
+	<Size><AbsDimension x="300" y="405"/></Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Frames>
+		<Button inherits="UIPanelButtonTemplate" hidden="false" text="X">
+			<Size><AbsDimension x="20" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-10" y="-10"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					DiscordMiniInventoryFrame:Hide();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="DMIN_ToggleTabsButton" inherits="UIPanelButtonTemplate" hidden="false">
+			<Size><AbsDimension x="20" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-10" y="-28"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					DMIN_Toggle_Tabs();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="DMIN_ToggleCompactButton" inherits="UIPanelButtonTemplate" hidden="false">
+			<Size><AbsDimension x="100" y="20"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-13" y="13"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					DMIN_Toggle_CompactMode();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="DMIN_ToggleBagsButton" inherits="UIPanelButtonTemplate" hidden="false" text="^">
+			<Size><AbsDimension x="20" y="20"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset><AbsDimension x="0" y="13"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					DMIN_Toggle_Bags();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<ScrollFrame name="DMIN_ScrollFrame" inherits="FauxScrollFrameTemplate">
+			<Size><AbsDimension x="255" y="300"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset><AbsDimension x="10" y="-50"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnVerticalScroll>
+					FauxScrollFrame_OnVerticalScroll(30, DMIN_ScrollFrame_Update);
+				</OnVerticalScroll>
+			</Scripts>
+		</ScrollFrame>
+		<Frame name="DMIN_ScrollButton_1" inherits="DMIN_ScrollButtonTemplate" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="DMIN_ScrollFrame" relativePoint="TOPLEFT">
+					<Offset><AbsDimension x="5" y="0"/></Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="DMIN_ScrollButton_2" inherits="DMIN_ScrollButtonTemplate" id="2"/>
+		<Frame name="DMIN_ScrollButton_3" inherits="DMIN_ScrollButtonTemplate" id="3"/>
+		<Frame name="DMIN_ScrollButton_4" inherits="DMIN_ScrollButtonTemplate" id="4"/>
+		<Frame name="DMIN_ScrollButton_5" inherits="DMIN_ScrollButtonTemplate" id="5"/>
+		<Frame name="DMIN_ScrollButton_6" inherits="DMIN_ScrollButtonTemplate" id="6"/>
+		<Frame name="DMIN_ScrollButton_7" inherits="DMIN_ScrollButtonTemplate" id="7"/>
+		<Frame name="DMIN_ScrollButton_8" inherits="DMIN_ScrollButtonTemplate" id="8"/>
+		<Frame name="DMIN_ScrollButton_9" inherits="DMIN_ScrollButtonTemplate" id="9"/>
+		<Frame name="DMIN_ScrollButton_10" inherits="DMIN_ScrollButtonTemplate" id="10"/>
+
+		<Button name="DMIN_SortByButton" inherits="UIPanelButtonTemplate" hidden="false">
+			<Size><AbsDimension x="150" y="20"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-12" y="34"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					if (DMIN_DropMenu:IsVisible()) then
+						DMIN_DropMenu:Hide();
+					else
+						DMIN_DropMenu:Show();
+					end
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button>
+			<Size><AbsDimension x="150" y="20"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT">
+					<Offset><AbsDimension x="15" y="15"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString name="DiscordMiniInventoryFrame_Slots" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnClick>
+					if (DMIN_Settings.freeSlots) then
+						DMIN_Settings.freeSlots = nil;
+					else
+						DMIN_Settings.freeSlots = 1;
+					end
+					DMIN_ScrollFrame_Update();
+				</OnClick>
+			</Scripts>
+		</Button>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString inherits="GameFontNormal" text="DISCORD MINI INVENTORY">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-15"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+			<FontString name="$parent_Header" inherits="GameFontNormal">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<Texture name="$parent_RightBorder">
+				<Size><AbsDimension x="1" y="300"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset><AbsDimension x="-30" y="-50"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+			<Texture>
+				<Size><AbsDimension x="280" y="1"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="10" y="-49"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+			<Texture>
+				<Size><AbsDimension x="280" y="1"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="10" y="54"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Color r=".4" g="0" b="0"/>
+			</Texture>
+
+			<FontString name="$parent_Gold" inherits="GameFontNormal" justifyH="RIGHT">
+				<Color r="1.0" g="1.0" b="0"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="15" y="36"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<Texture name="$parent_GoldTexture" file="Interface\MoneyFrame\UI-MoneyIcons">
+				<Size><AbsDimension x="13" y="13"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Gold" relativePoint="RIGHT">
+						<Offset><AbsDimension x="2" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+			</Texture>
+			<FontString name="$parent_Silver" inherits="GameFontNormal" justifyH="RIGHT">
+				<Color r=".9" g=".9" b=".9"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_GoldTexture" relativePoint="RIGHT">
+						<Offset><AbsDimension x="5" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<Texture name="$parent_SilverTexture" file="Interface\MoneyFrame\UI-MoneyIcons">
+				<Size><AbsDimension x="13" y="13"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Silver" relativePoint="RIGHT">
+						<Offset><AbsDimension x="2" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+			</Texture>
+			<FontString name="$parent_Copper" inherits="GameFontNormal" justifyH="RIGHT">
+				<Color r=".9" g=".3" b=".3"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_SilverTexture" relativePoint="RIGHT">
+						<Offset><AbsDimension x="5" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<Texture file="Interface\MoneyFrame\UI-MoneyIcons">
+				<Size><AbsDimension x="13" y="13"/></Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Copper" relativePoint="RIGHT">
+						<Offset><AbsDimension x="2" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniInventory\PlainBackdrop" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Scripts>
+		<OnLoad>
+			DMIN_OnLoad();
+		</OnLoad>
+		<OnShow>
+			DMIN_OnShow();
+		</OnShow>
+		<OnEvent>
+			DMIN_OnEvent(event);
+		</OnEvent>
+		<OnClick>
+			DMIN_OnClick();
+		</OnClick>
+		<OnReceiveDrag>
+			DMIN_OnClick();
+		</OnReceiveDrag>
+		<OnDragStart>
+			if (not DMIN_Settings.locked) then
+				this.moving = true;
+				this:StartMoving();
+			end
+		</OnDragStart>
+		<OnDragStop>
+			DMIN_StopMoving();
+		</OnDragStop>
+		<OnHide>
+			DMIN_StopMoving();
+		</OnHide>
+		<OnLeave>
+			DMIN_StopMoving();
+		</OnLeave>
+	</Scripts>
+</Button>
+
+<Frame name="DMIN_TabButtonBackdrop" parent="DiscordMiniInventoryFrame" frameStrata="MEDIUM">
+	<Size><AbsDimension x="50" y="100"/></Size>
+	<Anchors>
+		<Anchor point="LEFT" relativePoint="RIGHT">
+			<Offset><AbsDimension x="-9" y="0"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniInventory\PlainBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="5" right="5" top="5" bottom="5"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(0, 0, 0);
+			this:SetBackdropBorderColor(.8, 0, 0);
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<Button name="DMIN_TabButtonTemplate" hidden="true" parent="DMIN_TabButtonBackdrop" frameStrata="HIGH" virtual="true">
+	<Size><AbsDimension x="50" y="15"/></Size>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniInventory\PlainBackdrop" edgeFile="Interface\AddOns\DiscordMiniInventory\PlainBackdrop" tile="true">
+		<EdgeSize>
+			<AbsValue val="0"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Text" font="Fonts\ARIALN.TTF" outline="THIN">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="12"/>
+				</FontHeight>
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(0, 0, 0);
+			this:SetBackdropBorderColor(0, 0, 0, 0);
+			if (this:GetID() > 1) then
+				this:SetPoint("TOP", "DMIN_TabButton_"..(this:GetID() - 1), "BOTTOM", 0, 0);
+			end
+		</OnLoad>
+		<OnEnter>
+			this:SetBackdropColor(1, 1, 0);
+			getglobal(this:GetName().."_Text"):SetTextColor(1, 0, 0);
+		</OnEnter>
+		<OnLeave>
+			if (this.tabname ~= DiscordMiniInventoryFrame.selectedTab) then
+				this:SetBackdropColor(0, 0, 0);
+				getglobal(this:GetName().."_Text"):SetTextColor(this.color.r, this.color.g, this.color.b);
+			end
+		</OnLeave>
+		<OnClick>
+			DMIN_TabButton_OnClick(this.tabname);
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Button name="DMIN_TabButton_1" inherits="DMIN_TabButtonTemplate" id="1" hidden="false">
+	<Anchors>
+		<Anchor point="TOPLEFT">
+			<Offset><AbsDimension x="5" y="-5"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(1, 1, 0);
+			this:SetBackdropBorderColor(0, 0, 0, 0);
+			getglobal(this:GetName().."_Text"):SetTextColor(1, 0, 0);
+			getglobal(this:GetName().."_Text"):SetText(DMIN_TEXT.All);
+			this.color = {r=1, g=1, b=0};
+		</OnLoad>
+	</Scripts>
+</Button>
+<Button name="DMIN_TabButton_2" inherits="DMIN_TabButtonTemplate" id="2"/>
+<Button name="DMIN_TabButton_3" inherits="DMIN_TabButtonTemplate" id="3"/>
+<Button name="DMIN_TabButton_4" inherits="DMIN_TabButtonTemplate" id="4"/>
+<Button name="DMIN_TabButton_5" inherits="DMIN_TabButtonTemplate" id="5"/>
+<Button name="DMIN_TabButton_6" inherits="DMIN_TabButtonTemplate" id="6"/>
+<Button name="DMIN_TabButton_7" inherits="DMIN_TabButtonTemplate" id="7"/>
+<Button name="DMIN_TabButton_8" inherits="DMIN_TabButtonTemplate" id="8"/>
+<Button name="DMIN_TabButton_9" inherits="DMIN_TabButtonTemplate" id="9"/>
+<Button name="DMIN_TabButton_10" inherits="DMIN_TabButtonTemplate" id="10"/>
+<Button name="DMIN_TabButton_11" inherits="DMIN_TabButtonTemplate" id="11"/>
+<Button name="DMIN_TabButton_12" inherits="DMIN_TabButtonTemplate" id="12"/>
+<Button name="DMIN_TabButton_13" inherits="DMIN_TabButtonTemplate" id="13"/>
+<Button name="DMIN_TabButton_14" inherits="DMIN_TabButtonTemplate" id="14"/>
+<Button name="DMIN_TabButton_15" inherits="DMIN_TabButtonTemplate" id="15"/>
+<Button name="DMIN_TabButton_16" inherits="DMIN_TabButtonTemplate" id="16"/>
+<Button name="DMIN_TabButton_17" inherits="DMIN_TabButtonTemplate" id="17"/>
+<Button name="DMIN_TabButton_18" inherits="DMIN_TabButtonTemplate" id="18"/>
+<Button name="DMIN_TabButton_19" inherits="DMIN_TabButtonTemplate" id="19"/>
+<Button name="DMIN_TabButton_20" inherits="DMIN_TabButtonTemplate" id="20"/>
+<Button name="DMIN_TabButton_21" inherits="DMIN_TabButtonTemplate" id="21"/>
+<Button name="DMIN_TabButton_22" inherits="DMIN_TabButtonTemplate" id="22"/>
+<Button name="DMIN_TabButton_23" inherits="DMIN_TabButtonTemplate" id="23"/>
+<Button name="DMIN_TabButton_24" inherits="DMIN_TabButtonTemplate" id="24"/>
+<Button name="DMIN_TabButton_25" inherits="DMIN_TabButtonTemplate" id="25"/>
+<Button name="DMIN_TabButton_26" inherits="DMIN_TabButtonTemplate" id="26"/>
+<Button name="DMIN_TabButton_27" inherits="DMIN_TabButtonTemplate" id="27"/>
+<Button name="DMIN_TabButton_28" inherits="DMIN_TabButtonTemplate" id="28"/>
+<Button name="DMIN_TabButton_29" inherits="DMIN_TabButtonTemplate" id="29"/>
+<Button name="DMIN_TabButton_30" inherits="DMIN_TabButtonTemplate" id="30"/>
+<Button name="DMIN_TabButton_31" inherits="DMIN_TabButtonTemplate" id="31"/>
+<Button name="DMIN_TabButton_32" inherits="DMIN_TabButtonTemplate" id="32"/>
+<Button name="DMIN_TabButton_33" inherits="DMIN_TabButtonTemplate" id="33"/>
+<Button name="DMIN_TabButton_34" inherits="DMIN_TabButtonTemplate" id="34"/>
+<Button name="DMIN_TabButton_35" inherits="DMIN_TabButtonTemplate" id="35"/>
+
+<Button name="DMIN_BagTabTemplate" hidden="false" parent="DiscordMiniInventoryFrame" frameStrata="HIGH" virtual="true">
+	<Size><AbsDimension x="72" y="53"/></Size>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniInventory\PlainBackdrop" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parent_Icon">
+				<Size><AbsDimension x="25" y="25"/></Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<FontString name="$parent_Text" font="Fonts\ARIALN.TTF" outline="NORMAL">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset><AbsDimension x="0" y="13"/></Offset>
+					</Anchor>
+				</Anchors>
+				<FontHeight>
+					<AbsValue val="10"/>
+				</FontHeight>
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter>
+			this:SetBackdropColor(1, 1, 0);
+			getglobal(this:GetName().."_Text"):SetTextColor(1, 0, 0);
+		</OnEnter>
+		<OnLeave>
+			if (this.tabname ~= DiscordMiniInventoryFrame.selectedTab) then
+				this:SetBackdropColor(0, 0, 0);
+				getglobal(this:GetName().."_Text"):SetTextColor(this.color.r, this.color.g, this.color.b);
+			end
+		</OnLeave>
+		<OnClick>
+			DMIN_BagTab_OnClick(this:GetID(), this.tabname);
+		</OnClick>
+		<OnReceiveDrag>
+			DMIN_BagTab_OnClick(this:GetID(), this.tabname);
+		</OnReceiveDrag>
+		<OnDragStart>
+			PickupBagFromSlot(this:GetID() + 19);
+		</OnDragStart>
+	</Scripts>
+</Button>
+
+<Button name="DMIN_BagTab_0" inherits="DMIN_BagTabTemplate" id="0">
+	<Anchors>
+		<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+			<Offset><AbsDimension x="0" y="15"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+		<OnLoad>
+			this.tabname = DMIN_TEXT.Backpack;
+			DMIN_BagTab_OnLoad();
+		</OnLoad>
+		<OnDragStart>
+		</OnDragStart>
+	</Scripts>
+</Button>
+
+<Button name="DMIN_BagTab_1" inherits="DMIN_BagTabTemplate" id="1">
+	<Scripts>
+		<OnLoad>
+			this.tabname = DMIN_TEXT.Bag.." 1";
+			DMIN_BagTab_OnLoad();
+		</OnLoad>
+	</Scripts>
+</Button>
+<Button name="DMIN_BagTab_2" inherits="DMIN_BagTabTemplate" id="2">
+	<Scripts>
+		<OnLoad>
+			this.tabname = DMIN_TEXT.Bag.." 2";
+			DMIN_BagTab_OnLoad();
+		</OnLoad>
+	</Scripts>
+</Button>
+<Button name="DMIN_BagTab_3" inherits="DMIN_BagTabTemplate" id="3">
+	<Scripts>
+		<OnLoad>
+			this.tabname = DMIN_TEXT.Bag.." 3";
+			DMIN_BagTab_OnLoad();
+		</OnLoad>
+	</Scripts>
+</Button>
+<Button name="DMIN_BagTab_4" inherits="DMIN_BagTabTemplate" id="4">
+	<Scripts>
+		<OnLoad>
+			this.tabname = DMIN_TEXT.Bag.." 4";
+			DMIN_BagTab_OnLoad();
+		</OnLoad>
+	</Scripts>
+</Button>
+
+<Button name="DMIN_DropMenu" hidden="true"  frameStrata="DIALOG">
+	<Size><AbsDimension x="120" y="95"/></Size>
+	<Anchors>
+		<Anchor point="BOTTOMLEFT" relativeTo="DMIN_SortByButton" relativePoint="TOPLEFT"/>
+	</Anchors>
+	<Backdrop bgFile="Interface\AddOns\DiscordMiniInventory\PlainBackdrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="5" right="5" top="5" bottom="5"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Frames>
+		<Button name="$parent_Option1" inherits="DMIN_MenuOptionTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset><AbsDimension x="10" y="-10"/></Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="$parent_Option2" inherits="DMIN_MenuOptionTemplate"/>
+		<Button name="$parent_Option3" inherits="DMIN_MenuOptionTemplate"/>
+		<Button name="$parent_Option4" inherits="DMIN_MenuOptionTemplate"/>
+		<Button name="$parent_Option5" inherits="DMIN_MenuOptionTemplate"/>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			this:SetBackdropColor(.2,.2,.2);
+		</OnLoad>
+	</Scripts>
+</Button>
+
+<GameTooltip name="DMIN_Tooltip" frameStrata="TOOLTIP" hidden="false" inherits="GameTooltipTemplate"/>
+
+</Ui>

@@ -1,0 +1,246 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<!-- v1.31.11200 -->
+	<!-- Last Update: 28 oct 2006 -->
+
+	<Script file="constants.lua"/>
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Script file="CashNotify.lua"/>
+
+	<Frame name="CashNotifyFrame" parent="UIParent" hidden="true">
+		<Scripts>
+			<OnLoad>
+				CashNotify_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				CashNotify_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<Button name="CNCPButtonSwatchTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="90" y="20"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				CNCP_SwatchButton_OnClick();
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+			<TexCoords left="0" right="0.53125" top="0" bottom="0.625"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD"/>
+		<NormalText name="$parentNormalText" inherits="GameFontNormalSmall">
+			<Anchors>
+				<Anchor point="CENTER" relativeTo="$parent">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="CENTER" relativeTo="$parent">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<Layers>
+			<Layer name="ARTWORK">
+				<Texture name="$parentSwatch">
+					<Size>
+						<AbsDimension x="64" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+					<Scripts>
+						<OnClick>
+							this:GetParent():Click();
+						</OnClick>
+					</Scripts>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<ColorSelect name="CN_CPFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="true">
+		<Size>
+			<AbsDimension x="315" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="CASH_NOTIFY">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton1" inherits="CNCPButtonSwatchTemplate" text="CNCP_GAINTEXT" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-17" y="-48"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton2" inherits="CNCPButtonSwatchTemplate" text="CNCP_SPENDTEXT" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1Swatch" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentCancelButton" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+						if ( CN_CPFrame.cancelFunc ) then
+							CN_CPFrame.cancelFunc(CN_CPFrame.previousValues);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkayButton" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"><!-- relativeTo="$parentCancelButton" relativePoint="LEFT"-->
+						<Offset>
+							<AbsDimension x="10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local func = CN_CPFrame.updateFunc; --hiding clears it.
+						HideUIPanel(this:GetParent());
+						if ( func ) then
+							func(true); -- true: final update
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<ColorWheelTexture name="$parentCN_CPWheel">
+			<Size>
+				<AbsDimension x="128" y="128"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="16" y="-32"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ColorWheelTexture>
+		<ColorWheelThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+			<Size>
+				<AbsDimension x="10" y="10"/>
+			</Size>
+			<TexCoords left="0" right="0.15625" top="0" bottom="0.625"/>
+		</ColorWheelThumbTexture>
+		<ColorValueTexture>
+			<Size>
+				<AbsDimension x="32" y="128"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentCN_CPWheel" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ColorValueTexture>
+		<ColorValueThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+			<Size>
+				<AbsDimension x="48" y="14"/>
+			</Size>
+			<TexCoords left="0.25" right="1.0" top="0" bottom="0.875"/>
+		</ColorValueThumbTexture>
+		<Scripts>
+			<OnLoad>
+				CashNotify_InitialisePicker(this);
+				this.updateFunc = nil;
+			</OnLoad>
+			<OnShow>
+				-- Init swatch colours then use first
+				local c;
+				for i=1,2 do
+					c = this:GetColorTblRGB(i);
+					getglobal(this:GetName().."Button"..i.."Swatch"):SetTexture(c.r,c.g,c.b);
+				end
+				getglobal(this:GetName().."Button1"):Click();
+			</OnShow>
+			<OnHide>
+				this.updateFunc = nil;
+			</OnHide>
+			<OnColorSelect>
+				this:SetCurrentTexture(arg1, arg2, arg3);
+				this:SetColorTblRGB(this:GetSwatchID(), arg1, arg2, arg3);
+				if ( this.updateFunc ) then
+					this.updateFunc();
+				end
+			</OnColorSelect>
+			<OnKeyDown>
+				if (arg1 == "ESCAPE") then
+					HideUIPanel(this);
+					if ( this.cancelFunc ) then
+						this.cancelFunc(this.previousValues);
+					end
+				end
+			</OnKeyDown>
+		</Scripts>
+	</ColorSelect>
+</Ui>

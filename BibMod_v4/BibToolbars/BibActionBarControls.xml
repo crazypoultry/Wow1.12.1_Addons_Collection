@@ -1,0 +1,243 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="BibActionBarControls.lua"/>
+	
+	<Button name="BibGreenButtonsToggle" parent="BibMenuBar">
+		<HighlightTexture file="Interface\AddOns\BibToolbars\BibGreenButtonsHighlight"/>
+		<Scripts>
+			<OnLoad>
+				AddBibControlButton(this);
+				this:RegisterEvent("VARIABLES_LOADED");
+				GreenButtonsDisabled = false;
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					UpdateBibGreenButtons();
+					UpdateBibGreenButtonsToggle();
+				end
+			</OnEvent>
+			<OnClick>
+				if(GreenButtonsDisabled) then
+					GreenButtonsDisabled = false;
+				else
+					GreenButtonsDisabled = true;
+				end
+				UpdateBibGreenButtons();
+				UpdateBibGreenButtonsToggle();
+				GameTooltip:Hide();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(BibGreenButtonsToggle, "ANCHOR_LEFT");
+				if(GreenButtonsDisabled) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Show Green Drag Buttons");
+				else
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Hide Green Drag Buttons");
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibButtonsLockToggle" parent="BibMenuBar">
+		<HighlightTexture file="Interface\AddOns\BibToolbars\BibGreenButtonsHighlight"/>
+		<Scripts>
+			<OnLoad>
+				AddBibControlButton(this);
+				this:RegisterEvent("VARIABLES_LOADED");
+				BibActionBarButtonsLocked = false;
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					UpdateBibButtonsLockToggle();
+				end
+			</OnEvent>
+			<OnClick>
+				if (BibActionBarButtonsLocked) then
+					BibActionBarButtonsLocked = false;
+				else
+					BibActionBarButtonsLocked = true;
+				end
+				UpdateBibButtonsLockToggle();
+				GameTooltip:Hide();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(BibButtonsLockToggle, "ANCHOR_LEFT");
+				if(BibActionBarButtonsLocked) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Unlock Action Buttons");
+				else
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Lock Action Buttons");
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibButtonsHideGridToggle" parent="BibMenuBar">
+		<HighlightTexture file="Interface\AddOns\BibToolbars\BibGreenButtonsHighlight"/>
+		<Scripts>
+			<OnLoad>
+				AddBibControlButton(this);
+				this:RegisterEvent("VARIABLES_LOADED");
+				BibButtonsGridMode = BIB_BUTTON_GRID_SHOW;
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then		
+					UpdateBibButtonsGridModeToggle();
+					if (BibButtonsGridMode == BIB_BUTTON_GRID_SHOW) then
+						BibActionButtons_ShowGrid();
+					else
+						BibActionButtons_HideGrid();
+					end
+					RedrawAllBibActionBars();
+				end
+			</OnEvent>
+			<OnClick>
+				if (BibButtonsGridMode == BIB_BUTTON_GRID_SHOW) then
+					BibButtonsGridMode = BIB_BUTTON_GRID_HIDE_AND_CASCADE;
+					BibActionButtons_HideGrid();
+				elseif (BibButtonsGridMode == BIB_BUTTON_GRID_HIDE_AND_CASCADE) then
+					BibButtonsGridMode = BIB_BUTTON_GRID_HIDE_NO_CASCADE;
+					BibActionButtons_HideGrid();
+				else
+					BibButtonsGridMode = BIB_BUTTON_GRID_SHOW;
+					BibActionButtons_ShowGrid();
+				end
+				UpdateBibButtonsGridModeToggle();
+				RedrawAllBibActionBars();
+				GameTooltip:Hide();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(BibButtonsHideGridToggle, "ANCHOR_LEFT");
+				if (BibButtonsGridMode == BIB_BUTTON_GRID_SHOW) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Hide Empty Action Buttons With Cascading");
+				elseif (BibButtonsGridMode == BIB_BUTTON_GRID_HIDE_AND_CASCADE) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Hide Empty Action Buttons Without Cascading");
+				else
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Show Empty Action Buttons");
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibXPBarToggle" parent="BibMenuBar">
+		<HighlightTexture file="Interface\AddOns\BibToolbars\BibGreenButtonsHighlight"/>
+		<Scripts>
+			<OnLoad>
+				AddBibControlButton(this);
+				this:RegisterEvent("VARIABLES_LOADED");
+				BibXPBarInvisible = false;
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					UpdateBibXPBarVisibility();
+					UpdateBibXPBarToggle();
+				end
+			</OnEvent>
+			<OnClick>
+				if(BibXPBarInvisible) then
+					BibXPBarInvisible = false;
+				else
+					BibXPBarInvisible = true;
+				end
+				UpdateBibXPBarVisibility();
+				UpdateBibXPBarToggle();
+				GameTooltip:Hide();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(BibXPBarToggle, "ANCHOR_LEFT");
+				if(BibXPBarInvisible) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Show BibMod XP Bar");
+				else
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Hide BibMod XP Bar");
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibBagBarToggle" parent="BibMenuBar">
+		<HighlightTexture file="Interface\AddOns\BibToolbars\BibGreenButtonsHighlight"/>
+		<Scripts>
+			<OnLoad>
+				AddBibControlButton(this);
+				this:RegisterEvent("VARIABLES_LOADED");
+				BibBagBarInvisible = false;
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					UpdateBibBagBarVisibility();
+					UpdateBibBagBarToggle();
+				end
+			</OnEvent>
+			<OnClick>
+				if(BibBagBarInvisible) then
+					BibBagBarInvisible = false;
+				else
+					BibBagBarInvisible = true;
+				end
+				UpdateBibBagBarVisibility();
+				UpdateBibBagBarToggle();
+				GameTooltip:Hide();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(BibBagBarToggle, "ANCHOR_LEFT");
+				if(BibBagBarInvisible) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Show Bag Buttons");
+				else
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Hide Bag Buttons");
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Button name="BibMicroBarToggle" parent="BibMenuBar">
+		<HighlightTexture file="Interface\AddOns\BibToolbars\BibGreenButtonsHighlight"/>
+		<Scripts>
+			<OnLoad>
+				AddBibControlButton(this);
+				this:RegisterEvent("VARIABLES_LOADED");
+				BibMicroBarInvisible = false;	
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					UpdateBibMicroBarVisibility();
+					UpdateBibMicroBarToggle();
+				end
+			</OnEvent>
+			<OnClick>
+				if(BibMicroBarInvisible) then
+					BibMicroBarInvisible = false;
+				else
+					BibMicroBarInvisible = true;
+				end
+				UpdateBibMicroBarVisibility();
+				UpdateBibMicroBarToggle();
+				GameTooltip:Hide();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(BibMicroBarToggle, "ANCHOR_LEFT");
+				if(BibMicroBarInvisible) then
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Show Main Menu Bar");
+				else
+					GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE.."Hide Main Menu Bar");
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+</Ui>

@@ -1,0 +1,2672 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="UberHeal.lua" />
+	<Script file="UberHealDropDownMenus.lua" />
+	<Frame name="UberHeal" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("SPELLCAST_FAILED");
+				this:RegisterEvent("SPELLCAST_STOP");
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					Uber_Init();
+					UberHealConfigure();
+				elseif (event == "SPELLCAST_FAILED") then
+					targetOutOfLOS();
+				elseif (event == "SPELLCAST_STOP") then
+					UberSpellCastStop();
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+	
+	<EditBox name="UberHealEditBoxTemplate" historyLines="0"  autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="30"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="-5" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset><AbsDimension x="-10" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="10" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<FontString name="$parent_Description" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT">
+							<Offset><AbsDimension x="-10" y="-8"/></Offset>
+					</Anchor></Anchors>					
+				</FontString>					
+			</Layer>
+		</Layers>				
+		<FontString inherits="GameFontNormal"/>
+		<TextInsets left="2" right="10" top="0" bottom="2"/>		
+	</EditBox>
+
+	<EditBox name="UberHealEditBoxTemplate2" historyLines="0"  autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="30"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="-5" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset><AbsDimension x="-10" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="10" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<FontString name="$parent_Description" inherits="GameFontNormal" justifyH="LEFT" text="">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+							<Offset><AbsDimension x="-125" y="-8"/></Offset>
+					</Anchor></Anchors>					
+				</FontString>					
+			</Layer>
+		</Layers>				
+		<FontString inherits="GameFontNormal"/>
+		<TextInsets left="2" right="10" top="0" bottom="2"/>		
+	</EditBox>
+
+	<CheckButton name="UberHealCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>	
+
+	<Frame name="UberHealSetup" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="775" y="370"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\RaidFrame\UI-RaidFrame-GroupBg" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" bottom="11" right="11" top="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="1024"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>	
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="UberHealTitleFrame" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="450" y="85"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="Spell1 Modifier1" inherits="GameFontNormal" text="Cast Spell 1 on:                    +" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-185" y="182"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Spell1 Modifier2" inherits="GameFontNormal" text="Cast Spell 2 on:                    +" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell1 Modifier1">
+							<Offset>
+								<AbsDimension x="0" y="-36"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Spell1 Modifier3" inherits="GameFontNormal" text="Cast Spell 3 on:                    +" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell1 Modifier2">
+							<Offset>
+								<AbsDimension x="0" y="-36"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Spell1 Modifier4" inherits="GameFontNormal" text="Cast Spell 4 on:                    +" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell1 Modifier3">
+							<Offset>
+								<AbsDimension x="0" y="-36"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Spell1 Modifier5" inherits="GameFontNormal" text="Cast Spell 5 on:                    +" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell1 Modifier4">
+							<Offset>
+								<AbsDimension x="0" y="-36"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Instruction Text" inherits="GameFontNormalSmall" text="The following will be cast when clicking on the CT RaidAssist|n emergency monitor and raid windows." justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="Spell1 Modifier1">
+							<Offset>
+								<AbsDimension x="80" y="50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Title Text" inherits="GameFontNormalHUGE" text="|c00FFFFFFUBER HEAL v1.22|r" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="UberHealTitleFrame">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Title Small Text" inherits="GameFontNormalLarge" text="|c00FFFFFFThe last healing mod you will ever need!!|R" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" relativeTo="Title Text">
+							<Offset>
+								<AbsDimension x="0" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Disclamer Text" inherits="GameFontNormalSmall" text="by SpazJester of Kel'Thuzad" justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Title Text">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Automatic Text" inherits="GameFontNormalLarge" text="|c00FFFFFFAuto Target Healing|r" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="110" y="265"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Click Cast Text" inherits="GameFontNormalLarge" text="|c00FFFFFFClick Cast Healing|r" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="Instruction Text">
+							<Offset>
+								<AbsDimension x="0" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Instruction Text2" inherits="GameFontNormalSmall" text="These spells will be cast when you press the bound button. |n The CT Raid Assist emergency monitor must be on for these to work." justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Automatic Text">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Spell Text" inherits="GameFontNormalSmall" text="|c00FFFFFFSpell|r" justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Automatic Text">
+							<Offset>
+								<AbsDimension x="-80" y="-53"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Rank Text" inherits="GameFontNormalSmall" text="|c00FFFFFFRank|r" justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Automatic Text">
+							<Offset>
+								<AbsDimension x="45" y="-53"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Buff Check Text" inherits="GameFontNormalSmall" text="|c00FFFFFFBuff Check|r" justifyH="CENTER" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Automatic Text">
+							<Offset>
+								<AbsDimension x="105" y="-53"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>		
+
+					
+
+		<Frames>
+
+
+
+
+
+
+
+
+
+						<Frame name="AutoHealBorder">
+							<Size>
+								<AbsDimension x="365" y="265"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="-10" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+								<EdgeSize>
+									<AbsValue val="16"/>
+								</EdgeSize>
+								<TileSize>
+									<AbsValue val="16"/>
+								</TileSize>
+								<BackgroundInsets>
+									<AbsInset left="5" right="5" top="5" bottom="5"/>
+								</BackgroundInsets>
+							</Backdrop>
+							<Layers>
+								<Layer level="ARTWORK">
+								</Layer>
+							</Layers>
+						</Frame>
+
+						<Frame name="ClickCastBorder">
+							<Size>
+								<AbsDimension x="365" y="265"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="10" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+								<EdgeSize>
+									<AbsValue val="16"/>
+								</EdgeSize>
+								<TileSize>
+									<AbsValue val="16"/>
+								</TileSize>
+								<BackgroundInsets>
+									<AbsInset left="5" right="5" top="5" bottom="5"/>
+								</BackgroundInsets>
+							</Backdrop>
+							<Layers>
+								<Layer level="ARTWORK">
+								</Layer>
+							</Layers>
+						</Frame>
+
+
+
+
+
+
+
+
+			<EditBox name="Spell1" inherits="UberHealEditBoxTemplate" letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="AutoHealBorder">
+						<Offset><AbsDimension x="35" y="-85" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="Rank1" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell1">
+						<Offset><AbsDimension x="30" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			
+
+			<CheckButton name="BuffToggle1" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="Rank1" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="20" y="-4"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>ShowHideBuffs(1);</OnClick></Scripts>
+			</CheckButton>
+
+			<EditBox name="Slot1" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell1">
+						<Offset><AbsDimension x="-3" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+
+			<Frame name="Spell1SelectionMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell1 Modifier1" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="80" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckMenu1();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+			<Frame name="Spell1ButtonMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell1SelectionMenu" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckButton1();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+
+
+
+			<EditBox name="Spell2" inherits="UberHealEditBoxTemplate" letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell1">
+						<Offset><AbsDimension x="0" y="-35" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="Rank2" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell2">
+						<Offset><AbsDimension x="30" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			
+
+			<CheckButton name="BuffToggle2" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="Rank2" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="20" y="-4"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>ShowHideBuffs(2);</OnClick></Scripts>
+			</CheckButton>
+
+			<EditBox name="Slot2" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell2">
+						<Offset><AbsDimension x="-3" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+
+
+			<Frame name="Spell2SelectionMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell1 Modifier2" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="80" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckMenu2();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+			<Frame name="Spell2ButtonMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell2SelectionMenu" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckButton2();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+
+			<EditBox name="Spell3" inherits="UberHealEditBoxTemplate" letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell2">
+						<Offset><AbsDimension x="0" y="-35" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="Rank3" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell3">
+						<Offset><AbsDimension x="30" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			
+
+			<CheckButton name="BuffToggle3" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="Rank3" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="20" y="-4"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>ShowHideBuffs(3);</OnClick></Scripts>
+			</CheckButton>
+
+			<EditBox name="Slot3" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell3">
+						<Offset><AbsDimension x="-3" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+
+
+			<Frame name="Spell3SelectionMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell1 Modifier3" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="80" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckMenu3();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+			<Frame name="Spell3ButtonMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell3SelectionMenu" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckButton3();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+
+
+
+
+			<EditBox name="Spell4" inherits="UberHealEditBoxTemplate" hidden="false" letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell3">
+						<Offset><AbsDimension x="0" y="-35" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+			<EditBox name="Rank4" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell4">
+						<Offset><AbsDimension x="30" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			
+
+			<CheckButton name="BuffToggle4" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="Rank4" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="20" y="-4"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>ShowHideBuffs(4);</OnClick></Scripts>
+			</CheckButton>
+			<EditBox name="Slot4" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell4">
+						<Offset><AbsDimension x="-3" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+
+
+
+
+
+			<EditBox name="Spell5" inherits="UberHealEditBoxTemplate" hidden="false" letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Spell4">
+						<Offset><AbsDimension x="0" y="-35" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+			<EditBox name="Rank5" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell5">
+						<Offset><AbsDimension x="30" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			
+
+			<CheckButton name="BuffToggle5" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="Rank5" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="20" y="-4"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>ShowHideBuffs(5);</OnClick></Scripts>
+			</CheckButton>
+			<EditBox name="Slot5" inherits="UberHealEditBoxTemplate2"  letters="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="Spell5">
+						<Offset><AbsDimension x="-3" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+
+
+
+
+
+
+
+
+
+			<Frame name="Spell4SelectionMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell1 Modifier4" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="80" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckMenu4();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+			<Frame name="Spell4ButtonMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell4SelectionMenu" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckButton4();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+
+
+
+			<Frame name="Spell5SelectionMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell1 Modifier5" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="80" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckMenu5();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+			<Frame name="Spell5ButtonMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Spell5SelectionMenu" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- Ensure that the correct information is displayed
+					Also setup the different options and function for selecting options -->
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+						UberHealLoadCheckButton5();
+					</OnShow>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+
+
+      <Button name="Open Advanced Options" text="Advanced Options" inherits="GameFontLarge">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="135" y="23" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-10" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+	<Scripts><OnClick>
+		AdvancedOptionsFrame:Show();
+		UberHealSetup:Hide();
+	</OnClick></Scripts>
+      </Button>
+
+
+
+
+
+
+
+			<Button name="ChangeSpells" inherits="GameMenuButtonTemplate" text="">
+				<Size>
+					<AbsDimension x="250" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$parent">
+						<Offset><AbsDimension x="0" y="-5" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts><OnClick>UpdateSpellsOnMyClick();</OnClick></Scripts>
+			</Button>		
+
+
+
+			<Button name="AutoHelpButton" inherits="GameMenuButtonTemplate" text="Auto Target Help">
+				<Size>
+					<AbsDimension x="150" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Automatic Text">
+						<Offset><AbsDimension x="0" y="-5" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						UberHealHelpWindow:Show();
+						UberHealClickCastHelpFrame:Hide();
+						UberHealAutomaticHelpFrame:Show();
+						UberHealMainHelpFrame:Hide();
+						UberHealSetup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>		
+
+			<Button name="MainHelpButton" inherits="GameMenuButtonTemplate" text="Help">
+				<Size>
+					<AbsDimension x="75" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+						<Offset><AbsDimension x="-10" y="-10" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						UberHealHelpWindow:Show();
+						UberHealClickCastHelpFrame:Hide();
+						UberHealAutomaticHelpFrame:Hide();
+						UberHealMainHelpFrame:Show();
+						UberHealSetup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>		
+
+			<Button name="UberAnnoucneButton" inherits="GameMenuButtonTemplate" text="Open Announce Window">
+				<Size>
+					<AbsDimension x="170" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="MainHelpButton">
+						<Offset><AbsDimension x="0" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts><OnClick>
+					UberHealAnnounce();
+				</OnClick></Scripts>
+			</Button>		
+
+
+
+			<Button name="ClickCastHelpButton" inherits="GameMenuButtonTemplate" text="Click Cast Help">
+				<Size>
+					<AbsDimension x="150" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="Click Cast Text">
+						<Offset><AbsDimension x="0" y="-5" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						UberHealHelpWindow:Show();
+						UberHealClickCastHelpFrame:Show();
+						UberHealAutomaticHelpFrame:Hide();
+						UberHealMainHelpFrame:Hide();
+						UberHealSetup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>		
+
+
+
+
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				UberHealOption_OnLoad();
+				this:RegisterForDrag("LeftButton");
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("SPELLCAST_FAILED");
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					UberHealOption_OnShow();
+					UberHealConfigure();
+				elseif (event == "SPELLCAST_FAILED") then
+					targetOutOfLOS();
+				end
+			</OnEvent>
+			<OnShow>
+				UberHealOption_OnShow();
+				UberHealConfigure();
+			</OnShow>
+			<OnDragStart>this:StartMoving(); </OnDragStart>
+			<OnDragStop>this:StopMovingOrSizing(); </OnDragStop>
+		</Scripts>
+	</Frame>
+
+	
+	
+
+
+	
+	
+	
+	
+		<Frame name="UberHealOnClick_IconDragging" parent="Minimap" hidden="true">
+			<Scripts>
+				<OnUpdate>
+					UberHealOnClick_IconDragging_OnUpdate(arg1);
+				</OnUpdate>
+			</Scripts>
+		</Frame>
+
+	
+	
+		<Button name="UberHealOnClick_Minimap" frameStrata="MEDIUM" parent="Minimap" enableMouse="true" movable="true">
+			<Size>
+				<AbsDimension x="33" y="33"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-15" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture name="UberHealOnClick_Minimap_Icon" file="Interface\AddOns\UberHeal\uh">
+						<Size>
+							<AbsDimension x="21" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+					</Texture>
+				</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size>
+						<AbsDimension x="56" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			</Layers>
+			<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+			<Scripts>
+				<OnLoad>
+					this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+					this:RegisterForDrag("LeftButton")
+				</OnLoad>
+				<OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+					GameTooltip:AddLine("Uber Heal Settings");
+					GameTooltip:Show();
+				</OnEnter>
+				<OnMouseDown>
+					UberHealOnClick_Minimap_Icon:SetTexCoord(0,1,0,1);
+				</OnMouseDown>
+				<OnShow>
+					UberHealConfigure();
+				</OnShow>
+				<OnMouseUp>
+					UberHealOnClick_Minimap_Icon:SetTexCoord(.075,.925,.075,.925);
+				</OnMouseUp>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+				<OnDragStart>
+					this:LockHighlight();
+					UberHealOnClick_IconDragging:Show();
+				</OnDragStart>
+				<OnDragStop>
+					UberHealOnClick_IconDragging:Hide();
+					this:UnlockHighlight();
+					UberHealOnClick_Minimap_Icon:SetTexCoord(.075,.925,.075,.925);
+				</OnDragStop>
+				<OnClick>
+					UberHealOnClick_IconFrame_OnClick(arg1);
+					UberHealOnClick_Minimap_Icon:SetTexCoord(.075,.925,.075,.925);
+				</OnClick>
+			</Scripts>
+		</Button>
+
+	
+	
+	
+	
+
+
+
+
+  <Frame name="UberHealHelpWindow" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+    <!--<FrameSkin skinid="f15d4970-d66d-444e-bb2d-1ad102c87fed" frameid="f15d4971-d66d-444e-bb2d-1ad102c87fed" />-->
+    <Size>
+      <AbsDimension x="591" y="550" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32" />
+      </EdgeSize>
+    </Backdrop>
+    <Frames>
+      <Frame name="UberHealButtonLabel">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="356" y="17" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="119" y="-56" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Select a Help Section by clicking on a button below.">
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+                <Anchor point="BOTTOMRIGHT" />
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="12" />
+              </FontHeight>
+              <Color r="1" g="0.8196079" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <Button name="MainHelpButton" text="Uber Heal Main Help">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="204" y="30" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="192" y="-73" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+        <Scripts>
+        	<OnClick>
+        		UberHealClickCastHelpFrame:Hide();
+        		UberHealAutomaticHelpFrame:Hide();
+        		UberHealMainHelpFrame:Show();
+        	</OnClick>
+        </Scripts>
+        
+      </Button>
+      <Button name="Automatic Heal Help" text="Automatic Heal Help">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="169" y="26" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="24" y="-78" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+        <Scripts>
+        	<OnClick>
+        		UberHealClickCastHelpFrame:Hide();
+        		UberHealAutomaticHelpFrame:Show();
+        		UberHealMainHelpFrame:Hide();
+        	</OnClick>
+        </Scripts>
+        
+      </Button>
+      <Button name="Click Cast Help Button" text="Click Cast Help">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="173" y="24" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="396" y="-78" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+        <Scripts>
+        	<OnClick>
+        		UberHealClickCastHelpFrame:Show();
+        		UberHealAutomaticHelpFrame:Hide();
+        		UberHealMainHelpFrame:Hide();
+        	</OnClick>
+        </Scripts>
+
+      </Button>
+      <Button name="CloseHelp" text="X" inherits="GameFontLarge">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="23" y="23" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-10" y="-10" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+	<Scripts><OnClick>UberHealHelpWindow:Hide();</OnClick></Scripts>
+      </Button>
+      <Frame name="UberHealHelpTitle">
+        <!--<FrameSkin skinid="f15d4970-d66d-444e-bb2d-1ad102c87fed" frameid="f15d4978-d66d-444e-bb2d-1ad102c87fed" />-->
+        <Size>
+          <AbsDimension x="279" y="47" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="157" y="-3" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" inherits="GameFontHuge" text="Uber Heal Help">
+              <FontHeight>
+                <AbsValue val="20" />
+              </FontHeight>
+              <Color r="1" g="0.8196079" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <ScrollingMessageFrame name="HelpScroller" fade="false">
+        <!--<FrameSkin skinid="f15d4970-d66d-444e-bb2d-1ad102c87fed" frameid="07bef61e-ceb4-4cab-bd99-cc05653863c3" />-->
+        <Size>
+          <AbsDimension x="535" y="400" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="UberHealHelpWindow" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="34" y="-98" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <FontString font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+        <TextInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </TextInsets>
+      </ScrollingMessageFrame>
+      
+      
+      
+            <Frame name="UberHealClickCastHelpFrame" hidden="true">
+              <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+              <Size>
+                <AbsDimension x="500" y="250" />
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="25" y="-110" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <Layers>
+                <Layer>
+  
+   		<FontString name="ClickCastHelpText1" font="Fonts\FRIZQT__.TTF" text="|c00FFFFFFClick Cast Help|r">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" />
+                    </Anchors>
+                    <FontHeight>
+                      <AbsValue val="18" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                      <Color r="0" g="0" b="0" />
+                      <Offset>
+                        <AbsDimension x="1" y="-1" />
+                      </Offset>
+                    </Shadow>
+                  </FontString>
+
+		<FontString name="ClickCastHelpText2Font" inherits="GameFontNormal" text="UBERHEAL_CLICKCASTHELPTEXT2" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="55"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ClickCastHelpText1" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="ClickCastHelpText3Font" inherits="GameFontNormal" text="UBERHEAL_CLICKCASTHELPTEXT3" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="55"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ClickCastHelpText2Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="ClickCastHelpText4Font" inherits="GameFontNormal" text="UBERHEAL_CLICKCASTHELPTEXT4" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="85"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ClickCastHelpText3Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+                </Layer>
+              </Layers>
+            </Frame>
+
+      
+      
+            <Frame name="UberHealAutomaticHelpFrame" hidden="true">
+              <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+              <Size>
+                <AbsDimension x="500" y="250" />
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="25" y="-110" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <Layers>
+                <Layer>
+  
+   		<FontString name="AutomaticHelpText1" font="Fonts\FRIZQT__.TTF" text="|c00FFFFFFAutomatic Casting Help|r">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" />
+                    </Anchors>
+                    <FontHeight>
+                      <AbsValue val="18" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                      <Color r="0" g="0" b="0" />
+                      <Offset>
+                        <AbsDimension x="1" y="-1" />
+                      </Offset>
+                    </Shadow>
+                  </FontString>
+
+		<FontString name="AutomaticHelpText2Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT2" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText1" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-00"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="AutomaticHelpText3Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT3" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="105"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText2Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="AutomaticHelpText4Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT4" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText3Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+		<FontString name="AutomaticHelpText5Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT5" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText4Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+		<FontString name="AutomaticHelpText6Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT6" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText5Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+		<FontString name="AutomaticHelpText7Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT7" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText6Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+		<FontString name="AutomaticHelpText8Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT8" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText7Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+		<FontString name="AutomaticHelpText9Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT9" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="50"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText8Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+		<FontString name="AutomaticHelpText10Font" inherits="GameFontNormal" text="UBERHEAL_AUTOMATICCASTHELPTEXT10" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="55"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="AutomaticHelpText9Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+		
+                </Layer>
+              </Layers>
+            </Frame>
+
+      
+      
+      
+
+            <Frame name="UberHealMainHelpFrame" hidden="false">
+              <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+              <Size>
+                <AbsDimension x="500" y="250" />
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="25" y="-110" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <Layers>
+                <Layer>
+  
+   		<FontString name="MainHelpText1" font="Fonts\FRIZQT__.TTF" text="|c00FFFFFFMisc Uber Heal Help|r">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" />
+                    </Anchors>
+                    <FontHeight>
+                      <AbsValue val="18" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                      <Color r="0" g="0" b="0" />
+                      <Offset>
+                        <AbsDimension x="1" y="-1" />
+                      </Offset>
+                    </Shadow>
+                  </FontString>
+
+		<FontString name="MainHelpText2Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT2" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="55"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText1" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText3Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT3" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="5"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText2Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText4Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT4" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="55"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText3Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText5Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT5" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="5"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText4Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-25"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText6Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT6" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText5Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-15"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText7Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT7" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText6Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText8Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT8" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText7Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="MainHelpText9Font" inherits="GameFontNormal" text="UBERHEAL_MAINHELPTEXT9" justifyH="LEFT" justifyV="TOP">
+			<Size>
+				<AbsDimension x="545" y="40"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="MainHelpText8Font" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+
+                </Layer>
+              </Layers>
+            </Frame>
+
+
+
+      
+      
+      
+      
+      
+    </Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnEvent>
+			</OnEvent>
+			<OnShow>
+			</OnShow>
+			<OnDragStart>this:StartMoving(); </OnDragStart>
+			<OnDragStop>this:StopMovingOrSizing(); </OnDragStop>
+		</Scripts>
+
+  </Frame>
+
+
+
+
+
+
+
+
+
+
+
+
+            <Frame name="AdvancedOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+              <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+              <Size>
+                <AbsDimension x="500" y="180" />
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="25" y="-110" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+   		    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		      <BackgroundInsets>
+		        <AbsInset left="11" right="12" top="12" bottom="11" />
+		      </BackgroundInsets>
+		      <TileSize>
+		        <AbsValue val="32" />
+		      </TileSize>
+		      <EdgeSize>
+		        <AbsValue val="32" />
+		      </EdgeSize>
+		    </Backdrop>
+             <Layers>
+                <Layer>
+  
+
+  
+  
+   		<FontString name="MainHelpText1" font="Fonts\FRIZQT__.TTF" text="|c00FFFFFFUber Heal Advanced Options|r">
+                    <Anchors>
+	              <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+	                <Offset>
+	                  <AbsDimension x="0" y="-15" />
+	                </Offset>
+	              </Anchor>
+                    </Anchors>
+                    <FontHeight>
+                      <AbsValue val="18" />
+                    </FontHeight>
+                    <Color r="1" g="0.8196079" b="0" />
+                    <Shadow>
+                      <Color r="0" g="0" b="0" />
+                      <Offset>
+                        <AbsDimension x="1" y="-1" />
+                      </Offset>
+                    </Shadow>
+                  </FontString>
+
+		<FontString name="PrimaryCastTitle" inherits="GameFontNormalLarge" text="Primary Casting Settings" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="205" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="30" y="-85"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="PrimaryCastLabel" inherits="GameFontNormalSmall" text="Priority #" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="205" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP" relativeTo="PrimaryCastTitle" relativePoint="Bottom">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="SecondaryCastTitle" inherits="GameFontNormalLarge" text="Secondary Casting Settings" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="265" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="235" y="-85"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="SecondaryCastLabel" inherits="GameFontNormalSmall" text="Priority #" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="205" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP" relativeTo="SecondaryCastTitle" relativePoint="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="UberCTRaidLabel" inherits="GameFontNormalSmall" text="Use CT Raid assist emergency monitor for automatic casting" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="205" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="40" y="-60"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="UberSquishyLabel" inherits="GameFontNormalSmall" text="Use Squishy emergency monitor for automatic casting" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="205" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+					<Offset>
+						<AbsDimension x="40" y="-60"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="UberPrimaryHealValue" inherits="GameFontNormal" text="20" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="35" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="115" y="-145"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+		<FontString name="UberSecondaryHealValue" inherits="GameFontNormal" text="20" justifyH="CENTER" justifyV="TOP">
+			<Size>
+				<AbsDimension x="35" y="35"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="350" y="-145"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</FontString>
+
+
+
+
+
+
+
+
+
+
+                </Layer>
+              </Layers>
+	    <Frames>
+	    
+	    
+	    						<Frame name="PrimaryCastBorder">
+	    							<Size>
+	    								<AbsDimension x="235" y="85"/>
+	    							</Size>
+	    							<Anchors>
+	    								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM">
+	    									<Offset>
+	    										<AbsDimension x="0" y="15"/>
+	    									</Offset>
+	    								</Anchor>
+	    							</Anchors>
+	    							<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+	    								<EdgeSize>
+	    									<AbsValue val="16"/>
+	    								</EdgeSize>
+	    								<TileSize>
+	    									<AbsValue val="16"/>
+	    								</TileSize>
+	    								<BackgroundInsets>
+	    									<AbsInset left="5" right="5" top="5" bottom="5"/>
+	    								</BackgroundInsets>
+	    							</Backdrop>
+	    							<Layers>
+	    								<Layer level="ARTWORK">
+	    								</Layer>
+	    							</Layers>
+	    						</Frame>
+
+	    
+	    						<Frame name="SecondaryCastBorder">
+	    							<Size>
+	    								<AbsDimension x="235" y="85"/>
+	    							</Size>
+	    							<Anchors>
+	    								<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOM">
+	    									<Offset>
+	    										<AbsDimension x="0" y="15"/>
+	    									</Offset>
+	    								</Anchor>
+	    							</Anchors>
+	    							<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+	    								<EdgeSize>
+	    									<AbsValue val="16"/>
+	    								</EdgeSize>
+	    								<TileSize>
+	    									<AbsValue val="16"/>
+	    								</TileSize>
+	    								<BackgroundInsets>
+	    									<AbsInset left="5" right="5" top="5" bottom="5"/>
+	    								</BackgroundInsets>
+	    							</Backdrop>
+	    							<Layers>
+	    								<Layer level="ARTWORK">
+	    								</Layer>
+	    							</Layers>
+	    						</Frame>
+
+			<CheckButton name="UberCTRaidToggle" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="15" y="-55"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>UberUseCTRaid();</OnClick></Scripts>
+			</CheckButton>
+			<CheckButton name="UberSquishyToggle" inherits="UberHealCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+					<Offset>
+						<AbsDimension x="15" y="-55"/>
+					</Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>UberUseSquishy();</OnClick></Scripts>
+			</CheckButton>
+
+	    
+	    
+	          <Slider name="PrimaryThresholdSlider" minValue="1" maxValue="20" defaultValue="1" valueStep="1" orientation="HORIZONTAL">
+	            <!--<FrameSkin skinid="f15d4970-d66d-444e-bb2d-1ad102c87fed" frameid="f15d4976-d66d-444e-bb2d-1ad102c87fed" />-->
+	            <Size>
+	              <AbsDimension x="175" y="15" />
+	            </Size>
+	            <Anchors>
+	              <Anchor point="BOTTOM" relativeTo="UberPrimaryHealValue" relativePoint="TOP">
+	                <Offset>
+	                  <AbsDimension x="0" y="0" />
+	                </Offset>
+	              </Anchor>
+	            </Anchors>
+	            <Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+	              <BackgroundInsets>
+	                <AbsInset left="3" right="3" top="6" bottom="6" />
+	              </BackgroundInsets>
+	              <TileSize>
+	                <AbsValue val="8" />
+	              </TileSize>
+	              <EdgeSize>
+	                <AbsValue val="8" />
+	              </EdgeSize>
+	            </Backdrop>
+	            <HitRectInsets>
+	              <AbsInset left="0" right="0" top="-10" bottom="-10" />
+	            </HitRectInsets>
+	            <ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+	              <Size>
+	                <AbsDimension x="36" y="36" />
+	              </Size>
+	            </ThumbTexture>
+	            <Scripts>
+	              <OnValueChanged>
+	    
+	    	                UberPrimaryHealValue:SetText(PrimaryThresholdSlider:GetValue());
+	    
+	              </OnValueChanged>
+	            </Scripts>
+	          </Slider>
+
+	    
+	          <Slider name="SecondaryThresholdSlider" minValue="1" maxValue="20" defaultValue="1" valueStep="1" orientation="HORIZONTAL">
+	            <!--<FrameSkin skinid="f15d4970-d66d-444e-bb2d-1ad102c87fed" frameid="f15d4976-d66d-444e-bb2d-1ad102c87fed" />-->
+	            <Size>
+	              <AbsDimension x="175" y="15" />
+	            </Size>
+	            <Anchors>
+	              <Anchor point="BOTTOM" relativeTo="UberSecondaryHealValue" relativePoint="TOP">
+	                <Offset>
+	                  <AbsDimension x="0" y="0" />
+	                </Offset>
+	              </Anchor>
+	            </Anchors>
+	            <Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+	              <BackgroundInsets>
+	                <AbsInset left="3" right="3" top="6" bottom="6" />
+	              </BackgroundInsets>
+	              <TileSize>
+	                <AbsValue val="8" />
+	              </TileSize>
+	              <EdgeSize>
+	                <AbsValue val="8" />
+	              </EdgeSize>
+	            </Backdrop>
+	            <HitRectInsets>
+	              <AbsInset left="0" right="0" top="-10" bottom="-10" />
+	            </HitRectInsets>
+	            <ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+	              <Size>
+	                <AbsDimension x="36" y="36" />
+	              </Size>
+	            </ThumbTexture>
+	            <Scripts>
+	              <OnValueChanged>
+	    
+	    	                UberSecondaryHealValue:SetText(SecondaryThresholdSlider:GetValue());
+	    
+	              </OnValueChanged>
+	            </Scripts>
+	          </Slider>
+
+
+
+      <Button name="CloseAdvancedOptions" text="X" inherits="GameFontLarge">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="23" y="23" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-10" y="-10" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+	<Scripts><OnClick>
+		AdvancedOptionsFrame:Hide();
+		SaveAdvanced();
+		</OnClick></Scripts>
+      </Button>
+
+
+      <Button name="SaveAdvancedOptionsButton" text="Save Advanced Options" inherits="GameFontLarge">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="185" y="23" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOP">
+            <Offset>
+              <AbsDimension x="0" y="-35" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <ButtonText name="$parentText">
+          <FontHeight>
+            <AbsValue val="10" />
+          </FontHeight>
+        </ButtonText>
+        <NormalFont inherits="GameFontNormal" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalFont>
+        <HighlightFont inherits="GameFontHighlight" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightFont>
+        <DisabledFont inherits="GameFontDisable" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledFont>
+	<Scripts><OnClick>
+		AdvancedOptionsFrame:Hide();
+		SaveAdvanced();
+		</OnClick></Scripts>
+      </Button>
+
+
+	    
+	    
+	    </Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnEvent>
+			</OnEvent>
+			<OnShow>
+			</OnShow>
+			<OnDragStart>this:StartMoving(); </OnDragStart>
+			<OnDragStop>this:StopMovingOrSizing(); </OnDragStop>
+		</Scripts>
+
+          </Frame>
+
+
+
+
+
+
+
+
+	<Frame name="UberHealStatus" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="250" y="25"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\RaidFrame\UI-RaidFrame-GroupBg" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="1" bottom="1" right="1" top="1"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="1024"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>	
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="UberStatusText" inherits="GameFontHighlightSmall" text="UBER HEAL v1.22" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>		
+		<Frames>
+			<Button name="ChangeSpells" inherits="GameMenuButtonTemplate" text="X">
+				<Size>
+					<AbsDimension x="15" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$parent">
+						<Offset><AbsDimension x="-5" y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts><OnClick>
+					UberHealAnnounce();
+				</OnClick></Scripts>
+			</Button>		
+
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnEvent>
+			</OnEvent>
+			<OnShow>
+			</OnShow>
+			<OnDragStart>this:StartMoving(); </OnDragStart>
+			<OnDragStop>this:StopMovingOrSizing(); </OnDragStop>
+		</Scripts>
+	</Frame>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Ui>

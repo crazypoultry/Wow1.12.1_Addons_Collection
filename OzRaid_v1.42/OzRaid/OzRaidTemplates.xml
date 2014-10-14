@@ -1,0 +1,404 @@
+
+<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!-- OZ RAID
+	Templates for OZ Raid windows
+
+	I have blatantly & unashamedly copied most of this from KLH THreatMeters
+	Partly cos I am a noob at Addons, but mainly cos I like the UI style, its doing
+	the same sort of thing (scalable windows, status bars, and text), and the code
+	was really well written and I could understand it.
+
+	KLH_ThreatMeters written by Kenco@Perenolde,
+		New KLH UI code (which this uses) by Lukon@Perenolde
+-->
+	<Script file="OzRaid.lua"/>
+
+
+	<!-- The command buttons on the right side of the title bar -->
+	<Button name="OZ_ButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLeave> OZ_Button_OnLeave(); </OnLeave>
+		</Scripts>
+		<HighlightTexture>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="2" y="-2"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="-2" y="2"/>
+				</Anchor>
+			</Anchors>
+			<Color r="1.0" g="1.0" b="0" a="0.1"/> 
+		</HighlightTexture>
+	</Button>
+	
+	<!-- A dark red background texture used by some buttons to supplement a transparent texture -->
+	<Texture name="OZ_ButtonBackground" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="2" y="-2"/>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset x="-2" y="2"/>
+			</Anchor>
+		</Anchors>
+		<Color r="0.7" g="0" b="0"/>
+	</Texture>
+
+	<Button name="OZ_BarIconButtonTemplate" virtual="true" hidden="false">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon">
+					<TexCoords left="0.1" right="0.9" top="0.1" bottom="0.9"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				OZ_ClickBar( (this:GetParent()).unit, arg1 )
+			</OnClick>
+			<OnEnter>
+				OZ_BuffTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<!-- A data row for a single entry -->
+	<Frame name="OZ_RowTemplate" virtual="true" hidden="true">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="$parent"/>
+			<Anchor point="RIGHT" relativeTo="$parent"/>
+		</Anchors>
+
+		<Frames>
+			<Frame  name="$parentHeader" inherits="OZ_RowHeaderTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentBarFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHeader" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOM"/>			
+				</Anchors>
+
+				<Layers>
+					<Layer level="BACKGROUND">
+						<!-- Status bar -->
+						<Texture name="$parentBar" file="Interface\TargetingFrame\UI-StatusBar">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="-1"/>
+								</Anchor>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- An icon before the name (debuffed, leader, raid mark, etc.) -->
+					<Button name="$parentIcon" inherits="OZ_BarIconButtonTemplate" hidden="false" id="0">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Button>
+
+					<!-- Name of the bar's owner (player or mob) -->
+					<Frame name="$parentName" inherits="OZ_StringTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT"/>
+							<Anchor point="TOPRIGHT"/>
+							<Anchor point="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentValue" inherits="OZ_StringTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<!-- Arbitrary value (matches bar contents) -->
+					<!-- Buff Icons -->
+					<Button name="$parentBuff1" inherits="OZ_BarIconButtonTemplate" hidden="false" id="1">
+						<Anchors>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentBuff2" inherits="OZ_BarIconButtonTemplate" hidden="false" id="2">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parentBuff2" relativePoint="LEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentBuff3" inherits="OZ_BarIconButtonTemplate" hidden="false" id="3">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parentBuff3" relativePoint="LEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentBuff4" inherits="OZ_BarIconButtonTemplate" hidden="false" id="4">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parentBuff4" relativePoint="LEFT"/>
+						</Anchors>
+					</Button>
+					<Frame name="$parentBarGlow">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+
+
+								<Texture name="$parentBarGlowTex1" file="Interface\Buttons\ButtonHilight-SquareQuickslot" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT"><Offset x="-6" y="2"/></Anchor>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"><Offset x="6" y="-2"/></Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+								</Texture>
+								<Texture name="$parentBarGlowTex2" file="Interface\Buttons\ButtonHilight-SquareQuickslot" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT"><Offset x="6" y="2"/></Anchor>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"><Offset x="-6" y="-2"/></Anchor>
+									</Anchors>
+									<TexCoords left="0.25" right="0.75" top="0" bottom="1"/>
+								</Texture>
+								<Texture name="$parentBarGlowTex3" file="Interface\Buttons\ButtonHilight-SquareQuickslot" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"><Offset x="-6" y="2"/></Anchor>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"><Offset x="6" y="-2"/></Anchor>
+									</Anchors>
+									<TexCoords left="0.75" right="1" top="0" bottom="1"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp")
+						this.unit = "player";
+					</OnLoad>
+					<OnClick>
+						OZ_ClickBar(this.unit,arg1)
+					</OnClick>
+					<OnEnter>
+						OZ_ToolTip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+
+	</Frame>
+
+	<Frame name="OZ_WindowTemplate" toplevel="true" parent="UIParent" hidden="false" enableMouse="true" movable="true" virtual="true">
+		<Size>
+			<AbsDimension x="280" y="200"/>
+		</Size>
+
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+			    <AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+			    <AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+			    <AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Frames>
+			<!-- The title bar of the main frame. Contains command buttons, texts, background -->
+			<Frame name="$parentTitle">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">					
+						<!-- The title bar background -->
+						<Texture name="$parentBackground" >
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-1" y="1"/>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="1" y="0"/>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+						</Texture>
+						<!-- a dividing line between the title bar and the data -->
+						<Texture name="$parentLine" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="4"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.1" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+					</Layer>
+				</Layers>
+
+				<!-- The title bar strings (left to right) -->
+				<Frames>
+					<!-- Minimised title -->
+					<Frame name="$parentName" inherits="OZ_StringTemplate">
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset x="2" y="1"/>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Command buttons (right to left) -->
+					<!-- Close -->
+					<Button name="$parentClose" inherits="OZ_ButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick> OZ_Button_Close(this); </OnClick>
+							<OnEnter> OZ_Button_OnEnter("close"); </OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up">
+							<TexCoords left="0.175" top="0.175" right="0.825" bottom="0.825"/>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down">
+							<TexCoords left="0.175" top="0.175" right="0.825" bottom="0.825"/>
+						</PushedTexture>
+					</Button>
+					<!-- Options -->
+					<Button name="$parentOptions" inherits="OZ_ButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT"/>
+						</Anchors>
+						<Scripts>							
+							<OnClick> OZ_Button_Options(this); </OnClick>
+							<OnEnter> OZ_Button_OnEnter("opt"); </OnEnter>
+						</Scripts>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture inherits="OZ_ButtonBackground"/>
+							</Layer>
+						</Layers>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Up">
+							<TexCoords left="0.1" top="0.1" right="0.9" bottom="0.9"/>
+						</NormalTexture>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-Chat-Down">
+							<TexCoords left="0.1" top="0.1" right="0.9" bottom="0.9"/>
+						</PushedTexture>
+					</Button>
+				</Frames>
+			</Frame>
+			
+			<!-- Shows threat data from the raid members -->
+			<Frame name="$parentTable">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="-2"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent">
+						<Offset x="-6" y="6"/>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<!-- Threat data for a member of the raid -->
+					<Frame name="$parentRow1" inherits="OZ_RowTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentRow2" inherits="OZ_RowTemplate" id="2"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow1" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow3" inherits="OZ_RowTemplate" id="3"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow2" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow4" inherits="OZ_RowTemplate" id="4"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow3" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow5" inherits="OZ_RowTemplate" id="5"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow4" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow6" inherits="OZ_RowTemplate" id="6"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow5" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow7" inherits="OZ_RowTemplate" id="7"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow6" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow8" inherits="OZ_RowTemplate" id="8"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow7" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow9" inherits="OZ_RowTemplate" id="9"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow8" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow10" inherits="OZ_RowTemplate" id="10"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow9" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow11" inherits="OZ_RowTemplate" id="11"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow10" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow12" inherits="OZ_RowTemplate" id="12"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow11" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow13" inherits="OZ_RowTemplate" id="13"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow12" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow14" inherits="OZ_RowTemplate" id="14"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow13" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow15" inherits="OZ_RowTemplate" id="15"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow14" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow16" inherits="OZ_RowTemplate" id="16"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow15" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow17" inherits="OZ_RowTemplate" id="17"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow16" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow18" inherits="OZ_RowTemplate" id="18"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow17" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow19" inherits="OZ_RowTemplate" id="19"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow18" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow20" inherits="OZ_RowTemplate" id="20"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow19" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow21" inherits="OZ_RowTemplate" id="21"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow20" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow22" inherits="OZ_RowTemplate" id="22"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow21" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow23" inherits="OZ_RowTemplate" id="23"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow22" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow24" inherits="OZ_RowTemplate" id="24"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow23" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow25" inherits="OZ_RowTemplate" id="25"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow24" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow26" inherits="OZ_RowTemplate" id="26"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow25" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow27" inherits="OZ_RowTemplate" id="27"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow26" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow28" inherits="OZ_RowTemplate" id="28"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow27" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow29" inherits="OZ_RowTemplate" id="29"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow28" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow30" inherits="OZ_RowTemplate" id="30"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow29" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow31" inherits="OZ_RowTemplate" id="31"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow30" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow32" inherits="OZ_RowTemplate" id="32"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow31" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow33" inherits="OZ_RowTemplate" id="33"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow32" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow34" inherits="OZ_RowTemplate" id="34"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow33" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow35" inherits="OZ_RowTemplate" id="35"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow34" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+
+					<Frame name="$parentRow36" inherits="OZ_RowTemplate" id="36"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow35" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow37" inherits="OZ_RowTemplate" id="37"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow36" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow38" inherits="OZ_RowTemplate" id="38"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow37" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow39" inherits="OZ_RowTemplate" id="39"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow38" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+					<Frame name="$parentRow40" inherits="OZ_RowTemplate" id="40"><Anchors><Anchor point="TOPLEFT" relativeTo="$parentRow39" relativePoint="BOTTOMLEFT"/></Anchors></Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnDragStart>
+				if( not OZ_Config[ this:GetID() ].locked )then
+					this.moving = 1
+					this:StartMoving()
+				end
+			</OnDragStart>
+			<OnDragStop>
+				this.moving = nil
+				this:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+</Ui>

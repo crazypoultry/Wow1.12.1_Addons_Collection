@@ -1,0 +1,1068 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+  ..\FrameXML\UI.xsd">
+
+<Script file="Opiumkos.lua"/>
+
+  	<Frame name="OpiumTargetKosFrame" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true"                        parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="20" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="TargetFrameHealthBar" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="70" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+		   <Button name="OpiumTarget_KosButton" >
+			<Size>
+				<AbsDimension x="24" y="24"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+            <OnMouseUp>
+                OpiumTargetKosFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumTargetKosFrame:StartMoving();
+            </OnMouseDown>
+
+				<OnClick>
+					OpiumTargetKosPressed();
+				</OnClick>
+				<OnLoad>
+					this.tooltip = OPIUM_TEXT_KOS_ADDPLAYER;
+				</OnLoad>
+				<OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltip);
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+			</Scripts>
+
+			<NormalTexture file="Interface\AddOns\Opium\Images\OpiumButton-Up"/>
+			<PushedTexture file="Interface\AddOns\Opium\Images\OpiumButton-Down"/>
+			
+		</Button>
+      </Frames>
+        <Scripts>
+            <OnMouseUp>
+                OpiumTargetKosFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumTargetKosFrame:StartMoving();
+            </OnMouseDown>
+        </Scripts>
+	</Frame>
+
+
+  	<Frame name="OpiumTargetFrame" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true"                        parent="UIParent">
+		<Size>
+			<AbsDimension x="20" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="TargetFrameHealthBar" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="40" y="-5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="OpiumTargetText" inherits="TextStatusBarText"/>
+			</Layer>
+		</Layers>
+        <Scripts>
+            <OnMouseUp>
+                OpiumTargetFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumTargetFrame:StartMoving();
+            </OnMouseDown>
+				<OnEnter>
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					if( this.tooltip ) then
+     					GameTooltip:SetText(this.tooltip);
+					end
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+
+
+        </Scripts>
+	</Frame>
+
+
+
+
+	<Button name="OpiumKosButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="380" y="16"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+               OpiumKosButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				OpiumItemButton_OnLeave();
+			</OnLeave>
+			<OnClick>
+				OpiumKosItemButton_OnClick(arg1);
+			</OnClick>
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\QuestFrame\UI-QuestTitleHighlight"/>
+
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="88" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+	
+				<FontString name="$parentReason" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+	</Button>
+
+
+<Frame name="OpiumKosFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true">
+
+		<Size>
+			<AbsDimension x="394" y="352"/>
+		</Size>
+
+		 <Anchors>
+ 			<Anchor point="TOPRIGHT">
+ 				<Offset>
+ 					<AbsDimension x="-400" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+
+   	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"               edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+   </Backdrop>
+
+   <Layers>
+	   <Layer level="ARTWORK">
+	 			<Texture name="OpiumKosFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="OpiumKosTitleText" inherits="GameFontNormal" text="KoS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="OpiumKosFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+         </Layer>
+	</Layers>
+      <Frames>
+			<Button name="OpiumKosFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="OpiumKosFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="OpiumKosItem1" inherits="OpiumKosButtonTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosFrame">
+						<Offset>
+							<AbsDimension x="19" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem2" inherits="OpiumKosButtonTemplate" id="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem3" inherits="OpiumKosButtonTemplate" id="3" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem4" inherits="OpiumKosButtonTemplate" id="4" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem5" inherits="OpiumKosButtonTemplate" id="5" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem6" inherits="OpiumKosButtonTemplate" id="6" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem7" inherits="OpiumKosButtonTemplate" id="7" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem8" inherits="OpiumKosButtonTemplate" id="8" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem9" inherits="OpiumKosButtonTemplate" id="9" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem10" inherits="OpiumKosButtonTemplate" id="10" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem11" inherits="OpiumKosButtonTemplate" id="11" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem12" inherits="OpiumKosButtonTemplate" id="12" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem13" inherits="OpiumKosButtonTemplate" id="13" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem14" inherits="OpiumKosButtonTemplate" id="14" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem13" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem15" inherits="OpiumKosButtonTemplate" id="15" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem14" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem16" inherits="OpiumKosButtonTemplate" id="16" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem15" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem17" inherits="OpiumKosButtonTemplate" id="17" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem16" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem18" inherits="OpiumKosButtonTemplate" id="18" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem17" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="OpiumKosItem19" inherits="OpiumKosButtonTemplate" id="19" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosItem18" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+
+      <ScrollFrame name="OpiumKosListScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="256" y="324"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="OpiumKosFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-35" y="-17"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+<!-- KRIS 17/01/2006
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+KRIS -->
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(OPIUM_ITEM_HEIGHT, Opium_KosUpdate);
+					</OnVerticalScroll>
+<!-- KRIS 17/01/2006 -->
+<!-- HACK -->
+                                        <OnShow>
+                                                Opium_KosUpdate();
+                                        </OnShow>
+<!-- KRIS -->
+				</Scripts>
+			</ScrollFrame>
+
+			<Button name="OpiumKosFrameAddButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="50" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_KOS_ADD);
+					</OnLoad>
+					<OnClick>
+						OpiumAddKosEntry();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosFrameEditButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="50" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosFrameAddButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_KOS_EDIT);
+					</OnLoad>
+					<OnClick>
+						OpiumEditKosEntry();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosFrameRemoveButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="70" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosFrameEditButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_KOS_REMOVE);
+					</OnLoad>
+					<OnClick>
+						OpiumRemoveKosEntry();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosFrameShare" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="30"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosFrameRemoveButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_SHARE);
+					</OnLoad>
+					<OnClick>
+						OpiumKosFrame_Share();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosFrameCancel" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="30"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosFrameShare" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_CANCEL);
+					</OnLoad>
+					<OnClick>
+						OpiumKosFrame_Cancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+		</Frames>
+		<Scripts>
+			
+
+            <OnMouseUp>
+                OpiumKosFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumKosFrame:StartMoving();
+            </OnMouseDown>
+
+		</Scripts>
+
+</Frame>
+
+<Frame name="OpiumKosAddFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true">
+
+		<Size>
+			<AbsDimension x="364" y="182"/>
+		</Size>
+
+		 <Anchors>
+ 			<Anchor point="TOPRIGHT">
+ 				<Offset>
+ 					<AbsDimension x="-400" y="-504"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+
+   	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"               edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+   </Backdrop>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+
+				<FontString name="OK_TitleLabel" inherits="GameFontHighlight" justifyH="MIDDLE" justifyV="BOTTOM" text="OPIUM_TEXT_ADDDIALOGTITLE">
+					<Size>
+						<AbsDimension x="134" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" >
+							<Offset>
+								<AbsDimension x="0" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="OK_NameLabel" inherits="GameFontNormal" justifyH="RIGHT" justifyV="BOTTOM" text="OPIUM_TEXT_NAME">
+					<Size>
+						<AbsDimension x="134" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-30" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="OK_ReasonLabel" inherits="GameFontNormal" justifyH="RIGHT" justifyV="BOTTOM" text="OPIUM_TEXT_KOS_REASON">
+					<Size>
+						<AbsDimension x="134" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="OK_NameLabel" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="OK_FlagLabel" inherits="GameFontNormal" justifyH="RIGHT" justifyV="BOTTOM" text="OPIUM_TEXT_KOS_FLAG">
+					<Size>
+						<AbsDimension x="134" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="OK_ReasonLabel" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+
+   	<Frames>
+		<EditBox name="OK_NameEditBox" inherits="OS_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OK_NameLabel" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		<Scripts>
+			<OnEscapePressed>
+				OpiumAddKosEntryFrame_Cancel();
+			</OnEscapePressed>
+			<OnEnterPressed>
+				OpiumAddKosEntryConfirm();
+			</OnEnterPressed>
+		</Scripts>
+
+			</EditBox>
+
+			<EditBox name="OK_ReasonEditBox" inherits="OS_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OK_ReasonLabel" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+      		<Scripts>
+	      		<OnEscapePressed>
+		     		OpiumAddKosEntryFrame_Cancel();
+			     </OnEscapePressed>
+			     <OnEnterPressed>
+			 	    OpiumAddKosEntryConfirm();
+			     </OnEnterPressed>
+		     </Scripts>
+
+		</EditBox>
+
+
+
+			<Frame name="OpiumAddKosEntryFlagDropDown" letters="8" inherits="UIDropDownMenuTemplate" id="1" hidden="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="OK_FlagLabel" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+             		<OnShow>
+						OpiumAddKosEntryFlagDropDown_OnShow();
+					</OnShow>
+
+				</Scripts>
+			</Frame>
+
+			<Button name="OpiumKosFrameAddConfirmButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="80" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="70" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_KOS_ADD);
+					</OnLoad>
+					<OnClick>
+						OpiumAddKosEntryConfirm();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosFrameAddCancel" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="80" y="30"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosFrameAddConfirmButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_CANCEL);
+					</OnLoad>
+					<OnClick>
+						OpiumAddKosEntryFrame_Cancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+	</Frames>
+		<Scripts>
+            <OnMouseUp>
+                OpiumKosAddFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumKosAddFrame:StartMoving();
+            </OnMouseDown>
+
+		</Scripts>
+
+
+  </Frame>
+
+
+
+<Frame name="OpiumKosShareFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true">
+
+		<Size>
+			<AbsDimension x="364" y="152"/>
+		</Size>
+
+		 <Anchors>
+ 			<Anchor point="TOPRIGHT">
+ 				<Offset>
+ 					<AbsDimension x="-400" y="-504"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+
+   	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"               edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+   </Backdrop>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+
+				<FontString name="OKS_TitleLabel" inherits="GameFontHighlight" justifyH="MIDDLE" justifyV="BOTTOM" text="OPIUM_TEXT_SHAREDIALOGTITLE">
+					<Size>
+						<AbsDimension x="164" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" >
+							<Offset>
+								<AbsDimension x="0" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="OKS_NameLabel" inherits="GameFontNormal" justifyH="RIGHT" justifyV="BOTTOM" text="OPIUM_TEXT_SHAREWITHWHO">
+					<Size>
+						<AbsDimension x="200" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+
+   	<Frames>
+		<EditBox name="OKS_NameEditBox" inherits="OS_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OKS_NameLabel" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="70" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		<Scripts>
+			<OnEscapePressed>
+				OpiumKosShareFrame_Cancel();
+			</OnEscapePressed>
+			<OnEnterPressed>
+				OpiumKosShareFrameConfirm();
+			</OnEnterPressed>
+		</Scripts>
+
+		</EditBox>
+
+
+
+
+			<Button name="OpiumKosShareFrameConfirmButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="80" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="70" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_SHARE);
+					</OnLoad>
+					<OnClick>
+						OpiumKosShareFrameConfirm();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosShareFrameCancel" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="80" y="30"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosShareFrameConfirmButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_CANCEL);
+					</OnLoad>
+					<OnClick>
+						OpiumKosShareFrame_Cancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+	</Frames>
+		<Scripts>
+            <OnMouseUp>
+                OpiumKosShareFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumKosShareFrame:StartMoving();
+            </OnMouseDown>
+
+		</Scripts>
+
+
+  </Frame>
+
+
+<Frame name="OpiumKosShareReceiveFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" enableKeyboard="true" movable="true" parent="UIParent" hidden="true">
+
+		<Size>
+			<AbsDimension x="364" y="100"/>
+		</Size>
+
+		 <Anchors>
+ 			<Anchor point="TOPRIGHT">
+ 				<Offset>
+ 					<AbsDimension x="-400" y="-504"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+
+   	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"               edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+   </Backdrop>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+
+				<FontString name="OKSR_TitleLabel" inherits="GameFontHighlight" justifyH="MIDDLE" justifyV="BOTTOM">
+					<Size>
+						<AbsDimension x="300" y="28"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+
+			</Layer>
+		</Layers>
+
+   	<Frames>
+
+
+			<Button name="OpiumKosShareReceiveFrameConfirmButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="80" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="30" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_YES);
+					</OnLoad>
+					<OnClick>
+						OpiumKosShareReceiveFrameConfirm();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosShareReceiveFrameCancelButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="80" y="30"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosShareReceiveFrameConfirmButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_NO);
+					</OnLoad>
+					<OnClick>
+						OpiumKosShareReceiveFrame_Cancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="OpiumKosShareReceiveFrameBlockButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="110" y="30"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumKosShareReceiveFrameCancelButton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(OPIUM_TEXT_BLOCK);
+					</OnLoad>
+					<OnClick>
+						OpiumKosShareReceiveFrame_Block();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+	</Frames>
+		<Scripts>
+            <OnMouseUp>
+                OpiumKosShareReceiveFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumKosShareReceiveFrame:StartMoving();
+            </OnMouseDown>
+
+		</Scripts>
+
+
+  </Frame>
+
+
+
+
+
+
+
+
+
+</Ui>

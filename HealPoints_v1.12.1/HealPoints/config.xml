@@ -1,0 +1,431 @@
+<UI xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	
+  <Frame name="HealPointsConfigTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="390" y="140"/>
+    </Size>
+    <Scripts>
+      <OnLoad>
+        this:SetBackdropColor(0,0,0)
+      </OnLoad>
+    </Scripts>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString inherits="GameFontNormal" text="Duration:" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="70" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="10" y="-8"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentDurationText" inherits="GameFontHighlight" text="1 min" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="50" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="315" y="-8"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString inherits="GameFontNormal" text="Let HealPoints select spell and rank" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="300" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="40" y="-38"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentManualText" inherits="GameFontNormal" text="Force use of:" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="80" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="40" y="-68"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString inherits="GameFontNormal" text="Mana:" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="70" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="10" y="-103"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentManaText" inherits="GameFontHighlight" text="100%" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="50" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="315" y="-103"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Slider name="$parentDuration" inherits="OptionsSliderTemplate" minValue="0" maxValue="15" valueStep="0.5">
+        <Size>
+          <AbsDimension x="245" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="70" y="-5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            getglobal(this:GetName().."High"):SetText("Long");
+            getglobal(this:GetName().."Low"):SetText("Short");
+          </OnLoad>
+          <OnValueChanged>
+            HealPointsConfigUI:update();
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+      <CheckButton name="$parentAutoSelect" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-33"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            if (this:GetChecked()) then
+              getglobal(string.sub(this:GetName(), 1, -11).."ManualSelect"):SetChecked("0");
+              HealPointsConfigUI:update();
+            else
+              getglobal(string.sub(this:GetName(), 1, -11).."ManualSelect"):SetChecked("1");
+              HealPointsConfigUI:update();
+            end
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentManualSelect" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-63"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            if (this:GetChecked()) then
+              getglobal(string.sub(this:GetName(), 1, -13).."AutoSelect"):SetChecked("0");
+              HealPointsConfigUI:update();
+            else
+              getglobal(string.sub(this:GetName(), 1, -13).."AutoSelect"):SetChecked("1");
+              HealPointsConfigUI:update();
+            end
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+      <Frame name="$parentManualSelectSpell" inherits="UIDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentManualText" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="0" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            UIDropDownMenu_SetWidth(120,this);
+            UIDropDownMenu_JustifyText("LEFT",this);
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <Frame name="$parentManualSelectRank" inherits="UIDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentManualSelectSpell" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-30" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            UIDropDownMenu_SetWidth(80,this);
+            UIDropDownMenu_JustifyText("LEFT",this);
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <Slider name="$parentMana" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="5" id="2">
+        <Size>
+          <AbsDimension x="245" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="70" y="-100"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            getglobal(this:GetName().."High"):SetText("100%");
+            getglobal(this:GetName().."Low"):SetText("0%");
+          </OnLoad>
+          <OnValueChanged>
+            HealPointsConfigUI:update();
+          </OnValueChanged>
+          <OnEnter>
+            HealPointsConfigUI:setTooltip();
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+    </Frames>
+  </Frame>
+	
+  <Frame name="HealPoints_ConfigFrame" parent="UIParent" enableMouse="true" movable="true" frameStrata="DIALOG" hidden="true" toplevel="true">
+    <Size>
+      <AbsDimension x="430" y="440"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+        <Size>
+          <AbsDimension x="128" y="17"/>
+        </Size>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="420" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="12"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString inherits="GameFontNormal" text="HealPoints Configuration">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="HealPoints_ConfigFrame">
+              <Offset>
+                <AbsDimension x="0" y="-3"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="HealPointsPowerText" inherits="GameFontHighlight" text="PowerPoints">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="HealPoints_ConfigFrame">
+              <Offset>
+                <AbsDimension x="20" y="-20"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="HealPointsEnduranceText" inherits="GameFontHighlight" text="EndurancePoints">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="HealPoints_ConfigFrame">
+              <Offset>
+                <AbsDimension x="20" y="-180"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="HealPointsHotText" inherits="GameFontHighlight" text="Heal-over-time spells">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="HealPoints_ConfigFrame">
+              <Offset>
+                <AbsDimension x="20" y="-340"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="HealPointsPowerConfig" inherits="HealPointsConfigTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="HealPointsPowerText">
+            <Offset>
+              <AbsDimension x="0" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="HealPointsEnduranceConfig" inherits="HealPointsConfigTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="HealPointsEnduranceText">
+            <Offset>
+              <AbsDimension x="0" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
+      <Frame name="HealPointsHotConfig" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="390" y="40"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="HealPointsHotText">
+            <Offset>
+              <AbsDimension x="0" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropColor(0,0,0)
+          </OnLoad>
+        </Scripts>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString inherits="GameFontNormal" text="#targets:" justifyH="LEFT">
+              <Size>
+                <AbsDimension x="70" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="10" y="-8"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentNumTargetsText" inherits="GameFontHighlight" text="3 secs" justifyH="RIGHT">
+              <Size>
+                <AbsDimension x="50" y="20"/>
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="315" y="-8"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <Slider name="$parentNumTargets" inherits="OptionsSliderTemplate" minValue="0" maxValue="12" valueStep="1" id="1">
+            <Size>
+              <AbsDimension x="245" y="20"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="70" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                getglobal(this:GetName().."High"):SetText("Many");
+                getglobal(this:GetName().."Low"):SetText("Few");
+              </OnLoad>
+              <OnValueChanged>
+                HealPointsConfigUI:update();
+              </OnValueChanged>
+              <OnEnter>
+                HealPointsConfigUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Slider>
+        </Frames>
+      </Frame>
+
+      <!-- Reset Button -->
+      <Button name="$parentReset" inherits="OptionsButtonTemplate" text="Defaults">
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="20" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HealPointsConfigUI:reset();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <!-- Close Button -->
+      <Button name="$parentClose" inherits="OptionsButtonTemplate" text="Close">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-20" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HideUIPanel(this:GetParent());
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        tinsert(UISpecialFrames, "HealPoints_ConfigFrame");
+        local _, className = UnitClass("player");
+        if (className == "PALADIN" or className == "SHAMAN") then
+          getglobal("HealPointsHotConfigNumTargets"):Hide();
+          getglobal("HealPointsHotConfigNumTargetsText"):SetText("N/A");
+        end
+      </OnLoad>
+      <OnMouseDown>
+        if (arg1=="LeftButton") then
+          this:StartMoving();
+        end
+      </OnMouseDown>
+      <OnMouseUp>
+        if (arg1=="LeftButton") then
+          this:StopMovingOrSizing();
+        end
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+</UI>

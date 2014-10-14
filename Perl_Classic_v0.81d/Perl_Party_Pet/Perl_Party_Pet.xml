@@ -1,0 +1,901 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Perl_Party_Pet.lua"/>
+
+
+	<!-- Virtual buffs template -->
+	<Button name="Perl_Party_Pet_BuffTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				Perl_Party_Pet_SetBuffTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="Perl_Party_Pet_DeBuffTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentDebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays" hidden="true">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>
+				<FontString name="$parentCount" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				Perl_Party_Pet_SetDeBuffTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+
+	<!-- Frame to display Party's health -->
+	<Frame name="Perl_Party_Pet_FrameTemplate" frameStrata="LOW" virtual="true">
+		<Size>
+			<!-- The size of this frame determines what can be clicked for the menu and moving, hence it is the same size as the name frame. -->
+			<AbsDimension x="135" y="24"/>
+		</Size>
+		<Frames>
+			<!-- Name Frame -->
+			<Frame name="$parent_NameFrame">
+				<Size>
+					<AbsDimension x="135" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parent_CastClickOverlay">
+						<Size>
+							<AbsDimension x="135" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnClick>
+								Perl_Party_Pet_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Pet_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Pet_DragStop(arg1);
+							</OnDragStop>
+							<OnEnter>
+								Perl_Party_Pet_Tip();
+								UnitFrame_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								UnitFrame_OnLeave();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Backdrop bgFile="Interface\AddOns\Perl_Config\Perl_Black" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Fontstring name="$parent_NameBarText" inherits="GameFontNormalSmall" text="Error!">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" >
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Fontstring>
+					</Layer>
+				</Layers>
+			</Frame>
+
+
+			<!-- Portrait Frame -->
+			<Frame name="$parent_PortraitFrame">
+				<Size>
+					<AbsDimension x="53" y="54"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_NameFrame">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\AddOns\Perl_Config\Perl_Black" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<PlayerModel name="$parent_PartyModel" hidden="true">
+						<Size>
+							<AbsDimension x="43" y="43"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="1" y="-1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnUpdate>
+								this:SetCamera(0);
+							</OnUpdate>
+						</Scripts>
+					</PlayerModel>
+					<Button name="$parent_CastClickOverlay">
+						<Size>
+							<AbsDimension x="60" y="61"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnClick>
+								Perl_Party_Pet_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Pet_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Pet_DragStop(arg1);
+							</OnDragStop>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Layers>
+					<!-- Portrait -->
+					<Layer level="ARTWORK">
+						<Texture name="$parent_Portrait">
+							<Size>
+								<AbsDimension x="41" y="41"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+
+			<!-- Stats Frame -->
+			<Frame name="$parent_StatsFrame">
+				<Size>
+					<AbsDimension x="135" y="34"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_NameFrame">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\AddOns\Perl_Config\Perl_Black" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<Button name="$parent_CastClickOverlay">
+						<Size>
+							<AbsDimension x="135" y="34"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnClick>
+								Perl_Party_Pet_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Pet_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Pet_DragStop(arg1);
+							</OnDragStop>
+						</Scripts>
+					</Button>
+
+					<!-- Health Bar -->
+					<StatusBar name="$parent_HealthBar" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="123" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_HealthBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0.8" b="0"/>
+						<Layers>
+							<!-- Text -->
+							<Layer level="OVERLAY">
+								<Fontstring name="$parent_HealthBarText" inherits="GameFontNormalSmall" text="Error!">
+									<FontHeight>
+										<AbsValue val="11"/>
+									</FontHeight>
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="CENTER">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Fontstring>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<StatusBar name="$parent_HealthBarFadeBar" inherits="TextStatusBar" hidden="true">
+						<Size>
+							<AbsDimension x="123" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_HealthBarFadeBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0.8" b="0" a="0.25"/>
+					</StatusBar>
+					<StatusBar name="$parent_HealthBarBG" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="123" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_HealthBarBGTex" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+						<BarColor r="0" g="0.8" b="0" a="0.25"/>
+					</StatusBar>
+
+					<!-- Mana Bar -->
+					<StatusBar name="$parent_ManaBar" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="123" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_ManaBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0" b="1"/>
+						<Layers>
+							<!-- Text -->
+							<Layer level="OVERLAY">
+								<Fontstring name="$parent_ManaBarText" inherits="GameFontNormalSmall" text="Error!">
+									<FontHeight>
+										<AbsValue val="11"/>
+									</FontHeight>
+											<Anchors>
+												<Anchor point="CENTER" relativePoint="CENTER">
+													<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Fontstring>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<StatusBar name="$parent_ManaBarFadeBar" inherits="TextStatusBar" hidden="true">
+						<Size>
+							<AbsDimension x="123" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_ManaBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_ManaBarFadeBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0.8" b="0" a="0.25"/>
+					</StatusBar>
+					<StatusBar name="$parent_ManaBarBG" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="123" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_ManaBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_ManaBarBGTex" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+						<BarColor r="0" g="0" b="1" a="0.25"/>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+
+			<!-- Buffs Frame -->
+			<Frame name="$parent_BuffFrame">
+				<Size>
+					<AbsDimension x="170" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_StatsFrame">
+						<Offset>
+							<AbsDimension x="2" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parent_Buff1" inherits="Perl_Party_Pet_BuffTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="3" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff2" inherits="Perl_Party_Pet_BuffTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff1" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff3" inherits="Perl_Party_Pet_BuffTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff2" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff4" inherits="Perl_Party_Pet_BuffTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff3" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff5" inherits="Perl_Party_Pet_BuffTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff4" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff6" inherits="Perl_Party_Pet_BuffTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff5" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff7" inherits="Perl_Party_Pet_BuffTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff6" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff8" inherits="Perl_Party_Pet_BuffTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff7" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff9" inherits="Perl_Party_Pet_BuffTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff8" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff10" inherits="Perl_Party_Pet_BuffTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff9" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff11" inherits="Perl_Party_Pet_BuffTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff10" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff12" inherits="Perl_Party_Pet_BuffTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff11" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff13" inherits="Perl_Party_Pet_BuffTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff12" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff14" inherits="Perl_Party_Pet_BuffTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff13" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff15" inherits="Perl_Party_Pet_BuffTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff14" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_Buff16" inherits="Perl_Party_Pet_BuffTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff15" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff1" inherits="Perl_Party_Pet_DeBuffTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Buff1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff2" inherits="Perl_Party_Pet_DeBuffTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff1" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff3" inherits="Perl_Party_Pet_DeBuffTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff2" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff4" inherits="Perl_Party_Pet_DeBuffTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff3" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff5" inherits="Perl_Party_Pet_DeBuffTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff4" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff6" inherits="Perl_Party_Pet_DeBuffTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff5" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff7" inherits="Perl_Party_Pet_DeBuffTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff6" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff8" inherits="Perl_Party_Pet_DeBuffTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff7" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff9" inherits="Perl_Party_Pet_DeBuffTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff8" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff10" inherits="Perl_Party_Pet_DeBuffTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff9" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff11" inherits="Perl_Party_Pet_DeBuffTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff10" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff12" inherits="Perl_Party_Pet_DeBuffTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff11" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff13" inherits="Perl_Party_Pet_DeBuffTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff12" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff14" inherits="Perl_Party_Pet_DeBuffTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff13" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff15" inherits="Perl_Party_Pet_DeBuffTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff14" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="$parent_DeBuff16" inherits="Perl_Party_Pet_DeBuffTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_DeBuff15" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<!-- End buttons -->
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+
+	<!-- The Real Frames -->
+	<Frame name="Perl_Party_Pet1" inherits="Perl_Party_Pet_FrameTemplate" parent="UIParent" movable="true" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame1_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="Perl_Party_Pet2" inherits="Perl_Party_Pet_FrameTemplate" parent="UIParent" movable="true" id="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame2_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="Perl_Party_Pet3" inherits="Perl_Party_Pet_FrameTemplate" parent="UIParent" movable="true" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame3_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="Perl_Party_Pet4" inherits="Perl_Party_Pet_FrameTemplate" parent="UIParent" movable="true" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame4_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-5" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+
+
+	<!-- The Script Frames -->
+	<Frame name="Perl_Party_Pet1_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_One_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet2_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_Two_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet3_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_Three_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet4_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_Four_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet1_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_One_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet2_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_Two_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet3_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_Three_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Pet4_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Pet_Four_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+
+	<Frame name="Perl_Party_Pet_Script_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				Perl_Party_Pet_Script_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

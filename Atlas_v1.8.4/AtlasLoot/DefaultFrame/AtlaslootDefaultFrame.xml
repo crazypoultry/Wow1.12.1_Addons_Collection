@@ -1,0 +1,180 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+    <Script file="AtlasLootDropDowns.en.lua"/>
+    <Script file="AtlasLootDefaultFrame.lua"/>
+    <Frame name="AtlasLootDefaultFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="600" y="600"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+        <Frames>
+            <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="AtlasLootDefaultFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                <Scripts>
+                    <OnClick>
+                        AtlasLootDefaultFrame:Hide();
+                    </OnClick>
+                    <OnShow>
+				        this:SetFrameLevel( (this:GetParent()):GetFrameLevel() + 1 );
+			        </OnShow>
+                </Scripts>
+			</Button>
+            <Button name="$parent_Options" inherits="OptionsButtonTemplate" text="ATLASLOOT_PANEL_BUTTON_OPTIONS">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="15" y="-15"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+					<OnClick>
+						AtlasLootOptions_Toggle();
+					</OnClick>
+                    <OnShow>
+				        this:SetFrameLevel( (this:GetParent()):GetFrameLevel() + 1 );
+			        </OnShow>
+				</Scripts>
+            </Button>
+            <Button name="AtlasLootTypeDropDown" inherits="UIDropDownMenuTemplate">
+                <Size>
+			        <AbsDimension x="128" y="16"/>
+		        </Size>
+                <Anchors>
+					<Anchor point="TOPLEFT" relativeTo="AtlasLootDefaultFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                <Scripts>
+                    <OnShow>
+                        AtlasLootTypeDropDown_OnShow();
+                    </OnShow>
+                </Scripts>
+            </Button>
+            <Button name="AtlasLootZoneDropDown" inherits="UIDropDownMenuTemplate">
+                <Size>
+			        <AbsDimension x="180" y="16"/>
+		        </Size>
+                <Anchors>
+					<Anchor point="LEFT" relativeTo="AtlasLootTypeDropDown" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                <Scripts>
+                    <OnShow>
+                        AtlasLootZoneDropDown_OnShow();
+                    </OnShow>
+                </Scripts>
+            </Button>
+            <Button name="AtlasLootBossDropDown" inherits="UIDropDownMenuTemplate">
+                <Size>
+			        <AbsDimension x="128" y="16"/>
+		        </Size>
+                <Anchors>
+					<Anchor point="LEFT" relativeTo="AtlasLootZoneDropDown" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                <Scripts>
+                    <OnShow>
+                        AtlasLootBossDropDown_OnShow();
+                    </OnShow>
+                </Scripts>
+            </Button>
+            <Frame name="$parent_LootBackground">
+                <Size>
+			        <AbsDimension x="515" y="515"/>
+		        </Size>
+                <Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+				        <Texture name="$parent_Back">
+					        <Anchors>
+						        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+						        <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+					        </Anchors>
+					        <Color r="0" g="0" b="1" a="0.5"/>
+				        </Texture>
+			        </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="425" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="ATLASLOOT_VERSION">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+        <Scripts>
+            <OnLoad>
+                this:RegisterForDrag("LeftButton");
+                this:SetMovable(1);
+                this:SetBackdropColor(0.75, 0, 0.75);
+            </OnLoad>
+            <OnShow>
+                AtlasLootDefaultFrame_OnShow();
+            </OnShow>
+            <OnHide>
+                AtlasLootDefaultFrame_OnHide();
+            </OnHide>
+            <OnDragStart>
+                this:StartMoving();
+                this.isMoving = true;
+            </OnDragStart>
+            <OnDragStop>
+                this:StopMovingOrSizing();
+                this.isMoving = false;
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+    
+</Ui>

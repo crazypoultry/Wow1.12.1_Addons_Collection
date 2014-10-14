@@ -1,0 +1,243 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="EDB_Frame_Options.lua" />
+
+	<Frame name="EDB_Frame_Options" setAllPoints="true" enableMouse="false" parent="EDB_Frame" hidden="true" id="1">
+
+		<Frames>
+
+			<!-- Count Tag option -->
+			<CheckButton name="$parent_CountTagCheckbox" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-95"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parent_Label" inherits="GameFontNormal" text="Show count for available enchants.">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="30" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						if ( EDB_Config ) and ( EDB_Config.countTag ) then
+							this:SetChecked( EDB_Config.countTag );
+						end
+					</OnShow>
+					<OnClick>
+						EDB_Config.countTag = this:GetChecked();
+						EDB_Frame_Enchant_EnchantList_CountUpdate();
+						EDB_Frame_Enchant_EnchantList_Update();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- Count bank option -->
+			<CheckButton name="$parent_CountBankCheckbox" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_CountTagCheckbox" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parent_Label" inherits="GameFontNormal" text="Count banked reagents as available.">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="30" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						if ( EDB_Config ) and ( EDB_Config.countBank) then
+							this:SetChecked( EDB_Config.countBank );
+						end
+					</OnShow>
+					<OnClick>
+						EDB_Config.countBank = this:GetChecked();
+						EDB_Frame_Enchant_EnchantList_CountUpdate();
+						EDB_Frame_Enchant_EnchantList_Update();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- Use auction addons option -->
+			<CheckButton name="$parent_UseAucAddonsCheckbox" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_CountBankCheckbox" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parent_Label" inherits="GameFontNormal" text="Use Auction addon data.">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="30" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						if ( EDB_Config ) and ( EDB_Config.useAuctionAddons ) then
+							this:SetChecked( EDB_Config.useAuctionAddons );
+						end
+					</OnShow>
+					<OnClick>
+						EDB_Config.useAuctionAddons = this:GetChecked();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<!-- Show minimap button option -->
+			<CheckButton name="$parent_ShowMinimapButtonCheckbox" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_UseAucAddonsCheckbox" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parent_Label" inherits="GameFontNormal" text="Show minimap button.">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="30" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						if ( EDB_Config ) and ( EDB_Config.showMinimapButton ) then
+							this:SetChecked( EDB_Config.showMinimapButton );
+						end
+					</OnShow>
+					<OnClick>
+						EDB_Config.showMinimapButton = this:GetChecked();
+						if EDB_Config.showMinimapButton then
+							EDB_MinimapButton:Show();
+						else
+							EDB_MinimapButton:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<!-- Markup slider -->
+			<Slider name="$parent_MarkupSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_ShowMinimapButtonCheckbox" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Markup");
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("0");
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(1);
+						this.tooltipText = "Adjust this slider to set the markup.";
+					</OnLoad>
+					<OnShow>
+						if ( EDB_Config ) and ( EDB_Config.markup ) then
+							this:SetValue(EDB_Config.markup);
+						end
+					</OnShow>
+					<OnValueChanged>
+						EDB_Config.markup = this:GetValue();
+						getglobal(this:GetName().."Text"):SetText("Markup - "..this:GetValue().."%");
+						EDB_Frame_Enchant_TotalPrice_Update();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<!-- scan button -->
+			<Button name="$parent_ScanButton" inherits="UIPanelButtonTemplate" text="Scan Enchants">
+				<Size>
+					<AbsDimension x="160" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EDB_Frame_Options_Scan();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<!-- Update reagent values button -->
+			<Button name="$parent_ValueUpdateButton" inherits="UIPanelButtonTemplate" text="Update Reagent Values">
+				<Size>
+					<AbsDimension x="160" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_ScanButton" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EDB_Frame_Options_ValueUpdate();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<!-- Update reagent icons button -->
+			<Button name="$parent_IconUpdateButton" inherits="UIPanelButtonTemplate" text="Update Reagent Icons">
+				<Size>
+					<AbsDimension x="160" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_ValueUpdateButton" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						EDB_ReagentIcon_Build();
+						EDB_Frame_Reagent_ReagentList_Update();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		
+		<Scripts>
+			<OnLoad>
+				EDB_Frame_Options_OnLoad();
+			</OnLoad>
+		</Scripts>
+
+	</Frame>
+
+</Ui>

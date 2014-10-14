@@ -1,0 +1,1910 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	
+	<Script file="AoA_FlightMap.lua"/>
+	
+	<!-- ========= -->
+	<!-- Templates -->
+	<!-- ========= -->
+	
+	<Button name="AoAFlightMapNodeTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+				AoAFMapNode_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				AoAFMapNode_OnLeave();
+			</OnLeave>
+ 			<OnClick>
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Highlight">
+			<Size x="24" y="24"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</HighlightTexture>
+		<NormalTexture file="Interface\TaxiFrame\UI-Taxi-Icon-White">
+			<Size x="12" y="12"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+	</Button>
+	
+	<Frame name="AoAFlightMapInfoTemplate" hidden="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexTL" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0" bottom="0.5"/>
+				</Texture>
+				<Texture name="$parentTexTR" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1.0" top="0" bottom="0.5"/>
+				</Texture>
+				<Texture name="$parentTexTM" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTL" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexTR" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0" bottom="0.5"/>
+				</Texture>
+				
+				<Texture name="$parentTexBL" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0.5" bottom="0"/>
+				</Texture>
+				<Texture name="$parentTexBR" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Size>
+						<AbsDimension x="12" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1.0" top="0.5" bottom="0"/>
+				</Texture>
+				<Texture name="$parentTexBM" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexBL" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBR" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0.5" bottom="0"/>
+				</Texture>
+				
+				<Texture name="$parentTexML" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTL" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBL" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1" top="0.4" bottom="0.6"/>
+				</Texture>
+				<Texture name="$parentTexMM" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTM" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBM" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1" right="0.9" top="0.4" bottom="0.6"/>
+				</Texture>
+				<Texture name="$parentTexMR" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTexTR" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTexBR" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9" right="1.0" top="0.4" bottom="0.6"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<!-- ============= -->
+	<!-- InflightTimer -->
+	<!-- ============= -->
+	<Frame name="AoAFlightMapTimerFrame" setAllPoints="true" hidden="true" parent="UIParent">
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Destination line -->
+				<FontString name="$parentDest" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" outline="THICK" justifyH="CENTER">
+					<FontHeight>
+						<AbsValue val="20"/>
+					</FontHeight>
+					<Color r="1.0" g="0.9294" b="0.7607"/>
+					<Shadow/>
+					<Size>
+						<AbsDimension x="600" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-150"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- Text-Only Timer -->
+				<FontString name="$parentCountDown" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" outline="THICK" justifyH="CENTER">
+					<FontHeight>
+						<AbsValue val="14"/>
+					</FontHeight>
+					<Color r="1.0" g="0.9294" b="0.7607"/>
+					<Shadow/>
+					<Size>
+						<AbsDimension x="600" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentDest">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="AoAFlightMapTimerUpdateFrame" parent="UIParent">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnUpdate>
+				AoAFMap_OnTimerUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<!-- ========= -->
+	<!-- MainFrame -->
+	<!-- ========= -->
+	<Frame name="AoAFlightMapFrame" parent="AoAModuleFrame" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+			
+				<!-- Map Texture Tiles -->
+  			<Texture name="AoAFlightMapDetailTile1">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT">
+  					<Offset>
+  						<AbsDimension x="0" y="0"/>
+  					</Offset>
+  				</Anchor>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile2">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile1" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile3">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile2" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile4">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile3" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>	
+  			<Texture name="AoAFlightMapDetailTile5">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile1" relativePoint="BOTTOMLEFT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile6">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile5" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile7">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile6" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile8">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile7" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile9">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile5" relativePoint="BOTTOMLEFT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile10">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile9" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile11">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile10" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+  			<Texture name="AoAFlightMapDetailTile12">
+  				<Size>
+  					<AbsDimension x="128" y="128"/>
+  				</Size>
+  				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AoAFlightMapDetailTile11" relativePoint="TOPRIGHT"/>
+  				</Anchors>
+  			</Texture>
+				
+			</Layer>
+		</Layers>
+		<Frames>
+			
+			<!-- Factions DropDown -->
+			<Frame name="AoAFlightMapFactionsDropDown" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="50" y="33"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						AoAFMapFactionsDropDown_OnLoad();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			
+			<!-- virtual map 1 -->
+			<Frame name="AoAFlightMap1">
+				<Size>
+					<AbsDimension x="360" y="365"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-30" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+<!--Layers>
+	<Layer level="BACKGROUND">
+		<Texture alphaMode="ADD" file="Interface\TaxiFrame\TAXIMAP1">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</Texture>
+	</Layer>
+</Layers-->
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AoAFlightMapRoute1_1" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_2" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_3" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_4" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_5" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_6" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_7" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_8" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_9" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_10" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_11" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_12" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_13" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_14" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_15" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_16" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_17" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_18" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_19" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_20" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_21" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_22" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_23" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_24" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_25" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_26" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_27" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_28" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_29" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_30" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_31" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_32" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_33" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_34" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_35" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_36" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_37" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_38" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_39" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_40" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_41" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_42" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_43" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_44" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_45" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_46" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_47" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_48" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_49" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_50" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_51" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_52" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_53" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_54" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_55" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_56" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_57" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_58" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_59" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_60" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_61" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_62" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_63" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute1_64" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="AoAFlightMapNode1_1" inherits="AoAFlightMapNodeTemplate" id="1"/>
+					<Button name="AoAFlightMapNode1_2" inherits="AoAFlightMapNodeTemplate" id="2"/>
+					<Button name="AoAFlightMapNode1_3" inherits="AoAFlightMapNodeTemplate" id="3"/>
+					<Button name="AoAFlightMapNode1_4" inherits="AoAFlightMapNodeTemplate" id="4"/>
+					<Button name="AoAFlightMapNode1_5" inherits="AoAFlightMapNodeTemplate" id="5"/>
+					<Button name="AoAFlightMapNode1_6" inherits="AoAFlightMapNodeTemplate" id="6"/>
+					<Button name="AoAFlightMapNode1_7" inherits="AoAFlightMapNodeTemplate" id="7"/>
+					<Button name="AoAFlightMapNode1_8" inherits="AoAFlightMapNodeTemplate" id="8"/>
+					<Button name="AoAFlightMapNode1_9" inherits="AoAFlightMapNodeTemplate" id="9"/>
+					<Button name="AoAFlightMapNode1_10" inherits="AoAFlightMapNodeTemplate" id="10"/>
+					<Button name="AoAFlightMapNode1_11" inherits="AoAFlightMapNodeTemplate" id="11"/>
+					<Button name="AoAFlightMapNode1_12" inherits="AoAFlightMapNodeTemplate" id="12"/>
+					<Button name="AoAFlightMapNode1_13" inherits="AoAFlightMapNodeTemplate" id="13"/>
+					<Button name="AoAFlightMapNode1_14" inherits="AoAFlightMapNodeTemplate" id="14"/>
+					<Button name="AoAFlightMapNode1_15" inherits="AoAFlightMapNodeTemplate" id="15"/>
+					<Button name="AoAFlightMapNode1_16" inherits="AoAFlightMapNodeTemplate" id="16"/>
+					<Button name="AoAFlightMapNode1_17" inherits="AoAFlightMapNodeTemplate" id="17"/>
+					<Button name="AoAFlightMapNode1_18" inherits="AoAFlightMapNodeTemplate" id="18"/>
+					<Button name="AoAFlightMapNode1_19" inherits="AoAFlightMapNodeTemplate" id="19"/>
+					<Button name="AoAFlightMapNode1_20" inherits="AoAFlightMapNodeTemplate" id="20"/>
+					<Button name="AoAFlightMapNode1_21" inherits="AoAFlightMapNodeTemplate" id="21"/>
+					<Button name="AoAFlightMapNode1_22" inherits="AoAFlightMapNodeTemplate" id="22"/>
+					<Button name="AoAFlightMapNode1_23" inherits="AoAFlightMapNodeTemplate" id="23"/>
+					<Button name="AoAFlightMapNode1_24" inherits="AoAFlightMapNodeTemplate" id="24"/>
+					<Button name="AoAFlightMapNode1_25" inherits="AoAFlightMapNodeTemplate" id="25"/>
+					<Button name="AoAFlightMapNode1_26" inherits="AoAFlightMapNodeTemplate" id="26"/>
+					<Button name="AoAFlightMapNode1_27" inherits="AoAFlightMapNodeTemplate" id="27"/>
+					<Button name="AoAFlightMapNode1_28" inherits="AoAFlightMapNodeTemplate" id="28"/>
+					<Button name="AoAFlightMapNode1_29" inherits="AoAFlightMapNodeTemplate" id="29"/>
+					<Button name="AoAFlightMapNode1_30" inherits="AoAFlightMapNodeTemplate" id="30"/>
+					<Button name="AoAFlightMapNode1_31" inherits="AoAFlightMapNodeTemplate" id="31"/>
+					<Button name="AoAFlightMapNode1_32" inherits="AoAFlightMapNodeTemplate" id="32"/>
+					<Button name="AoAFlightMapNode1_33" inherits="AoAFlightMapNodeTemplate" id="33"/>
+					<Button name="AoAFlightMapNode1_34" inherits="AoAFlightMapNodeTemplate" id="34"/>
+					<Button name="AoAFlightMapNode1_35" inherits="AoAFlightMapNodeTemplate" id="35"/>
+					<Button name="AoAFlightMapNode1_36" inherits="AoAFlightMapNodeTemplate" id="36"/>
+					<Button name="AoAFlightMapNode1_37" inherits="AoAFlightMapNodeTemplate" id="37"/>
+					<Button name="AoAFlightMapNode1_38" inherits="AoAFlightMapNodeTemplate" id="38"/>
+					<Button name="AoAFlightMapNode1_39" inherits="AoAFlightMapNodeTemplate" id="39"/>
+					<Button name="AoAFlightMapNode1_40" inherits="AoAFlightMapNodeTemplate" id="40"/>
+					<Button name="AoAFlightMapNode1_41" inherits="AoAFlightMapNodeTemplate" id="41"/>
+					<Button name="AoAFlightMapNode1_42" inherits="AoAFlightMapNodeTemplate" id="42"/>
+					<Button name="AoAFlightMapNode1_43" inherits="AoAFlightMapNodeTemplate" id="43"/>
+					<Button name="AoAFlightMapNode1_44" inherits="AoAFlightMapNodeTemplate" id="44"/>
+					<Button name="AoAFlightMapNode1_45" inherits="AoAFlightMapNodeTemplate" id="45"/>
+					<Button name="AoAFlightMapNode1_46" inherits="AoAFlightMapNodeTemplate" id="46"/>
+					<Button name="AoAFlightMapNode1_47" inherits="AoAFlightMapNodeTemplate" id="47"/>
+					<Button name="AoAFlightMapNode1_48" inherits="AoAFlightMapNodeTemplate" id="48"/>
+					<Button name="AoAFlightMapNode1_49" inherits="AoAFlightMapNodeTemplate" id="49"/>
+					<Button name="AoAFlightMapNode1_50" inherits="AoAFlightMapNodeTemplate" id="50"/>
+					<Button name="AoAFlightMapNode1_51" inherits="AoAFlightMapNodeTemplate" id="51"/>
+					<Button name="AoAFlightMapNode1_52" inherits="AoAFlightMapNodeTemplate" id="52"/>
+					<Button name="AoAFlightMapNode1_53" inherits="AoAFlightMapNodeTemplate" id="53"/>
+					<Button name="AoAFlightMapNode1_54" inherits="AoAFlightMapNodeTemplate" id="54"/>
+					<Button name="AoAFlightMapNode1_55" inherits="AoAFlightMapNodeTemplate" id="55"/>
+					<Button name="AoAFlightMapNode1_56" inherits="AoAFlightMapNodeTemplate" id="56"/>
+					<Button name="AoAFlightMapNode1_57" inherits="AoAFlightMapNodeTemplate" id="57"/>
+					<Button name="AoAFlightMapNode1_58" inherits="AoAFlightMapNodeTemplate" id="58"/>
+					<Button name="AoAFlightMapNode1_59" inherits="AoAFlightMapNodeTemplate" id="59"/>
+					<Button name="AoAFlightMapNode1_60" inherits="AoAFlightMapNodeTemplate" id="60"/>
+					<Button name="AoAFlightMapNode1_61" inherits="AoAFlightMapNodeTemplate" id="61"/>
+					<Button name="AoAFlightMapNode1_62" inherits="AoAFlightMapNodeTemplate" id="62"/>
+					<Button name="AoAFlightMapNode1_63" inherits="AoAFlightMapNodeTemplate" id="63"/>
+					<Button name="AoAFlightMapNode1_64" inherits="AoAFlightMapNodeTemplate" id="64"/>
+				</Frames>
+			</Frame>
+			
+			<!-- virtual map 2 -->
+			<Frame name="AoAFlightMap2">
+				<Size>
+					<AbsDimension x="310" y="325"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+<!--Layers>
+	<Layer level="BACKGROUND">
+		<Texture alphaMode="ADD" file="Interface\TaxiFrame\TAXIMAP0">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</Texture>
+	</Layer>
+</Layers-->
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AoAFlightMapRoute2_1" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_2" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_3" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_4" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_5" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_6" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_7" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_8" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_9" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_10" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_11" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_12" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_13" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_14" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_15" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_16" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_17" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_18" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_19" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_20" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_21" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_22" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_23" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_24" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_25" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_26" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_27" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_28" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_29" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_30" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_31" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_32" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_33" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_34" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_35" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_36" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_37" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_38" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_39" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_40" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_41" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_42" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_43" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_44" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_45" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_46" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_47" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_48" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_49" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_50" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_51" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_52" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_53" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_54" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_55" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_56" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_57" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_58" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_59" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_60" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_61" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_62" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_63" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+						<Texture name="AoAFlightMapRoute2_64" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="AoAFlightMapNode2_1" inherits="AoAFlightMapNodeTemplate" id="1"/>
+					<Button name="AoAFlightMapNode2_2" inherits="AoAFlightMapNodeTemplate" id="2"/>
+					<Button name="AoAFlightMapNode2_3" inherits="AoAFlightMapNodeTemplate" id="3"/>
+					<Button name="AoAFlightMapNode2_4" inherits="AoAFlightMapNodeTemplate" id="4"/>
+					<Button name="AoAFlightMapNode2_5" inherits="AoAFlightMapNodeTemplate" id="5"/>
+					<Button name="AoAFlightMapNode2_6" inherits="AoAFlightMapNodeTemplate" id="6"/>
+					<Button name="AoAFlightMapNode2_7" inherits="AoAFlightMapNodeTemplate" id="7"/>
+					<Button name="AoAFlightMapNode2_8" inherits="AoAFlightMapNodeTemplate" id="8"/>
+					<Button name="AoAFlightMapNode2_9" inherits="AoAFlightMapNodeTemplate" id="9"/>
+					<Button name="AoAFlightMapNode2_10" inherits="AoAFlightMapNodeTemplate" id="10"/>
+					<Button name="AoAFlightMapNode2_11" inherits="AoAFlightMapNodeTemplate" id="11"/>
+					<Button name="AoAFlightMapNode2_12" inherits="AoAFlightMapNodeTemplate" id="12"/>
+					<Button name="AoAFlightMapNode2_13" inherits="AoAFlightMapNodeTemplate" id="13"/>
+					<Button name="AoAFlightMapNode2_14" inherits="AoAFlightMapNodeTemplate" id="14"/>
+					<Button name="AoAFlightMapNode2_15" inherits="AoAFlightMapNodeTemplate" id="15"/>
+					<Button name="AoAFlightMapNode2_16" inherits="AoAFlightMapNodeTemplate" id="16"/>
+					<Button name="AoAFlightMapNode2_17" inherits="AoAFlightMapNodeTemplate" id="17"/>
+					<Button name="AoAFlightMapNode2_18" inherits="AoAFlightMapNodeTemplate" id="18"/>
+					<Button name="AoAFlightMapNode2_19" inherits="AoAFlightMapNodeTemplate" id="19"/>
+					<Button name="AoAFlightMapNode2_20" inherits="AoAFlightMapNodeTemplate" id="20"/>
+					<Button name="AoAFlightMapNode2_21" inherits="AoAFlightMapNodeTemplate" id="21"/>
+					<Button name="AoAFlightMapNode2_22" inherits="AoAFlightMapNodeTemplate" id="22"/>
+					<Button name="AoAFlightMapNode2_23" inherits="AoAFlightMapNodeTemplate" id="23"/>
+					<Button name="AoAFlightMapNode2_24" inherits="AoAFlightMapNodeTemplate" id="24"/>
+					<Button name="AoAFlightMapNode2_25" inherits="AoAFlightMapNodeTemplate" id="25"/>
+					<Button name="AoAFlightMapNode2_26" inherits="AoAFlightMapNodeTemplate" id="26"/>
+					<Button name="AoAFlightMapNode2_27" inherits="AoAFlightMapNodeTemplate" id="27"/>
+					<Button name="AoAFlightMapNode2_28" inherits="AoAFlightMapNodeTemplate" id="28"/>
+					<Button name="AoAFlightMapNode2_29" inherits="AoAFlightMapNodeTemplate" id="29"/>
+					<Button name="AoAFlightMapNode2_30" inherits="AoAFlightMapNodeTemplate" id="30"/>
+					<Button name="AoAFlightMapNode2_31" inherits="AoAFlightMapNodeTemplate" id="31"/>
+					<Button name="AoAFlightMapNode2_32" inherits="AoAFlightMapNodeTemplate" id="32"/>
+					<Button name="AoAFlightMapNode2_33" inherits="AoAFlightMapNodeTemplate" id="33"/>
+					<Button name="AoAFlightMapNode2_34" inherits="AoAFlightMapNodeTemplate" id="34"/>
+					<Button name="AoAFlightMapNode2_35" inherits="AoAFlightMapNodeTemplate" id="35"/>
+					<Button name="AoAFlightMapNode2_36" inherits="AoAFlightMapNodeTemplate" id="36"/>
+					<Button name="AoAFlightMapNode2_37" inherits="AoAFlightMapNodeTemplate" id="37"/>
+					<Button name="AoAFlightMapNode2_38" inherits="AoAFlightMapNodeTemplate" id="38"/>
+					<Button name="AoAFlightMapNode2_39" inherits="AoAFlightMapNodeTemplate" id="39"/>
+					<Button name="AoAFlightMapNode2_40" inherits="AoAFlightMapNodeTemplate" id="40"/>
+					<Button name="AoAFlightMapNode2_41" inherits="AoAFlightMapNodeTemplate" id="41"/>
+					<Button name="AoAFlightMapNode2_42" inherits="AoAFlightMapNodeTemplate" id="42"/>
+					<Button name="AoAFlightMapNode2_43" inherits="AoAFlightMapNodeTemplate" id="43"/>
+					<Button name="AoAFlightMapNode2_44" inherits="AoAFlightMapNodeTemplate" id="44"/>
+					<Button name="AoAFlightMapNode2_45" inherits="AoAFlightMapNodeTemplate" id="45"/>
+					<Button name="AoAFlightMapNode2_46" inherits="AoAFlightMapNodeTemplate" id="46"/>
+					<Button name="AoAFlightMapNode2_47" inherits="AoAFlightMapNodeTemplate" id="47"/>
+					<Button name="AoAFlightMapNode2_48" inherits="AoAFlightMapNodeTemplate" id="48"/>
+					<Button name="AoAFlightMapNode2_49" inherits="AoAFlightMapNodeTemplate" id="49"/>
+					<Button name="AoAFlightMapNode2_50" inherits="AoAFlightMapNodeTemplate" id="50"/>
+					<Button name="AoAFlightMapNode2_51" inherits="AoAFlightMapNodeTemplate" id="51"/>
+					<Button name="AoAFlightMapNode2_52" inherits="AoAFlightMapNodeTemplate" id="52"/>
+					<Button name="AoAFlightMapNode2_53" inherits="AoAFlightMapNodeTemplate" id="53"/>
+					<Button name="AoAFlightMapNode2_54" inherits="AoAFlightMapNodeTemplate" id="54"/>
+					<Button name="AoAFlightMapNode2_55" inherits="AoAFlightMapNodeTemplate" id="55"/>
+					<Button name="AoAFlightMapNode2_56" inherits="AoAFlightMapNodeTemplate" id="56"/>
+					<Button name="AoAFlightMapNode2_57" inherits="AoAFlightMapNodeTemplate" id="57"/>
+					<Button name="AoAFlightMapNode2_58" inherits="AoAFlightMapNodeTemplate" id="58"/>
+					<Button name="AoAFlightMapNode2_59" inherits="AoAFlightMapNodeTemplate" id="59"/>
+					<Button name="AoAFlightMapNode2_60" inherits="AoAFlightMapNodeTemplate" id="60"/>
+					<Button name="AoAFlightMapNode2_61" inherits="AoAFlightMapNodeTemplate" id="61"/>
+					<Button name="AoAFlightMapNode2_62" inherits="AoAFlightMapNodeTemplate" id="62"/>
+					<Button name="AoAFlightMapNode2_63" inherits="AoAFlightMapNodeTemplate" id="63"/>
+					<Button name="AoAFlightMapNode2_64" inherits="AoAFlightMapNodeTemplate" id="64"/>
+				</Frames>
+			</Frame>
+					
+			<Frame name="AoAFlightMapInfo" inherits="AoAFlightMapInfoTemplate">
+				<Size>
+					<AbsDimension x="200" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 40);
+					</OnLoad>
+				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+					
+						<FontString name="$parentNodeThis" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="8" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="$parentDirect" inherits="GameFontHighlightSmall" text="AOA_FLIGHTMAP_ONEHOPS">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeThis" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="$parentNodeD1" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentDirect" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD2" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD1" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD3" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD2" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD4" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD3" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD5" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD4" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD6" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD5" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD7" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD6" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD8" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD7" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD9" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD8" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD10" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD9" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD11" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD10" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD12" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD11" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD13" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD12" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD14" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD13" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD15" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD14" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD16" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD15" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD17" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD16" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD18" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD17" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD19" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD18" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD20" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD19" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD21" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD20" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD22" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD21" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD23" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD22" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD24" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD23" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD25" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD24" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD26" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD25" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD27" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD26" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD28" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD27" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD29" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD28" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD30" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD29" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD31" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD30" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD32" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD31" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD33" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD32" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD34" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD33" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD35" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD34" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD36" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD35" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD37" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD36" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD38" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD37" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD39" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD38" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeD40" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeD39" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="$parentMulti" inherits="GameFontHighlightSmall" text="AOA_FLIGHTMAP_MULTIHOPS">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeThis" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="$parentNodeM1" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentMulti" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM2" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM1" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM3" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM2" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM4" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM3" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM5" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM4" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM6" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM5" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM7" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM6" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM8" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM7" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM9" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM8" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM10" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM9" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM11" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM10" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM12" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM11" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM13" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM12" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM14" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM13" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM15" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM14" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM16" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM15" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM17" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM16" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM18" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM17" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM19" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM18" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM20" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM19" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM21" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM20" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM22" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM21" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM23" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM22" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM24" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM23" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM25" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM24" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM26" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM25" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM27" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM26" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM28" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM27" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM29" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM28" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM30" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM29" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM31" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM30" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM32" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM31" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM33" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM32" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM34" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM33" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM35" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM34" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM36" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM35" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM37" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM36" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM38" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM37" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM39" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM38" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentNodeM40" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentNodeM39" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="$parentTimeD1" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD1" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD2" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD2" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD3" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD3" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD4" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD4" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD5" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD5" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD6" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD6" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD7" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD7" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD8" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD8" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD9" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD9" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD10" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD10" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD11" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD11" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD12" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD12" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD13" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD13" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD14" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD14" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD15" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD15" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD16" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD16" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD17" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD17" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD18" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD18" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD19" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD19" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD20" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD20" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD21" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD21" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD22" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD22" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD23" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD23" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD24" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD24" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD25" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD25" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD26" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD26" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD27" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD27" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD28" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD28" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD29" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD29" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD30" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD30" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD31" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD31" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD32" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD32" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD33" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD33" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD34" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD34" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD35" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD35" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD36" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD36" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD37" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD37" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD38" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD38" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD39" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD39" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeD40" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeD40" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="$parentTimeM1" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM1" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM2" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM2" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM3" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM3" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM4" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM4" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM5" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM5" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM6" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM6" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM7" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM7" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM8" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM8" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM9" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM9" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM10" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM10" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM11" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM11" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM12" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM12" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM13" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM13" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM14" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM14" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM15" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM15" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM16" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM16" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM17" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM17" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM18" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM18" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM19" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM19" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM20" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM20" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM21" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM21" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM22" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM22" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM23" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM23" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM24" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM24" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM25" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM25" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM26" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM26" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM27" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM27" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM28" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM28" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM29" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM29" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM30" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM30" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM31" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM31" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM32" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM32" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM33" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM33" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM34" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM34" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM35" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM35" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM36" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM36" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM37" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM37" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM38" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM38" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM39" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM39" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimeM40" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNodeM40" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+					</Layer>
+				</Layers>
+			</Frame>
+	
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() - 2);
+				AoAFMap_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				AoAFMap_OnEvent();
+			</OnEvent>
+			<OnShow>
+				AoAFMap_OnShow();
+			</OnShow>
+			<OnHide>
+				AoAFMap_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
+</Ui>

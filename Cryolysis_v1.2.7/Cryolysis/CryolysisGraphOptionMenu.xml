@@ -1,0 +1,352 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+	<Frame name="CryolysisGraphOptionMenu" frameStrata="DIALOG" movable="false" enableMouse="true" parent="CryolysisGeneralFrame">
+		<Size>
+			<AbsDimension x="350" y="452"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="CryolysisGeneralFrame"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">	
+				<FontString name="CryolysisShowConcentration_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisIconsLock_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisLock_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisBuffMenu_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-140"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CryolysisPortalMenu_Option" inherits="GameFontNormalSmall">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="60" y="-170"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider name="CryolysisButtonRotate_Slider" inherits="OptionsSliderTemplate" minValue="0" maxValue="360" valueStep="18" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue());
+					</OnEnter>
+					<OnValueChanged>
+						CryolysisConfig.CryolysisAngle = this:GetValue();
+						local x, y = CryolysisButton:GetCenter();
+						GameTooltip:SetText(this:GetValue());
+						Cryolysis_UpdateButtonsScale();
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisButtonScale_Slider" inherits="OptionsSliderTemplate" minValue="50" maxValue="150" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>	
+					<OnEnter>
+						NBx, NBy = CryolysisButton:GetCenter();
+						NBx = NBx * (CryolysisConfig.CryolysisButtonScale / 100);
+						NBy = NBy * (CryolysisConfig.CryolysisButtonScale / 100);
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue().." %");
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() ~= CryolysisConfig.CryolysisButtonScale then
+							CryolysisButton:ClearAllPoints();
+							GameTooltip:SetText(this:GetValue().." %");
+							CryolysisConfig.CryolysisButtonScale = this:GetValue();
+							CryolysisButton:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", NBx / (CryolysisConfig.CryolysisButtonScale / 100), NBy / (CryolysisConfig.CryolysisButtonScale / 100));
+							CryolysisButton:SetScale(CryolysisConfig.CryolysisButtonScale / 100);
+							Cryolysis_UpdateButtonsScale();
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="CryolysisStoneScale_Slider" inherits="OptionsSliderTemplate" minValue="50" maxValue="150" valueStep="5" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>	
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this:GetValue().."%");
+					</OnEnter>
+					<OnValueChanged>
+						if this:GetValue() ~= CryolysisConfig.CryolysisStoneScale then
+							GameTooltip:SetText(this:GetValue().."%");
+							CryolysisConfig.CryolysisStoneScale = this:GetValue();
+							CryolysisFoodButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisDrinkButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisManastoneButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisLeftSpellButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisEvocationButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisRightSpellButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisBuffMenuButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisMountButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							CryolysisPortalMenuButton:SetScale(CryolysisConfig.CryolysisStoneScale / 100);
+							Cryolysis_UpdateButtonsScale();
+							Cryolysis_CreateMenu();
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<CheckButton name="CryolysisIconsLock_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-75"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.CryolysisLockServ = true;
+							Cryolysis_ClearAllPoints();
+							Cryolysis_UpdateButtonsScale();
+							Cryolysis_NoDrag();
+							if not CryolysisConfig.NoDragAll then
+								CryolysisButton:RegisterForDrag("LeftButton");
+								CryolysisSpellTimerButton:RegisterForDrag("LeftButton");
+							end
+						else
+							CryolysisConfig.CryolysisLockServ = false;
+							Cryolysis_ClearAllPoints();
+							CryolysisFoodButton:SetPoint("CENTER", "UIParent", "CENTER", -121,-100);
+							CryolysisDrinkButton:SetPoint("CENTER", "UIParent", "CENTER", -87,-100);
+							CryolysisManastoneButton:SetPoint("CENTER", "UIParent", "CENTER", -53,-100);
+							CryolysisLeftSpellButton:SetPoint("CENTER", "UIParent", "CENTER", -17,-100);
+							CryolysisEvocationButton:SetPoint("CENTER", "UIParent", "CENTER", 17,-100);
+							CryolysisRightSpellButton:SetPoint("CENTER", "UIParent", "CENTER", 53,-100);
+							CryolysisBuffMenuButton:SetPoint("CENTER", "UIParent", "CENTER", 87,-100);
+							CryolysisMountButton:SetPoint("CENTER", "UIParent", "CENTER", 121,-100);
+							CryolysisPortalMenuButton:SetPoint("CENTER", "UIParent", "CENTER", 155,-100);
+							Cryolysis_Drag();
+							CryolysisConfig.NoDragAll = false;
+							CryolysisLock_Button:SetChecked(false);
+							CryolysisButton:RegisterForDrag("LeftButton");
+							CryolysisSpellTimerButton:RegisterForDrag("LeftButton");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CryolysisLock_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-95"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							Cryolysis_NoDrag();
+							CryolysisButton:RegisterForDrag("");
+							CryolysisSpellTimerButton:RegisterForDrag("");
+							CryolysisConfig.NoDragAll = true;
+						else
+							if not CryolysisConfig.CryolysisLockServ then
+								Cryolysis_Drag();
+							end
+							CryolysisButton:RegisterForDrag("LeftButton");
+							CryolysisSpellTimerButton:RegisterForDrag("LeftButton");
+							CryolysisConfig.NoDragAll = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CryolysisBuffMenu_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-135"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.BuffMenuPos = -34;
+						else
+							CryolysisConfig.BuffMenuPos = 34;
+						end
+						Cryolysis_CreateMenu();							
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="CryolysisBuffMenuAnchor_Slider" inherits="OptionsSliderTemplate" minValue="-50" maxValue="50" valueStep="2" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-30" y="65"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Anchor.Text);
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+						if CryolysisConfig.BuffMenuAnchor ~= this:GetValue() then
+							CryolysisConfig.BuffMenuAnchor = this:GetValue();
+							if CryolysisPrivate.BuffMenuShow then
+								Cryolysis_BuffMenu("LeftButton");
+							end
+							Cryolysis_BuffMenu("LeftButton");
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<CheckButton name="CryolysisPortalMenu_Button" enableMouse="true" inherits="UICheckButtonTemplate" checked="false">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-165"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then
+							CryolysisConfig.PortalMenuPos = -34;
+						else
+							CryolysisConfig.PortalMenuPos = 34;
+						end
+						Cryolysis_CreateMenu();						
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="CryolysisPortalMenuAnchor_Slider" inherits="OptionsSliderTemplate" minValue="-50" maxValue="50" valueStep="2" virtual="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="CryolysisGraphOptionMenu" relativeFrom="TOP">
+						<Offset>
+							<AbsDimension x="-30" y="35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(CRYOLYSIS_CONFIGURATION.Anchor.Text);
+					</OnEnter>
+					<OnValueChanged>
+						GameTooltip:SetText(this:GetValue());
+						if CryolysisConfig.PortalMenuAnchor ~= this:GetValue() then
+							CryolysisConfig.PortalMenuAnchor = this:GetValue();
+							if  CryolysisPrivate.PortalMenuShow then
+								Cryolysis_PortalMenu("LeftButton");
+							end
+							Cryolysis_PortalMenu("LeftButton");
+						end
+					</OnValueChanged>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+		</Frames>
+     		<Scripts>
+        		<OnLoad>
+				HideUIPanel(CryolysisGraphOptionMenu);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

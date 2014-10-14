@@ -1,0 +1,1302 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+<Script file="localization.lua"/>
+<Script file="PallyPower.lua"/>
+
+<Button name="PallyPowerResizeTemplate" virtual="true">
+  <Size>
+    <AbsDimension x="16" y="16"/>
+  </Size>
+  <Scripts>
+    <OnMouseDown>
+      PallyPower_StartScaling(arg1)
+    </OnMouseDown>
+    <OnMouseUp>
+      PallyPower_StopScaling(arg1)
+    </OnMouseUp>
+  </Scripts>
+  <NormalTexture file="Interface\AddOns\PallyPower\PallyPower-ResizeGrip"/>
+  <HighlightTexture file="Interface\AddOns\PallyPower\PallyPower-ResizeGrip" alphaMode="ADD"/>
+</Button>
+
+<Button name="BuffGridButtonTemplate" hidden="false" virtual="true">
+  <Size>
+    <AbsDimension x="54" y="54" />
+  </Size>
+  <Layers>
+    <Layer level="OVERLAY">
+      <Texture file="Interface\Icons\Spell_Holy_SealOfWisdom" name="$parentIcon">
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="11" y="-11" />
+	    </Offset>
+          </Anchor>
+        </Anchors>
+      </Texture>
+    </Layer>
+  </Layers>
+  <Scripts>
+    <OnLoad>
+      PallyPowerGridButton_OnLoad(this);
+      this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+      this:EnableMouseWheel(1)
+    </OnLoad>
+    <OnClick>
+      PallyPowerGridButton_OnClick(this,arg1)
+    </OnClick>
+    <OnEnter>
+      PallyPowerGridButton_OnEnter(this)
+    </OnEnter>
+    <OnLeave>
+      PallyPowerGridButton_OnLeave(this)
+    </OnLeave>
+    <OnMouseWheel>
+      PallyPowerGridButton_OnMouseWheel(this, arg1)
+    </OnMouseWheel>
+  </Scripts>
+</Button>
+
+<Button name="PallyPowerBuffButtonTemplate" hidden="false" virtual="true">
+  <Size>
+    <AbsDimension x="100" y="34" />
+  </Size>
+  <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+    <EdgeSize>
+      <AbsValue val="8"/>
+    </EdgeSize>
+    <TileSize>
+      <AbsValue val="8"/>
+    </TileSize>
+    <BackgroundInsets>
+      <AbsInset left="2" right="2" top="3" bottom="2"/>
+    </BackgroundInsets>
+  </Backdrop>
+  <Layers>
+    <Layer level="OVERLAY">
+      <FontString name="$parentTime" inherits="GameFontHighlightSmall" text="15:00" justifyH="RIGHT">
+      <Size>
+        <AbsDimension x="40" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="TOPRIGHT">
+	  <Offset>
+	    <AbsDimension x="-5" y="-3"/>
+	  </Offset>
+	</Anchor>
+      </Anchors>
+    </FontString>
+    <FontString name="$parentText" inherits="GameFontHighlightSmall" text="99" justifyH="RIGHT">
+      <Size>
+        <AbsDimension x="40" y="16"/>
+      </Size>
+      <Anchors>
+        <Anchor point="BOTTOMRIGHT">
+	  <Offset>
+	    <AbsDimension x="-5" y="3"/>
+	  </Offset>
+	</Anchor>
+      </Anchors>
+    </FontString>
+    <Texture file="Interface\AddOns\PallyPower\Icons\Warrior" name="$parentClassIcon">
+      <Size>
+        <AbsDimension x="26" y="26" />
+      </Size>
+      <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="4" y="-4" />
+            </Offset>
+          </Anchor>
+		  </Anchors>
+        </Texture>
+        <Texture file="Interface\Icons\Spell_Holy_SealOfWisdom" name="$parentBuffIcon">
+          <Size>
+            <AbsDimension x="26" y="26" />
+          </Size>
+		  <Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parentClassIcon" relativePoint="TOPRIGHT">
+				<Offset>
+				<AbsDimension x="4" y="0" />
+				</Offset>
+			</Anchor>
+		  </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>PallyPowerBuffButton_OnLoad(this);this:RegisterForClicks("LeftButtonUp","RightButtonUp")</OnLoad>
+      <OnClick>PallyPowerBuffButton_OnClick(this,arg1)</OnClick>
+      <OnEnter>PallyPowerBuffButton_OnEnter(this)</OnEnter>
+      <OnLeave>PallyPowerBuffButton_OnLeave(this)</OnLeave>
+    </Scripts>  
+  </Button>
+	<Frame name="UserTemplate" hidden="false" virtual="true">
+	   <Size>
+	     <AbsDimension x="576" y="56" />
+	   </Size>
+		<Layers>
+	   <Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlightSmall" text="SomePally$parent" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="576" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOP">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSymbols" inherits="GameFontHighlightSmall" text="999" justifyH="RIGHT">
+				  <Size>
+				    <AbsDimension x="50" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+						  <Offset>
+						    <AbsDimension x="128" y="0"/>
+						  </Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+        <Texture file="Interface\Icons\Spell_Holy_SealOfWisdom" name="$parentIcon0">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+  						<Offset>
+  							<AbsDimension x="0" y="-16"/>
+  						</Offset>
+						</Anchor>
+					</Anchors>
+        </Texture>
+        <Texture file="Interface\Icons\Spell_Holy_FistOfJustice" name="$parentIcon1">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+  						<Offset>
+  							<AbsDimension x="40" y="-16"/>
+  						</Offset>
+						</Anchor>
+					</Anchors>
+        </Texture>
+        <Texture file="Interface\Icons\Spell_Holy_SealOfSalvation" name="$parentIcon2">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+  						<Offset>
+  							<AbsDimension x="80" y="-16"/>
+  						</Offset>
+						</Anchor>
+					</Anchors>
+        </Texture>
+        <Texture file="Interface\Icons\Spell_Holy_PrayerOfHealing02" name="$parentIcon3">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+  						<Offset>
+  							<AbsDimension x="0" y="-36"/>
+  						</Offset>
+						</Anchor>
+					</Anchors>
+        </Texture>
+        <Texture file="Interface\Icons\Spell_Magic_MageArmor" name="$parentIcon4">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+  						<Offset>
+  							<AbsDimension x="40" y="-36"/>
+  						</Offset>
+						</Anchor>
+					</Anchors>
+        </Texture>
+        <Texture file="Interface\Icons\Spell_Nature_LightningShield" name="$parentIcon5">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+  						<Offset>
+  							<AbsDimension x="80" y="-36"/>
+  						</Offset>
+						</Anchor>
+					</Anchors>
+        </Texture>
+        <Texture name="$parentLine" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="576" y="2"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine2" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="128" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine3" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine2">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine4" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine3">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine5" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine4">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine6" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine5">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine7" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine6">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine8" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine7">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine9" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine8">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+				<FontString name="$parentSkill0" inherits="GameFontNormalSmall" text="0/0" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="30" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon0" relativePoint="TOPRIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkill1" inherits="GameFontNormalSmall" text="0/0" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="30" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon1" relativePoint="TOPRIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkill2" inherits="GameFontNormalSmall" text="0/0" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="30" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon2" relativePoint="TOPRIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkill3" inherits="GameFontNormalSmall" text="0/0" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="30" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon3" relativePoint="TOPRIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkill4" inherits="GameFontNormalSmall" text="0/0" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="30" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon4" relativePoint="TOPRIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkill5" inherits="GameFontNormalSmall" text="0/0" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="30" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon5" relativePoint="TOPRIGHT">
+						</Anchor>
+					</Anchors>
+				</FontString>
+		 </Layer>
+		</Layers>
+		<Frames>
+		  <Button name="$parentClass0" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT">
+		        <Offset>
+		          <AbsDimension x="130" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass1" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass0" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass2" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass1" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass3" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass2" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass4" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass3" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass5" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass4" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass6" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass5" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		  <Button name="$parentClass7" inherits="BuffGridButtonTemplate">
+		    <Anchors>
+		      <Anchor point="TOPLEFT" relativeTo="$parentClass6" relativePoint="TOPRIGHT">
+		        <Offset>
+		          <AbsDimension x="2" y="0" />
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="PallyPowerBuffBar" hidden="false" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+	   <Size>
+	     <AbsDimension x="110" y="302"/>
+	   </Size>
+	   <Anchors>
+       <Anchor point="LEFT" />
+	   </Anchors>
+		<Frames>
+	  	<Button name="$parentTitle">
+				<Anchors>
+					<Anchor point="TOP">
+					   <Offset>
+					      <AbsDimension x="0" y="-5" />
+					   </Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+				  <AbsDimension x="110" y="20" />
+				</Size>
+    		<Scripts>
+          <OnEnter>
+             PallyPower_ShowCredits()
+          </OnEnter>
+          <OnLeave>
+             HideUIPanel(GameTooltip);
+          </OnLeave>
+          <OnMouseDown>PallyPowerBuffBar_MouseDown(arg1)</OnMouseDown>
+          <OnMouseUp>PallyPowerBuffBar_MouseUp()</OnMouseUp>
+    		</Scripts>
+			<Layers>
+			<Layer level="OVERLAY">
+    		<FontString name="$parentText" inherits="GameFontNormal" text="Pally Buffs" justifyH="CENTER">
+    			<Size>
+    				<AbsDimension x="130" y="12"/>
+    			</Size>
+    			<Anchors>
+    				<Anchor point="CENTER">
+    					<Offset>
+    						<AbsDimension x="0" y="0"/>
+    					</Offset>
+    				</Anchor>
+    			</Anchors> 
+    		</FontString>
+			</Layer>
+			</Layers>
+			</Button>
+			<Button name="$parentBuff1" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff2" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff3" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff4" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff5" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff6" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff7" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentBuff8" inherits="PallyPowerBuffButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBuff7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentResizeButton" inherits="PallyPowerResizeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+    </Frames>
+	<Scripts>
+				<OnUpdate>
+			  PallyPower_OnUpdate(arg1);
+			</OnUpdate>
+	</Scripts>
+	</Frame>
+	
+	<Frame name="PallyPowerFrame" hidden="true" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="590" y="760"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="400" y="400"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+ 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+        <Texture name="$parentLine2" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="135" y="-24"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine3" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine2">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine4" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine3">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine5" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine4">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine6" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine5">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine7" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine6">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine8" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine7">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentLine9" file="Interface\Tooltips\UI-Tooltip-Background" hidden="false">
+					<Size>
+						<AbsDimension x="2" y="56"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine8">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass0" file="Interface\AddOns\PallyPower\Icons\Warrior" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentLine2">
+							<Offset>
+								<AbsDimension x="12" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass1" file="Interface\AddOns\PallyPower\Icons\Rogue" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass0">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass2" file="Interface\AddOns\PallyPower\Icons\Priest" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass1">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass3" file="Interface\AddOns\PallyPower\Icons\Druid" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass2">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass4" file="Interface\AddOns\PallyPower\Icons\Paladin" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass3">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass5" file="Interface\AddOns\PallyPower\Icons\Hunter" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass4">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass6" file="Interface\AddOns\PallyPower\Icons\Mage" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass5">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+        <Texture name="$parentClass7" file="Interface\AddOns\PallyPower\Icons\Warlock" hidden="false">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentClass6">
+							<Offset>
+								<AbsDimension x="56" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>				
+			</Layer>
+
+		</Layers>
+		<Frames>
+	  	<Button name="$parentTitle">
+				<Anchors>
+					<Anchor point="TOP">
+					   <Offset>
+					      <AbsDimension x="0" y="-7" />
+					   </Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+				  <AbsDimension x="100" y="20" />
+				</Size>
+    		<Scripts>
+          <OnEnter>
+             PallyPower_ShowCredits()
+          </OnEnter>
+          <OnLeave>
+             HideUIPanel(GameTooltip);
+          </OnLeave>
+          <OnMouseDown>PallyPowerFrame_MouseDown(arg1)</OnMouseDown>
+          <OnMouseUp>PallyPowerFrame_MouseUp()</OnMouseUp>
+          <OnUpdate>PallyPowerGrid_Update()</OnUpdate>
+    		</Scripts>
+			<Layers><Layer level="OVERLAY">
+    		<FontString name="$parentText" inherits="GameFontNormal" text="Pally Power" justifyH="CENTER">
+    			<Size>
+    				<AbsDimension x="100" y="12"/>
+    			</Size>
+    			<Anchors>
+    				<Anchor point="LEFT">
+    					<Offset>
+    						<AbsDimension x="5" y="0"/>
+    					</Offset>
+    				</Anchor>
+    			</Anchors> 
+    		</FontString>
+			</Layer>
+			</Layers>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentRefresh" inherits="GameMenuButtonTemplate" text="PALLYPOWER_REFRESH" hidden="false">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+					  <Offset>
+					    <AbsDimension x="-7" y="7"/>
+					  </Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					  PallyPower_Refresh()
+					</OnClick>
+				</Scripts>
+			</Button>			
+			<Button name="$parentResizeButton" inherits="PallyPowerResizeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentClear" inherits="GameMenuButtonTemplate" text="PALLYPOWER_CLEAR" hidden="false">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentRefresh" relativePoint="BOTTOMLEFT">
+					  <Offset>
+					    <AbsDimension x="-7" y="0"/>
+					  </Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					  PallyPower_Clear()
+					</OnClick>
+				</Scripts>
+			</Button>			
+
+			<Button name="$parentOptions" inherits="GameMenuButtonTemplate" text="PALLYPOWER_OPTIONS" hidden="false">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentClear" relativePoint="BOTTOMLEFT">
+					  <Offset>
+					    <AbsDimension x="-7" y="0"/>
+					  </Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					  PallyPower_Options()
+					</OnClick>
+				</Scripts>
+			</Button>			
+
+			<Frame name="$parentPlayer1" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="7" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer2" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer1" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer3" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer2" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer4" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer3" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer5" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer4" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer6" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer5" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer7" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer6" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer8" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer7" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer9" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer8" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer10" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer9" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer11" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer10" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+			<Frame name="$parentPlayer12" inherits="UserTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer11" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+			</Frame>
+    </Frames>		
+ 		<Scripts>
+			<OnLoad>
+				PallyPower_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PallyPower_OnEvent(event);
+			</OnEvent>
+      <OnMouseUp>PallyPowerFrame_MouseUp()</OnMouseUp> 
+      <OnMouseDown>PallyPowerFrame_MouseDown(arg1)</OnMouseDown> 
+      <OnHide>if ( this.isMoving ) then this:StopMovingOrSizing(); this.isMoving = false; end</OnHide> 
+ 		</Scripts>
+	</Frame>
+
+	<Frame name="PallyPower_ScalingFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				PallyPower_ScalingFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PallyPower_OptionsFrame" hidden="true" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="300"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+			</Anchor>
+		</Anchors>
+ 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+    <Layers>
+      <Layer level="OVERLAY">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="PALLYPOWER_OPTIONS_TITLE" justifyH="CENTER">
+				  <Size>
+				    <AbsDimension x="200" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+							<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOption1" inherits="GameFontHighlight" text="PALLYPOWER_OPTIONS_SCAN" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="200" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+							<AbsDimension x="7" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOption2" inherits="GameFontHighlight" text="PALLYPOWER_OPTIONS_SCAN2" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="200" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+							<AbsDimension x="7" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOption3" inherits="GameFontHighlight" text="PALLYPOWER_OPTIONS_FEEDBACK_CHAT" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="200" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+							<AbsDimension x="7" y="-75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOption4" inherits="GameFontHighlight" text="PALLYPOWER_OPTIONS_SMARTBUFFS" justifyH="LEFT">
+				  <Size>
+				    <AbsDimension x="200" y="16"/>
+				  </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+							<AbsDimension x="7" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+    </Layers>
+    <Frames>
+    	<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+      <EditBox name="$parentScan1" enableMouse="true" letters="8" numeric="true">
+        <Size>
+          <AbsDimension x="50" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="-25" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" />
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" />
+              </Anchors>
+              <TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="10" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+            </Texture>
+          </Layer>
+        </Layers>
+        <FontString inherits="ChatFontNormal"/>
+        <Scripts>
+        <OnShow>
+          this:SetNumeric(1);
+          this:SetText(PP_PerUser.scanfreq);
+        </OnShow>
+					<OnTabPressed>
+						PallyPower_OptionsFrameScan2:SetFocus();
+					</OnTabPressed>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+					</OnEditFocusLost>
+					<OnChar>
+						
+					</OnChar>
+					<OnEnterPressed>
+						PallyPower_OptionsFrameScan2:SetFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:GetParent():Hide();
+					</OnEscapePressed>
+					<OnTextChanged>
+					   if (this:GetNumber() > 0) then 
+  					   PallyPower_SetOption("scanfreq", this:GetNumber());
+  					 end
+					</OnTextChanged>
+        </Scripts>
+      </EditBox>
+      <EditBox name="$parentScan2" enableMouse="true" letters="8" numeric="true">
+        <Size>
+          <AbsDimension x="50" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="-50" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" />
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" />
+              </Anchors>
+              <TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="10" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+            </Texture>
+          </Layer>
+        </Layers>
+        <FontString inherits="ChatFontNormal"/>
+        <Scripts>
+        <OnShow>
+          this:SetNumeric(1);
+          this:SetText(PP_PerUser.scanperframe);
+        </OnShow>
+					<OnTabPressed>
+						PallyPower_OptionsFrameScan1:SetFocus();
+					</OnTabPressed>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+					</OnEditFocusLost>
+					<OnChar>
+						
+					</OnChar>
+					<OnEnterPressed>
+						PallyPower_OptionsFrameScan1:SetFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:GetParent():Hide();
+					</OnEscapePressed>
+					<OnTextChanged>
+					   if (this:GetNumber() > 0) then 
+  					   PallyPower_SetOption("scanperframe", this:GetNumber());
+  					 end
+					</OnTextChanged>
+        </Scripts>
+      </EditBox>
+      <CheckButton name="$parentFeedback" inherits="OptionsCheckButtonTemplate">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="-75" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>if (PP_PerUser.chatfeedback) then this:SetChecked(true) else this:SetChecked(false) end</OnShow>
+          <OnClick>PP_PerUser.chatfeedback = this:GetChecked()</OnClick>
+        </Scripts>
+      </CheckButton>
+      <CheckButton name="$parentSmart" inherits="OptionsCheckButtonTemplate">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="-100" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnShow>if (PP_PerUser.smartbuffs) then this:SetChecked(true) else this:SetChecked(false) end</OnShow>
+          <OnClick>PP_PerUser.smartbuffs = this:GetChecked()</OnClick>
+        </Scripts>
+      </CheckButton>
+    </Frames>
+		<Scripts>
+			<OnLoad>
+			this:SetBackdropColor(0.0, 0.0, 0.0, 0.5);
+			</OnLoad>
+		</Scripts>
+  </Frame>
+
+</Ui>

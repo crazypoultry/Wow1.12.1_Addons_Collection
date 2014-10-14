@@ -1,0 +1,70 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\FrameXML\UI.xsd">
+
+  <!-- The loot button, this will be re-purposed to whatever slot has
+       items in -->
+  <LootButton name="PocketHelperLoot" inherits="LootButtonTemplate"
+	      parent="UIParent" id="1" hidden="true">
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+	<Offset>
+	  <AbsDimension x="0" y="0"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+  </LootButton>
+  
+  <!-- The action button, this will have its identity changed as necessary
+       to whichever slot has the action in -->
+  <CheckButton name="PocketHelperAction" inherits="ActionButtonTemplate"
+	       parent="UIParent" id="0" hidden="true">
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+	<Offset>
+	  <AbsDimension x="0" y="0"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>
+	PocketHelperAction = this;
+	ActionButton_OnLoad();
+      </OnLoad>
+      <OnEvent>
+	ActionButton_OnEvent(event);
+      </OnEvent>
+      <OnShow>
+	ActionButton_Update();
+	PocketHelper.ActionOnShow();
+      </OnShow>
+      <OnClick>
+	if (MacroFrame_SaveMacro) then
+	  MacroFrame_SaveMacro();
+	end
+	UseAction(ActionButton_GetPagedID(this), 1);
+	ActionButton_UpdateState();
+      </OnClick>
+      <OnUpdate>
+	ActionButton_OnUpdate(arg1);
+      </OnUpdate>
+    </Scripts>
+  </CheckButton>
+  
+  <!-- Launch frame, with OnUpdate handler -->
+  <Frame name="PocketHelperFrame" hidden="true">
+    <Scripts>
+      <OnLoad>
+	PocketHelper.OnLoad();
+      </OnLoad>
+      <OnEvent>
+	PocketHelper.OnEvent(event);
+      </OnEvent>
+      <OnUpdate>
+	-- This one gets its own global symbol since it's called a lot.
+	PocketHelper_OnUpdate();
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+</Ui>

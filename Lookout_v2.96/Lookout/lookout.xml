@@ -1,0 +1,1574 @@
+<!-- Lookout v2.95 -->
+
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+<Script file="localization.lua"/>
+<Script file="lookout.lua"/>
+
+
+
+<Button name="LookoutTabTemplate" 
+	inherits="CharacterFrameTabButtonTemplate" 
+	virtual="true"
+	>
+	<Scripts>
+		<OnClick>
+			PlaySound("igMainMenuOpen");
+			PanelTemplates_Tab_OnClick(LookoutPrefsFrame);
+			Lookout_ShowPanel(LookoutPrefsFrame.selectedTab);
+		</OnClick>
+	</Scripts>
+</Button>
+	
+
+                
+
+
+<Frame 
+	name="LookoutPrefsTemplate"
+	virtual="true"
+	parent="LookoutPrefsFrame"
+	>
+	<Size><AbsDimension x="370" y="600"/></Size>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="LookoutPrefsFrame"
+		>
+		<Offset><AbsDimension x="0" y="-32"/></Offset>
+		</Anchor>
+	</Anchors>
+</Frame>
+	
+	
+<Frame 
+	name="Lookout"
+	>
+	<Size>
+		<AbsDimension x="384" y="720"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	
+	<Scripts>
+		<OnLoad>
+			Lookout_OnLoad();
+		</OnLoad>
+		<OnEvent>
+			Lookout_Event(event)
+		</OnEvent>
+	</Scripts>
+</Frame>	
+	
+	
+
+    
+
+
+
+<Frame name="LookoutPrefsFrame"
+	frameStrata="DIALOG" 
+	toplevel="true" 
+	parent="UIParent"
+	movable="true" 
+	hidden="true"
+	enableMouse="true"
+	>
+	<Size>
+		<AbsDimension x="600" y="500"/>
+	</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop 
+			bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" 
+			tile="true"
+		>
+                <TileSize>
+                        <AbsValue val="32"/>
+                </TileSize>
+                <EdgeSize>
+                        <AbsValue val="32"/>
+                </EdgeSize>
+                <BackgroundInsets>
+                        <AbsInset left="11" right="12" top="12" bottom="11"/>
+                </BackgroundInsets>
+        </Backdrop>
+        
+        
+        
+
+
+		<!-- set the parameters for the layers of the frame -->
+	<Layers>
+		<Layer level="ARTWORK">
+      
+      
+      
+      
+<FontString 
+	name="LookoutPrefsTitle" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	
+	text="LOOKOUT_TITLE" 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="LookoutPrefsFrame"
+		>
+			<Offset>
+				<AbsDimension x="20" y="-22"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r=".2" g="1" b=".2" a="1" />
+</FontString> 
+                
+
+                
+
+
+
+
+
+
+       
+       
+      </Layer>
+    </Layers>
+    
+<frames>
+	<Button name="LookoutPrefsCloseButton" inherits="UIPanelCloseButton">
+	<Anchors>
+		<Anchor point="TOPRIGHT" relativeTo="LookoutPrefsFrame" relativePoint="TOPRIGHT">
+			<Offset>
+				<AbsDimension x="-2" y="-5"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	</Button>
+              
+              
+              
+	<Button
+		name="LookoutPrefsFrameTab1" 
+		inherits="LookoutTabTemplate" 
+		id="1" 
+		text="BOSSES">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset><AbsDimension x="11" y="-26"/></Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+
+
+	<Button
+		name="LookoutPrefsFrameTab2" 
+		inherits="LookoutTabTemplate" 
+		id="2" 
+		text="SUMMONERS">
+		<Anchors>
+			<Anchor 
+			point="LEFT"
+			relativePoint="RIGHT"
+			relativeTo="LookoutPrefsFrameTab1"
+			>
+				<Offset><AbsDimension x="-14" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+
+
+	<Button
+		name="LookoutPrefsFrameTab3" 
+		inherits="LookoutTabTemplate" 
+		id="3" 
+		text="BOOM">
+		<Anchors>
+			<Anchor 
+			point="LEFT"
+			relativePoint="RIGHT"
+			relativeTo="LookoutPrefsFrameTab2"
+			>
+				<Offset><AbsDimension x="-14" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+
+
+
+	<Button
+		name="LookoutPrefsFrameTab4" 
+		inherits="LookoutTabTemplate" 
+		id="4" 
+		text="HELP">
+		<Anchors>
+			<Anchor 
+			point="LEFT"
+			relativePoint="RIGHT"
+			relativeTo="LookoutPrefsFrameTab3"
+			>
+				<Offset><AbsDimension x="-14" y="0"/></Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+
+
+
+
+	
+	
+	
+	
+	
+	
+</frames>
+	<Scripts>
+	<OnLoad>
+		PanelTemplates_SetNumTabs(this,4);
+		-- PanelTemplates_SetNumTabs(LookoutPrefsFrame, 3);
+		LookoutPrefsFrame.selectedTab=1;
+		PanelTemplates_UpdateTabs(this);
+	</OnLoad>
+
+	
+		<OnMouseDown> this:StartMoving();  </OnMouseDown>
+		<OnMouseUp>  this:StopMovingOrSizing(); </OnMouseUp>
+		<OnDragStop> this:StopMovingOrSizing(); </OnDragStop>
+	<OnShow>LookoutPrefsFrameOnShow();</OnShow>
+	</Scripts> 
+</Frame>
+
+
+
+
+
+
+
+<!-- start of content frame-->
+<frame
+	name="LookoutBossPanel" 
+	inherits="LookoutPrefsTemplate" 
+	parent="LookoutPrefsFrame"
+	
+>
+	
+	<Layers>
+		<Layer level="ARTWORK">
+      
+<FontString 
+	name="$parent_Boss_Title" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Bosses" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent"
+		>
+			<Offset>
+				<AbsDimension x="20" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+<FontString 
+	name="$parent_Boss_Text" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Please select what you want to watch for, |nand what action to take:"
+	nonspacewrap="false" 
+	maxLines="3"
+	>
+	<Anchors>
+		<Anchor 
+		point="LEFT" 
+		relativePoint="TOPLEFT" 
+		relativeTo="$parent_Boss_Title" 
+		>
+			<Offset>
+				<AbsDimension x="0" y="-30"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />  <!-- White Color -->
+</FontString>      
+        
+        
+        
+  
+		
+		
+		
+<!-- Original function for bloodlord: -->
+<FontString 
+	name="$parent_Mandokir_block" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Bloodlord Mandokir (in Zul' Gurub)"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent" 
+		>
+			<Offset>
+				<AbsDimension x="20" y="-60"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+
+                
+<FontString 
+	name="$parent_block1option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when you are watched." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Mandokir_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+                
+                
+                
+<FontString 
+	name="$parent_block1option2" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Disengage target." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Mandokir_block"
+		>
+		<Offset>
+			<AbsDimension x="44" y="-44"/>
+		</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+                
+      
+<!--  Baron Geddon: -->      
+      
+      <FontString 
+	name="$parent_Geddon_block" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Baron Geddon (in Molten Core)"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent" 
+		>
+			<Offset>
+				<AbsDimension x="20" y="-130"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+
+                
+<FontString 
+	name="$parent_block2option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when you are the Living Bomb." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Geddon_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+                
+                
+                
+<FontString 
+	name="$parent_block2option2" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when another party member is the Living Bomb" 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Geddon_block"
+		>
+		<Offset>
+			<AbsDimension x="44" y="-44"/>
+		</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+      
+      
+<!-- Majordomo Executus: --> 
+      
+<FontString 
+	name="$parent_Domo_block" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Majordomo Executus (in Molten Core)"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent" 
+		>
+			<Offset>
+				<AbsDimension x="20" y="-200"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+
+                
+<FontString 
+	name="$parent_block3option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when the magic and damage shields go up/down." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Domo_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+                
+                
+<FontString 
+	name="$parent_block3option2" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Disengage target when PHYSICAL REFLECTION shield goes up." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Domo_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-44"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+               
+<FontString 
+	name="$parent_block3option3" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Disengage target when MAGIC REFLECTION shield goes up." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Domo_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-64"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+              
+      
+      
+      
+<!-- Arlokk in ZG: --> 
+      
+<FontString 
+	name="$parent_Arlokk_block" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="High Priestess Arlokk (in Zul'Gurub)"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent" 
+		>
+			<Offset>
+				<AbsDimension x="20" y="-290"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+
+                
+<FontString 
+	name="$parent_block4option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Target the player with the hunter's mark. (Recommended for healers.)" 
+
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Arlokk_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+         
+         
+      
+<!-- Ony: --> 
+      
+<FontString 
+	name="$parent_Ony_block" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Onyxia"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent" 
+		>
+			<Offset>
+				<AbsDimension x="20" y="-340"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+
+                
+<FontString 
+	name="$parent_block5option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Warn when Onyxia breaths." 
+
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Ony_block"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+         
+         
+         
+  </Layer>
+</Layers>
+
+
+<frames>
+
+<CheckButton 
+	name="LookoutPrefsFrameMandokirAlert" 
+	inherits="UICheckButtonTemplate"
+	id="11"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Mandokir_block"
+			>
+			<Offset><AbsDimension x="8" y="-24"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+
+
+<CheckButton 
+	name="LookoutPrefsDomoShields" 
+	inherits="UICheckButtonTemplate"
+	id="29"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Domo_block"
+			>
+			<Offset><AbsDimension x="8" y="-24"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+<CheckButton 
+	name="LookoutPrefsDomoPhysical" 
+	inherits="UICheckButtonTemplate"
+	id="30"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Domo_block"
+			>
+			<Offset><AbsDimension x="8" y="-44"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+<CheckButton 
+	name="LookoutPrefsDomoMagic" 
+	inherits="UICheckButtonTemplate"
+	id="31"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Domo_block"
+			>
+			<Offset><AbsDimension x="8" y="-64"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+
+<CheckButton 
+	name="LookoutPrefsFrameMandokirAction" 
+	inherits="UICheckButtonTemplate" id="12" 
+	>
+				<Anchors>
+					<Anchor 
+						point="LEFT" 
+						relativePoint="TOPLEFT" 
+						relativeTo="$parent_Mandokir_block"
+						>
+						<Offset>
+							<AbsDimension x="8" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+			
+
+
+<CheckButton 
+	name="LookoutPrefsFrameGeddonMeAlert" 
+	inherits="UICheckButtonTemplate"
+	id="13"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Geddon_block"
+			>
+			<Offset><AbsDimension x="8" y="-24"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+	
+<CheckButton 
+	name="LookoutPrefsFrameGeddonOtherAlert" 
+	inherits="UICheckButtonTemplate"
+	id="14"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_Geddon_block"
+			>
+			<Offset><AbsDimension x="8" y="-44"/></Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+
+<CheckButton 
+	name="LookoutPrefsFrameArlokkAction" 
+	inherits="UICheckButtonTemplate" id="56" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_Arlokk_block">
+						<Offset>
+							<AbsDimension x="12" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+			</CheckButton>
+			
+			
+<CheckButton 
+	name="LookoutPrefsFrameOnyAlert" 
+	inherits="UICheckButtonTemplate" id="57" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_Ony_block">
+						<Offset>
+							<AbsDimension x="12" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+	
+</frames>
+
+
+
+</frame>
+
+
+<!-- End of content frame-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- start of content frame-->
+<frame
+	name="LookoutFusePanel" 
+	inherits="LookoutPrefsTemplate" 
+	parent="LookoutPrefsFrame"
+	hidden="true"
+>
+	
+
+	<Layers>
+		<Layer level="ARTWORK">
+
+
+
+<!-- BOOM: -->
+<FontString 
+	name="Lookout_Fuse_Title" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Bad Things that Go BOOM" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent"
+		>
+			<Offset>
+				<AbsDimension x="20" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+
+
+<FontString 
+	name="$parent_block5option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Warn about poison clouds"
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="LookoutFusePanel"
+		>
+			<Offset>
+				<AbsDimension x="60" y="-30"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+  </Layer>
+</Layers>
+<frames>
+
+
+
+
+
+			
+<CheckButton 
+	name="LookoutPrefsFramePoisonCloud" 
+	inherits="UICheckButtonTemplate" id="57" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="Lookout_Fuse_Title">
+						<Offset>
+							<AbsDimension x="12" y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+			
+			
+
+
+
+
+</frames>
+</frame>
+
+
+<!-- End of content frame-->
+
+
+
+
+
+
+
+
+
+<!-- start of content frame-->
+<frame
+	name="LookoutSummonerPanel" 
+	inherits="LookoutPrefsTemplate" 
+	parent="LookoutPrefsFrame"
+	hidden="true"
+>
+	
+
+
+	<Layers>
+		<Layer level="ARTWORK">
+
+
+
+<!-- Summoners: -->
+<FontString 
+	name="$parent_Summoner_Title" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Summoners" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent"
+		>
+			<Offset>
+				<AbsDimension x="20" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+
+<FontString 
+	name="$parent_Summoner_Text" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Please select what you want to watch for, |nand what action to take:"
+	nonspacewrap="false" 
+	maxLines="3"
+	>
+	<Anchors>
+		<Anchor 
+		point="LEFT" 
+		relativePoint="TOPLEFT" 
+		relativeTo="$parent_Summoner_Title" 
+		>
+			<Offset>
+				<AbsDimension x="0" y="-30"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />  <!-- White Color -->
+</FontString> 
+
+<!-- Eye of Naxxramas for Stratholhm -->
+<FontString 
+	name="$parent_block2" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Eye of Naxxramas in Stratholm" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="LookoutPrefsFrame"
+		>
+			<Offset>
+				<AbsDimension x="20" y="-100"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+                
+<FontString 
+	name="$parent_block2option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when shouts ''the living are here!''" 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block2"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+
+
+                
+<FontString 
+	name="$parent_block2option2" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Target the eye. "
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block2"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-44"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+                        
+            
+       
+       
+<!-- The Eye of Kilrogg in Dire Maul: -->
+<FontString 
+	name="$parent_block3" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Eye of Kilrogg in Dire Maul" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block2"
+		>
+			<Offset>
+				<AbsDimension x="0" y="-80"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+                
+<FontString 
+	name="$parent_block3option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when eye begins to summon." 
+	>
+	<Anchors>
+		<Anchor 
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block3"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-20"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+
+
+                
+<FontString 
+	name="$parent_block3option2" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Target the eye. "
+	>
+	<Anchors>
+		<Anchor 
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block3"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-40"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+     
+     
+     
+     
+     <!-- Blackhand Summoner in Blackrock Spire: -->
+<FontString 
+	name="$parent_block4" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Blackhand Summoner in Blackrock Spire" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block3"
+		>
+			<Offset>
+				<AbsDimension x="0" y="-80"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+                
+<FontString 
+	name="$parent_block4option1" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when starts to summon." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block4"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+<FontString 
+	name="$parent_block4option2" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Attempt to target the Summoner." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block4"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-40"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+
+
+
+
+
+<!-- Mobile Alert System (Alarm-bot) in Gnomeregan: -->
+<FontString 
+	name="$parent_block_MAS_Title" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="Mobile Alert System (Alarm-bot) in Gnomeregan" 
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block4"
+		>
+			<Offset>
+				<AbsDimension x="0" y="-80"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+                
+<FontString 
+	name="$parent_block_MAS_alert" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Alert when alarm goes off." 
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block_MAS_Title"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-24"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+
+
+<FontString 
+	name="$parent_block_MAS_summon" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	text="Target the Mobile Alert System. "
+	>
+	<Anchors>
+		<Anchor 
+			point="LEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent_block_MAS_Title"
+		>
+			<Offset>
+				<AbsDimension x="44" y="-44"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />
+</FontString>
+  </Layer>
+</Layers>
+<frames>
+
+
+
+<!-- Eye of Naxxramas for Stratholhm -->
+		
+			
+<CheckButton 
+	name="LookoutPrefsFrameNaxxramasAlert" 
+	inherits="UICheckButtonTemplate" 
+	id="21" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block2">
+						<Offset>
+							<AbsDimension x="8" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+			</CheckButton>
+			
+			
+<CheckButton 
+	name="LookoutPrefsFrameNaxxramasAction" 
+	inherits="UICheckButtonTemplate"
+	id="22" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block2">
+						<Offset>
+							<AbsDimension x="8" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+		
+		
+<!-- The Eye of Kilrogg in Dire Maul: -->		
+<CheckButton 
+	name="LookoutPrefsFrameKilroggAlert" 
+	inherits="UICheckButtonTemplate" id="23" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block3">
+						<Offset>
+							<AbsDimension x="8" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+			</CheckButton>
+			
+			
+<CheckButton 
+	name="LookoutPrefsFrameKilroggAction" 
+	inherits="UICheckButtonTemplate" id="24" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block3">
+						<Offset>
+							<AbsDimension x="8" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+<!-- Blackhand Summoner in Blackrock Spire: -->
+<CheckButton 
+	name="LookoutPrefsFrameBlackhandSummonerAlert" 
+	inherits="UICheckButtonTemplate" id="25" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block4">
+						<Offset>
+							<AbsDimension x="8" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+			</CheckButton>
+			
+			
+<CheckButton 
+	name="LookoutPrefsFrameBlackhandSummonerAction" 
+	inherits="UICheckButtonTemplate" id="26" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block4">
+						<Offset>
+							<AbsDimension x="8" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+
+
+
+<!-- Mobile Alert System (Alarm-bot) in Gnomeregan: -->
+<CheckButton 
+	name="LookoutPrefsFrameMobileAlertSystemAlert" 
+	inherits="UICheckButtonTemplate" id="27" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block_MAS_Title">
+						<Offset>
+							<AbsDimension x="8" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+			</CheckButton>
+			
+			
+<CheckButton 
+	name="LookoutPrefsFrameMobileAlertSystemAaction" 
+	inherits="UICheckButtonTemplate" id="28" 
+	>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="$parent_block_MAS_Title">
+						<Offset>
+							<AbsDimension x="8" y="-44"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+	<Scripts>
+			<OnClick>LookoutOptions_OnClick(); </OnClick>
+	</Scripts>
+</CheckButton>
+
+
+
+</frames>
+
+
+
+
+
+</frame>
+
+
+<!-- End of content frame-->
+
+
+
+
+
+
+<!-- start of content frame-->
+<frame
+	name="LookoutHelpPanel" 
+	inherits="LookoutPrefsTemplate" 
+	parent="LookoutPrefsFrame"
+	
+>
+	
+	<Layers>
+		<Layer level="ARTWORK">
+      
+<FontString 
+	name="$parent_Help_Title" 
+	inherits="GameFontNormal"
+	justifyH="LEFT"
+	text="LOOKOUT HELP" 
+
+	>
+	<Anchors>
+		<Anchor
+			point="TOPLEFT" 
+			relativePoint="TOPLEFT" 
+			relativeTo="$parent"
+		>
+			<Offset>
+				<AbsDimension x="20" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b=".2" a="1" />
+</FontString>
+
+<FontString 
+	name="LookoutPrefsFrame_Help_Text" 
+	inherits="GameFontNormal"  
+	justifyH="LEFT" 
+	justifyV="TOP" 
+	text="  "
+	nonspacewrap="false" 
+	spacing=".5"
+
+	>
+	<Size><AbsDimension x="560" y="520"/></Size>
+
+	<Anchors>
+		<Anchor 
+		point="TOPLEFT" 
+		relativePoint="TOPLEFT" 
+		relativeTo="$parent_Help_Title" 
+		>
+			<Offset>
+				<AbsDimension x="0" y="-30"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Color r="1" g="1" b="1" a="1" />  <!-- White Color -->
+</FontString>      
+        
+        
+
+		
+		
+		
+
+      
+      
+            
+  </Layer>
+</Layers>
+
+
+<frames>
+
+
+
+	
+</frames>
+
+
+
+</frame>
+
+
+<!-- End of content frame-->
+
+
+
+
+<MessageFrame name="LookoutMessageFrame" insertMode="TOP" parent="UIParent" frameStrata="LOW" toplevel="true">
+
+	<Size><AbsDimension x="1000" y="200"/></Size>
+       
+	<Anchors>
+		<Anchor point="CENTER">
+			<Offset><AbsDimension x="0" y="0"/></Offset>
+		</Anchor>
+	</Anchors>
+       
+	<Scripts>
+	
+		<OnLoad>
+
+		</OnLoad>
+
+	
+	</Scripts>
+       
+	<FontString name="LookoutAlertMessageFrameText" inherits="NumberFontNormalHuge" justifyH="CENTER" />
+</MessageFrame>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Ui>

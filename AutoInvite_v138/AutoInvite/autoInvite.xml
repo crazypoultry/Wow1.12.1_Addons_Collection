@@ -1,0 +1,708 @@
+<?xml version="1.0"?><!-- $Id: autoInvite.xml 137 2006-11-14 08:50:13Z idefix $ -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ file:///e:/wow/extract/Interface/FrameXML/UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="localization_de.lua"/>
+	<Script file="localization_fr.lua"/>
+	<Script file="autoInvite.lua"/>
+
+	<!-- our hidden frame to handle OnUpdate -->
+	<Frame name="autoInviteUpdateFrame" framaStrata="BACKGROUND" toplevel="false" parent="UIParent">
+		<Scripts>
+			<OnUpdate>autoInvite:onUpdate();</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<!-- Frame to handle all core events -->
+	<Frame name="autoInviteMainConfigFrame" frameStrata="MEDIUM" hidden="true" toplevel="false" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="890" y="500"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>autoInvite:onLoad();</OnLoad>
+			<OnEvent>autoInvite:onEvent();</OnEvent>
+			<OnDragStart>autoInvite:onDragStart();</OnDragStart>
+			<OnDragStop>autoInvite:onDragStop();</OnDragStop>
+			<OnMouseUp>autoInvite:onDragStop();</OnMouseUp>
+		</Scripts>
+
+		<!-- Draw the main window -->
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer>
+				<Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="160" y="32" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="9" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="Auto Invite">
+					<Size>
+						<AbsDimension x="140" y="0" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentPlayerStatistic" inherits="GameFontNormalSmall" text="AUTO_INVITE_NUMBER_OF_PLAYERS">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="35" y="-30" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentVersionText" inherits="GameFontNormalSmall" text="Version: ">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-40" y="-30" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCheckButtonWisperLabel" inherits="GameFontNormal" text="AUTO_INVITE_WISPER_PLAYER_IF_IN_GROUP">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="55" y="42"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCheckButtonModActiveLabel" inherits="GameFontNormal" text="AUTO_INVITE_MOD_ACTIVE">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="435" y="42"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="AUTO_INVITE_CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> autoInvite:showConfigFrame(); </OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentCompleteList" inherits="AutoInviteSelectBoxBigTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-35" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_COMPLETELIST);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentButtonInviteRaid" inherits="OptionsButtonTemplate" text="AUTO_INVITE_RAID_INVITE">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-410"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:inviteButton_OnClick("raid");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonInviteGroup" inherits="OptionsButtonTemplate" text="AUTO_INVITE_GROUP_INVITE">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonInviteRaid" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:inviteButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonReadGroupSetup" inherits="OptionsButtonTemplate" text="AUTO_INVITE_READ_GROUPS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonInviteGroup" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="55" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:readGroupSetup();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonSetGroupSetup" inherits="OptionsButtonTemplate" text="AUTO_INVITE_MOVE_GROUPS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonReadGroupSetup" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:movePlayers();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonLoadConfig" inherits="OptionsButtonTemplate" text="AUTO_INVITE_LOAD_SAVE">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonSetGroupSetup" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="45" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:loadSaveConfig();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonUpdate" inherits="OptionsButtonTemplate" text="AUTO_INVITE_UPDATE">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonLoadConfig" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:updateButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonClear" inherits="OptionsButtonTemplate" text="AUTO_INVITE_CLEAR">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonUpdate" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:clearButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<CheckButton name="$parentCheckButtonWisper" inherits="OptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>autoInvite:ifWisperOnClick();</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckButtonModActive" inherits="OptionsCheckButtonTemplate" checked="false">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="400" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>autoInvite:switchPowerStatus();</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentDRUIDList" inherits="AutoInviteSelectBoxSmallTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['DRUID']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownDRUID" inherits="autoInviteDropDown" id="1">
+			</Frame>
+
+			<Frame name="$parentHUNTERList" inherits="AutoInviteSelectBoxSmallTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDRUIDList" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['HUNTER']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownHUNTER" inherits="autoInviteDropDown" id="2">
+			</Frame>
+
+			<Frame name="$parentMAGEList" inherits="AutoInviteSelectBoxSmallTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHUNTERList" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['MAGE']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownMAGE" inherits="autoInviteDropDown" id="3">
+			</Frame>
+
+			<Frame name="$parentPALADINList" inherits="AutoInviteSelectBoxSmallTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMAGEList" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['PALADIN'].."/"..AUTO_INVITE_CLASS['SHAMAN']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownPALADIN" inherits="autoInviteDropDown" id="4">
+			</Frame>
+
+			<Frame name="$parentPRIESTList" inherits="AutoInviteSelectBoxSmallTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDRUIDList" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-90"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['PRIEST']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownPRIEST" inherits="autoInviteDropDown" id="5">
+			</Frame>
+
+			<Frame name="$parentROGUEList" inherits="AutoInviteSelectBoxSmallTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPRIESTList" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['ROGUE']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownROGUE" inherits="autoInviteDropDown" id="6">
+			</Frame>
+
+			<Frame name="$parentWARRIORList" inherits="AutoInviteSelectBoxSmallTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentROGUEList" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['WARRIOR']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownWARRIOR" inherits="autoInviteDropDown" id="7">
+			</Frame>
+
+			<Frame name="$parentWARLOCKList" inherits="AutoInviteSelectBoxSmallTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentWARRIORList" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>getglobal(this:GetName().."Label"):SetText(AUTO_INVITE_CLASS['WARLOCK']);</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="autoInviteDropDownWARLOCK" inherits="autoInviteDropDown" id="8">
+			</Frame>
+		</Frames>
+	</Frame>
+
+
+
+	<!--	<Frame name="autoInviteLoadSaveFrame" frameStrata="DIALOG" hidden="false" toplevel="true" enableMouse="true" movable="true" parent="autoInviteMainConfigFrame"> -->
+	<Frame name="autoInviteLoadSaveFrame" frameStrata="HIGH" hidden="true" toplevel="true" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="500" y="300"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad></OnLoad>
+			<OnEvent></OnEvent>
+			<OnDragStart></OnDragStart>
+			<OnDragStop></OnDragStop>
+			<OnMouseUp></OnMouseUp>
+		</Scripts>
+
+		<!-- Draw the load-save window -->
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer>
+				<Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="160" y="32" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="9" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="AUTO_INVITE_LOAD_SAVE_CONFIG">
+					<Size>
+						<AbsDimension x="140" y="0" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="AUTO_INVITE_CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> autoInviteLoadSaveFrame:Hide(); </OnClick>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="autoInviteLoadSaveScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="30" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="autoInviteLoadSaveFrame">
+						<Offset>
+							<AbsDimension x="-40" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<!--
+						    <Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						    <Size>
+						    <AbsDimension x="31" y="106"/>
+						    </Size>
+						    <Anchors>
+						    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						    <Offset>
+						    <AbsDimension x="0" y="7"/>
+						    </Offset>
+						    </Anchor>
+						    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						    <Offset>
+						    <AbsDimension x="0" y="-3"/>
+						    </Offset>
+						    </Anchor>
+						    </Anchors>
+						    <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						    </Texture>
+						    <Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+						    <Size>
+						    <AbsDimension x="31" y="106"/>
+						    </Size>
+						    <Anchors>
+						    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+						    <Offset>
+						    <AbsDimension x="0" y="-2"/>
+						    </Offset>
+						    </Anchor>
+						    </Anchors>
+						    <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						    </Texture>
+						-->
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(8, autoInvite.loadSaveScrollBar_Update)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="$parentLoadSaveDetail1" inherits="LoadSaveDetailTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-38" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail2" inherits="LoadSaveDetailTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail3" inherits="LoadSaveDetailTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail4" inherits="LoadSaveDetailTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail5" inherits="LoadSaveDetailTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail6" inherits="LoadSaveDetailTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail7" inherits="LoadSaveDetailTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentLoadSaveDetail8" inherits="LoadSaveDetailTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLoadSaveDetail7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButtonSaveAsNew" inherits="OptionsButtonTemplate" text="AUTO_INVITE_SAVE_NEW">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="30" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>StaticPopup_Show("AUTOINVITE_ENTERDESCRIPTION"); </OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonImportCSV" inherits="OptionsButtonTemplate" text="AUTO_INVITE_IMPORT_CSV">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonSaveAsNew" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="30" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>autoInvite:loadCSV(); </OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+	</Frame>
+
+
+	<Frame name="autoInviteLoadCSVFrame" frameStrata="HIGH" hidden="true" toplevel="true" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="620" y="450"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad></OnLoad>
+			<OnEvent></OnEvent>
+			<OnDragStart></OnDragStart>
+			<OnDragStop></OnDragStop>
+			<OnMouseUp></OnMouseUp>
+		</Scripts>
+
+		<!-- Draw the load-save window -->
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer>
+				<Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="160" y="32" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="9" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="AUTO_INVITE_TITLE_IMPORT_CSV">
+					<Size>
+						<AbsDimension x="140" y="0" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<EditBox name="$parentEditBoxProfileName" inherits="AutoInviteEditBoxTemplate">
+				<Size>
+					<AbsDimension x="100" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						autoInviteLoadCSVFrameEditBoxProfileNameLabel:SetText(AUTO_INVITE_ENTER_NAME_FOR_PROFILE);
+					</OnLoad>
+				</Scripts>
+			</EditBox>
+
+			<ScrollFrame name="$parentEditBoxCSVData" inherits="AutoInviteMultiLineEditboxTemplate">
+				<Size><AbsDimension x="550" y="300"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEditBoxProfileName" relativePoint="BOTTOMLEFT">
+						<Offset><AbsDimension x="0" y="-20"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						autoInviteLoadCSVFrameEditBoxCSVDataLabel:SetText(AUTO_INVITE_COPY_CSV_HERE);
+					</OnLoad>
+					<OnShow>
+						autoInviteLoadCSVFrameEditBoxCSVDataText:SetText("");
+					</OnShow>
+					<OnHide>
+					</OnHide>
+				</Scripts>
+			</ScrollFrame>
+
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="AUTO_INVITE_CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> autoInviteLoadCSVFrame:Hide(); </OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonImport" inherits="OptionsButtonTemplate" text="AUTO_INVITE_IMPORT">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						autoInvite:importCSVData();
+						autoInviteLoadCSVFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+</Ui>

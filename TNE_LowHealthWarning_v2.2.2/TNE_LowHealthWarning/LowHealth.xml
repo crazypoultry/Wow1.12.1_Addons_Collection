@@ -1,0 +1,49 @@
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+  <Script file="LowHealth.lua" />
+
+  <Frame name="LowHealthWarningFrame">
+    <Frames>     
+      <Frame name="LowHealthWarningFrameAlt" parent="WorldFrame" setAllPoints="true">
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentTexture1" file="Interface\AddOns\TNE_LowHealthWarning\Textures\lowhealth1.tga" alphaMode="ADD" />
+            <Texture name="$parentTexture2" file="Interface\AddOns\TNE_LowHealthWarning\Textures\lowhealth2.tga" alphaMode="ADD" />
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            getglobal(this:GetName().. "Texture1"):SetAlpha(0)
+            getglobal(this:GetName().. "Texture1"):SetVertexColor(1, 0.1, 0.1)
+            getglobal(this:GetName().. "Texture2"):SetAlpha(0)
+            getglobal(this:GetName().. "Texture2"):SetVertexColor(0.1, 0.1, 1)
+          </OnLoad>
+        </Scripts>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        -- initialize data
+        TNE_LowHealth_OnLoad()
+        -- register meta events
+        this:RegisterEvent("VARIABLES_LOADED")
+      </OnLoad>
+      <OnEvent>
+        -- handle health/mana events
+        if (event == "UNIT_HEALTH" or event == "UNIT_MANA") then
+          if (arg1 == "player") then
+            TNE_LowHealth_OnEvent(event)
+          end
+        elseif (event == "VARIABLES_LOADED" or this.running) then
+          TNE_LowHealth_ApplySettings()
+          this.running = true
+        end
+      </OnEvent>
+    </Scripts>
+  </Frame>
+
+
+
+</Ui>

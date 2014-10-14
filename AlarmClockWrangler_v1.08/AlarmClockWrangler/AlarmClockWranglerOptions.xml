@@ -1,0 +1,963 @@
+<!--
+	Alarm Clock Wrangler
+-->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="AlarmClockWranglerOptions.lua"/>
+	<CheckButton name="ACWOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				ACWOptionsCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="ACWOptionsToggleCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				ACWOptionsToggleCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Frame name="ACWOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="340" y="634"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="ACWOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="430" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="ACW_OPTIONS_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ACWOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="ACWOptionsFrameCheckButton1" inherits="ACWOptionsCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="19" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ACWOptionsFrameCheckButton2" inherits="ACWOptionsCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="19" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ACWOptionsFrameCheckButton3" inherits="ACWOptionsCheckButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="19" y="-125"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Frame name="ACWOptionsFrameTimeFormatDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="202" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWOptionsFrameTimeFormatDropDownText" inherits="GameFontNormalSmall" text="ACW_OPTIONS_TIMEFORMAT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="ACWOptionsFrameOffsetDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="202" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWOptionsFrameOffsetDropDownText" inherits="GameFontNormalSmall" text="ACW_OPTIONS_OFFSET">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+				<Frame name="ACWOptionsFrameOffsetMinuteDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="202" y="-126"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWOptionsFrameOffsetMinuteDropDownText" inherits="GameFontNormalSmall" text="ACW_OPTIONS_OFFSET_MIN">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="21" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="ACWAlarm1Frame" enableMouse="true">
+				<Size>
+					<AbsDimension x="310" y="110"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-160"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWAlarm1FrameText1" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM1ON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm1FrameText2" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM1TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-40"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm1FrameText3" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM1TIME">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm1FrameText4" inherits="GameFontNormalSmall" text=":">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="106" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="18"/>
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<CheckButton name="ACWOptionsAlarm1CheckButton" inherits="ACWOptionsCheckButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox historyLines="0" letters="100" name="ACWOptionsAlarm1EditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="295" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm1HourEditBox:HighlightText();ACWOptionsAlarm1HourEditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsAlarm1HourEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="80" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);
+							</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm1MinuteEditBox:HighlightText();ACWOptionsAlarm1MinuteEditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsAlarm1MinuteEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="110" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm2EditBox:HighlightText();ACWOptionsAlarm2EditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<CheckButton name="ACWOptionsAlarm1PMCheckButton" inherits="ACWOptionsToggleCheckButtonTemplate" hidden="true">
+						<Size>
+							<AbsDimension x="26" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="258" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ACWOptionsAlarm1AMCheckButton" inherits="ACWOptionsToggleCheckButtonTemplate" hidden="true">
+						<Size>
+							<AbsDimension x="26" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="213" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="ACWAlarm2Frame" enableMouse="true">
+				<Size>
+					<AbsDimension x="310" y="110"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-277"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWAlarm2FrameText1" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM2ON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm2FrameText2" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM2TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-40"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm2FrameText3" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM2TIME">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm2FrameText4" inherits="GameFontNormalSmall" text=":">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="106" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="18"/>
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<CheckButton name="ACWOptionsAlarm2CheckButton" inherits="ACWOptionsCheckButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox historyLines="0" letters="100" name="ACWOptionsAlarm2EditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="295" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm2HourEditBox:HighlightText();ACWOptionsAlarm2HourEditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsAlarm2HourEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="80" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm2MinuteEditBox:HighlightText();ACWOptionsAlarm2MinuteEditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsAlarm2MinuteEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="110" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm3EditBox:HighlightText();ACWOptionsAlarm3EditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<CheckButton name="ACWOptionsAlarm2PMCheckButton" inherits="ACWOptionsToggleCheckButtonTemplate" hidden="true">
+						<Size>
+							<AbsDimension x="26" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="258" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ACWOptionsAlarm2AMCheckButton" inherits="ACWOptionsToggleCheckButtonTemplate" hidden="true">
+						<Size>
+							<AbsDimension x="26" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="213" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="ACWAlarm3Frame" enableMouse="true">
+				<Size>
+					<AbsDimension x="310" y="110"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-394"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWAlarm3FrameText1" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM3ON">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm3FrameText2" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM3TEXT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-40"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm3FrameText3" inherits="GameFontNormalSmall" text="ACW_OPTIONS_ALARM3TIME">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWAlarm3FrameText4" inherits="GameFontNormalSmall" text=":">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="106" y="-83"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="18"/>
+					</EdgeSize>
+				</Backdrop>
+				<Frames>
+					<CheckButton name="ACWOptionsAlarm3CheckButton" inherits="ACWOptionsCheckButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox historyLines="0" letters="100" name="ACWOptionsAlarm3EditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="295" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm3HourEditBox:HighlightText()ACWOptionsAlarm3HourEditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsAlarm3HourEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="80" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm3MinuteEditBox:HighlightText();ACWOptionsAlarm3MinuteEditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsAlarm3MinuteEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="110" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+							<OnEditFocusLost>this:HighlightText(0,0);</OnEditFocusLost>
+							<OnTabPressed>ACWOptionsAlarm1EditBox:HighlightText();ACWOptionsAlarm1EditBox:SetFocus();</OnTabPressed>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+					<CheckButton name="ACWOptionsAlarm3PMCheckButton" inherits="ACWOptionsToggleCheckButtonTemplate" hidden="true">
+						<Size>
+							<AbsDimension x="26" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="258" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ACWOptionsAlarm3AMCheckButton" inherits="ACWOptionsToggleCheckButtonTemplate" hidden="true">
+						<Size>
+							<AbsDimension x="26" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="213" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame name="ACWMiscFrame" enableMouse="true">
+				<Size>
+					<AbsDimension x="310" y="84"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-511"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWMiscFrameText1" inherits="GameFontNormalSmall" text="Snooze Time:">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="9" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ACWMiscFrameText2" inherits="GameFontNormalSmall" text="minutes">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="112" y="-12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+            <FontString name="ACWMiscFrameText3" inherits="GameFontNormalSmall" text="Adjust X:">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="9" y="-36"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="ACWMiscFrameText4" inherits="GameFontNormalSmall" text="Adjust Y:">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="9" y="-60"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="18"/>
+					</EdgeSize>
+				</Backdrop>
+				<Scripts>
+					
+				</Scripts>
+				<Frames>
+					<EditBox historyLines="0" numeric="true" letters="2" name="ACWOptionsSnoozeMinuteEditBox" ignoreArrows="true">
+						<Size>
+							<AbsDimension x="28" y="26"/> 
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="83" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4"/>
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="18"/>
+							</EdgeSize>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>this:SetBackdropBorderColor(ACW_DLG_COLOR,ACW_DLG_COLOR,ACW_DLG_COLOR);</OnLoad>
+							<OnShow>this:ClearFocus();</OnShow>
+							<OnEnterPressed>this:ClearFocus();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnEditFocusGained>this:HighlightText();</OnEditFocusGained>
+						</Scripts>
+						<FontString bytes="256" inherits="ChatFontNormal"/>
+						<TextInsets>
+							<AbsInset left="6" right="6" top="0" bottom="0"/>
+						</TextInsets>
+					</EditBox>
+          <Slider name="ACWXSlider" minValue="-10" maxValue="10" valueStep="1" defaultValue="0" inherits="OptionsSliderTemplate">
+            <Size>
+              <AbsDimension x="200" y="20"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="88" y="-33"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnValueChanged>
+                ACW_Update_XScale();
+              </OnValueChanged>
+              <OnLoad>
+                getglobal(this:GetName().."High"):SetText(" ");
+                getglobal(this:GetName().."Low"):SetText(" ");
+              </OnLoad>
+            </Scripts>
+          </Slider>
+          <Slider name="ACWYSlider" minValue="-10" maxValue="10" valueStep="1" defaultValue="0" inherits="OptionsSliderTemplate">
+            <Size>
+              <AbsDimension x="200" y="20"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="88" y="-56"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnValueChanged>
+                ACW_Update_YScale();
+              </OnValueChanged>
+              <OnLoad>
+                getglobal(this:GetName().."High"):SetText(" ");
+                getglobal(this:GetName().."Low"):SetText(" ");
+              </OnLoad>
+            </Scripts>
+          </Slider>
+				</Frames>
+			</Frame>
+			<Button name="ACWOptionsFrameDefaults" inherits="OptionsButtonTemplate" text="DEFAULTS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ACWOptionsFrame_SetDefaults();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ACWOptionsFrameOkay" inherits="OptionsButtonTemplate" text="Okay">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						ACW_OnOK();
+					</OnClick>
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ACWOptionsFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				ACWOptionsFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				ACWOptionsFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

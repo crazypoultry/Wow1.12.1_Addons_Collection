@@ -1,0 +1,544 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<Script file="ImmersionRPSocialLocalizationEnglish.lua" />
+	<Script file="ImmersionRPSocialConstants.lua" />
+	<Script file="ImmersionRPSocialHandler.lua" />
+	<Script file="ImmersionRPSocialTooltipPlugin.lua" />
+	
+	<Button name="ImmersionRPScrollButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="250" y="31"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentButtonText" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentName" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentInfo" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName() .. "ButtonTextInfo"):SetWidth(this:GetWidth() - 20);
+				getglobal(this:GetName() .. "ButtonTextInfo"):SetHeight(8);
+			</OnLoad>
+			<OnClick>
+				ImmersionRPSocialHandler.ListMode.AssociatedEntryFrame:Hide(); -- Deselect and save information about previous character/guild
+				ImmersionRPSocialHandler.SelectedEntry = ImmersionRPSocialHandler.BufferTable[this:GetID() + FauxScrollFrame_GetOffset(ImmersionRPSocialScrollFrame)];
+				ImmersionRPSocialHandler.ListMode.AssociatedEntryFrame:Show();
+				ImmersionRPSocialHandler.UpdateScroll();
+				ImmersionRPSocialRemove:Enable();
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<ScrollFrame name="ImmersionRPSocialFrame" parent="ImmersionRPMainFrame" inherits="ImmersionRPPanelTemplate" toplevel="false" movable="false" hidden="True">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\AddOns\ImmersionRPSocial\Graphics\Nagrand1">
+					<Size>
+						<AbsDimension x="440" y="410" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" />				
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AddOns\ImmersionRPSocial\Graphics\Nagrand2">
+					<Size>
+						<AbsDimension x="128" y="410" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="440" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="ImmersionRPSocialTitle" inherits="NumberFontNormalHuge" font="Fonts\skurri.ttf" text="IRP_STRING_SOCIAL">
+						<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="-5" />
+									</Offset>
+								</Anchor>
+						</Anchors>
+						<FontHeight>
+								<AbsValue val="25" />
+						</FontHeight>
+						<Color r="1" g="0.82" b="0" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ImmersionRPSocialPlayersTab" inherits="ImmersionRPTabTemplate" text="IRP_STRING_SOCIAL_PLAYERS">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ImmersionRPSocialHandler.ListMode.AssociatedEntryFrame:Hide();
+						ImmersionRPSocialHandler.SetActiveTable(ImmersionRPSocialPlayers);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ImmersionRPSocialGuildsTab" inherits="ImmersionRPTabTemplate" text="IRP_STRING_SOCIAL_GUILDS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialPlayersTab" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ImmersionRPSocialHandler.ListMode.AssociatedEntryFrame:Hide();
+						ImmersionRPSocialHandler.SetActiveTable(ImmersionRPSocialGuilds);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="ImmersionRPSocialListFrame">
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="11" right="12" top="12" bottom="11"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="32"/>
+					</EdgeSize>
+				</Backdrop>
+				<Size>
+					<AbsDimension x="280" y="360" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialPlayersTab" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-4" y="2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentButtonBackground">
+							<Size>
+								<AbsDimension x="0" y="30" />
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="12" y="12" />
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-12" y="-12" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="ImmersionRPSocialScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="" y="-13" />
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentButtonBackground" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-23" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(31, ImmersionRPSocialHandler.UpdateScroll); 
+							</OnVerticalScroll>
+							<OnShow>
+								if (ImmersionRPSocialHandler.BufferTable == nil) then ImmersionRPSocialHandler.SetActiveTable(ImmersionRPSocialPlayers); end
+							</OnShow>
+						</Scripts>
+					</ScrollFrame>
+					<Button name="ImmersionRPSocialAdd" inherits="OptionsButtonTemplate" text="IRP_STRING_SOCIAL_ADD">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="16" y="16" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if (ImmersionRPSocialHandler.ListMode == ImmersionRPSocialPlayers) then
+									StaticPopup_Show("IRP_SOCIAL_ADDPLAYER");
+								elseif (ImmersionRPSocialHandler.ListMode == ImmersionRPSocialGuilds) then
+									StaticPopup_Show("IRP_SOCIAL_ADDGUILD");
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ImmersionRPSocialRemove" inherits="OptionsButtonTemplate" text="IRP_STRING_SOCIAL_REMOVE">
+						<Size>
+							<AbsDimension x="70" y="20" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-16" y="16" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if (ImmersionRPSocialHandler.SelectedEntry ~= nil) then
+									ImmersionRPSocialHandler.ListMode:RemoveEntry(ImmersionRPSocialHandler.SelectedEntry);
+									ImmersionRPSocialHandler.ListMode.AssociatedEntryFrame:Hide(); -- Deselect player/guild.
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ImmersionRPFriendButton1" inherits="ImmersionRPScrollButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-12" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton2" inherits="ImmersionRPScrollButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton1" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton3" inherits="ImmersionRPScrollButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton2" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton4" inherits="ImmersionRPScrollButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton3" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton5" inherits="ImmersionRPScrollButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton4" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton6" inherits="ImmersionRPScrollButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton5" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton7" inherits="ImmersionRPScrollButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton6" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton8" inherits="ImmersionRPScrollButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton7" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+					<Button name="ImmersionRPFriendButton9" inherits="ImmersionRPScrollButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPFriendButton8" relativePoint="BOTTOMLEFT" />
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="ImmersionRPSocialPlayerEntry" hidden="true">
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5" /> 
+					</BackgroundInsets>
+				</Backdrop>
+				<Size>
+					<AbsDimension x="250" y="300" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialListFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="15" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ImmersionRPSocialAlternateFirstNameLabel" inherits="GameFontNormal" text="IRP_STRING_SOCIAL_ALTERNATEPREFIX">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-30"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ImmersionRPSocialAlternateLastNameLabel" inherits="GameFontNormal" text="IRP_STRING_SOCIAL_ALTERNATESUFFIX">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-75"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ImmersionRPSocialAlternateTitleLabel" inherits="GameFontNormal" text="IRP_STRING_SOCIAL_ALTERNATETITLE">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-120"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ImmersionRPSocialStatusLabelPlayer" inherits="GameFontNormal" text="IRP_STRING_SOCIAL_STATUS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-170"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="ImmersionRPSocialInfoNote" inherits="GameFontNormal" justifyH="LEFT" text="IRP_STRING_SOCIAL_ALTERNATEINFONOTE">
+							<Size>
+								<AbsDimension x="220" y="70" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-220"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" />
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():Hide();
+								ImmersionRPSocialHandler.UpdateScroll();
+							</OnClick>
+						</Scripts>
+					</Button>
+					
+					<EditBox name="ImmersionRPSocialAlternateFirstName" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Color r="1" g="1" b="1" a="0.25" />
+								</Texture>
+							</Layer>
+						</Layers>
+						<Size>
+							<AbsDimension x="220" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialAlternateFirstNameLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<FontString inherits="ChatFontNormal" />
+					</EditBox>
+					
+					<EditBox name="ImmersionRPSocialAlternateLastName" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Color r="1" g="1" b="1" a="0.25" />
+								</Texture>
+							</Layer>
+						</Layers>
+						<Size>
+							<AbsDimension x="220" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialAlternateLastNameLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<FontString inherits="ChatFontNormal" />
+					</EditBox>
+					
+					<EditBox name="ImmersionRPSocialAlternateTitle" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture>
+									<Color r="1" g="1" b="1" a="0.25" />
+								</Texture>
+							</Layer>
+						</Layers>
+						<Size>
+							<AbsDimension x="220" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialAlternateTitleLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<FontString inherits="ChatFontNormal" />
+					</EditBox>
+					
+					<Button name="ImmersionRPSocialPlayerStatus" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialStatusLabelPlayer" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0.1, 0.1, 0.2, 0.5);
+					</OnLoad>
+					<OnShow>
+						ImmersionRPSocialHandler.LoadPlayerInformation();
+					</OnShow>
+					<OnHide>
+						if (ImmersionRPSocialPlayers[ImmersionRPSocialHandler.SelectedEntry] ~= nil) then
+							ImmersionRPSocialHandler.SavePlayerInformation();
+						end
+						ImmersionRPSocialHandler.SelectedEntry = nil;
+						ImmersionRPSocialRemove:Disable();
+						this:Hide();
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<Frame name="ImmersionRPSocialGuildEntry" hidden="true">
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5" /> 
+					</BackgroundInsets>
+				</Backdrop>
+				<Size>
+					<AbsDimension x="250" y="100" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialListFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="15" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="ImmersionRPSocialStatusLabelGuild" inherits="GameFontNormal" text="IRP_STRING_SOCIAL_STATUS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-30"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" />
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():Hide();
+								ImmersionRPSocialHandler.UpdateScroll();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ImmersionRPSocialGuildStatus" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSocialStatusLabelGuild" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0.1, 0.1, 0.2, 0.5);
+					</OnLoad>
+					<OnShow>
+						ImmersionRPSocialHandler.LoadGuildInformation();
+					</OnShow>
+					<OnHide>
+						if (ImmersionRPSocialGuilds[ImmersionRPSocialHandler.SelectedEntry] ~= nil) then
+							ImmersionRPSocialHandler.SaveGuildInformation();
+						end
+						ImmersionRPSocialHandler.SelectedEntry = nil;
+						ImmersionRPSocialRemove:Disable();
+						this:Hide();
+					</OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ImmersionRPSocialHandler.OnLoad();
+			</OnLoad>
+			<OnEvent>
+				if (event == "ADDON_LOADED" and arg1 == "ImmersionRPSocial") then ImmersionRPSocialHandler.InitialiseMetatables(); end
+			</OnEvent>
+		</Scripts>
+	</ScrollFrame>
+</Ui>

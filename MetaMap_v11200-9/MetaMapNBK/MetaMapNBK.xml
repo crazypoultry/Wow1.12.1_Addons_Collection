@@ -1,0 +1,434 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+	<Script file="MetaMapNBK.loc"/>
+	<Script file="MetaMapNBK.lua"/>
+	
+	<Frame name="NBK_NoteBookFrame" inherits="MetaMap_OptionsFrameTemplate">
+		<Size><AbsDimension	x="500"	y="300"/></Size>
+		<Frames>
+			<Frame name="$parentLeft" inherits="MetaMap_OptionsFrameTemplate" hidden="false" movable="false">
+				<Size><AbsDimension x="150" y="100"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="0" y="0"/></Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="0" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name="NBK_ListFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size><AbsDimension x="100" y="1"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset><AbsDimension x="-32" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="NBK_ScrollFrame">
+								<Size><AbsDimension	x="200"	y="300" /></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset><AbsDimension x="10" y="0"/></Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+						</ScrollChild>
+						<Scripts>
+							<OnLoad>
+								this:SetScale(0.75);
+							</OnLoad>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnMouseDown>
+					</OnMouseDown>
+					<OnMouseUp>
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			<Frame>
+				<Size><AbsDimension	x="326"	y="22" /></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset><AbsDimension x="-22" y="-10"/></Offset>
+					</Anchor>
+				</Anchors> 
+				<Backdrop	edgeFile="Interface\Tooltips\UI-Tooltip-Border"	tile="true">
+					<EdgeSize><AbsValue	val="12"/></EdgeSize>
+				</Backdrop>
+				<Frames>
+					<EditBox name="NBK_NoteTitle" autofocus="false" toplevel="true" id="0">
+						<Size><AbsDimension	x="320"	y="22" /></Size>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset><AbsDimension x="5" y="0"/></Offset>
+							</Anchor>
+						</Anchors> 
+						<Scripts>
+							<OnEscapePressed>
+								this:ClearFocus();
+							</OnEscapePressed>
+							<OnEnterPressed>
+								this:ClearFocus();
+							</OnEnterPressed>
+						</Scripts>
+						<FontString inherits="QuestFont">
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Frame>
+				<Size><AbsDimension	x="436"	y="300" /></Size>
+				<Backdrop	edgeFile="Interface\Tooltips\UI-Tooltip-Border"	tile="true">
+					<EdgeSize><AbsValue	val="14"/></EdgeSize>
+				</Backdrop>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset><AbsDimension x="-28" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name="$parentNoteFrame" inherits="UIPanelScrollFrameTemplate" toplevel="true">
+						<Size><AbsDimension	x="420"	y="280" /></Size>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset><AbsDimension x="-5" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<EditBox name="NBK_NoteBody" multiLine="true" autofocus="false">
+								<Size><AbsDimension	x="418"	y="150" /></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset><AbsDimension x="10" y="0"/></Offset>
+									</Anchor>
+								</Anchors> 
+								<Scripts>
+									<OnEscapePressed>
+										this:ClearFocus();
+									</OnEscapePressed>
+									<OnTextChanged>
+										this:GetParent():UpdateScrollChildRect();
+									</OnTextChanged>
+								</Scripts>
+								<FontString inherits="QuestFont">
+									<Color r="0" g="0.85" b="0.85"/>
+								</FontString>
+							</EditBox>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetScale(0.75);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentOptions" toplevel="true" inherits="UIPanelButtonTemplate2" text="METAMAP_OPTIONS_BUTTON">
+				<Size><AbsDimension	x="80" y="20"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-50" y="20"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetScale(0.75);
+					</OnLoad>
+					<OnClick>
+						MetaMap_ToggleFrame(NBK_OptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeleteNote" toplevel="true" inherits="UIPanelButtonTemplate2" text="METAMAPNOTES_DELETE_NOTE">
+				<Size><AbsDimension	x="80" y="20"/></Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentOptions" relativePoint="LEFT">
+						<Offset><AbsDimension x="-20" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetScale(0.75);
+					</OnLoad>
+					<OnClick>
+						NBK_NoteDelete();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentSaveNote" toplevel="true" inherits="UIPanelButtonTemplate2" text="METAMAPNOTES_SAVE_NOTE">
+				<Size><AbsDimension	x="80" y="20"/></Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentDeleteNote" relativePoint="LEFT">
+						<Offset><AbsDimension x="-20" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetScale(0.75);
+					</OnLoad>
+					<OnClick>
+						NBK_NoteSave();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentNewNote" toplevel="true" inherits="UIPanelButtonTemplate2" text="METAMAP_NEWNOTE">
+				<Size><AbsDimension	x="80" y="20"/></Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentSaveNote" relativePoint="LEFT">
+						<Offset><AbsDimension x="-20" y="0"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetScale(0.75);
+					</OnLoad>
+					<OnClick>
+						NBK_NoteTitle:SetID(0);
+						NBK_NoteTitle:SetText("");
+						NBK_NoteBody:SetText("");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Size><AbsDimension	x="26" y="26"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="-1" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				NBK_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				NBK_OnEvent(event);
+			</OnEvent>
+			<OnHide>
+				NBK_OptionsFrame:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<Frame name="NBK_OptionsFrame" inherits="MetaMap_OptionsFrameTemplate" parent="UIParent">
+		<Frames>
+			<CheckButton name="NBK_Check_Tooltips" inherits="MetaMap_CheckButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT">
+						<Offset><AbsDimension	x="15"	y="-35" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_TOOLTIPS_TEXT);
+					</OnLoad>
+					<OnShow>
+						this:SetChecked(NBK_Options[this.option]);
+					</OnShow>
+					<OnClick>
+						NBK_ToggleOptions(this.option);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NBK_Check_ShowGuild" inherits="MetaMap_CheckButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_Tooltips">
+						<Offset><AbsDimension	x="0"	y="-30" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_GUILD_TEXT);
+					</OnLoad>
+					<OnShow>
+						this:SetChecked(NBK_Options[this.option]);
+					</OnShow>
+					<OnClick>
+						NBK_ToggleOptions(this.option);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NBK_Check_PlaySound1" inherits="MetaMap_CheckButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_ShowGuild">
+						<Offset><AbsDimension	x="0"	y="-30" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_SOUND1_TEXT);
+					</OnLoad>
+					<OnShow>
+						this:SetChecked(NBK_Options[this.option]);
+					</OnShow>
+					<OnClick>
+						NBK_ToggleOptions(this.option);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NBK_Check_PlaySound2" inherits="MetaMap_CheckButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_PlaySound1">
+						<Offset><AbsDimension	x="0"	y="-30" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_SOUND2_TEXT);
+					</OnLoad>
+					<OnShow>
+						this:SetChecked(NBK_Options[this.option]);
+					</OnShow>
+					<OnClick>
+						NBK_ToggleOptions(this.option);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider	name="NBK_Slider_FrameScale"	inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension	x="120"	y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor	point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension	x="15"	y="40"	/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Slider_", "");
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0.5, 1.5);
+						this:SetValueStep(0.01);
+					</OnLoad>
+					<OnShow>
+						this:SetValue(NBK_Options[this.option]);
+						getglobal(this:GetName().."Text"):SetText(NBK_SCALE_TEXT.." |cff00ff00"..MetaMap_round(this:GetValue(), 2));
+					</OnShow>
+					<OnValueChanged>
+						getglobal(this:GetName().."Text"):SetText(NBK_SCALE_TEXT.." |cff00ff00"..MetaMap_round(this:GetValue(), 2));
+						NBK_ToggleOptions(this.option, this:GetValue());
+						NBK_NoteBookFrame:SetScale(this:GetValue());
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<CheckButton name="NBK_Check_ListColor" inherits="MetaMap_ColourButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_Tooltips">
+						<Offset><AbsDimension	x="250"	y="0" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_LISTCOLOR_TEXT);
+					</OnLoad>
+					<OnShow>
+						local R, G, B = unpack(NBK_Options[this.option]);
+						getglobal(this:GetName().."BG"):SetTexture(R, G, B);
+						this.color = NBK_Options[this.option];
+						this.func = NBK_SetTextColor;
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NBK_Check_HeadColor" inherits="MetaMap_ColourButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_ListColor">
+						<Offset><AbsDimension	x="0"	y="-30" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_HEADCOLOR_TEXT);
+					</OnLoad>
+					<OnShow>
+						local R, G, B = unpack(NBK_Options[this.option]);
+						getglobal(this:GetName().."BG"):SetTexture(R, G, B);
+						this.color = NBK_Options[this.option];
+						this.func = NBK_SetTextColor;
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NBK_Check_TextColor" inherits="MetaMap_ColourButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_HeadColor">
+						<Offset><AbsDimension	x="0"	y="-30" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_TEXTCOLOR_TEXT);
+					</OnLoad>
+					<OnShow>
+						local R, G, B = unpack(NBK_Options[this.option]);
+						getglobal(this:GetName().."BG"):SetTexture(R, G, B);
+						this.color = NBK_Options[this.option];
+						this.func = NBK_SetTextColor;
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NBK_Check_TtipColor" inherits="MetaMap_ColourButtonTemplate">
+				<Anchors>
+					<Anchor	point="TOPLEFT" relativeTo="NBK_Check_TextColor">
+						<Offset><AbsDimension	x="0"	y="-30" /></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.option = string.gsub(this:GetName(), "NBK_Check_", "");
+						getglobal(this:GetName().."Text"):SetText(NBK_TTIPCOLOR_TEXT);
+					</OnLoad>
+					<OnShow>
+						local R, G, B = unpack(NBK_Options[this.option]);
+						getglobal(this:GetName().."BG"):SetTexture(R, G, B);
+						this.color = NBK_Options[this.option];
+						this.func = NBK_SetTextColor;
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Text"):SetText("MetaMapNBK");
+				getglobal(this:GetName().."Text"):SetTextHeight(14);
+			</OnLoad>
+			<OnShow>
+			</OnShow>
+			<OnHide>
+			</OnHide>
+		</Scripts>		
+	</Frame>
+
+	<Frame name="NBK_Tooltip1" parent="GameTooltip" hidden="false">
+		<Scripts>
+			<OnShow>
+				NBK_OnShow(1);
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+	<Frame name="NBK_Tooltip2" parent="WorldMapTooltip" hidden="false">
+		<Scripts>
+			<OnShow>
+				NBK_OnShow(2);
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

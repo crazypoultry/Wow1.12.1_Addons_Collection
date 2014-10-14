@@ -1,0 +1,699 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="PanzaPBM.lua"/>
+	<Frame name="PanzaPBMFrame" inherits="PanzaTemplateFrame">
+		<Size>
+			<AbsDimension x="400" y="510"/>
+		</Size>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+
+				<FontString name="txtPanzaPBMNPCount" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PanzaPBMFrame">
+							<Offset>
+								<AbsDimension x="260" y="-90"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPBMNearRestart" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="txtPanzaPBMNPCount">
+							<Offset>
+								<AbsDimension x="0" y="-35"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPBMRebless" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="txtPanzaPBMNearRestart">
+							<Offset>
+								<AbsDimension x="0" y="-35"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPBMNotBlessed" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="txtPanzaPBMRebless">
+							<Offset>
+								<AbsDimension x="0" y="-35"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPBMGreater" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="txtPanzaPBMNotBlessed">
+							<Offset>
+								<AbsDimension x="0" y="-35"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<CheckButton name="cbxPanzaEnableNPC" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PanzaPBMFrame">
+						<Offset>
+							<AbsDimension x="24" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_NPC);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("enableNPC")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="SliderPanzaPBMNPC" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaEnableNPC">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_NPCS);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("1");
+						SliderPanzaPBMNPC:SetMinMaxValues(1,100);
+						SliderPanzaPBMNPC:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.NPCount = SliderPanzaPBMNPC:GetValue();
+						PA:PBM_UpdateNPCS();
+						PA:PBM_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaPBMNearRestart" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPBMNPC">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_NEAR_RESTART);
+						getglobal(this:GetName().."High"):SetText("300");
+						getglobal(this:GetName().."Low"):SetText("1");
+						SliderPanzaPBMNearRestart:SetMinMaxValues(1,300);
+						SliderPanzaPBMNearRestart:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.NearRestart = SliderPanzaPBMNearRestart:GetValue();
+						PA:PBM_UpdateNearRestart();
+						PA:PBM_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaPBMRebless" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPBMNearRestart">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_REBLESS);
+						getglobal(this:GetName().."High"):SetText("300");
+						getglobal(this:GetName().."Low"):SetText("1");
+						this:SetMinMaxValues(1,300);
+						this:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.Rebless = this:GetValue();
+						PA:PBM_UpdateRebless();
+						PA:PBM_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaPBMNotBlessed" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPBMRebless">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_NOTBLESSED);
+						getglobal(this:GetName().."High"):SetText("40");
+						getglobal(this:GetName().."Low"):SetText("0");
+						this:SetMinMaxValues(0,40);
+						this:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.NotBlessedCount = this:GetValue();
+						PA:PBM_UpdateNotBlessed();
+						PA:PBM_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+
+			<CheckButton name="cbxPanzaEnableCycle" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPBMNotBlessed">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_CYCLE);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("enablecycle");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaEnableWarn" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaEnableCycle">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_WARN);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("warn");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaBEWSParty" inherits="SendMailRadioButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaEnableWarn">
+						<Offset>
+							<AbsDimension x="25" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_GBPARTY);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.BEWS.party = not PASettings.Switches.BEWS.party;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaBEWSRaid" inherits="SendMailRadioButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaBEWSParty">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_GBRAID);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.BEWS.raid = not PASettings.Switches.BEWS.raid;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+
+			<CheckButton name="cbxPanzaBEWSAll" inherits="SendMailRadioButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaBEWSRaid">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_BEWS_ALL);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.BEWS.all = not PASettings.Switches.BEWS.all;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaBEWSGreater" inherits="SendMailRadioButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaBEWSAll">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_BEWS_GREATER);
+					</OnLoad>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.GreaterBlessings.Warn = not PASettings.Switches.GreaterBlessings.Warn;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaBEWSSounds" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaBEWSParty">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_BEWS_SOUNDS);
+					</OnLoad>
+					<OnEnter>
+							PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.BEWS.sounds = not PASettings.Switches.BEWS.sounds;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaBowOnLowMana" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaEnableWarn">
+						<Offset>
+							<AbsDimension x="0" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_BOWLOWMANA);
+					</OnLoad>
+					<OnEnter>
+							PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("enablebowonlowmana");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPVPUseBG" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaBowOnLowMana">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_PVPUSEBG);
+					</OnLoad>
+					<OnEnter>
+							PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("enablebgonpvp");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaShowProgress" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPVPUseBG">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_CBX_BLESSINGPROGRESS);
+					</OnLoad>
+					<OnEnter>
+							PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.ShowBlessingProgress.enabled = not PASettings.Switches.ShowBlessingProgress.enabled;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaIgnoreParty" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaShowProgress">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_PARTYINRAID);
+					</OnLoad>
+					<OnClick>
+				 		Panza_SlashHandler("dcbignoreparty")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPets" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaIgnoreParty">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_PETS);
+					</OnLoad>
+					<OnClick>
+				 		Panza_SlashHandler("dcbpets")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaBoSaf" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPets">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PBM_BOSAF);
+					</OnLoad>
+					<OnClick>
+						PASettings.Switches.BoSafOnPVP = not PASettings.Switches.BoSafOnPVP;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+
+			<Button name="btnPanzaPBMDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PanzaPBMFrame">
+						<Offset>
+							<AbsDimension x="10" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PA:PBM_btnDone_OnClick()
+						if (PanzaTreeFrame:IsVisible()) then
+							PanzaTreeFrame:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPBMGroup" inherits="OptionsButtonTemplate" text="Group">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="btnPanzaPBMDone">
+						<Offset>
+							<AbsDimension x="45" y="25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:FrameToggle(PanzaPBMGroupFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPBMDCB" inherits="OptionsButtonTemplate" text="(DCB)">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="btnPanzaPBMDone">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:FrameToggle(PanzaDCBFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPBMIndi" inherits="OptionsButtonTemplate" text="Indi">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="btnPanzaPBMDCB">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:FrameToggle(PanzaPBMIndiFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPBMDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="btnPanzaPBMIndi">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PBM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:PBM_Defaults();
+						PA:PBM_SetValues();
+						if (PanzaSTAFrame:IsVisible()) then
+							PA:STA_SetValues();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PA:PBM_OnLoad();
+				getglobal(this:GetName().."Title"):SetText(PANZA_PBM_TITLE);
+			</OnLoad>
+			<OnShow>
+				this:SetBackdropColor(0, 0, 0);
+				PA:PBM_OnShow();
+			</OnShow>
+			<OnHide>
+				PA:PBM_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

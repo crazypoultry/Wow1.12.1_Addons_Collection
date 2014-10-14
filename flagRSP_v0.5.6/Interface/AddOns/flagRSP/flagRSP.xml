@@ -1,0 +1,369 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+  
+  <Script file="localization.lua"/>
+  <Script file="localization.de.lua"/>
+  <Script file="localization.fr.lua"/>
+  <Script file="tooltipHandler.lua"/>
+  <Script file="tooltipModifier.lua"/>
+  <Script file="settings.lua"/>
+  <Script file="flagHandler.lua"/>
+  <Script file="chatHandler.lua"/>
+  <Script file="InfoBox.lua"/>
+  <Script file="UList.lua"/>
+  <Script file="flagRSP.lua"/>
+
+  <Frame name="flagRSPMain">
+    <Scripts>
+      <OnLoad>
+	xTooltip_OnLoad();
+      </OnLoad>
+      
+      <OnEvent>
+	xTooltip_OnEvent(event);
+      </OnEvent>
+      
+      <OnUpdate>
+	xTooltip_OnUpdate();
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+	    
+  <GameTooltip name="FlagRSPTooltip" hidden="true" frameStrata="DIALOG" parent="UIParent" inherits="GameTooltipTemplate" movable="true" enableMouse="true">
+    <Scripts>
+      <OnMouseUp>
+      </OnMouseUp>
+      <OnMouseDown>
+	FlagRSP.showOwnTooltip();
+      </OnMouseDown>
+      <OnHide>
+      </OnHide>
+    </Scripts>
+  </GameTooltip>
+    
+  <CheckButton name="FlagRSPCheckButton" virtual="true">
+    <Layers>
+      <Layer level="ARTWORK">
+	<FontString name="$parentText" inherits="GameFontHighlightSmall" text="...">
+	  <Anchors>
+	    <Anchor point="LEFT" relativePoint="RIGHT">
+	      <Offset>
+		<AbsDimension x="0" y="1"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+      </Layer>
+    </Layers>
+    <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+    <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+    <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+    <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+    <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+    <Scripts>
+      <OnClick>
+	local test = getglobal(this:GetName() .. "_OnClick");
+	test();
+      </OnClick>
+    </Scripts>
+  </CheckButton>
+
+  <CheckButton name="FlagRSPInfoBoxButton" parent="UIParent" toplevel="true" hidden="true" movable="true">
+    <NormalTexture name="$parentNormalTexture" file="Interface\Addons\flagRSP\artwork\flagRSPInfoBoxButton_Up"/>
+    <HighlightTexture file="Interface\Addons\flagRSP\artwork\flagRSPInfoBoxButton_Glow" alphaMode="ADD"/>
+    <PushedTexture file="Interface\Addons\flagRSP\artwork\flagRSPInfoBoxButton_Down"/> -->
+    <CheckedTexture file="Interface\Addons\flagRSP\artwork\flagRSPInfoBoxButton_Down"/>
+    <!-- <DisabledCheckedTexture file="Interface\Addons\flagRSP\artwork\flagRSPInfoBoxButton_Glow" alphaMode="ADD"/> -->
+    <Size>
+      <AbsDimension x="24" y="24"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="TargetFrame">
+	<Offset>
+	  <AbsDimension x="12" y="32"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnClick>
+	--local test = getglobal(this:GetName() .. "_OnClick");
+	--test();
+        FlagRSPInfoBoxButton_OnClick("target");
+      </OnClick>
+      <OnMouseDown>
+	FlagRSPInfo.FrameOnMouseDown(arg1, this);
+      </OnMouseDown>
+      <OnMouseUp>
+	FlagRSPInfo.FrameOnMouseUp(arg1, this);
+      </OnMouseUp>
+    </Scripts>
+  </CheckButton>
+
+  <Frame name="FlagRSPInfoBox" inherits="FlagRSPInfoBoxTemplate" hidden="true" frameStrata="BACKGROUND" movable="true" parent="UIParent">
+    <Anchors>
+      <Anchor point="LEFT"><AbsDimension x="0" y="0"/></Anchor>
+    </Anchors>
+    <Scripts>
+      <OnMouseDown>
+	FlagRSPInfo.FrameOnMouseDown(arg1, this);
+      </OnMouseDown>
+      <OnMouseUp>
+	FlagRSPInfo.FrameOnMouseUp(arg1, this);
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+
+  <Frame name="FlagRSPMessageBox" hidden="true" virtual="true" frameStrata="DIALOG">
+    <Anchors>
+      <Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
+	<Offset>
+	  <AbsDimension x="0" y="-150"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop name="$parentBackdrop" bgFile="Interface\AddOns\flagRSP\BackDrop" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+	<AbsInset left="11" right="12" top="12" bottom="11"/>
+	<Size>
+	  <AbsDimension x="128" y="17" />
+	</Size>
+      </BackgroundInsets>
+      <TileSize>
+	<AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+	<AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    
+    <Layers>
+      <Layer level="ARTWORK">
+	<Texture name="$parentTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+	  <Size>
+	    <AbsDimension x="276" y="64" />
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOP">
+	      <Offset>
+		<AbsDimension x="0" y="12" relativeTo="$parent"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+	<FontString name="$parentTitleText" inherits="FlagRSPFont" text="Test...">
+	  <Anchors>
+	    <Anchor point="TOP" relativeTo="$parent">
+	      <Offset>
+		<AbsDimension x="0" y="-3" />
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText" inherits="FlagRSPFont" justifyH="LEFT" text="Test...">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent">
+	      <Offset>
+		<AbsDimension x="20" y="-40" />
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+      </Layer>
+    </Layers>
+    
+    <Frames>
+      <Button name="$parentAccept" inherits="flagRSPButtonTemplate" text="FRIENDLIST_LOCALE_EDITENTRY_FRAME_OK_BUTTON">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="0" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    local test = getglobal(this:GetName() .. "_OnClick");
+	    
+	    if test ~= nil then
+     	        test();
+	    else
+	        FlagRSP.printDebug("Calling " .. this:GetParent():GetName() .. ":Hide");
+	        --test = getglobal(this:GetParent():GetName() .. ":Hide");
+	        --test();
+                this:GetParent():Hide();
+	    end
+	    
+	  </OnClick>
+	</Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnShow>
+	
+      </OnShow>
+      <OnHide>
+	
+      </OnHide>
+    </Scripts>
+  </Frame> 
+  
+  <Frame name="FlagRSPNewVersionNotification" inherits="FlagRSPMessageBox" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+    <Frames>
+      <CheckButton name="$parentCheckButton" inherits="FlagRSPCheckButton">
+	<Size>
+	  <AbsDimension x="20" y="20"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="0" y="60" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </CheckButton>
+    </Frames>
+  </Frame>
+
+  <Frame name="FlagRSPDescWarnBox" inherits="FlagRSPMessageBox" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+  </Frame> 
+
+  <Frame name="FlagRSPWelcomeBox" inherits="FlagRSPMessageBox" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+  </Frame> 
+
+  <Frame name="FlagRSPDYKBox" inherits="FlagRSPMessageBox" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+    <Frames>
+      <CheckButton name="$parentCheckButton" inherits="FlagRSPCheckButton">
+	<Size>
+	  <AbsDimension x="20" y="20"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="0" y="60" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </CheckButton>
+      <Button name="$parentClose" inherits="flagRSPButtonTemplate" text="FlagRSP_Locale_CloseButton">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="-75" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    local test = getglobal(this:GetName() .. "_OnClick");
+	    
+	    if test ~= nil then
+     	        test();
+	    else
+	        FlagRSP.printDebug("Calling " .. this:GetParent():GetName() .. ":Hide");
+	        --test = getglobal(this:GetParent():GetName() .. ":Hide");
+	        --test();
+                this:GetParent():Hide();
+	    end
+	    
+	  </OnClick>
+	</Scripts>
+      </Button>
+      <Button name="$parentNextTip" inherits="flagRSPButtonTemplate" text="FlagRSP_Locale_NextTipButton">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="75" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    FlagRSP.showDYKBox(true);
+	    
+	  </OnClick>
+	</Scripts>
+      </Button>
+    </Frames>
+  </Frame>
+  
+  <Frame name="FlagRSPDescEditor" hidden="true" parent="UIParent" frameStrata="BACKGROUND" movable="true">
+    <Backdrop name="$parentBackdrop" bgFile="Interface\AddOns\flagRSP\BackDrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <EdgeSize>
+	<AbsValue val="16"/>
+      </EdgeSize>
+      <TileSize>
+	<AbsValue val="16"/>
+      </TileSize>
+      <BackgroundInsets>
+	<AbsInset left="5" right="5" top="5" bottom="5"/>
+      </BackgroundInsets>
+    </Backdrop>	
+    <Size><AbsDimension x="400" y="400"/></Size>
+    <Frames>
+      <Button name="$parentSave" inherits="UIPanelButtonTemplate" visible="true" text="Save">
+	<Size>
+	  <AbsDimension x="100" y="40"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="10" y="-10"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>FlagRSPInfo.saveEditDescription()</OnClick>
+	</Scripts>				
+      </Button>
+      <EditBox name="$parentEditBox" multiLine="true" letters="1600">
+	<Size>
+	  <AbsDimension x="380" y="330"/>
+	</Size>
+	<Scripts>
+	  <OnTextChanged></OnTextChanged>
+	  <OnCursorChanged></OnCursorChanged>
+	  <OnUpdate></OnUpdate>
+	  <OnEscapePressed>
+	    FlagRSPDescEditor:Hide();
+	    FlagRSPDescEditorEditBox:Hide();
+	  </OnEscapePressed>
+	</Scripts>
+	<FontString inherits="ChatFontNormal"/>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="10" y="-50"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </EditBox>        
+    </Frames>
+    <Scripts>
+      <OnMouseDown>
+      </OnMouseDown>
+      <OnMouseUp>
+      </OnMouseUp>
+    </Scripts>
+    <Anchors>
+      <Anchor point="TOPLEFT"><AbsDimension x="20" y="100"/></Anchor>
+    </Anchors>
+  </Frame>
+  
+
+</Ui>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-omittag:nil
+sgml-shorttag:nil
+sgml-namecase-general:nil
+sgml-general-insert-case:lower
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:t
+sgml-parent-document:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:("/etc/sgml/catalog" "/usr/share/xemacs21/xemacs-packages/etc/psgml-dtds/CATALOG")
+sgml-local-ecat-files:("ECAT" "~/sgml/ECAT" "/usr/share/sgml/ECAT" "/usr/local/share/sgml/ECAT" "/usr/local/lib/sgml/ECAT")
+End:
+-->

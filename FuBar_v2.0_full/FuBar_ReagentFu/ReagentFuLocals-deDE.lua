@@ -1,0 +1,78 @@
+local L = AceLibrary("AceLocale-2.2"):new("ReagentFu");
+
+L:RegisterTranslations("deDE", function() return {
+	["Keeps track of your reagents for buffing."] = "Behält einen Überblick über Ihre Reagenzien f\195\188r das wirken von Verstärkungszaubern.",
+	
+	["Show short names"] = "Zeigen kurze Namen",
+	["Show short reagent names in FuBar text"] = "Kurze Reagensnamen im FuBar Text zeigen",
+	["Reagents"] = "Reagenzien",
+	
+	-- reagents
+	--mage	
+	["Arcane Powder"] = "Arkanes Pulver",
+	["Arcane Powder.SHORT"] = "Pulver: ",
+	["Rune of Teleportation"] = "Rune der Teleportation",
+	["Rune of Teleportation.SHORT"] = "Teleport: ",
+	["Rune of Portals"] = "Rune der Portale",
+	["Rune of Portals.SHORT"] = "Portal: ",
+	["Light Feather"] = "Leichte Feder",
+	["Light Feather.SHORT"] = "Feder: ",
+	--priest
+	["Holy Candle"] = "Heilige Kerze",
+	["Holy Candle.SHORT"] = "Heilige: ",
+	["Sacred Candle"] = "Hochheilige Kerze",
+	["Sacred Candle.SHORT"] = "Hochheilige: ",
+	-- rogue
+	["Flash Powder"] = "Blitzstrahlpulver",
+	["Flash Powder.SHORT"] = "Blitz: ",
+	["Blinding Powder"] = "Blendungspulver",
+	["Blinding Powder.SHORT"] = "Blend: ",
+	["Thistle Tea"] = "Disteltee",
+	["Thistle Tea.SHORT"] = "Distel: ",
+	["Instant Poison"] = "Sofort wirkendes Gift",
+	["Deadly Poison"] = "T\195\182dliches Gift",
+	["Crippling Poison"] = "Verkr\195\188ppelndes Gift",
+	["Mind-numbing Poison"] = "Gedankenbenebelndes Gift",
+	["Wound Poison"] = "Wundgift",
+	["Poison: "] = "Gift: ",
+	--druid
+	["Wild Berries"] = "Wilde Beeren",
+	["Wild Berries.SHORT"] = "Beeren: ",
+	["Wild Thornroot"] = "Wilder Dornwurz",
+	["Wild Thornroot.SHORT"] = "Dornwurz: ",
+	["Maple Seed"] = "Ahornsamenkorn",
+	["Maple Seed.SHORT"] = "Ahornholz: ",
+	["Stranglethorn Seed"] = "Schlingendornsamenkorn",
+	["Stranglethorn Seed.SHORT"] = "Schlingendorn: ",
+	["Ashwood Seed"] = "Eschenholzsamenkorn",
+	["Ashwood Seed.SHORT"] = "Eschenholz: ",
+	["Hornbeam Seed"] = "Hainbuchensamenkorn",
+	["Hornbeam Seed.SHORT"] = "Hainbuchen: ",
+	["Ironwood Seed"] = "Eisenholzsamenkorn",
+	["Ironwood Seed.SHORT"] = "Eisenholz: ",
+	-- Paladin
+	["Symbol of Divinity"] = "Symbol der Offenbarung",
+	["Symbol of Divinity.SHORT"] = "Offenb.: ",
+	["Symbol of Kings"] = "Symbol der K\195\182nige",
+	["Symbol of Kings.SHORT"] = "K\195\182nige: ",
+	-- Shaman
+	["Ankh"] = "Ankh",
+	["Ankh.SHORT"] = "Ankh: ",
+	["Shiny Fish Scales"] = "Gl\195\164nzende Fischschuppen",
+	["Shiny Fish Scales.SHORT"] = "Schuppen: ",
+	["Fish Oil"] = "Fisch\195\182l",
+	["Fish Oil.SHORT"] = "\195\182l: ",
+	-- warlock
+	["Soul Shard"] = "Seelensplitter",
+	["Soul Shard.SHORT"] = "Splitter: ",
+	["Healthstone"] = "Gesundheitsstein",
+	["Healthstone.SHORT"] = "Gesundheitsstein: ",
+	["Soulstone"] = "Seelenstein",
+	["Soulstone.SHORT"] = "Seelen: ",
+	["Spellstone"] = "Zauberstein",
+	["Spellstone.SHORT"] = "Zauber: ",
+	["Firestone"] = "Feuerstein",
+	["Firestone.SHORT"] = "Feuer: ",
+	["Infernal Stone"] = "Infernal Stein",
+	["Infernal Stone.SHORT"] = "Infernal: ",
+} end)

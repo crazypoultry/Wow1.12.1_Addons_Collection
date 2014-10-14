@@ -1,0 +1,609 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+<Script file="ErrorRedirectOptions.lua" />
+
+<Button name="ErrorRedirectSmallButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="45" y="21"/>
+	</Size>
+</Button>
+
+
+<Frame name="ErrorRedirectOptionsEditFilterFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+	<Size>
+		<AbsDimension x="330" y="70"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Frames>
+		<Button name="$parentOkay" inherits="OptionsButtonTemplate" text="OKAY">
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					this.func(this:GetParent());
+					-- ErrorRedirectOptionsEditOkay_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="$parentCancel" inherits="OptionsButtonTemplate" text="CANCEL">
+			<Anchors>
+				<Anchor point="RIGHT" relativeTo="$parentOkay" relativePoint="LEFT">
+					<Offset>
+						<AbsDimension x="-10" y="0"/>	
+				</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					this.func(this:GetParent());
+					-- ErrorRedirectOptionsEditCancel_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<EditBox name="$parentText" inherits="InputBoxTemplate" letters="60" autoFocus="false">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="20" y="-10"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentOkay" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</EditBox>
+	</Frames>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString name="$parentMessage" inherits="GameFontNormal" hidden="true" text="Message!" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="290" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentTitle" inherits="GameFontNormal" text="ER_EH" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="105" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMessage" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			table.insert(UISpecialFrames, this:GetName());
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<Frame name="ErrorRedirectOptionsFilterContainerTemplate" parent="ErrorRedirectOptionsFilterParent" virtual="true">
+	<Size>
+		<AbsDimension x="330" y="70"/>
+	</Size>
+	<Backdrop bgFile="" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="5" right="6" top="6" bottom="5"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+	</Backdrop>
+	<Frames>
+		<CheckButton name="$parentActive" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormal" justifyH="LEFT" text="ERRORREDIRECT_ACTIVE">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnClick>
+					ErrorRedirectOptionsFilterActive_OnClick();
+				</OnClick>
+			</Scripts>
+		</CheckButton>
+
+		<Button name="$parentDelete" inherits="UIPanelButtonTemplate" text="Del">
+			<Size>
+				<AbsDimension x="40" y="21"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ErrorRedirectOptionsEdit_Confirm(ErrorRedirectOptionsFilterDelete_FuncSetup, ErrorRedirectOptionsFilterDelete_FuncOkay, ErrorRedirectOptionsFilterDelete_FuncCancel);
+					-- ErrorRedirectOptionsFilterDelete_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Button name="$parentChange" inherits="UIPanelButtonTemplate" text="Chg">
+			<Size>
+				<AbsDimension x="40" y="21"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentDelete" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ErrorRedirectOptionsEdit_Confirm(ErrorRedirectOptionsFilterLabel_FuncSetup, ErrorRedirectOptionsFilterLabel_FuncOkay, ErrorRedirectOptionsFilterLabel_FuncCancel);
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Frame name="$parentLabel">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="20" y="35"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativeTo="$parentChange" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="-5" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" text="DanceDanceDance" setAllPoints="true" />
+				</Layer>
+			</Layers>
+		</Frame>
+
+		<Frame name="$parentRedirectCombo" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="65" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsFilterRedirectCombo_OnLoad();
+				</OnLoad>
+			</Scripts>
+		</Frame>
+
+		<Frame name="$parentColorCombo" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="185" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsFilterColorCombo_OnLoad();
+				</OnLoad>
+			</Scripts>
+		</Frame>
+	</Frames>
+</Frame>
+
+<Frame name="ErrorRedirectOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+	<Size>
+		<AbsDimension x="380" y="520"/>
+		<!-- Original <AbsDimension x="380" y="190"/> -->
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER" />
+	</Anchors>
+	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Size>
+					<AbsDimension x="390" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+			<FontString name="$parentTitle" inherits="GameFontNormal" text="ERRORREDIRECT_NAME">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentHeader">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame name="$parentCombo" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="90" y="-35"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<FontString name="$parentCaption" inherits="GameFontNormal" text="ERRORREDIRECT_DEFAULT" justifyH="LEFT">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsFrameCombo_OnLoad();
+				</OnLoad>
+			</Scripts>
+		</Frame>
+
+		<CheckButton name="$parentHighlight" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="30" y="-65" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ErrorRedirectOptionsFrameHighlight_OnClick();
+				</OnClick>
+			</Scripts>
+		</CheckButton>
+
+		<CheckButton name="$parentSuppress" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentHighlight" relativePoint="BOTTOMLEFT" />
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ErrorRedirectOptionsFrameSuppress_OnClick();
+				</OnClick>
+			</Scripts>
+		</CheckButton>
+
+		<Frame name="$parentSuppressCombo" inherits="UIDropDownMenuTemplate" enableMouse="true">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentSuppress" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="150" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsSuppressCombo_OnLoad();
+				</OnLoad>
+			</Scripts>
+		</Frame>
+
+		<Button name="$parentOkay" inherits="OptionsButtonTemplate" text="Okay">
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-20" y="20"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ErrorRedirectOptionsFrameOkay_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Frame name="ErrorRedirectOptionsFilterParent">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="20" y="-140"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-20" y="50"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Backdrop bgFile="" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<BackgroundInsets>
+					<AbsInset left="5" right="6" top="6" bottom="5"/>
+				</BackgroundInsets>
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+			</Backdrop>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString name="ErrorRedirectOptionsHelp" inherits="GameFontNormal" hidden="true" text="ERRORREDIRECT_CHATHELP1" justifyH="LEFT" justifyV="TOP">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="52"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame name="$parentFilter1" inherits="ErrorRedirectOptionsFilterContainerTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Frame>
+
+				<Frame name="$parentFilter2" inherits="ErrorRedirectOptionsFilterContainerTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFilter1" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</Frame>
+
+				<Frame name="$parentFilter3" inherits="ErrorRedirectOptionsFilterContainerTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFilter2" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</Frame>
+
+				<Frame name="$parentFilter4" inherits="ErrorRedirectOptionsFilterContainerTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentFilter3" relativePoint="BOTTOMLEFT" />
+					</Anchors>
+				</Frame>
+
+				<Button name="$parentPrevButton" ID="1">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+								<Anchors>
+									<Anchor point="LEFT" relativePoint="RIGHT"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnLoad>
+							this:Disable();
+						</OnLoad>
+						<OnClick>
+							ErrorRedirectOptionsFilterButton_OnClick();
+						</OnClick>
+					</Scripts>
+					<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+					<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+					<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+
+				<Button name="$parentNextButton" ID="2">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+								<Anchors>
+									<Anchor point="RIGHT" relativePoint="LEFT"/>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnLoad>
+							this:Disable();
+						</OnLoad>
+						<OnClick>
+							ErrorRedirectOptionsFilterButton_OnClick();
+						</OnClick>
+					</Scripts>
+					<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+					<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+					<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+
+				<Button name="$parentAdd" inherits="OptionsButtonTemplate" text="Add">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentPrevButton" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="35" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ErrorRedirectOptionsEdit_Confirm(ErrorRedirectOptionsFilterAdd_FuncSetup, ErrorRedirectOptionsFilterAdd_FuncOkay, ErrorRedirectOptionsFilterAdd_FuncCancel);
+							-- ErrorRedirectOptionsFilterAdd_OnClick();
+						</OnClick>
+					</Scripts>
+				</Button>
+
+				<Button name="$parentReset" inherits="OptionsButtonTemplate" text="RESET">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentNextButton" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-35" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ErrorRedirectOptionsEdit_Confirm(ErrorRedirectOptionsFilterReset_FuncSetup, ErrorRedirectOptionsFilterReset_FuncOkay, ErrorRedirectOptionsFilterReset_FuncCancel);
+							-- ErrorRedirectOptionsFilterReset_OnClick();
+						</OnClick>
+					</Scripts>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnShow>
+					ErrorRedirectOptionsFilterParent_OnShow();
+				</OnShow>
+			</Scripts>
+		</Frame>
+
+		<Button name="$parentTab1" inherits="CharacterFrameTabButtonTemplate" ID="1" text="Fixed">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ErrorRedirectOptionsFilterParent" relativePoint="BOTTOMLEFT" />
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsTab_OnLoad();
+				</OnLoad>
+				<OnClick>
+					ErrorRedirectOptionsTab_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Button name="$parentTab2" inherits="CharacterFrameTabButtonTemplate" ID="2" text="Partial">
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="-8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsTab_OnLoad();
+				</OnLoad>
+				<OnClick>
+					ErrorRedirectOptionsTab_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+
+		<Button name="$parentTab3" inherits="CharacterFrameTabButtonTemplate" ID="3" text="HELP_LABEL">
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="-8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					ErrorRedirectOptionsTab_OnLoad();
+				</OnLoad>
+				<OnClick>
+					ErrorRedirectOptionsHelp_OnClick();
+				</OnClick>
+			</Scripts>
+		</Button>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			ErrorRedirectOptionsFrame_OnLoad();
+		</OnLoad>
+		<OnShow>
+			ErrorRedirectOptionsFrame_OnShow();
+		</OnShow>
+		<OnHide>
+			ErrorRedirectOptionsFrame_OnHide();
+		</OnHide>
+	</Scripts>
+</Frame>
+
+</Ui>

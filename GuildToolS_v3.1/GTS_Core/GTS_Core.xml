@@ -1,0 +1,764 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="localization.lua"/>
+<Script file="GTS_Core.lua"/>
+<Frame name="GTS_Core_Main">
+	<Scripts>
+		<OnLoad>
+ 			this:RegisterEvent("VARIABLES_LOADED"); 
+			this:RegisterEvent("BANKFRAME_OPENED"); 
+			this:RegisterEvent("BANKFRAME_CLOSED");
+			this:RegisterEvent("MAIL_SHOW"); 
+			this:RegisterEvent("MAIL_INBOX_UPDATE");
+			this:RegisterEvent("BAG_UPDATE");
+			this:RegisterEvent("MAIL_CLOSED");
+			this:RegisterEvent("GUILD_ROSTER_UPDATE");
+		</OnLoad>
+		<OnEvent>
+       			GTS_OnEvent(); 
+		</OnEvent>
+	</Scripts>
+</Frame>
+
+<Button name="GTS_TabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Scripts>
+		<OnClick>
+			GTS_TabHandler(this:GetID());
+			PanelTemplates_Tab_OnClick(GTS_Menu);
+			
+		</OnClick>
+	</Scripts>
+</Button>
+
+<!-- Menu frame -->
+<Frame name="GTS_Menu" hidden="true" parent="UIParent" movable="true" enableMouse="true">
+    <Size> 
+		<AbsDimension x="512" y="512"/> 
+    </Size> 
+    <Anchors> 
+		<Anchor point="CENTER" /> 
+    </Anchors> 
+	
+	<Frames>
+		<!-- Close button -->
+		<Button name="$parent_Close" inherits="UIPanelCloseButton">
+			<Anchors> 
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-42" y="-3"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+		</Button>
+		
+		<!-- Tab buttons -->
+		<Button name="$parentTab1" inherits="GTS_TabButtonTemplate" id="1">
+			<Anchors> 
+				<Anchor point="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="10" y="10"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			<Scripts>
+				<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+			</Scripts>
+		</Button>
+		<Button name="$parentTab2" inherits="GTS_TabButtonTemplate" id="2">
+			<Anchors> 
+				<Anchor point="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="60" y="10"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			<Scripts>
+				<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+			</Scripts>
+		</Button>
+		<Button name="$parentTab3" inherits="GTS_TabButtonTemplate" id="3">
+			<Anchors> 
+				<Anchor point="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="185" y="10"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			<Scripts>
+				<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+			</Scripts>
+		</Button>
+		
+		<!-- Apply button -->
+		<Button name="$parent_ButtonValidate" inherits="UIPanelButtonTemplate" text="Ok" id="100">
+			<Size> 
+				<AbsDimension x="70" y="24"/> 
+			</Size> 
+			<Anchors> 
+				<Anchor point="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="-48" y="20"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			<Scripts>
+				<OnClick>GTS_Menu:Hide();</OnClick>
+			</Scripts>
+		</Button>
+		
+		<!-- First tab window -->
+		<Frame name="$parent_Tab1" hidden="false">
+		    <Size> 
+				<AbsDimension x="455" y="425"/> 
+			</Size> 
+			<Anchors> 
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-45"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			
+			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+			</Backdrop>
+			
+			<Frames>
+			</Frames>
+			
+			
+			<Layers>
+				<Layer level="ARTWORK"> 
+					<Texture name="$parent_Pic" file="Interface\AddOns\GTS_Core\Img\GTS.tga">
+						<Anchors><Anchor point="CENTER"><Offset><AbsDimension x="0" y="90"/></Offset></Anchor></Anchors>
+						<Size><AbsDimension x="384" y="192"/></Size>
+						<TexCoords left="0" right="1" top="0" bottom="1"/>  
+					</Texture>
+				</Layer> 
+				<Layer level="ARTWORK">
+					<FontString name="$parent_Header" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+						</Scripts>
+						<Color r="1" g="1" b="0"/>
+					</FontString>
+					<FontString name="$parent_Sig" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+						</Scripts>
+						<Color r="0.8" g="0.8" b="0.8"/>
+					</FontString>
+					<FontString name="$parent_Text" inherits="GameFontNormalSmall" justifyH="LEFT" >
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-220"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+						</Scripts>
+						<Color r="1" g="0.85" b="0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+		<!-- Second tab window (Advanced) -->
+		<Frame name="$parent_Tab2" hidden="true">
+			<Size> 
+				<AbsDimension x="455" y="425"/> 
+			</Size> 
+			<Anchors> 
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-45"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			
+			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+			</Backdrop>
+			
+			<Frames>
+				<Frame name="GTS_Menu_BS_NL" hidden="false">
+					<Size> 
+						<AbsDimension x="455" y="135"/> 
+					</Size> 
+					<Anchors> 
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors> 
+					
+					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<TileSize>
+							<AbsValue val="16"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="16"/>
+						</EdgeSize>
+					</Backdrop>
+					<Frames>
+						<CheckButton name="$parent_loadBS" inherits="UICheckButtonTemplate">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Scripts>
+								<OnClick>
+									if (this:GetChecked()) then GTS_Options[GTS_Position].BSON = true; else GTS_Options[GTS_Position].BSON = false; end
+								</OnClick>
+								<OnLoad>
+									GTS_SetGUIName(this:GetName().."Text");
+								</OnLoad>
+							</Scripts>
+						</CheckButton>
+						<Button name="$parent_loadNow" inherits="UIPanelButtonTemplate">
+							<Size> 
+								<AbsDimension x="80" y="24"/> 
+							</Size> 
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="365" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors> 
+							<Scripts>
+								<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								<OnClick>GTS_LoadAddon("GTS_BankScan");</OnClick>
+							</Scripts>
+						</Button>
+					</Frames>
+					<Layers>
+						<Layer level="ARTWORK">
+							<!-- Header text -->
+							<FontString name="$parent_Header" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="180" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="1" b="0"/>
+							</FontString>
+							<FontString name="$parent_Loaded" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="0" b="0"/>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+				
+				<Frame name="GTS_Menu_IM_NL" hidden="false">
+					<Size> 
+						<AbsDimension x="455" y="135"/> 
+					</Size> 
+					<Anchors> 
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-152"/>
+							</Offset>
+						</Anchor>
+					</Anchors> 
+					
+					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<TileSize>
+							<AbsValue val="16"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="16"/>
+						</EdgeSize>
+					</Backdrop>
+					<Frames>
+						<CheckButton name="$parent_loadIM" inherits="UICheckButtonTemplate">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Scripts>
+								<OnClick>
+									if (this:GetChecked()) then GTS_Options[GTS_Position].IMON = true; else GTS_Options[GTS_Position].IMON = false; end
+								</OnClick>
+								<OnLoad>
+									GTS_SetGUIName(this:GetName().."Text");
+								</OnLoad>
+							</Scripts>
+						</CheckButton>
+						<Button name="$parent_loadNow" inherits="UIPanelButtonTemplate">
+							<Size> 
+								<AbsDimension x="80" y="24"/> 
+							</Size> 
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="365" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors> 
+							<Scripts>
+								<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								<OnClick>GTS_LoadAddon("GTS_IncomingMail");</OnClick>
+							</Scripts>
+						</Button>
+					</Frames>
+					<Layers>
+						<Layer level="ARTWORK">
+							<!-- Header text -->
+							<FontString name="$parent_Header" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="170" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="1" b="0"/>
+							</FontString>
+							<FontString name="$parent_Loaded" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="0" b="0"/>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame name="GTS_Menu_OM_NL" hidden="false">
+					<Size> 
+						<AbsDimension x="455" y="135"/> 
+					</Size> 
+					<Anchors> 
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-279"/>
+							</Offset>
+						</Anchor>
+					</Anchors> 
+					
+					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<TileSize>
+							<AbsValue val="16"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="16"/>
+						</EdgeSize>
+					</Backdrop>
+					<Frames>
+						<CheckButton name="$parent_loadOM" inherits="UICheckButtonTemplate">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Scripts>
+								<OnClick>
+									if (this:GetChecked()) then GTS_Options[GTS_Position].OMON = true; else GTS_Options[GTS_Position].OMON = false; end
+								</OnClick>
+								<OnLoad>
+									GTS_SetGUIName(this:GetName().."Text");
+								</OnLoad>
+							</Scripts>
+						</CheckButton>
+						<Button name="$parent_loadNow" inherits="UIPanelButtonTemplate">
+							<Size> 
+								<AbsDimension x="80" y="24"/> 
+							</Size> 
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="365" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors> 
+							<Scripts>
+								<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								<OnClick>GTS_LoadAddon("GTS_OutgoingMail");</OnClick>
+							</Scripts>
+						</Button>
+					</Frames>
+					<Layers>
+						<Layer level="ARTWORK">
+							<!-- Header text -->
+							<FontString name="$parent_Header" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="170" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="1" b="0"/>
+							</FontString>
+							<FontString name="$parent_Loaded" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="0" b="0"/>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+			</Frames>
+			
+			<Layers>
+				<Layer level="ARTWORK">
+					<!-- Headers -->
+					<FontString name="$parent_Header" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+						</Scripts>
+						<Color r="1" g="1" b="0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+		
+		<!-- Third tab window (Guild manegement) -->
+		<Frame name="$parent_Tab3" hidden="true">
+			<Size> 
+				<AbsDimension x="455" y="425"/> 
+			</Size> 
+			<Anchors> 
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-45"/>
+					</Offset>
+				</Anchor>
+			</Anchors> 
+			
+			<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+			</Backdrop>
+			
+			<Frames>
+				<Frame name="GTS_Menu_GRS_NL" hidden="false">
+					<Size> 
+						<AbsDimension x="455" y="135"/> 
+					</Size> 
+					<Anchors> 
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors> 
+					
+					<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+						<TileSize>
+							<AbsValue val="16"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val="16"/>
+						</EdgeSize>
+					</Backdrop>
+					<Frames>
+						<CheckButton name="$parent_loadGRS" inherits="UICheckButtonTemplate">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Scripts>
+								<OnClick>
+									if (this:GetChecked()) then GTS_Options[GTS_Position].GRSON = true; else GTS_Options[GTS_Position].GRSON = false; end
+								</OnClick>
+								<OnLoad>
+									GTS_SetGUIName(this:GetName().."Text");
+								</OnLoad>
+							</Scripts>
+						</CheckButton>
+						<Button name="$parent_loadNow" inherits="UIPanelButtonTemplate">
+							<Size> 
+								<AbsDimension x="80" y="24"/> 
+							</Size> 
+							<Anchors> 
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="365" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors> 
+							<Scripts>
+								<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								<OnClick>GTS_LoadAddon("GTS_GuildRosterScan");</OnClick>
+							</Scripts>
+						</Button>
+					</Frames>
+					<Layers>
+						<Layer level="ARTWORK">
+							<!-- Header text -->
+							<FontString name="$parent_Header" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="160" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="1" b="0"/>
+							</FontString>
+							<FontString name="$parent_Loaded" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+								</Scripts>
+								<Color r="1" g="0" b="0"/>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+				
+			</Frames>
+			
+			<Layers>
+				<Layer level="ARTWORK">
+					<!-- Headers -->
+					<FontString name="$parent_Header" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+						</Scripts>
+						<Color r="1" g="1" b="0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Frame>
+	</Frames>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
+				<Size>
+					<AbsDimension x="128" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Texture>
+			<Texture file="Interface\HelpFrame\HelpFrame-Top">
+				<Size>
+					<AbsDimension x="256" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="128" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+			<Texture file="Interface\HelpFrame\HelpFrame-TopRight">
+				<Size>
+					<AbsDimension x="128" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Texture>
+			<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+				<Size>
+					<AbsDimension x="128" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+			</Texture>
+			<Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+				<Size>
+					<AbsDimension x="256" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="128" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+			<Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+				<Size>
+					<AbsDimension x="128" y="256"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		
+		<Layer level="ARTWORK"> 
+			<!-- Header -->
+			<FontString name="$parent_Header" inherits="GameFontNormalLarge">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="160" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+				</Scripts>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+			<FontString name="$parent_Header2" inherits="GameFontNormal">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="180" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>GTS_SetGUIName(this:GetName());</OnLoad>
+				</Scripts>
+				<Color r="1" g="1" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	
+	<Scripts>
+		<OnLoad>
+			GTS_SetGUIName("GTS_Menu_Tab1_Header");
+			GTS_SetGUIName("GTS_Menu_Tab1_Sig");
+			GTS_SetGUIName("GTS_Menu_Tab1_Text");
+			GTS_SetGUIName("GTS_Menu_BS_NL_loadBSText");
+			GTS_SetGUIName("GTS_Menu_BS_NL_loadNow");
+			GTS_SetGUIName("GTS_Menu_BS_NL_Header");
+			GTS_SetGUIName("GTS_Menu_BS_NL_Loaded");
+			GTS_SetGUIName("GTS_Menu_IM_NL_loadIMText");
+			GTS_SetGUIName("GTS_Menu_IM_NL_loadNow");
+			GTS_SetGUIName("GTS_Menu_IM_NL_Header");
+			GTS_SetGUIName("GTS_Menu_IM_NL_Loaded");
+			GTS_SetGUIName("GTS_Menu_OM_NL_loadOMText");
+			GTS_SetGUIName("GTS_Menu_OM_NL_loadNow");
+			GTS_SetGUIName("GTS_Menu_OM_NL_Header");
+			GTS_SetGUIName("GTS_Menu_OM_NL_Loaded");
+			GTS_SetGUIName("GTS_Menu_Tab2_Header");
+			GTS_SetGUIName("GTS_Menu_GRS_NL_loadGRSText");
+			GTS_SetGUIName("GTS_Menu_GRS_NL_loadNow");
+			GTS_SetGUIName("GTS_Menu_GRS_NL_Header");
+			GTS_SetGUIName("GTS_Menu_GRS_NL_Loaded");
+			GTS_SetGUIName("GTS_Menu_Tab3_Header");
+			GTS_SetGUIName(this:GetName().."_Header");
+			GTS_SetGUIName(this:GetName().."_Header2");
+		</OnLoad>
+		<OnMouseDown> this:StartMoving();  </OnMouseDown>
+		<OnMouseUp>  this:StopMovingOrSizing(); </OnMouseUp>
+		<OnDragStop> this:StopMovingOrSizing(); </OnDragStop>
+	</Scripts> 
+</Frame>
+
+<GameTooltip name="GTS_ItemTooltip" frameStrata="LOW" parent="UIParent" inherits="GameTooltipTemplate"/>
+</Ui>

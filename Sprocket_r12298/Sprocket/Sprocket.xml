@@ -1,0 +1,714 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+	<Frame name="SprocketFrame" frameStrata="BACKGROUND" hidden="false">
+		<Scripts>
+			<OnUpdate>
+				Sprocket:OnUpdate( arg1 );
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Button name="SprocketBigButton" parent="UIParent" hidden="false" enableMouse="true" movable="true" resizable="true">
+		<Size>
+			<AbsDimension x="64" y="64"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Gear_01">
+					<Size>
+						<AbsDimension x="36" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>			
+			<Layer level="OVERLAY">
+				<Texture name="$parentOverlayTexture" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-TrackingBorder">
+				</Texture>
+			</Layer>			
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetMaxResize( 128, 128 )
+				this:SetMinResize( 16, 16 )
+			</OnLoad>
+			<OnSizeChanged>
+				this:SetHeight( this:GetWidth() )
+				getglobal( this:GetName().."IconTexture" ):SetWidth( this:GetWidth() * 0.5625 )
+				getglobal( this:GetName().."IconTexture" ):SetHeight( this:GetHeight() * 0.5625 )
+			</OnSizeChanged>
+			<OnMouseDown>
+				if ( IsShiftKeyDown() ) then
+					this:StartMoving()
+					this.isMoving = true
+				elseif( IsAltKeyDown() ) then
+					this:StartSizing( 'TOPLEFT' )
+					this.isMoving = true
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing()
+				this.isMoving = false
+			</OnMouseUp>
+		</Scripts>		
+	</Button>
+
+	<Frame name="SprocketDummyItemRingTemplate" frameStrata="HIGH" hidden="true" movable="false" virtual="true">
+		<Size>
+			<AbsDimension x="55" y="55"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Background">
+					<Size>
+						<AbsDimension x="172" y="172"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>			
+		</Layers>
+	</Frame>
+	
+	<Frame name="SprocketItemRing" frameStrata="HIGH" hidden="true" movable="false">
+		<Size>
+			<AbsDimension x="55" y="55"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Background">
+					<Size>
+						<AbsDimension x="172" y="172"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>			
+		</Layers>
+	</Frame>
+	
+	<Frame name="SprocketCenterButton" frameStrata="HIGH" hidden="true" movable="false">
+		<Size>
+			<AbsDimension x="55" y="55"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Rune_06">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>			
+			<Layer level="OVERLAY">
+				<Texture name="$parentOverlay" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Border">
+				</Texture>
+			</Layer>			
+		</Layers>
+	</Frame>
+	
+	<Frame name="SprocketItemButtonTemplate" frameStrata="HIGH" hidden="true" movable="false" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Rune_06">
+							<Size>
+								<AbsDimension x="22" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Model name="$parentCooldown" inherits="CooldownFrameTemplate" scale="0.5" setAllPoints="true" hidden="true">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						this:SetPosition( 0.006, 0.006, 0 )
+					</OnLoad>
+				</Scripts>
+			</Model>
+			<Frame setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentOverlayTexture" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Border">
+							<Size>
+								<AbsDimension x="40" y="40"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentText" inherits="NumberFontNormal" text="">
+							<Anchors>
+								<Anchor point="CENTER">
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentHighlight" setAllPoints="true" enableMouse="false">
+				<Layers>
+					<Layer level="HIGHLIGHT">
+						<Texture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+							<Size>
+								<AbsDimension x="30" y="30"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel( 6 )
+			</OnLoad>
+			<OnUpdate>
+				SprocketItemButton_OnUpdate()
+			</OnUpdate>
+			<OnEvent>
+				SprocketItemButton_OnEvent( this )
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<Button name="SprocketOverlayTemplate" hidden="false" enableMouse="true" toplevel="true" virtual="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Addons\Sprocket\UI\UI-Overlay-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0, 0.75, 0, 1.0);
+				this:SetBackdropColor(0.15, 0.15, 0.15, 0);
+				Sprocket:Overlay_OnLoad( arg1 );
+			</OnLoad>
+			<OnMouseUp>
+				Sprocket:Overlay_OnMouseUp( arg1 );
+			</OnMouseUp>
+			<OnMouseDown>
+				Sprocket:Overlay_OnMouseDown( arg1 );
+			</OnMouseDown>
+			<OnClick>
+				Sprocket:Overlay_OnClick( arg1 )
+			</OnClick>
+			<OnEnter>
+				this.hasFocus = true
+				Sprocket:Overlay_OnEnter()
+			</OnEnter>
+			<OnLeave>
+				this.hasFocus = false
+				this.doUpdate = true
+				Sprocket:Overlay_OnLeave()
+			</OnLeave>
+			<OnUpdate>
+				if ( Sprocket:IsMarking() ) then
+					return
+				end
+				if ( this.hasFocus ) then
+					if ( IsShiftKeyDown() or IsAltKeyDown() or IsControlKeyDown() ) then
+						if ( this:IsMouseEnabled() ) then
+							this:EnableMouse( false )
+						end
+					else
+						if ( not this:IsMouseEnabled() ) then
+							this:EnableMouse( true )
+						end
+					end
+				elseif ( this.doUpdate ) then
+					if ( IsShiftKeyDown() or IsAltKeyDown() or IsControlKeyDown() ) then
+						return
+					end
+					if ( not this:IsMouseEnabled() ) then
+						this:EnableMouse( true )
+					end
+					this.doUpdate = false
+				end
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Frame name="SprocketButtonTemplate" hidden="false" enableMouse="false" movable="true" virtual="true">
+		<Size>
+			<AbsDimension x="58" y="58"/>
+		</Size>
+		<Frames>
+			<Button name="$parentButton" enableMouse="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentNormalTexture" file="Interface\AddOns\Sprocket\UI\ButtonBG">
+							<Size>
+								<RelDimension x="1" y="1"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						Sprocket:Button_OnLoad( arg1 );
+					</OnLoad>
+					<OnMouseUp>
+						Sprocket:Button_OnMouseUp( arg1 );
+					</OnMouseUp>
+					<OnMouseDown>
+						Sprocket:Button_OnMouseDown( arg1 );
+					</OnMouseDown>
+					<OnClick>
+						Sprocket:Button_OnClick( arg1 );
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnDragStop>
+				Sprocket:ButtonParent_OnDragStop( arg1 );
+			</OnDragStop>
+			<OnDragStart>
+				Sprocket:ButtonParent_OnDragStart( arg1 );
+			</OnDragStart>
+			<OnMouseUp>
+				Sprocket:ButtonParent_OnMouseUp( arg1 );
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+	
+	<Button name="SprocketMinimapButton" parent="Minimap" movable="false">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks( "LeftButtonUp", "RightButtonUp" )
+				this:SetFrameLevel(5);
+			</OnLoad>
+			<OnClick>
+				GameTooltip:Hide()
+				Sprocket:MinimapButton_OnClick( arg1 )
+			</OnClick>
+			<OnEnter>
+				Sprocket:MinimapButton_SetTooltip()
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Icons\INV_Misc_Gear_01">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="6" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size>
+						<AbsDimension x="45" y="45"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="6" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+				
+	<Frame name="SprocketMarkingFrame" frameStrata="FULLSCREEN_DIALOG" hidden="true" parent="UIParent" setallpoints="true" enableMouse="false" toplevel="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Addons\Sprocket\UI\UI-Marking-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0.1, 0.3, 1.0, 0.33);
+				this:SetBackdropColor(0.15, 0.15, 0.15, 0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Button name="SprocketItemButton1" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="1">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" text="Title">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton2" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="2">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" text="Title">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton3" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="3">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="CENTER" text="Title">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton4" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="4">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="Title">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton5" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="5">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="Title">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton6" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="6">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="Title">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton7" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="7">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="CENTER" text="Title">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SprocketItemButton8" inherits="SprocketItemButtonTemplate" parent="SprocketFrame" id="8">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" text="Title">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentNamePlate" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateBG">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$parentName"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateLeft" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentNamePlate"/>
+					</Anchors>					
+				</Texture>
+				<Texture name="$parentNamePlateRight" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-PlateLeft">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNamePlate"/>
+					</Anchors>
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="MarkingLines" hidden="false" toplevel="true" frameStrata="HIGH">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MarkingLine1" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+				<Texture name="MarkingLine2" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+				<Texture name="MarkingLine3" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+				<Texture name="MarkingLine4" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+				<Texture name="MarkingLine5" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+				<Texture name="MarkingLine6" file="Interface\TaxiFrame\UI-Taxi-Line" hidden="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Model name="ExecAnim" file="Interface\ItemAnimations\ForcedBackpackItem.mdx" scale="1.0" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Model>
+	<Model name="ExecEffect" file="Spells\ArcaneExplosion_Base.mdx" scale="0.25" hidden="false"/>
+	
+</Ui>
+

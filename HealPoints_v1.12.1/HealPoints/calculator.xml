@@ -1,0 +1,695 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+  
+  <!-- Template for variable player stats -->
+  <Frame name="HealPointsVariablesTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="390" y="22"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="147" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT"/>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentOriginalStat" inherits="GameFontHighlight" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-210" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentPlus" inherits="GameFontHighlight" text="+">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-190" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentEqual" inherits="GameFontHighlight" text="=">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-70" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentNewStat" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="50" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-20" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentDecrementButton">
+        <Size>
+          <AbsDimension x="23" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentPlus" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            local inputBox = getglobal(strsub(this:GetName(), 1, -16).."InputBox");
+            inputBox:SetNumber(inputBox:GetNumber() - 1);
+            inputBox:ClearFocus();
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+      </Button>
+      <Button name="$parentIncrementButton">
+        <Size>
+          <AbsDimension x="23" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentDecrementButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="43" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            local inputBox = getglobal(strsub(this:GetName(), 1, -16).."InputBox");
+            inputBox:SetNumber(inputBox:GetNumber() + 1);
+            inputBox:ClearFocus();
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+      </Button>
+      <EditBox name="$parentInputBox" letters="6" autoFocus="false" inherits="InputBoxTemplate">
+        <Size>
+          <AbsDimension x="50" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentDecrementButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="4" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetText("0");
+          </OnLoad>
+          <OnEnterPressed>
+            this:ClearFocus();
+          </OnEnterPressed>
+          <OnTextChanged>
+            if (this:GetNumber() &gt; 0) then
+              this:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+            elseif (this:GetNumber() &lt; 0) then
+              this:SetTextColor(RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+            else
+              this:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+            end
+            HealPointsCalculatorUI:inputBoxChanged();
+          </OnTextChanged>
+        </Scripts>
+      </EditBox>
+    </Frames>
+  </Frame>
+
+  <!-- Template for HealPoints spell healing statistics -->
+  <Frame name="HealPointsSpellTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="390" y="22"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="150" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT"/>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentShort" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="95" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-220" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentLong" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="95" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-120" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentHOT" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="95" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-20" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+    </Frames>
+  </Frame>
+
+  <!-- Template for HealPoints spell selector -->
+  <Frame name="HealPointsSpellSelectorTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="390" y="22"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="50" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT"/>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="$parentShort" inherits="UIDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="RIGHT">
+            <Offset>
+              <AbsDimension x="-200" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            UIDropDownMenu_SetWidth(80,this);
+            UIDropDownMenu_JustifyText("LEFT",this);
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <Frame name="$parentLong" inherits="UIDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="RIGHT">
+            <Offset>
+              <AbsDimension x="-100" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            UIDropDownMenu_SetWidth(80,this);
+            UIDropDownMenu_JustifyText("LEFT",this);
+          </OnLoad>
+        </Scripts>
+      </Frame>
+      <Frame name="$parentHOT" inherits="UIDropDownMenuTemplate">
+        <Anchors>
+          <Anchor point="RIGHT"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            UIDropDownMenu_SetWidth(80,this);
+            UIDropDownMenu_JustifyText("LEFT",this);
+          </OnLoad>
+        </Scripts>
+      </Frame>
+    </Frames>
+  </Frame>
+
+  <!-- Template for HealPoints calculated results -->
+  <Frame name="HealPointsResultsTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="390" y="22"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormal" text="Stat" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="156" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT"/>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentCurrent" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-160" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentPlus" inherits="GameFontHighlight" text="+">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-140" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentDifference" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="50" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT" relativeTo="$parentPlus" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="50" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentEqual" inherits="GameFontHighlight" text="=">
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-70" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentResult" inherits="GameFontHighlight" text="N/A" justifyH="RIGHT">
+          <Size>
+            <AbsDimension x="50" y="22"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT">
+              <Offset>
+                <AbsDimension x="-20" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+  </Frame>
+
+  <!-- Main calculator  -->
+  <Frame name="HealPoints_CalcFrame" parent="UIParent" enableMouse="true" movable="true" frameStrata="DIALOG" hidden="true" toplevel="true">
+    <Size>
+      <AbsDimension x="430" y="502"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+        <Size>
+          <AbsDimension x="128" y="17"/>
+        </Size>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="420" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="12"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString inherits="GameFontNormal" text="HealPoints Calculator 1.12.1">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="HealPoints_CalcFrame">
+              <Offset>
+                <AbsDimension x="0" y="-3"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="HealPoints_CalcFrameBoLText" inherits="GameFontNormal" text="Blessing of Light">
+          <Anchors>
+            <Anchor point="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="146" y="24"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="HealPointsResultFrame" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="390" y="100"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="20" y="-30"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropColor(0,0,0)
+          </OnLoad>
+        </Scripts>
+        <Frames>
+          <Frame name="HealPointsResult1" inherits="HealPointsResultsTemplate" id="1">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnEnter>
+                HealPointsCalculatorUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Frame>
+          <Frame name="HealPointsResult2" inherits="HealPointsResultsTemplate" id="2">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsResult1" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+            <Scripts>
+              <OnEnter>
+                HealPointsCalculatorUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Frame>
+          <Frame name="HealPointsResult4" inherits="HealPointsResultsTemplate" id="4">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsResult2" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Button name="$parentConfig" inherits="OptionsButtonTemplate" text="Configure">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsResult4" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnClick>
+                if (HealPoints_ConfigFrame:IsVisible()) then
+                  HealPoints_ConfigFrame:Hide();
+                else
+                  HealPoints_ConfigFrame:Show();
+                end
+              </OnClick>
+            </Scripts>
+          </Button>
+        </Frames>
+      </Frame>
+      <Frame name="HealPointsSpellFrame" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="390" y="147"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="HealPointsResultFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropColor(0,0,0)
+          </OnLoad>
+        </Scripts>
+        <Frames>
+          <!-- Spells -->
+          <Frame name="HealPointsSpell" inherits="HealPointsSpellSelectorTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y= "-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsSpell1" inherits="HealPointsSpellTemplate" id="5">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsSpell" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y= "3"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsSpell2" inherits="HealPointsSpellTemplate" id="6">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsSpell1" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsSpell3" inherits="HealPointsSpellTemplate" id="7">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsSpell2" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsSpell4" inherits="HealPointsSpellTemplate" id="8">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsSpell3" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+            <Scripts>
+              <OnEnter>
+                HealPointsCalculatorUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Frame>
+          <Frame name="HealPointsSpell5" inherits="HealPointsSpellTemplate" id="9">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsSpell4" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+            <Scripts>
+              <OnEnter>
+                HealPointsCalculatorUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="HealPointsVariableFrame" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="390" y="186"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="HealPointsSpellFrame" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropColor(0,0,0)
+          </OnLoad>
+        </Scripts>
+        <Frames>
+          <Frame name="HealPointsVariables1" inherits="HealPointsVariablesTemplate" id="10">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsVariables2" inherits="HealPointsVariablesTemplate" id="11">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables1" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsVariables3" inherits="HealPointsVariablesTemplate" id="12">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables2" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsVariables4" inherits="HealPointsVariablesTemplate" id="13">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables3" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+            <Scripts>
+              <OnEnter>
+                HealPointsCalculatorUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Frame>
+          <Frame name="HealPointsVariables5" inherits="HealPointsVariablesTemplate" id="14">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables4" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+            <Scripts>
+              <OnEnter>
+                HealPointsCalculatorUI:setTooltip();
+              </OnEnter>
+              <OnLeave>
+                GameTooltip:Hide();
+              </OnLeave>
+            </Scripts>
+          </Frame>
+          <Frame name="HealPointsVariables6" inherits="HealPointsVariablesTemplate" id="15">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables5" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsVariables7" inherits="HealPointsVariablesTemplate" id="16">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables6" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+          <Frame name="HealPointsVariables8" inherits="HealPointsVariablesTemplate" id="17">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="HealPointsVariables7" relativePoint="BOTTOMLEFT"/>
+            </Anchors>
+          </Frame>
+        </Frames>
+      </Frame>
+      <!-- Reset Button -->
+      <Button name="$parentReset" inherits="OptionsButtonTemplate" text="Reset">
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="20" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            for i = 1, 8, 1 do
+              local frame = getglobal("HealPointsVariables"..i);
+              local inputBox = getglobal("HealPointsVariables"..i.."InputBox");
+              inputBox:SetText("0");
+              inputBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+            end
+          </OnClick>
+        </Scripts>
+      </Button>
+      <!-- BoL checkBox-->
+      <CheckButton name="$parentBoL" inherits="OptionsCheckButtonTemplate" text="Blessing of Light">
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentReset" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="5" y="-1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HealPointsCalculatorUI:bolChanged();
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+      <!-- Close Button -->
+      <Button name="$parentClose" inherits="OptionsButtonTemplate" text="Close">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-20" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            HideUIPanel(this:GetParent());
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        tinsert(UISpecialFrames, "HealPoints_CalcFrame"); 
+        UIPanelWindows["HealPoints_CalcFrame"] = nil;
+        local _, className = UnitClass("player");
+        if (className == "PALADIN") then
+          getglobal("HealPoints_CalcFrameBoL"):SetChecked(1);
+        else
+          getglobal("HealPoints_CalcFrameBoL"):Hide();
+          getglobal("HealPoints_CalcFrameBoLText"):Hide();
+        end
+        getglobal("HealPointsSpell1Label"):SetText("HP/s:");
+        getglobal("HealPointsSpell2Label"):SetText("HP/mana:");
+        getglobal("HealPointsSpell3Label"):SetText("HP/cast:");
+        getglobal("HealPointsSpell4Label"):SetText("Tot HP (-r):");
+        getglobal("HealPointsSpell5Label"):SetText("Tot HP (+r):");
+      </OnLoad>
+      <OnShow>
+        HealPointsCalculatorUI:show();
+      </OnShow>
+      <OnMouseDown>
+        if (arg1=="LeftButton") then
+          this:StartMoving();
+        end
+      </OnMouseDown>
+      <OnMouseUp>
+        if (arg1=="LeftButton") then
+          this:StopMovingOrSizing();
+        end
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+</Ui>

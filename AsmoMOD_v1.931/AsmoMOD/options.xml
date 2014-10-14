@@ -1,0 +1,3177 @@
+<!-- AsmoMOD -->
+<!-- Options Pane Definition -->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+	<Script file="AsmoMOD.lua"/>
+	<Script file="options.lua"/>
+
+	<Frame name="AsmoMOD_SetsFrame" parent="Minimap" frameStrata="MEDIUM" enableMouse="true" hidden="false">
+		<Frames>
+			<Button name="AsmoMOD_Button" movable="true">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "AsmoMOD Options";
+						this:SetFrameLevel(5);
+   						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+   						this:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnClick>
+						AsmoMOD_ToggleDropDown()
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						GameTooltip:SetText(this.tooltip);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseUp>
+						AsmoMODOptionsButton_OnDragStop();
+					</OnMouseUp>
+					<OnDragStart>
+						AsmoMODOptionsButton_OnDragStart();
+					</OnDragStart>
+					<OnDragStop>
+						AsmoMODOptionsButton_OnDragStop();
+					</OnDragStop>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\AddOns\AsmoMOD\Images\am"/>
+					</Layer>
+				</Layers>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+	
+	<CheckButton name="AsmoMODCheckTemplate" hidden="false" virtual="true">
+		<Anchors>
+			<Anchor point="LEFT">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="32" y="32" />
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentCheckbuttonBackground" setAllPoints="true">
+					<Color r="0" g="0" b="1" a="0.0" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD" />
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+		<CheckedDisabledTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<DisabledTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+	</CheckButton>
+	
+	<Slider name="AsmoMODSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="LEFT">
+				<Offset>
+					<AbsDimension x="20" y="-140" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="100" y="17"/>
+		</Size>
+		<Scripts>
+			<OnValueChanged>
+				AsmoMOD_OptionsSliderOnValueChanged();
+			</OnValueChanged>
+		</Scripts>
+	</Slider >	
+	
+	<Frame name="AsmoMODDividerTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="200" y="19" />
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\HelpFrame\HelpFrameDivider">
+					<Size>
+						<AbsDimension x="134" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.3125" />
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\HelpFrame\HelpFrameDivider">
+					<Size>
+						<AbsDimension x="55" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.3125" bottom="0.625" />
+				</Texture>
+				<Texture name="$parentRight" file="Interface\HelpFrame\HelpFrameDivider">
+					<Size>
+						<AbsDimension x="101" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT" />
+					</Anchors>
+					<TexCoords left="0" right="0.25390625" top="0.625" bottom="0.9375" />
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="AsmoMODOptions" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="360" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AsmoMODFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="430" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="AsmoMOD v1.931 Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODOptions">
+							<Offset>
+								<AbsDimension x="-15" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>	
+
+		<Frames>
+			<CheckButton name="mapenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="220" y="170" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_MinimapToggle();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+						GameTooltip:SetText("Toggle the minimap button by clicking here");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="AsmoMODOptionsShowGeneral" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="25" y="130" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="250" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("General Options");
+					</OnLoad>
+					<OnClick>
+						AsmoMODGeneralOps:Show();
+						this:GetParent():Hide();
+					</OnClick>
+					<OnEnter>
+						AsmoMODExplainText:AddMessage("\n BG Auto Release, Auto Repair, Auto Herb/Mine, Auto Overpower, Auto Riposte, Auto Execute, Auto NSHeal \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODOptionsShowBreak" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="25" y="90" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="250" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Auto-Break Options");
+					</OnLoad>
+					<OnClick>
+						AsmoMODBreakOps:Show();
+						this:GetParent():Hide();
+					</OnClick>
+					<OnEnter>
+						AsmoMODExplainText:AddMessage("\n Enable/Disable each effect that auto break acts upon by clicking here \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODOptionsShowAccept" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="25" y="50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="250" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Auto-Accept Options");
+					</OnLoad>
+					<OnClick>
+						AsmoMODAcceptOps:Show();
+						this:GetParent():Hide();
+					</OnClick>
+					<OnEnter>
+						AsmoMODExplainText:AddMessage("\n Enable/Disable auto accept of groups/summons/ressurects/BG queues as well as set their delay timers, if applicable \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODOptionsShowConserve" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="25" y="10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="250" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Auto-Conserve Options");
+					</OnLoad>
+					<OnClick>
+						AsmoMODConserveOps:Show();
+						this:GetParent():Hide();
+					</OnClick>
+					<OnEnter>
+						AsmoMODExplainText:AddMessage("\n Enable/Disable mana conservation as well as mana conservation options \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODOptionsShowSwift" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="25" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="250" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Auto-Swiftmend Options");
+					</OnLoad>
+					<OnClick>
+						AsmoMODSwiftOps:Show();
+						this:GetParent():Hide();
+					</OnClick>
+					<OnEnter>
+						AsmoMODExplainText:AddMessage("\n Enable/Disable swiftmend targets and auto swiftmend options \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+	
+			<Frame name="AsmoMODOptionsDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-240" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<ScrollingMessageFrame name="AsmoMODExplainText" ignoreArrows="true" maxLines="4" historyLines="0" fade="true"
+				displayDuration="3" fadeDuration="3" letters="256" hidden="false">
+				<Size>
+					<AbsDimension x="295" y="55" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="65" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AsmoMODTextBack" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.0" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AsmoMODTextBack" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="13" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal"></FontString>
+			</ScrollingMessageFrame>
+			
+			<Frame name="AsmoMODSubDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="AsmoMODOptionsSave" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM" relitiveTo="AsmoMODOptions">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Exit");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="AsmoMODBreakOps" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="450" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AsmoMODBreakFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="265" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Auto-Break Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODBreakOps">
+							<Offset>
+								<AbsDimension x="0" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<CheckButton name="trinketenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="185" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Break">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_trinkettoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Dsiables auto-break totally \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="fearenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="155" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Break Fear">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_feartoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables auto break out of fear effects (Fear, Psychic Scream, etc.)\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="stunenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="125" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Break Stun">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_stuntoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables auto break out of stun effects (Cheapshot, Bash, etc.)\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="charmenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="95" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Break Charm">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_charmtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables auto break out of charm effects (Mind Control, Seduction, etc.)\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="polymorphenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="65" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Break Polymorph">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_polymorphtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables auto break out of polymorph effects \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="entangleenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Break Immobilization">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_entangletoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables auto break out of immobilization effects (Root, Frost Nova, etc.)\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="impairenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Break Impairment">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_impairtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables auto break out of impairment effects (Crippling Poison, Hamstring, etc.) \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="escapeenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Use Escape Artist">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_escapetoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables use of Escape Artist to break out of impair effects \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="zerkenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-55" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Use Berserker Rage">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_berserktoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables use of Berserker Rage to break out of fear effects/gouge \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="wotfenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-85" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Use Wotf">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_wotftoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables use of Wotf to break out of fear/charm/sleep effects \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="stoneenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-115" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Use Stoneform">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_stonetoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODBreakOpsExplainText:AddMessage("\n Enables or Disables use of Stoneform to break out of crippling poison \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODBreakOpsExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+	
+			<Frame name="AsmoMODBreakOpsDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-350" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<ScrollingMessageFrame name="AsmoMODBreakOpsExplainText" ignoreArrows="true" maxLines="4" historyLines="0" fade="true"
+				displayDuration="3" fadeDuration="3" letters="256" hidden="false">
+				<Size>
+					<AbsDimension x="280" y="55" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="65" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AsmoMODBreakOpsTextBack" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.0" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AsmoMODBreakOpsTextBack" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="50" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal"></FontString>
+			</ScrollingMessageFrame>
+			
+			<Frame name="AsmoMODBreakOpsSubDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="AsmoMODBreakOpsExit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" relitiveTo="AsmoMODBreakOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Exit");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODBreakOpsBack" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" relitiveTo="AsmoMODBreakOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Back");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+						AsmoMODOptions:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="AsmoMODAcceptOps" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="380" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AsmoMODAcceptFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="285" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Auto-Accept Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODAcceptOps">
+							<Offset>
+								<AbsDimension x="0" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+
+		<Frames>
+			<CheckButton name="RessEnabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="150" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Ressurect">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_RezToggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Enables or Disables automatic acceptance of ressurects \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="restimer" inherits="AsmoMODSliderTemplate">
+\				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="125" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="restext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 110);
+						this:SetValueStep(5);
+						getglobal(this:GetName().."High"):SetText("110");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_RestimeChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Sets the time (In seconds) the mod will wait before automatically accepting a ressurect (0 for instant accept) \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			
+			<CheckButton name="SummonEnabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="90" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Summon">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_SummonToggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Enables or Disables automatic acceptance of summons \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="summontimer" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="65" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="summontext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 110);
+						this:SetValueStep(5);
+						getglobal(this:GetName().."High"):SetText("110");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_SummontimeChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Sets the time (In seconds) the mod will wait before automatically accepting a summon (0 for instant accept) \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="bgjoinenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="BG Auto Join">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_bgjointoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Enables or Disables automatically joining BGs \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="bgtimer" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="bgtext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 110);
+						this:SetValueStep(5);
+						getglobal(this:GetName().."High"):SetText("110");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_BGtimeChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Sets the time (In seconds) the mod will wait before automatically joining a battleground (0 for instant accept) \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="groupenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Group">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_grouptoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n Enables or Dsiables automatic acceptance of group invites \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="friendguildenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Friend/Guildmate Only">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_friendguildtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODAcceptExplainText:AddMessage("\n If enabled Auto Group will only accept invite requests from friends or guildmates \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODAcceptExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+	
+			<Frame name="AsmoMODAcceptDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-255" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<ScrollingMessageFrame name="AsmoMODAcceptExplainText" ignoreArrows="true" maxLines="4" historyLines="0" fade="true"
+				displayDuration="3" fadeDuration="3" letters="256" hidden="false">
+				<Size>
+					<AbsDimension x="280" y="55" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="70" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AsmoMODAcceptTextBack" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.0" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AsmoMODAcceptTextBack" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="50" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal"></FontString>
+			</ScrollingMessageFrame>
+			
+			<Frame name="AsmoMODAcceptSubDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="AsmoMODAcceptExit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" relitiveTo="AsmoMODAcceptOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Exit");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODAcceptBack" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" relitiveTo="AsmoMODAcceptOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Back");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+						AsmoMODOptions:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="AsmoMODGeneralOps" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="520" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AsmoMODGeneralFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="285" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="General Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODGeneralOps">
+							<Offset>
+								<AbsDimension x="0" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<CheckButton name="bgrelenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="220" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="BG Auto Release">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_bgreltoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Disables automatically releasing in BGs \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="repairenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="190" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Repair">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_repairtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Disables automatic repair of all items when you talk to merchants \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="herbmineenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="160" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Herb/Mine">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_herbminetoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Disables automatic casting of find herbs/minerals, cannot be enabled with find treasure\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="findgemenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="130" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Find Treasure">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_findgemtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Disables automatic casting of find treasure, cannot be enabled with find herbs/minerals\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="openabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="100" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Overpower">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_overpowertoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Dsiables automatic use of overpower Note: Do NOT enable unless you have overpower on one of your hotbars \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="riposteenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="70" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Riposte">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_ripostetoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Dsiables automatic use of riposte Note: Do NOT enable unless you have riposte on one of your hotbars \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="counterenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Counterattack">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_countertoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Dsiables automatic use of Counterattack Note: Do NOT enable unless you have Counterattack on one of your hotbars \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="executeenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto Execute">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_executetoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Dsiables automatic use of execute Note: Enable ONLY if you are a warrior \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="executerage" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="executetext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(15, 100);
+						this:SetValueStep(1);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("15");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_ExecuteRageChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Sets the rage ceiling for execute.  Execute will not cast if you have more rage than this value \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="nshealenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Auto NSHeal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_nshealtoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Enables or Dsiables automatic use of NSHeal if you go below a certain health percentage: Enable ONLY if you are a druid or shaman with NS \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+
+			<CheckButton name="nscombatenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-80" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="NSHeal in Combat">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_nscombattoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n If Enabled, Auto - Nsheal will cast only if the player is in combat \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="nshealpercentage" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-110" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="nstext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(10);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_PercentageChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODGeneralExplainText:AddMessage("\n Sets the percentage of health at which nsheal with automatically cast: Enable ONLY if you are a shaman or druid \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODGeneralExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<Frame name="AsmoMODGeneralDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-385" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<ScrollingMessageFrame name="AsmoMODGeneralExplainText" ignoreArrows="true" maxLines="4" historyLines="0" fade="true"
+				displayDuration="3" fadeDuration="3" letters="256" hidden="false">
+				<Size>
+					<AbsDimension x="280" y="55" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="70" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AsmoMODGeneralTextBack" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.0" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AsmoMODGeneralTextBack" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="50" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal"></FontString>
+			</ScrollingMessageFrame>
+			
+			<Frame name="AsmoMODGeneralSubDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="AsmoMODGeneralExit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" relitiveTo="AsmoMODAcceptOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Exit");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODGeneralBack" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" relitiveTo="AsmoMODAcceptOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Back");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+						AsmoMODOptions:Show();
+					</OnClick>
+				</Scripts>
+			</Button>	
+		</Frames>
+	</Frame>
+
+	<Frame name="AsmoMODConserveOps" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="260" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AsmoMODConserveFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="285" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Conserve Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODConserveOps">
+							<Offset>
+								<AbsDimension x="0" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<CheckButton name="conserveenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="90" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Mana Conserve">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_conservetoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODConserveExplainText:AddMessage("\n Enables or Dsiables automatic cancelling of heals if your target is above a specified percentage of life\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODConserveExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="conservepercentage" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="60" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="conservetext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(10);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_ConserveChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODConserveExplainText:AddMessage("\n Spells will cancel if your target has more than this set percentage: Enable ONLY if you are a healer \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODConserveExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<Slider name="conservetime" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="conservetimetext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 1);
+						this:SetValueStep(0.1);
+						getglobal(this:GetName().."High"):SetText("1");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_ConserveTimeChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODConserveExplainText:AddMessage("\n Set this to the time at which you want your spell cancels to be detected before the spell completes. IE: Set it to 0.3 and your spells can ONLY be cancelled if they are within 0.3s of completing the cast \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODConserveExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<Frame name="AsmoMODConserveDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-115" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<ScrollingMessageFrame name="AsmoMODConserveExplainText" ignoreArrows="true" maxLines="4" historyLines="0" fade="true"
+				displayDuration="3" fadeDuration="3" letters="256" hidden="false">
+				<Size>
+					<AbsDimension x="280" y="55" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="70" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AsmoMODConserveTextBack" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.0" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AsmoMODConserveTextBack" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="50" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal"></FontString>
+			</ScrollingMessageFrame>
+			
+			<Frame name="AsmoMODConserveSubDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="AsmoMODConserveExit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" relitiveTo="AsmoMODConserveOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Exit");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODConserveBack" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" relitiveTo="AsmoMODConserveOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Back");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+						AsmoMODOptions:Show();
+					</OnClick>
+				</Scripts>
+			</Button>	
+		</Frames>
+	</Frame>
+
+	<Frame name="AsmoMODSwiftOps" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="375" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="AsmoMODSwiftFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="285" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Swiftmend Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODSwiftOps">
+							<Offset>
+								<AbsDimension x="0" y="-3" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<CheckButton name="emerswiftenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="145" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Emergency Swiftmend">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_emerswifttoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Enables or Disables automatic casting of swiftmend on anyone if their health goes below a set percentage, regardless of time left on your HoTs\n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="emerpercent" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="115" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="emertext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(10);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_EmerPercentChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Percentage that emergency swiftmend triggers at \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="autoswiftenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="85" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Swiftmend Conserve">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_autoswifttoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Enables or Disables automatic casting of swiftmend on anyone whose HoT is about to expire and whose health is below a set percentage \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="swiftpercent" inherits="AsmoMODSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="55" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="swifttext" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="110" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(10);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("0");
+					</OnLoad>
+					<OnValueChanged>
+						AsmoMOD_SwiftPercentChanged();
+					</OnValueChanged>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Percentage that swiftmend conserve triggers at, it will only trigger if 3 seconds or less are left on your HoT \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="swiftmonitorenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Swiftmend Monitor">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_monitortoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Enables or Disables swiftmend monitor parsing, if disabled only emergency swiftmend on the player will work \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="playerswiftonenabled" inherits="AsmoMODCheckTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="20" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer>
+						<FontString inherits="GameFontNormal" text="Player Only">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="35" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnClick>
+						AsmoMOD_playerswfitontoggle();
+					</OnClick>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n If enabled emergency swiftmend will cast ONLY on you (Emergency swiftmend must still be enabled) \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="AsmoMODMoveableBar" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="30" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Move Bars");
+					</OnLoad>
+					<OnClick>
+						AsmoMOD_MoveableBar();
+					</OnClick>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Click here to create a moveable bar that changes the position of all Swiftmend Bars \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+
+			<Button name="AsmoMODResetBars" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="160" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Reset Bars");
+					</OnLoad>
+					<OnClick>
+						AsmoMOD_ResetBarPos();
+					</OnClick>
+					<OnEnter>
+						AsmoMODSwiftExplainText:AddMessage("\n Click here to reset the Swiftmend Bars to their default position \n", 156/256, 212/256, 1.0 );
+					</OnEnter>
+					<OnLeave>
+						AsmoMODSwiftExplainText:AddMessage("\n\n\n\n\n");
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Frame name="AsmoMODSwiftDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-240" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<ScrollingMessageFrame name="AsmoMODSwiftExplainText" ignoreArrows="true" maxLines="4" historyLines="0" fade="true"
+				displayDuration="3" fadeDuration="3" letters="256" hidden="false">
+				<Size>
+					<AbsDimension x="280" y="55" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="70" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="AsmoMODSwiftTextBack" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.0" />
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="AsmoMODSwiftTextBack" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="50" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal"></FontString>
+			</ScrollingMessageFrame>
+			
+			<Frame name="AsmoMODSwiftSubDivider" inherits="AsmoMODDividerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<Button name="AsmoMODSwiftExit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="BOTTOM" relitiveTo="AsmoMODSwiftOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Exit");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="AsmoMODSwiftBack" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOM" relitiveTo="AsmoMODSwiftOps">
+						<Offset>
+							<AbsDimension x="0" y="30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Back");
+					</OnLoad>
+					<OnClick>
+						this:GetParent():Hide();
+						AsmoMODOptions:Show();
+					</OnClick>
+				</Scripts>
+			</Button>	
+		</Frames>
+	</Frame>
+
+  <Button name="AsmoEnemyCastBarTemplate" virtual="true" hidden="true" movable="true" enableMouse="true">
+    <TitleRegion setAllPoints="true"/>
+    <Size>
+      <AbsDimension x="206" y="26"/>
+    </Size>
+    <!-- Slap it smack in the middle of the screen where it can be seen -->
+    <Anchors>
+      <Anchor point="TOP" relativeTo="ZoneTextFrame" relativePoint="BOTTOM">
+        <Offset>
+          <AbsDimension x="0" y="10" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+        <Layers>
+          <Layer level="BACKGROUND">
+            <!-- Icon -->
+            <Texture name="$parent_Icon" file="Interface\Icons\Spell_Holy_Renew" hidden="true">
+              <Size>
+                <AbsDimension x="16" y="16"/>
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT">
+	            <Offset>
+	              <AbsDimension x="-12" y="5"/>
+	            </Offset>
+          	</Anchor>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+
+    <Layers>
+      <Layer level="OVERLAY">
+        <FontString name="$parent_Text" inherits="GameFontHighlight">
+          <Size>
+            <AbsDimension x="185" y="14"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP"/>
+          </Anchors>
+        </FontString>
+		<FontString name="$parent_CastTimeText" inherits="GameFontHighlight" text="">
+			<FontHeight>
+				<AbsValue val="14"/>
+			</FontHeight>
+			<Color r="1.0" g="1.0" b="1.0"/>
+			<Anchors>
+			  <Anchor point="LEFT">
+				  <Offset>
+					  <AbsDimension x="205" y="5.5"/>
+				  </Offset>
+			  </Anchor>
+		    </Anchors>
+		</FontString>
+        <!-- Steal the casting bar's border -->
+        <Texture file="Interface\Tooltips\UI-StatusBar-Border">
+          <Size>
+            <AbsDimension x="205" y="20"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="2"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Frames>
+      <!-- Status bar to update duration visually -->
+      <StatusBar name="$parent_StatusBar">
+        <Size>
+          <AbsDimension x="195" y="13"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOP">
+            <Offset>
+              <AbsDimension x="0" y="-2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <!-- The "spark" adds pizzaz to the head of the status bar -->
+            <Texture name="$parent_Spark" alphaMode="ADD" file="Interface\CastingBar\UI-CastingBar-Spark">
+              <Size>
+                <AbsDimension x="32" y="32"/>
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER"/>
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <BarTexture file="Interface\AddOns\AsmoMOD\Images\bartexture.tga"/>
+        <BarColor r="1.0" g="0.7" b="0.0"/>
+        <Scripts>
+          <OnLoad>
+            this:SetFrameLevel(this:GetFrameLevel() - 1);
+          </OnLoad>
+        </Scripts>
+      </StatusBar>
+    </Frames>
+    <Scripts>
+		<OnUpdate> AsmoMOD_OnUpdate(arg1); </OnUpdate>
+    </Scripts>
+  </Button>
+
+<Button name="AsmoFauxTargetBtnTemplate" inherits="UIPanelButtonTemplate" virtual="true" hidden="true" alpha="0">
+	<Size>
+		<AbsDimension x="206" y="26"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOPLEFT">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Scripts>
+		<OnClick>
+			if (IsShiftKeyDown()) then
+				TargetByName(getglobal("Asmo_ECB_"..this:GetID()).name);
+			elseif (IsControlKeyDown()) then
+				AsmoMOD_SwiftRemove(getglobal("Asmo_ECB_"..this:GetID()).name, this:GetID(), true);
+			else
+				AsmoMOD_ManualSwift(this:GetID());
+			end
+		</OnClick>
+	</Scripts>
+</Button>
+
+<Frame name="AsmoEnemyCastBarFrame" parent="UIParent" frameStrata="HIGH" toplevel="false" movable="false" enableMouse="false">
+	<Size>
+		<AbsDimension x="1" y="1"/>
+	</Size>
+	<Anchors>
+		<Anchor point="BOTTOMLEFT" relativeTo="UIParent" relativePoint="CENTER">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Frames>
+	<Button name="Asmo_ECB_0" inherits="AsmoEnemyCastBarTemplate" id="0">
+		<Anchors>
+			<Anchor point="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-30" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="AsmoFauxTargetBtn0" inherits="AsmoFauxTargetBtnTemplate" id="0" text="0">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_0" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Asmo_ECB_1" inherits="AsmoEnemyCastBarTemplate" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_0" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="AsmoFauxTargetBtn1" inherits="AsmoFauxTargetBtnTemplate" id="1" text="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_1" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Asmo_ECB_2" inherits="AsmoEnemyCastBarTemplate" id="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_1" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="AsmoFauxTargetBtn2" inherits="AsmoFauxTargetBtnTemplate" id="2" text="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_2" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Asmo_ECB_3" inherits="AsmoEnemyCastBarTemplate" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_2" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="AsmoFauxTargetBtn3" inherits="AsmoFauxTargetBtnTemplate" id="3" text="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_3" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Asmo_ECB_4" inherits="AsmoEnemyCastBarTemplate" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_3" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="AsmoFauxTargetBtn4" inherits="AsmoFauxTargetBtnTemplate" id="4" text="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Asmo_ECB_4" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+    </Frames>
+</Frame>
+
+<Frame name="AsmoMODBGChoice" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="250" y="100" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" text="Joining Battleground In:">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODBGChoice">
+							<Offset>
+								<AbsDimension x="0" y="-20" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AsmoMODBGTime" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODBGChoice">
+							<Offset>
+								<AbsDimension x="0" y="-35" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>	
+
+		<Frames>
+			<Button name="AsmoMODBGCancel" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="AsmoMODBGChoice">
+						<Offset>
+							<AbsDimension x="75" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Cancel");
+					</OnLoad>
+					<OnClick>
+						AsmoMOD_BGJoinDisable();
+						this:GetParent():Hide();
+						AsmoMOD_ChatR("Battleground autojoin cancelled.");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+<Frame name="AsmoMODRessChoice" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="250" y="100" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" text="Accepting Ressurect In:">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODRessChoice">
+							<Offset>
+								<AbsDimension x="0" y="-20" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AsmoMODRessTime" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODRessChoice">
+							<Offset>
+								<AbsDimension x="0" y="-35" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>	
+
+		<Frames>
+			<Button name="AsmoMODRessCancel" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="AsmoMODRessChoice">
+						<Offset>
+							<AbsDimension x="75" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Cancel");
+					</OnLoad>
+					<OnClick>
+						AsmoMOD_RessAcceptDisable();
+						this:GetParent():Hide();
+						AsmoMOD_ChatR("Ressurect Accept cancelled.");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+<Frame name="AsmoMODSummChoice" hidden="true" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="250" y="100" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" text="Accepting Summon In:">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODSummChoice">
+							<Offset>
+								<AbsDimension x="0" y="-20" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AsmoMODSummTime" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="AsmoMODSummChoice">
+							<Offset>
+								<AbsDimension x="0" y="-35" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>	
+
+		<Frames>
+			<Button name="AsmoMODSummCancel" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="AsmoMODSummChoice">
+						<Offset>
+							<AbsDimension x="75" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="100" y="32" />
+				</Size>
+				<Scripts>
+					<OnLoad>
+						this:SetText("Cancel");
+					</OnLoad>
+					<OnClick>
+						AsmoMOD_SummAcceptDisable();
+						this:GetParent():Hide();
+						AsmoMOD_ChatR("Summon Accept cancelled.");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,0 +1,1130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+<!-- ================================================================================================================================== -->
+<!-- MAIN FRAME TEMPLATES                                                                                                               -->
+<!-- ================================================================================================================================== -->
+
+	<Button name="CH_DebuffTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="15" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentOverlay" file="Interface\Buttons\UI-Debuff-Border" hidden="false">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>	
+
+	<Button name="CH_CooldownTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTime" justifyH="CENTER" justifyV="TOP" inherits="GameFontNormalSmall" text="empty">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>	
+
+	<!-- template for the drag anchor ====================================================== -->
+        <Frame name="CH_AnchorTemplate" enableMouse="true" movable="true" parent="UIParent" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="8"/>
+		</Size>
+		<Frames>
+			<Button name="$parentMove">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+                        		</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+                        		</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" setAllpoints="true">
+							<Color r="0.1" g="0.1" b="0.1" a="0.9"/>
+						</Texture>
+						<Texture name="$parentHighlight" setAllpoints="true">
+							<Color r="0" g="0" b="1" a="0.9"/>
+						</Texture>
+						<Texture name="$parentDisabled" setAllpoints="true">
+							<Color r="0" g="0" b="0.5" a="0.9"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyV="BOTTOM" text="ClickHeal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+                        					</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+                        					</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>
+						CH_AnchorOnMouseDown( arg1 );
+					</OnMouseDown>
+					<OnMouseUp>
+						CH_AnchorOnMouseUp( arg1 );
+					</OnMouseUp>
+					<OnHide>
+						CH_AnchorOnHide();
+					</OnHide>
+					<OnUpdate>
+						CH_AnchorOnUpdate();
+					</OnUpdate>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.topFrame = nil;
+				this.bottomFrame = nil;
+				this.isVisible = true;
+				this.lastUpdate = 0;
+				this.members = 0;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+        <Frame name="CH_AnchorBottomTemplate" parent="UIParent" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="1"/>
+		</Size>
+		<!--
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" setAllpoints="true">
+					<Color r="1" g="0" b="0" a="0.9"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		-->
+	</Frame>
+
+	<!-- template for the extra buttons -->
+	<Button name="CH_ExtraFrameTemplate" enableMouse="true" movable="true" parent="UIParent" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="50" y="24"/>
+		</Size>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" setAllpoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" justifyH="LEFT" inherits="GameFontNormal" text="empty" noneSpaceWrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentCenter" justifyH="CENTER" justifyV="CENTER" hidden="false" inherits="GameFontNormal" text="38">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues( 0, 100 );
+						this:SetValue( 100 );
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1" g="0" b="0"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				CH_OnExtraUpdate( this.frameData );
+			</OnUpdate>
+			<OnClick>
+				CH_UnitClicked( this.index, arg1, arg2, arg3, arg4 );
+			</OnClick>
+			<OnEnter>
+				CH_TooltipFrameIndex = this.index;
+				CH_TooltipShow( this.index, this.index, 'GLOBAL' );
+				CH_TooltipActionsShow( this.index, this.index );
+			</OnEnter>
+			<OnLeave>
+				CH_TooltipFrameIndex = nil;
+				CH_TooltipHide();
+				CH_TooltipActionsHide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_UnitFrameTemplate" enableMouse="true" movable="true" parent="UIParent" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="34"/>
+		</Size>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" setAllpoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" justifyH="LEFT" justifyV="TOP" hidden="false" inherits="GameFontNormal" text="empty" noneSpaceWrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-4"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentEffects" justifyH="RIGHT" justifyV="TOP" inherits="GameFontNormal" text="CPDMS" virtual="true" hidden="false">
+					<Size>
+						<AbsDimension x="50" y="16"/>
+					</Size>
+					<Color r="1" g="1" b="1" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHPBar">
+        			<Anchors>
+        				<Anchor point="TOPLEFT" relativePoint="LEFT">
+        					<Offset>
+        						<AbsDimension x="5" y="0"/>
+        					</Offset>
+        				</Anchor>
+        				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+        					<Offset>
+        						<AbsDimension x="-5" y="5"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues( 0, 100 );
+						this:SetValue( 100 );
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="1" b="0"/>
+				<Frames>
+					<StatusBar name="$parentSPBar">
+        					<Anchors>
+        						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+        							<Offset>
+        								<AbsDimension x="0" y="3"/>
+        							</Offset>
+        						</Anchor>
+        						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+        							<Offset>
+        								<AbsDimension x="0" y="0"/>
+        							</Offset>
+        						</Anchor>
+        					</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCenter" justifyH="CENTER" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="38">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+								<FontString name="$parentRight" justifyH="RIGHT" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="138">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOP" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="0" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues( 0, 100 );
+								this:SetValue( 100 );
+							</OnLoad>
+						</Scripts>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0" b="1"/>
+					</StatusBar>
+				</Frames>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				CH_UnitClicked( this.index, arg1, arg2, arg3, arg4 );
+			</OnClick>
+			<OnEnter>
+				CH_TooltipFrameIndex = this.index;
+				CH_TooltipShow( this.index, this.index, 'GLOBAL' );
+				CH_TooltipActionsShow( this.index, this.index );
+			</OnEnter>
+			<OnLeave>
+				CH_TooltipFrameIndex = nil;
+				CH_TooltipHide();
+				CH_TooltipActionsHide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_UnitTargetFrameTemplate" enableMouse="true" movable="true" parent="UIParent" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="90" y="34"/>
+		</Size>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" setAllpoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" justifyH="LEFT" justifyV="TOP" hidden="false" inherits="GameFontNormalSmall" text="empty" noneSpaceWrap="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="6" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-6" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentEffects" justifyH="RIGHT" justifyV="TOP" inherits="GameFontNormalSmall" text="Rogue" virtual="true" hidden="false">
+					<Size>
+						<AbsDimension x="50" y="16"/>
+					</Size>
+					<Color r="1" g="1" b="1" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHPBar">
+        			<Anchors>
+        				<Anchor point="TOPLEFT" relativePoint="LEFT">
+        					<Offset>
+        						<AbsDimension x="5" y="0"/>
+        					</Offset>
+        				</Anchor>
+        				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+        					<Offset>
+        						<AbsDimension x="-5" y="5"/>
+        					</Offset>
+        				</Anchor>
+        			</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues( 0, 100 );
+						this:SetValue( 100 );
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="1" b="0"/>
+				<Frames>
+					<StatusBar name="$parentSPBar">
+        					<Anchors>
+        						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+        							<Offset>
+        								<AbsDimension x="0" y="3"/>
+        							</Offset>
+        						</Anchor>
+        						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+        							<Offset>
+        								<AbsDimension x="0" y="0"/>
+        							</Offset>
+        						</Anchor>
+        					</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentCenter" justifyH="CENTER" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="38">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+								<FontString name="$parentRight" justifyH="RIGHT" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="138">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOP" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="0" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues( 0, 100 );
+								this:SetValue( 100 );
+							</OnLoad>
+						</Scripts>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0" b="1"/>
+					</StatusBar>
+				</Frames>
+			</StatusBar>
+			<Button name="$parentDebuff1" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff2" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff3" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff4" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff5" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff6" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff7" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff8" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff9" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff10" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff11" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff12" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff13" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff14" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff15" inherits="CH_DebuffTemplate"/>
+			<Button name="$parentDebuff16" inherits="CH_DebuffTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				CH_UnitClicked( this.index, arg1, arg2, arg3, arg4 );
+			</OnClick>
+			<OnEnter>
+				CH_TooltipFrameIndex = this.index;
+				CH_TooltipShow( this.index, this.index, 'GLOBAL' );
+				CH_TooltipActionsShow( this.index, this.index );
+			</OnEnter>
+			<OnLeave>
+				CH_TooltipFrameIndex = nil;
+				CH_TooltipHide();
+				CH_TooltipActionsHide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<!-- ======================================================= BUFF EXPIRE ======================================================= -->
+
+	<MessageFrame name="CH_BuffExpireMsg" parent="UIParent" hidden="false">
+		<Size>
+			<AbsDimension x="400" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<RelDimension x="0" y="0.05"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<FontString name="CH_FontBuff" inherits="GameFontNormalLarge">
+			<FontHeight>
+				<AbsValue val="36"/>
+			</FontHeight>
+		</FontString>
+	</MessageFrame>
+	
+	<!-- ======================================================= MENUS ======================================================= -->
+
+	<!-- ===== TITEL (main anchor) ================================================================================== -->
+
+	<Frame name="CH_MainAnchor" inherits="CH_AnchorTemplate" />
+	<Frame name="CH_MainBottomAnchor" inherits="CH_AnchorBottomTemplate" />
+ 
+	<!-- ===== party anchor ================================================================================== -->
+
+	<Frame name="CH_PartyAnchor" inherits="CH_AnchorTemplate" />
+	<Frame name="CH_PartyBottomAnchor" inherits="CH_AnchorBottomTemplate" />
+
+	<!-- ===== Extra Frames ======================================================================== -->
+	<Button name="CH_Extra1Frame" inherits="CH_ExtraFrameTemplate">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CH_MainAnchor" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad( 'Extra1', 'Extra1', 1 );
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Extra2Frame" inherits="CH_ExtraFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Extra1Frame" relativePoint="RIGHT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad( 'Extra2', 'Extra2', 2 );
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Extra3Frame" inherits="CH_ExtraFrameTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="CH_Extra1Frame" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad( 'Extra3', 'Extra3', 3 );
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Extra4Frame" inherits="CH_ExtraFrameTemplate">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="CH_Extra2Frame" relativePoint="BOTTOM"/>
+		</Anchors>
+		<Frames>
+			<Button name="CH_Mesmerize1" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_Mesmerize2" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_Mesmerize3" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_Mesmerize4" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_Mesmerize5" inherits="CH_CooldownTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad( 'Extra4', 'Extra4', 4 );
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<!-- ===== PANIC =================================================================================== -->
+	<Button name="CH_PanicFrame" enableMouse="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="100" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CH_Extra3Frame" relativePoint="BOTTOMLEFT" />
+		</Anchors>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" setAllpoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="CH_PlayerManaBar" enableMouse="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLeft" justifyH="LEFT" justifyV="TOP" hidden="false" inherits="GameFontNormal" text='CHT_LABEL_PANIC'>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+							</Anchors>
+						</FontString>
+						<FontString name="$parentCenter" justifyH="CENTER" justifyV="TOP" hidden="false" inherits="GameFontNormal" text="38">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString name="$parentRight" justifyH="RIGHT" justifyV="TOP" hidden="false" inherits="GameFontNormal" text="138">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOP" />
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+							</Anchors>
+							<Color r="1" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="0" b="1"/>
+				<Frames>
+        				<StatusBar name="CH_CastBar" hidden="false">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="30" y="0"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentCastTime" justifyH="LEFT" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="38">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+        										<Offset>
+			        								<AbsDimension x="3" y="0"/>
+        										</Offset>
+			        						</Anchor>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+								<FontString name="$parentRight" justifyH="RIGHT" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="138">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOP" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="0" b="0"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="1" g="1" b="0"/>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues( 0, 100 );
+								this:SetValue( 100 );
+							</OnLoad>
+						</Scripts>
+					</StatusBar>
+        				<StatusBar name="CH_FiveSecRuleBar" hidden="false">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="30" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentDarkBackground" setAllpoints="true">
+									<Color r="0" g="0.5" b="0.5"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString name="$parentCenter" justifyH="CENTER" justifyV="BOTTOM" hidden="false" inherits="GameFontNormal" text="38">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									</Anchors>
+									<Color r="1" g="1" b="1"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="1" b="0"/>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues( 0, 5000 );
+								this:SetValue( 5000 );
+							</OnLoad>
+							<OnUpdate>
+								CH_OnFiveSecRuleUpdate();
+							</OnUpdate>
+						</Scripts>
+					</StatusBar>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues( 0, 100 );
+						this:SetValue( 100 );
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+			<Button name="CH_PanicCooldown1" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown2" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown3" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown4" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown5" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown6" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown7" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown8" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown9" inherits="CH_CooldownTemplate"/>
+			<Button name="CH_PanicCooldown10" inherits="CH_CooldownTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('Panic','Panic',nil);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnPlayerManaUpdate();
+				CH_OnSpellCastUpdate();
+			</OnUpdate>
+			<OnClick>
+				CH_UnitClicked( this.index, arg1, arg2, arg3, arg4 );
+			</OnClick>
+			<OnEnter>
+				CH_TooltipFrameIndex = this.index;
+				CH_TooltipShow( this.index, this.index, 'GLOBAL' );
+				CH_TooltipActionsShow( this.index, this.index );
+			</OnEnter>
+			<OnLeave>
+				CH_TooltipFrameIndex = nil;
+				CH_TooltipHide();
+				CH_TooltipActionsHide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<!-- ===== PLAYER / GROUP ================================================================================================ -->
+
+	<Button name="CH_PlayerFrame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('player','Player',0);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party1Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party1','Party1',1);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party2Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party2','Party2',2);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party3Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party3','Party3',3);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party4Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party4','Party4',4);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<!-- ===== PETS ========================================================================================================== -->
+
+	<Button name="CH_PetFrame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('pet','Pet',0);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet1Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet1','Partypet1',1);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet2Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet2','Partypet2',2);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet3Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet3','Partypet3',3);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet4Frame" inherits="CH_UnitFrameTemplate">
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet4','Partypet4',4 );
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,false,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<!-- ===== TARGETS =================================================================================== -->
+
+	<Button name="CH_PlayertargetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_PlayerFrame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('target','Playertarget',0);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party1targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Party1Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party1target','Party1target',1);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party2targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Party2Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party2target','Party2target',2);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party3targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Party3Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party3target','Party3target',3);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Party4targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Party4Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('party4target','Party4target',4);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,false,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_PettargetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_PetFrame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('pettarget','Pettarget',0);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet1targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Partypet1Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet1target','Partypet1target',1);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet2targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Partypet2Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet2target','Partypet2target',2);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet3targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Partypet3Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet3target','Partypet3target',3);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+	<Button name="CH_Partypet4targetFrame" inherits="CH_UnitTargetFrameTemplate">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="CH_Partypet4Frame" relativePoint="RIGHT" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CH_OnUnitFrameLoad('partypet4target','Partypet4target',4);
+			</OnLoad>
+			<OnUpdate>
+				CH_OnUnitFrameUpdate(this.index,this.frameUnit,this.frameData,false,true,true,false,false);
+			</OnUpdate>
+		</Scripts>
+	</Button>
+
+<!-- ===== GLOBALS =================================================================================== -->
+
+	<Frame name="CH_ClickHeal" hidden="true">
+		<Scripts>
+			<OnLoad>
+				CH_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				CH_OnEvent(event,arg1,arg2,arg3,arg4,arg5);
+			</OnEvent> 
+		</Scripts>
+	</Frame>
+
+	<Frame name="CH_InvisUpdate" hidden="false">
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="-1" y="-1"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnUpdate>
+				CH_MainUpdateLoop( );
+			</OnUpdate> 
+		</Scripts>
+	</Frame>
+
+	<GameTooltip name="CH_Tooltip" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner( CH_ClickHeal, "ANCHOR_NONE" );
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+
+</Ui>

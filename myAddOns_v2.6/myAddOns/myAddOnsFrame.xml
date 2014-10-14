@@ -1,0 +1,1864 @@
+<!-- myAddOns v2.6 -->
+
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="myAddOnsFrame.lua"/>
+	<Button name="myAddOnsFrameButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="200" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="171" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="29" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				myAddOnsFrameButton_OnClick();
+			</OnClick>
+			<OnEnter>
+				myAddOnsFrameButton_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				if (this:GetID() ~= myAddOnsFrame_GetSelectedLine()) then
+					getglobal(this:GetName().."Name"):SetTextColor(this.r, this.g, this.b);
+				end
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentNormal" file="">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="10" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="10" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	<Button name="myAddOnsDetailsFrameAddressCopyButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="0" y="10"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				myAddOnsDetailsFrameAddressCopyButton_OnClick();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(MYADDONS_CLICK_COPY);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<CheckButton name="myAddOnsLoadOptionsFrameMethodCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-70" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				myAddOnsLoadOptionsFrameMethodCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<CheckButton name="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-50" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				myAddOnsLoadOptionsFrameClassCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+	<Button name="myAddOnsLoadOptionsCharactersListFrameButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="140" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				myAddOnsLoadOptionsCharactersListFrameButton_OnClick();
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."Name"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				if (this:GetID() ~= myAddOnsLoadOptionsCharactersListFrame_GetSelectedLine()) then
+					getglobal(this:GetName().."Name"):SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Frame name="myAddOnsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="640" y="512"/>
+		</Size>
+		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Icons\Trade_Engineering">
+					<Size>
+						<AbsDimension x="42" y="45"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-21"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.25" right="0.95" top="0.25" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\Icons\Trade_Engineering">
+					<Size>
+						<AbsDimension x="49" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="13" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1" right="0.916666" top="0.116666" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\Icons\Trade_Engineering">
+					<Size>
+						<AbsDimension x="33" y="3"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.233333" right="0.783333" top="0.066666" bottom="0.116666"/>
+				</Texture>
+				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x="60" y="4"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.066666"/>
+				</Texture>
+				<Texture file="Interface\Icons\Trade_Engineering">
+					<Size>
+						<AbsDimension x="8" y="49"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="14" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.116666" right="0.25" top="0.1" bottom="0.916666"/>
+				</Texture>
+				<Texture file="Interface\Icons\Trade_Engineering">
+					<Size>
+						<AbsDimension x="4" y="33"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.05" right="0.116666" top="0.233333" bottom="0.783333"/>
+				</Texture>
+				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x="3" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.05" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x="3" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="64" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.95" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="myAddOnsFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="myAddOnsFrameTopCenterLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.38" right="0.88" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameTopCenterRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="384" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.45" right="0.95" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="myAddOnsFrameBottomLeft" file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="myAddOnsFrameBottomCenterLeft" file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameBottomCenterRight" file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="384" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameBottomRight" file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="myAddOnsFrameVerticalBarTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="4" y="184"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="250" y="-72"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.648437" right="0.679687" top="0.28125" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameVerticalBarTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="4" y="184"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-72"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.070312" right="0.085937" top="0.28125" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameVerticalBarBottomLeft" file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+					<Size>
+						<AbsDimension x="87" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="167" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.679687" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="myAddOnsFrameVerticalBarBottomRight" file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="4" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.070312" right="0.085937" top="0" bottom="1.0"/>
+				</Texture>
+				<FontString name="myAddOnsFrameTitleText" inherits="GameFontNormal" text="AddOns">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="myAddOnsFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameTab1" inherits="TabButtonTemplate" text="MYADDONS_TAB_DETAILS" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="256" y="-39"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						myAddOnsFrameTab_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="myAddOnsFrameTab2" inherits="TabButtonTemplate" text="MYADDONS_TAB_HELP" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="myAddOnsFrameTab1" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						myAddOnsFrameTab_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="myAddOnsFrameTab3" inherits="TabButtonTemplate" text="MYADDONS_TAB_LOAD" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="myAddOnsFrameTab2" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						myAddOnsFrameTab_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="myAddOnsFrameButton1" inherits="myAddOnsFrameButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-76"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton2" inherits="myAddOnsFrameButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton3" inherits="myAddOnsFrameButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton4" inherits="myAddOnsFrameButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton5" inherits="myAddOnsFrameButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton6" inherits="myAddOnsFrameButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton7" inherits="myAddOnsFrameButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton8" inherits="myAddOnsFrameButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton9" inherits="myAddOnsFrameButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton10" inherits="myAddOnsFrameButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton11" inherits="myAddOnsFrameButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton12" inherits="myAddOnsFrameButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton11" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton13" inherits="myAddOnsFrameButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton12" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton14" inherits="myAddOnsFrameButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton13" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton15" inherits="myAddOnsFrameButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton14" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton16" inherits="myAddOnsFrameButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton15" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton17" inherits="myAddOnsFrameButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton16" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton18" inherits="myAddOnsFrameButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton17" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton19" inherits="myAddOnsFrameButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton18" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="myAddOnsFrameButton20" inherits="myAddOnsFrameButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="myAddOnsFrameButton19" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Frame name="myAddOnsFrameHighlightFrame" hidden="true">
+				<Size>
+					<AbsDimension x="200" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="myAddOnsFrameHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ScrollFrame name="myAddOnsFrameScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="298" y="335"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-415" y="-75"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="29" y="256"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.453125" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="29" y="106"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="-1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="0.96875" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(16, myAddOnsFrame_Update);
+					</OnVerticalScroll>
+					<OnMouseWheel>
+						ScrollFrameTemplate_OnMouseWheel(arg1);
+					</OnMouseWheel>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="myAddOnsFrameLoadButton" inherits="UIPanelButtonTemplate" text="MYADDONS_BUTTON_LOAD">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="174" y="80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						myAddOnsFrame_LoadAddOn();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="myAddOnsFrameOptionsButton" inherits="UIPanelButtonTemplate" text="MYADDONS_BUTTON_OPTIONS">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-41" y="80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOption");
+						myAddOnsFrame_ShowOptions();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="myAddOnsDetailsFrame" hidden="true">
+				<Size>
+					<AbsDimension x="340" y="335"/>
+				</Size>
+				<Anchors>
+ 					<Anchor point="TOPLEFT">
+ 						<Offset>
+ 							<AbsDimension x="256" y="-74"/>
+ 						</Offset>
+ 					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopLeft">
+							<Size>
+								<AbsDimension x="256" y="104"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.132812" bottom="0.539062"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopRight">
+							<Size>
+								<AbsDimension x="128" y="104"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.132812" bottom="0.539062"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopLeft">
+							<Size>
+								<AbsDimension x="256" y="63"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-139"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.753906" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-TopRight">
+							<Size>
+								<AbsDimension x="128" y="63"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-139"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.753906" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="256" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-202"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="128" y="84"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-202"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-286"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.46875" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-286"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.46875" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="256" y="44"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.65625" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="128" y="44"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.65625" bottom="1.0"/>
+						</Texture>
+						<FontString name="myAddOnsDetailsFrameName" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="256" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-9"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameDescriptionGroupLabel" inherits="GameFontNormal" text="MYADDONS_LABEL_DESCRIPTION">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="26" y="-45"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameDescriptionValue" inherits="GameFontHighlightSmall" justifyV="TOP" justifyH="LEFT" spacewrap="true" maxLines="2">
+							<Size>
+								<AbsDimension x="245" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameDescriptionGroupLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameVersionGroupLabel" inherits="GameFontNormal" text="Version">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameDescriptionGroupLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-40"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameVersionLabel" inherits="GameFontHighlightSmall" text="Version">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameVersionGroupLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameReleaseDateLabel" inherits="GameFontHighlightSmall" text="MYADDONS_LABEL_RELEASE_DATE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameVersionLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameVersionValue" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameVersionLabel" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="278" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameReleaseDateValue" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameReleaseDateLabel" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="278" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameAuthorGroupLabel" inherits="GameFontNormal" text="MYADDONS_LABEL_AUTHOR">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameVersionGroupLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-43"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameAuthorLabel" inherits="GameFontHighlightSmall" text="MYADDONS_LABEL_AUTHOR">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameAuthorGroupLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameEmailLabel" inherits="GameFontHighlightSmall" text="Email">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameAuthorLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameWebsiteLabel" inherits="GameFontHighlightSmall" text="MYADDONS_LABEL_WEBSITE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameEmailLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameAuthorValue" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameAuthorLabel" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="278" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameEmailValue" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameEmailLabel" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="278" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameWebsiteValue" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameWebsiteLabel" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="278" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsDetailsFrameNotesLabel" inherits="GameFontNormal" text="MYADDONS_LABEL_NOTES">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameAuthorGroupLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-65"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="myAddOnsDetailsFrameEmailAddressCopyButton" inherits="myAddOnsDetailsFrameAddressCopyButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameEmailValue" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="myAddOnsDetailsFrameWebsiteAddressCopyButton" inherits="myAddOnsDetailsFrameAddressCopyButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="myAddOnsDetailsFrameWebsiteValue" relativePoint="RIGHT"/>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="myAddOnsDetailsFrameNotesScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="255" y="62"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="myAddOnsDetailsFrameNotesLabel" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="myAddOnsDetailsFrameNotesScrollChildFrame">
+								<Size>
+									<AbsDimension x="255" y="62"/>
+								</Size>
+								<Frames>
+									<EditBox name="myAddOnsDetailsFrameNotesEditBox" letters="200" multiLine="true" enableMouse="true" autoFocus="false" spacewrap="true">
+										<Size>
+											<AbsDimension x="255" y="62"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Scripts>
+											<OnTextChanged>
+												ScrollingEdit_OnTextChanged(myAddOnsDetailsFrameNotesScrollFrame);
+												myAddOnsDetailsFrameNotesEditBox_OnTextChanged();
+											</OnTextChanged>
+											<OnCursorChanged>
+												ScrollingEdit_OnCursorChanged(arg1, arg2, arg3, arg4);
+											</OnCursorChanged>
+											<OnUpdate>
+												ScrollingEdit_OnUpdate(myAddOnsDetailsFrameNotesScrollFrame);
+											</OnUpdate>
+											<OnEscapePressed>
+												this:ClearFocus();
+											</OnEscapePressed>
+										</Scripts>
+										<FontString inherits="GameFontHighlightSmall"/>
+									</EditBox>
+								</Frames>
+								<Scripts>
+									<OnMouseUp>
+										myAddOnsDetailsFrameNotesEditBox:SetFocus();
+									</OnMouseUp>
+								</Scripts>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="myAddOnsHelpFrame" hidden="true">
+				<Size>
+					<AbsDimension x="340" y="335"/>
+				</Size>
+				<Anchors>
+ 					<Anchor point="TOPLEFT">
+ 						<Offset>
+ 							<AbsDimension x="256" y="-74"/>
+ 						</Offset>
+ 					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="256" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-34"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.125" bottom="0.21875"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="128" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-34"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.125" bottom="0.21875"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-46"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.21875" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-46"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.21875" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-102"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-102"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.65625" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-154"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-154"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-206"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-206"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.65625" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-258"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-258"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="256" y="44"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.65625" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="128" y="44"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.65625" bottom="1.0"/>
+						</Texture>
+						<FontString name="myAddOnsHelpFrameName" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="256" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-9"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsHelpFrameHelp" inherits="GameFontHighlightSmall" justifyH="LEFT" justifyV="TOP" spacewrap="true" maxLines = "23">
+							<Size>
+								<AbsDimension x="290" y="230"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="26" y="-47"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsHelpFramePage" inherits="GameFontNormalSmall">
+							<Size>
+								<AbsDimension x="102" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="30"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="myAddOnsHelpFramePrevPageButton">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="myAddOnsHelpFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="38" y="35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="PREV">
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="myAddOnsHelpFramePrevPageButton" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								myAddOnsHelpFramePrevPageButton_OnClick();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="myAddOnsHelpFrameNextPageButton">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="myAddOnsHelpFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="302" y="35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormalSmall" justifyH="RIGHT" text="NEXT">
+									<Anchors>
+										<Anchor point="RIGHT" relativeTo="myAddOnsHelpFrameNextPageButton" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								myAddOnsHelpFrameNextPageButton_OnClick();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="myAddOnsLoadFrame" hidden="true">
+				<Size>
+					<AbsDimension x="340" y="335"/>
+				</Size>
+				<Anchors>
+ 					<Anchor point="TOPLEFT">
+ 						<Offset>
+ 							<AbsDimension x="256" y="-74"/>
+ 						</Offset>
+ 					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="256" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-34"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.125" bottom="0.21875"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="128" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-34"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.125" bottom="0.21875"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-46"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.21875" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-46"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.21875" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-102"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-102"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.65625" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-154"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-154"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-206"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-206"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.65625" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="11" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-258"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.042968" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="74" y="52"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="318" y="-258"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.421875" right="1.0" top="0.25" bottom="0.65625"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomLeft">
+							<Size>
+								<AbsDimension x="256" y="44"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="11" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.65625" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Honor-BottomRight">
+							<Size>
+								<AbsDimension x="128" y="44"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="264" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.65625" bottom="1.0"/>
+						</Texture>
+						<FontString name="myAddOnsLoadFrameName" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="256" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-9"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="myAddOnsLoadFrameNotLoadOnDemand" inherits="GameFontNormalSmall" text="MYADDONS_NOT_LOAD_ONDEMAND">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-172"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="myAddOnsLoadOptionsFrame">
+						<Size>
+							<AbsDimension x="340" y="335"/>
+						</Size>
+						<Anchors>
+		 					<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Frames>
+							<CheckButton name="myAddOnsLoadOptionsFrameManualCheckButton" inherits="myAddOnsLoadOptionsFrameMethodCheckButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="23" y="-43"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="myAddOnsLoadOptionsFrameAutomaticCheckButton" inherits="myAddOnsLoadOptionsFrameMethodCheckButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsFrameManualCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="myAddOnsLoadOptionsFrameClassCheckButton" inherits="myAddOnsLoadOptionsFrameMethodCheckButtonTemplate" id="3">
+								<HitRectInsets>
+									<AbsInset left="0" right="-100" top="0" bottom="0"/>
+								</HitRectInsets>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsFrameAutomaticCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<Frame name="myAddOnsLoadOptionsClassesFrame" inherits="OptionFrameBoxTemplate">
+								<Size>
+									<AbsDimension x="270" y="90"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsFrameClassCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="24" y="4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Frames>
+									<CheckButton name="myAddOnsLoadOptionsFrameDruidCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="1">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsClassesFrame" relativePoint="TOPLEFT">
+												<Offset>
+													<AbsDimension x="6" y="-6"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFrameHunterCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="2">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="myAddOnsLoadOptionsFrameDruidCheckButton" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="60" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFrameMageCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="3">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="myAddOnsLoadOptionsFrameHunterCheckButton" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="60" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFramePaladinCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="4">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOP" relativeTo="myAddOnsLoadOptionsFrameDruidCheckButton" relativePoint="BOTTOM"/>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFramePriestCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="5">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="myAddOnsLoadOptionsFramePaladinCheckButton" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="60" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFrameRogueCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="6">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="myAddOnsLoadOptionsFramePriestCheckButton" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="60" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFrameShamanCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="7">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOP" relativeTo="myAddOnsLoadOptionsFramePaladinCheckButton" relativePoint="BOTTOM"/>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFrameWarlockCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="8">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="myAddOnsLoadOptionsFrameShamanCheckButton" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="60" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+									<CheckButton name="myAddOnsLoadOptionsFrameWarriorCheckButton" inherits="myAddOnsLoadOptionsFrameClassCheckButtonTemplate" id="9">
+										<Size>
+											<AbsDimension x="26" y="26"/>
+										</Size>
+										<Anchors>
+											<Anchor point="LEFT" relativeTo="myAddOnsLoadOptionsFrameWarlockCheckButton" relativePoint="RIGHT">
+												<Offset>
+													<AbsDimension x="60" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</CheckButton>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+										this:SetBackdropColor(0.15, 0.15, 0.15);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+							<CheckButton name="myAddOnsLoadOptionsFrameCharacterCheckButton" inherits="myAddOnsLoadOptionsFrameMethodCheckButtonTemplate" id="4">
+								<HitRectInsets>
+									<AbsInset left="0" right="-130" top="0" bottom="0"/>
+								</HitRectInsets>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsClassesFrame" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-24" y="4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<Frame name="myAddOnsLoadOptionsCharactersFrame" inherits="OptionFrameBoxTemplate">
+								<Size>
+									<AbsDimension x="270" y="68"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsFrameCharacterCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="24" y="4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Frames>
+									<Frame name="myAddOnsLoadOptionsCharactersListFrame" inherits="OptionFrameBoxTemplate">
+										<Size>
+											<AbsDimension x="160" y="56"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsCharactersFrame" relativePoint="TOPLEFT">
+												<Offset>
+													<AbsDimension x="6" y="-6"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Frames>
+											<Button name="myAddOnsLoadOptionsCharactersListFrameButton1" inherits="myAddOnsLoadOptionsCharactersListFrameButtonTemplate" id="1">
+												<Anchors>
+													<Anchor point="TOPLEFT">
+														<Offset>
+															<AbsDimension x="10" y="-3"/>
+														</Offset>
+													</Anchor>
+												</Anchors>
+											</Button>
+											<Button name="myAddOnsLoadOptionsCharactersListFrameButton2" inherits="myAddOnsLoadOptionsCharactersListFrameButtonTemplate" id="2">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsCharactersListFrameButton1" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="myAddOnsLoadOptionsCharactersListFrameButton3" inherits="myAddOnsLoadOptionsCharactersListFrameButtonTemplate" id="3">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsCharactersListFrameButton2" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Button name="myAddOnsLoadOptionsCharactersListFrameButton4" inherits="myAddOnsLoadOptionsCharactersListFrameButtonTemplate" id="4">
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeTo="myAddOnsLoadOptionsCharactersListFrameButton3" relativePoint="BOTTOMLEFT"/>
+												</Anchors>
+											</Button>
+											<Frame name="myAddOnsLoadOptionsCharactersListFrameHighlightFrame" hidden="true">
+												<Size>
+													<AbsDimension x="145" y="12"/>
+												</Size>
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+												<Layers>
+													<Layer level="ARTWORK">
+														<Texture name="myAddOnsLoadOptionsCharactersListFrameHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+													</Layer>
+												</Layers>
+											</Frame>
+										</Frames>
+										<Scripts>
+											<OnLoad>
+												this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+												this:SetBackdropColor(0.15, 0.15, 0.15);
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<ScrollFrame name="myAddOnsLoadOptionsCharactersListFrameScrollFrame" inherits="FauxScrollFrameTemplate">
+										<Size>
+											<AbsDimension x="155" y="50"/>
+										</Size>
+										<Anchors>
+											<Anchor point="TOPLEFT">
+												<Offset>
+													<AbsDimension x="6" y="-10"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnScrollRangeChanged>
+												ScrollFrame_OnScrollRangeChanged(arg2);
+												myAddOnsLoadOptionsFrame_UpdateButtons();
+											</OnScrollRangeChanged>
+											<OnVerticalScroll>
+												FauxScrollFrame_OnVerticalScroll(12, myAddOnsLoadOptionsCharactersFrame_Update);
+											</OnVerticalScroll>
+										</Scripts>
+									</ScrollFrame>
+									<Button name="myAddOnsLoadOptionsCharactersListFrameAddButton" inherits="UIPanelButtonTemplate" text="MYADDONS_BUTTON_ADD">
+										<Size>
+											<AbsDimension x="70" y="16"/>
+										</Size>
+										<NormalText inherits="GameFontHighlightSmall"/>
+										<DisabledText inherits="GameFontDisableSmall"/>
+										<HighlightText inherits="GameFontHighlightSmall"/>
+										<Anchors>
+											<Anchor point="TOPLEFT">
+												<Offset>
+													<AbsDimension x="189" y="-27"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												myAddOnsLoadOptionsCharactersListFrame_AddCharacter();
+											</OnClick>
+										</Scripts>
+									</Button>
+									<Button name="myAddOnsLoadOptionsCharactersListFrameRemoveButton" inherits="UIPanelButtonTemplate" text="MYADDONS_BUTTON_REMOVE">
+										<Size>
+											<AbsDimension x="70" y="16"/>
+										</Size>
+										<NormalText inherits="GameFontHighlightSmall"/>
+										<DisabledText inherits="GameFontDisableSmall"/>
+										<HighlightText inherits="GameFontHighlightSmall"/>
+										<Anchors>
+											<Anchor point="TOP" relativeTo="myAddOnsLoadOptionsCharactersListFrameAddButton" relativePoint="BOTTOM"/>
+										</Anchors>
+										<Scripts>
+											<OnClick>
+												myAddOnsLoadOptionsCharactersListFrame_RemoveCharacter();
+											</OnClick>
+										</Scripts>
+									</Button>
+								</Frames>
+								<Scripts>
+									<OnLoad>
+										this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+										this:SetBackdropColor(0.15, 0.15, 0.15);
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				myAddOnsFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				myAddOnsFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				myAddOnsFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				myAddOnsFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

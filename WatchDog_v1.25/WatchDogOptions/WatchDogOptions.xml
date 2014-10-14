@@ -1,0 +1,906 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Slider name="WatchDogOptionsSliderTemplate" virtual="true" inherits="OptionsSliderTemplate">
+		<Size>
+			<AbsDimension x="120" y="17"/>
+		</Size>	
+	</Slider>
+
+	
+<EditBox name="WatchDogEditBoxTemplate" letters="150" historyLines="0"  autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="255" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT"/>
+		</Anchors>
+		<Scripts>			
+			<OnEditFocusGained>			
+				if WatchDogOptions_ClickCastings:IsVisible() and wd_spellName then					
+					WatchDogOptions_LoadSpell()
+				end			
+			</OnEditFocusGained>
+			<OnEscapePressed>
+				this:ClearFocus()
+			</OnEscapePressed>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="-5" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset><AbsDimension x="-10" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="10" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<FontString name="$parent_Description" inherits="GameFontNormalSmall" justifyH="LEFT" text="Format String">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset><AbsDimension x="-7" y="-4"/></Offset>
+					</Anchor></Anchors>					
+				</FontString>					
+			</Layer>
+		</Layers>				
+		<FontString inherits="GameFontNormalSmall"/>
+		<TextInsets left="2" right="10" top="0" bottom="2"/>		
+	</EditBox>
+	
+	<CheckButton name="WatchDogCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	
+	<Frame name="WatchDogOptions_ClickCastings" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="500" y="580"/>
+		</Size>
+		
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" bottom="11" right="11" top="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		
+		<Frames>
+		<Button name="$parent_Save" inherits="GameMenuButtonTemplate" text="Save">
+			<Size>
+				<AbsDimension x="75" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="100" y="-10" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>WatchDogOptions_SaveClickCastings(); this:GetParent():Hide();</OnClick>
+			</Scripts>
+		</Button>
+		
+		<Button name="$parent_Apply" inherits="GameMenuButtonTemplate" text="Apply">
+			<Size>
+				<AbsDimension x="75" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Save">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>WatchDogOptions_SaveClickCastings();</OnClick>
+			</Scripts>
+		</Button>	
+		
+		<Button name="$parent_Cancel" inherits="GameMenuButtonTemplate" text="Cancel">
+			<Size>
+				<AbsDimension x="75" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Apply">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>this:GetParent():Hide();</OnClick>
+			</Scripts>
+		</Button>		
+		
+		
+		<Button name="$parent_Global" inherits="GameMenuButtonTemplate" text="Global" id="1">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="30" y="40" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Priest" inherits="GameMenuButtonTemplate" text="Priest" id="2">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Global">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Paladin" inherits="GameMenuButtonTemplate" text="Paladin" id="3">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Priest">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Druid" inherits="GameMenuButtonTemplate" text="Druid" id="4">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Paladin">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Shaman" inherits="GameMenuButtonTemplate" text="Shaman" id="5">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Druid">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Mage" inherits="GameMenuButtonTemplate" text="Mage" id="6">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_Global">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Warlock" inherits="GameMenuButtonTemplate" text="Warlock" id="7">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Mage">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Warrior" inherits="GameMenuButtonTemplate" text="Warrior" id="8">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Warlock">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Rogue" inherits="GameMenuButtonTemplate" text="Rogue" id="9">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Warrior">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+		
+		<Button name="$parent_Hunter" inherits="GameMenuButtonTemplate" text="Hunter" id="10">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Rogue">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>		
+		
+		<EditBox name="$parent_LeftButton" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Save" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="-70" y="-5"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_LeftButtonAlt" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_LeftButton" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_LeftButtonShift" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_LeftButtonAlt" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_LeftButtonControl" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_LeftButtonShift" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		
+		<EditBox name="$parent_MiddleButton" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_LeftButtonControl" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="-10"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_MiddleButtonAlt" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_MiddleButton" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_MiddleButtonShift" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_MiddleButtonAlt" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_MiddleButtonControl" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_MiddleButtonShift" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+
+		<EditBox name="$parent_RightButton" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_MiddleButtonControl" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="-10"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_RightButtonAlt" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_RightButton" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_RightButtonShift" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_RightButtonAlt" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_RightButtonControl" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_RightButtonShift" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		
+		<EditBox name="$parent_Button4" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_RightButtonControl" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="-10"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_Button4Alt" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button4" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_Button4Shift" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button4Alt" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_Button4Control" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button4Shift" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		
+		<EditBox name="$parent_Button5" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button4Control" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="-10"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_Button5Alt" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button5" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_Button5Shift" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button5Alt" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		<EditBox name="$parent_Button5Control" inherits="WatchDogEditBoxTemplate" letters="255">
+			<Size><AbsDimension x="300" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent_Button5Shift" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="0"/></Offset></Anchor>
+			</Anchors>
+		</EditBox>
+		
+		<Button name="$parent_Friendly" inherits="GameMenuButtonTemplate" text="Friendly" id="11">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_Button5Control">
+					<Offset><AbsDimension x="0" y="-5" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>
+
+		<Button name="$parent_Hostile" inherits="GameMenuButtonTemplate" text="Hostile"  id="12">
+			<Size><AbsDimension x="60" y="25"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_Friendly">
+					<Offset><AbsDimension x="0" y="0" /></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts><OnClick>WatchDogOptions_ChangeClickCastings()</OnClick></Scripts>
+		</Button>	
+				
+		</Frames>
+		
+		<Scripts>
+		<OnShow>
+			WatchDogOptions_LoadClickCastings()
+		</OnShow>
+		<OnLoad>this:RegisterForDrag("LeftButton");</OnLoad>						
+		<OnDragStart>this:StartMoving(); this.isMoving=true;</OnDragStart>
+		<OnDragStop>this:StopMovingOrSizing(); this.isMoving=false;</OnDragStop>
+		</Scripts>
+		
+		</Frame>
+				
+	<Frame name="WatchDogOptions" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="425" y="535"/>
+		</Size>
+		
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" bottom="11" right="11" top="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		
+		<Frames>
+			<CheckButton name="$parent_Enable" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+					<Offset><AbsDimension x="15" y="-15"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_ShowPlayer" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_Enable" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="5" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_ShowPet" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowPlayer" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_ShowTarget" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowPet" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_ShowParty" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowTarget" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_ShowTooltip" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowParty" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+					
+			<CheckButton name="$parent_ShowBorders" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowPlayerText" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="30" y="7"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_ChooseRank" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowBorders" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>			
+			<CheckButton name="$parent_LockFrames" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ChooseRank" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>			
+			<CheckButton name="$parent_TOFT" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_LockFrames" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_PartyPets" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_TOFT" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>			
+
+
+			<CheckButton name="$parent_CalculateHP" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowBordersText" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="20" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			
+			<Frame><Layers><Layer level="ARTWORK">
+			<FontString name="$parent_FrameWidth" inherits="GameFontNormalSmall" justifyH="LEFT" text="Frame Width:">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowTooltip" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-5"/></Offset>
+				</Anchor></Anchors>					
+			</FontString>
+			<FontString name="$parent_Backdrop" inherits="GameFontNormalSmall" justifyH="LEFT" text="Backdrop:">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_FrameWidth" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-8"/></Offset>
+				</Anchor></Anchors>					
+			</FontString>
+			<FontString name="$parent_HPBarString" inherits="GameFontNormalSmall" justifyH="LEFT" text="Health Bar:">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_Backdrop" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-8"/></Offset>
+				</Anchor></Anchors>					
+			</FontString>
+			<FontString name="$parent_MPBarString" inherits="GameFontNormalSmall" justifyH="LEFT" text="Mana Bar:">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_HPBarString" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-8"/></Offset>
+				</Anchor></Anchors>					
+			</FontString>
+			<FontString name="$parent_Buffs" inherits="GameFontNormalSmall" justifyH="LEFT" text="Buffs:">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_MPBarString" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-8"/></Offset>
+				</Anchor></Anchors>					
+			</FontString>
+			<FontString name="$parent_Debuffs" inherits="GameFontNormalSmall" justifyH="LEFT" text="Debuffs:">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_Buffs" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-8"/></Offset>
+				</Anchor></Anchors>					
+			</FontString>
+			</Layer></Layers></Frame>			
+			
+			<CheckButton name="$parent_DynamicWidth" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_FrameWidth" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="0" y="6"/></Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>
+					this:SetChecked(true); WatchDogOptions_FixedWidth:SetChecked(false);
+				</OnClick></Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_FixedWidth" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DynamicWidthText" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="3" y="7"/></Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>
+					this:SetChecked(true); WatchDogOptions_DynamicWidth:SetChecked(false);
+				</OnClick></Scripts>
+			</CheckButton>
+			<EditBox name="$parent_FixedWidthAmount" inherits="WatchDogEditBoxTemplate" letters="3">
+				<Size>
+					<AbsDimension x="40" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_FixedWidthText" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="8" y="6"/></Offset></Anchor>
+				</Anchors>
+				<Scripts><OnEditFocusGained>this:HighlightText()</OnEditFocusGained></Scripts>				
+			</EditBox>			
+						
+			<Button name="$parent_ColorBackdrops" inherits="GameMenuButtonTemplate" text="Color">
+				<Size><AbsDimension x="45" y="15"/></Size>
+				<Anchors><Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_DynamicWidth">
+						<Offset><AbsDimension x="0" y="2" /></Offset>
+				</Anchor></Anchors>
+				<Scripts><OnClick>WatchDogOptions_ShowColorSelect()</OnClick></Scripts>
+			</Button>
+			
+			<CheckButton name="$parent_ShowHPBar" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ColorBackdrops" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="2"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+				<CheckButton name="$parent_ReverseHP" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowHPBarText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="3" y="7"/></Offset>
+					</Anchor></Anchors>
+				</CheckButton>
+				<CheckButton name="$parent_HPShade" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ReverseHPText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="3" y="7"/></Offset>
+					</Anchor></Anchors>
+				</CheckButton>
+				
+				<Slider name="$parent_HPHeight" inherits="WatchDogOptionsSliderTemplate">
+				<Size x="75" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_HPShadeText" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+				
+			<CheckButton name="$parent_ShowMPBar" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowHPBar" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="6"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+				<CheckButton name="$parent_ReverseMP" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowMPBarText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="3" y="7"/></Offset>
+					</Anchor></Anchors>
+				</CheckButton>
+								
+			<CheckButton name="$parent_ShowBuffs" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowMPBar" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="6"/></Offset>
+				</Anchor></Anchors>				
+			</CheckButton>
+				<CheckButton name="$parent_FilterBuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowBuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="3" y="7"/></Offset>
+					</Anchor></Anchors>					
+				</CheckButton>
+				<CheckButton name="$parent_LeftBuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_FilterBuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="1" y="7"/></Offset>
+					</Anchor></Anchors>
+					<Scripts><OnClick>this:SetChecked(true); WatchDogOptions_RightBuffs:SetChecked(false); WatchDogOptions_BottomBuffs:SetChecked(false);</OnClick></Scripts>				
+				</CheckButton>		
+				<CheckButton name="$parent_RightBuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_LeftBuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="1" y="7"/></Offset>
+					</Anchor></Anchors>
+					<Scripts><OnClick>this:SetChecked(true); WatchDogOptions_LeftBuffs:SetChecked(false); WatchDogOptions_BottomBuffs:SetChecked(false);</OnClick></Scripts>					
+				</CheckButton>
+				<CheckButton name="$parent_BottomBuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_RightBuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="1" y="7"/></Offset>
+					</Anchor></Anchors>
+					<Scripts><OnClick>this:SetChecked(true); WatchDogOptions_LeftBuffs:SetChecked(false); WatchDogOptions_RightBuffs:SetChecked(false);</OnClick></Scripts>					
+				</CheckButton>					
+			
+			<CheckButton name="$parent_ShowDebuffs" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowBuffs" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="6"/></Offset>
+				</Anchor></Anchors>				
+			</CheckButton>
+				<CheckButton name="$parent_FilterDebuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_ShowDebuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="3" y="7"/></Offset>
+					</Anchor></Anchors>					
+				</CheckButton>
+				<CheckButton name="$parent_LeftDebuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_FilterDebuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="1" y="7"/></Offset>
+					</Anchor></Anchors>
+					<Scripts><OnClick>this:SetChecked(true); WatchDogOptions_RightDebuffs:SetChecked(false); WatchDogOptions_BottomDebuffs:SetChecked(false)</OnClick></Scripts>				
+				</CheckButton>		
+				<CheckButton name="$parent_RightDebuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_LeftDebuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="1" y="7"/></Offset>
+					</Anchor></Anchors>
+					<Scripts><OnClick>this:SetChecked(true); WatchDogOptions_LeftDebuffs:SetChecked(false); WatchDogOptions_BottomDebuffs:SetChecked(false)</OnClick></Scripts>					
+				</CheckButton>
+				<CheckButton name="$parent_BottomDebuffs" inherits="WatchDogCheckButtonTemplate">
+					<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_RightDebuffsText" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="1" y="7"/></Offset>
+					</Anchor></Anchors>
+					<Scripts><OnClick>this:SetChecked(true); WatchDogOptions_LeftDebuffs:SetChecked(false); WatchDogOptions_RightDebuffs:SetChecked(false);</OnClick></Scripts>					
+				</CheckButton>		
+					
+			
+			<Slider name="$parent_CalculateHPSlider" inherits="WatchDogOptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_CalculateHP" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			
+			<Slider name="$parent_SetScale" inherits="WatchDogOptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_CalculateHPSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+				
+			<EditBox name="$parent_TargetFormat1" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Debuffs" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-10"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_TargetFormat2" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_TargetFormat1" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-3"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_PlayerFormat1" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_TargetFormat2" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-9"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_PlayerFormat2" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_PlayerFormat1" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-3"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_PartyFormat1" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_PlayerFormat2" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-9"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_PartyFormat2" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_PartyFormat1" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-3"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_PetFormat1" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_PartyFormat2" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-9"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			<EditBox name="$parent_PetFormat2" inherits="WatchDogEditBoxTemplate" letters="255">
+				<Size><AbsDimension x="300" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_PetFormat1" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-3"/></Offset></Anchor>
+				</Anchors>
+			</EditBox>
+			
+			<CheckButton name="$parent_DefaultPlayer" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_PetFormat2" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="-5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>			
+			<CheckButton name="$parent_DefaultParty" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DefaultPlayer" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_DefaultTarget" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DefaultPlayerText" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="3" y="7"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_DefaultBuffs" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DefaultTarget" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_DefaultGryphons" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DefaultTargetText" relativePoint="TOPRIGHT">
+					<Offset><AbsDimension x="3" y="7"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_3DBars" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DefaultParty" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_RetainTarget" inherits="WatchDogCheckButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_DefaultGryphons" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			
+			<CheckButton name="$parent_IntegrateCTRA" inherits="WatchDogCheckButtonTemplate" hidden="true">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_3DBars" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_IntegrateBlizzRaid" inherits="WatchDogCheckButtonTemplate" hidden="true">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent_IntegrateCTRA" relativePoint="BOTTOMLEFT">
+					<Offset><AbsDimension x="0" y="5"/></Offset>
+				</Anchor></Anchors>
+			</CheckButton>
+
+			<Button name="$parent_EditClickCasting" inherits="GameMenuButtonTemplate" text="Edit Click-Casting" hidden="true">
+			<Size>
+				<AbsDimension x="125" y="25"/>
+			</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_RetainTarget">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+						WatchDogOptions_ClickCastings:Show();					
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parent_Cancel" inherits="GameMenuButtonTemplate" text="Cancel">
+			<Size>
+				<AbsDimension x="75" y="20"/>
+			</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="-15" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();					
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Apply" inherits="GameMenuButtonTemplate" text="Apply">
+			<Size>
+				<AbsDimension x="75" y="20"/>
+			</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_Cancel">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WatchDogOptions_SaveValues();
+					</OnClick>
+				</Scripts>
+			</Button>			
+			<Button name="$parent_Save" inherits="GameMenuButtonTemplate" text="Save">
+			<Size>
+				<AbsDimension x="75" y="20"/>
+			</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_Apply">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WatchDogOptions_SaveValues();
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		
+			
+		</Frames>
+				
+		<Scripts>
+			<OnLoad>
+				WatchDogOptions_OnLoad();
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnShow>
+				WatchDogOptions_LoadValues();
+			</OnShow>								
+			<OnDragStart>this:StartMoving(); this.isMoving=true;</OnDragStart>
+			<OnDragStop>this:StopMovingOrSizing(); this.isMoving=false;</OnDragStop>
+		</Scripts>		
+	</Frame>
+
+</Ui>
+

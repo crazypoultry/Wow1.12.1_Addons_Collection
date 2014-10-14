@@ -1,0 +1,37 @@
+--[[
+	ImmersionRP Alpha 4 infobox constants.
+	Purpose: Provide constants for the infobox.
+	Author: Seagale.
+	Last update: March 9th, 2007.
+	
+	NOTE: You may change values to customize your infobox.
+]]
+
+-- Player name color
+IRP_INFOBOX_PLAYERNAME_COLORR = 0.5;
+IRP_INFOBOX_PLAYERNAME_COLORG = 0.5;
+IRP_INFOBOX_PLAYERNAME_COLORB = 1;
+
+-- Title line
+IRP_INFOBOX_TITLE_COLORR = 1;
+IRP_INFOBOX_TITLE_COLORG = 1;
+IRP_INFOBOX_TITLE_COLORB = 0.5;
+
+-- RP style line
+IRP_INFOBOX_RPSTYLE_COLORR = 1;
+IRP_INFOBOX_RPSTYLE_COLORG = 1;
+IRP_INFOBOX_RPSTYLE_COLORB = 0.5;
+
+-- RP status line
+IRP_INFOBOX_RPSTATUS_COLORR = 1;
+IRP_INFOBOX_RPSTATUS_COLORG = 1;
+IRP_INFOBOX_RPSTATUS_COLORB = 0.5;
+
+-- Description/notes title line
+IRP_INFOBOX_DESCRIPTION_COLORR = 1;
+IRP_INFOBOX_DESCRIPTION_COLORG = 1;
+IRP_INFOBOX_DESCRIPTION_COLORB = 0.5;
+
+-- Size
+IRP_INFOBOX_NORMALHEIGHT = 250;
+IRP_INFOBOX_NORMALWIDTH = 250;

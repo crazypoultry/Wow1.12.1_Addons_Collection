@@ -1,0 +1,5 @@
+TITAN_INN_MENU_TEXT = "Inn Home";
+TITAN_INN_BUTTON_LABEL = "Inn: ";
+TITAN_INN_BUTTON_TEXT = "%s";
+TITAN_INN_TOOLTIP = "Inn Home";
+TITAN_INN_TOOLTIP_INN = "Inn Location: %s";

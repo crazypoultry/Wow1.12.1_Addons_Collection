@@ -1,0 +1,1 @@
+Displays your current damage range in a small box. Click to drag and use "/movedamage" to lock or unlock its position.

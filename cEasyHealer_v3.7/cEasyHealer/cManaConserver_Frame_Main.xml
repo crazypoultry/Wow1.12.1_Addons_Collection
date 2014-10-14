@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+	
+	<Script file="cEasyHealer.lua"/> 
+
+	<Frame name="cManaConserver_Frame_Main"> 
+		<Scripts> 
+			<OnLoad>
+
+				this:RegisterEvent( "SPELLCAST_START" );
+				this:RegisterEvent( "SPELLCAST_FAILED" );
+				this:RegisterEvent( "SPELLCAST_STOP" );
+				this:RegisterEvent( "SPELLCAST_INTERRUPTED" );
+
+			</OnLoad>
+			<OnEvent>
+
+				if( (event == "SPELLCAST_START") and (UnitIsFriend("player","target")) )
+				then
+					CASTING_SPELL = arg1;
+					TARGETED_FOR_SPELL = UnitName("target");
+					--ChatFrame2:AddMessage( "SPELLCAST_START " .. CASTING_SPELL .. " " .. TARGETED_FOR_SPELL );
+				end
+
+				if( (event == "SPELLCAST_FAILED") or (event == "SPELLCAST_STOP") or (event == "SPELLCAST_INTERRUPTED") )
+				then
+					--ChatFrame2:AddMessage( "CASTING_SPELL = false" );
+					CASTING_SPELL = nil;
+					TARGETED_FOR_SPELL = nil;
+
+					cEasyHealer_Frame_Main:SetBackdropBorderColor( 1, 1, 1 );
+					cEasyHealer_Frame_Spell:SetBackdropBorderColor( 1, 1, 1 );
+
+				end
+
+			</OnEvent>
+			<OnUpdate> 
+
+				if( (CASTING_SPELL ~= nil) and (TARGETED_FOR_SPELL == UnitName("target")) )
+				then
+					local hpRatio = UnitHealth("target")/UnitHealthMax("target");
+					--ChatFrame2:AddMessage( "casting '" .. CASTING_SPELL .. "' on '" .. TARGETED_FOR_SPELL .. "' (" .. hpRatio .. ")" );
+
+					if
+					(
+						((CASTING_SPELL == "Flash Heal") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Heal") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Greater Heal") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Lesser Heal") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Regrowth") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Holy Light") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Healing Wave") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Healing Touch") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Lesser Healing Wave") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+						or 
+						((CASTING_SPELL == "Chain Heal") and (hpRatio > (CEASYHEALER_MANA_CONSERVER/100)))
+					)
+					then
+						--ChatFrame1:AddMessage( "|cffF63A00cManaConserver: Aborting '|cffffffff" .. CASTING_SPELL .. "|cffF63A00' on '|cffffffff" .. TARGETED_FOR_SPELL .. "|cffF63A00'.|r" );
+				
+						cEasyHealer_Frame_Main:SetBackdropBorderColor( 1, 0, 0 );
+						cEasyHealer_Frame_Spell:SetBackdropBorderColor( 1, 0, 0 );
+
+					end
+
+				end
+			
+			</OnUpdate> 
+		</Scripts> 
+	</Frame> 
+
+</Ui>

@@ -1,0 +1,735 @@
+<!--
+    PvPLogUI
+    Author:           Atolicus
+	Maintainer:       Matthew Musgrove
+    Version:          0.6.1
+    Last Modified:    2006-10-23
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="PvPLogUI.lua"/>
+	<Frame name="PvPLogConfigFrame" parent="UIParent" enableMouse="true" movable="true" frameStrata="DIALOG" hidden="true" toplevel="true">
+    	<Size>
+			<AbsDimension x="320" y="320"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="txtPvPLogConfigFrame_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="325" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="txtPvPLogConfigFrame_HeaderText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="txtPvPLogConfig_NotifyKillsToggle_Header" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-130"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogConfig_NotifyDeathsToggle_Header" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyKillsToggle_Header">
+							<Offset>
+								<AbsDimension x="140" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogConfig_NotifyKillsCustomChannel_Header" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyKillsToggle_Header">
+							<Offset>
+								<AbsDimension x="20" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogConfig_NotifyDeathsCustomChannel_Header" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyDeathsToggle_Header">
+							<Offset>
+								<AbsDimension x="20" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="cbxPvPLogConfig_EnableToggle" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="100" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_ENABLE);
+					</OnLoad>
+					<OnClick>
+						 PvPLogEnabled_Toggle_OnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_DingToggle" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_EnableToggle">
+						<Offset>
+							<AbsDimension x="-85" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_DING);
+					</OnLoad>
+					<OnClick>
+						PvPLogDing_Toggle_OnClick();
+					</OnClick>
+					<OnEnter>
+						PvPLogDing_Toggle_OnEnter(this);
+					</OnEnter>
+					<OnLeave>
+						PvPLogDing_Toggle_OnLeave();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_MouseoverToggle" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_DingToggle">
+						<Offset>
+							<AbsDimension x="140" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_MOUSEOVER);
+					</OnLoad>
+					<OnClick>
+						 PvPLogMouseover_Toggle_OnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_MiniMapButtonToggle" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_DingToggle">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_MINIMAP_BUTTON);
+					</OnLoad>
+					<OnClick>
+						MiniMapButton_Toggle_OnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_DispToggle" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_MiniMapButtonToggle">
+						<Offset>
+							<AbsDimension x="140" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_DISPLAY);
+					</OnLoad>
+					<OnClick>
+						PvPLogDisp_Toggle_OnClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyKillsNone" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyKillsToggle_Header">
+						<Offset>
+							<AbsDimension x="20" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_NOTIFY_NONE);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyKills_Toggle_OnClick(NONE);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyKillsParty" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_NotifyKillsNone">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PARTY);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyKills_Toggle_OnClick(PARTY);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyKillsGuild" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_NotifyKillsParty">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(GUILD);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyKills_Toggle_OnClick(GUILD);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyKillsRaid" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_NotifyKillsGuild">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(RAID);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyKills_Toggle_OnClick(RAID);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyDeathsNone" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyDeathsToggle_Header">
+						<Offset>
+							<AbsDimension x="20" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_NOTIFY_NONE);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyDeaths_Toggle_OnClick(NONE);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyDeathsParty" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_NotifyDeathsNone">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PARTY);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyDeaths_Toggle_OnClick(PARTY);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyDeathsGuild" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_NotifyDeathsParty">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(GUILD);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyDeaths_Toggle_OnClick(GUILD);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="cbxPvPLogConfig_NotifyDeathsRaid" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="cbxPvPLogConfig_NotifyDeathsGuild">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(RAID);
+					</OnLoad>
+					<OnClick>
+						PvPLogNotifyDeaths_Toggle_OnClick(RAID);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Button name="btnPvPLogConfig_Close" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PvPLogConfig_btnClose_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="ebxPvPLogConfig_NotifyKillsChannel" letters="100" historyLines="0" autoFocus="false" virtual="true">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyKillsCustomChannel_Header">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>		
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="95" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged>
+						PvPLogConfig_NotifyKillsCustomChannel_UpdateString();
+					</OnTextChanged>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+						PvPLogConfig_NotifyKillsCustomChannel_Message();
+					</OnEditFocusLost>
+					<OnEnterPressed>
+						this:ClearFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<EditBox name="ebxPvPLogConfig_NotifyDeathsChannel" letters="100" historyLines="0" autoFocus="false" virtual="true">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="txtPvPLogConfig_NotifyDeathsCustomChannel_Header">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>		
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="95" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnTextChanged>
+						PvPLogConfig_NotifyDeathsCustomChannel_UpdateString();
+					</OnTextChanged>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0);
+						PvPLogConfig_NotifyDeathsCustomChannel_Message();
+					</OnEditFocusLost>
+					<OnEnterPressed>
+						this:ClearFocus();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+		</Frames>	
+		<Scripts>	
+			<OnLoad>
+				PvPLogConfig_OnLoad();
+			</OnLoad>
+			<OnShow>
+				PvPLogConfig_OnShow();
+			</OnShow>
+			<OnHide>
+				PvPLogConfig_OnHide();
+			</OnHide>
+			<OnMouseDown>
+				PvPLogConfig_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				PvPLogConfig_OnMouseUp(arg1);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+	<Frame name="PvPLogStatsFrame" parent="UIParent" enableMouse="true" movable="true" frameStrata="DIALOG" hidden="true" toplevel="true">
+		<Size>
+			<AbsDimension x="650" y="560"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="txtPvPLogStatsFrame_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="600" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="txtPvPLogStatsFrame_HeaderText" inherits="SystemFont" fontsize = "11">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_PlayersHeader" inherits="SystemFont">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_RealmsHeader" inherits="SystemFont">
+					<Anchors>
+				 		<Anchor point="TOPLEFT">
+				 			<Offset>
+				 				<AbsDimension x="180" y="-30"/>
+				 			</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_GuildsHeader" inherits="SystemFont">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="330" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_WinsHeader" inherits="SystemFont">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="450" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_LossesHeader" inherits="SystemFont">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="530" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="txtPvPLogStats_PlayerList" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo = "txtPvPLogStats_PlayersHeader">
+							<Offset>
+								<AbsDimension x="-10" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_RealmsList" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo = "txtPvPLogStats_RealmsHeader">
+							<Offset>
+								<AbsDimension x="-10" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_GuildList" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo = "txtPvPLogStats_GuildsHeader">
+							<Offset>
+								<AbsDimension x="-40" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_WinsList" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo = "txtPvPLogStats_WinsHeader">
+							<Offset>
+								<AbsDimension x="10" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="txtPvPLogStats_LossesList" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo = "txtPvPLogStats_LossesHeader">
+							<Offset>
+								<AbsDimension x="20" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="btnPvPLogStats_Close" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PvPLog_btnPvPLogStats_Close_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="btnPvPLogStats_Previous" inherits="OptionsButtonTemplate" text="Previous">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-150" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PvPLog_btnPvPLogStats_Previous_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="btnPvPLogStats_Next" inherits="OptionsButtonTemplate" text="Next">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="150" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PvPLog_btnPvPLogStats_Next_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>	
+			<OnLoad>
+				PvPLog_PvPLogStats_OnLoad();
+				tinsert(UISpecialFrames,PvPLogConfigFrame);
+				tinsert(UISpecialFrames,PvPLogStatsFrame);
+			</OnLoad>
+			<OnShow>
+				PvPLog_PvPLogStats_OnShow();
+			</OnShow>
+			<OnHide>
+				PvPLog_PvPLogStats_OnHide();
+			</OnHide>
+			<OnMouseDown>
+				PvPLog_PvPLogStats_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				PvPLog_PvPLogStats_OnMouseUp(arg1);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,528 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Perl_Party_Target.lua"/>
+
+
+	<Frame name="Perl_Party_Target_FrameTemplate" frameStrata="LOW" virtual="true">
+		<Size>
+			<!-- The size of this frame determines what can be clicked for the menu and moving, hence it is the same size as the name frame. -->
+			<AbsDimension x="110" y="24"/>
+		</Size>
+		<Frames>
+			<!-- Name Frame -->
+			<Frame name="$parent_NameFrame">
+				<Size>
+					<AbsDimension x="110" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parent_CastClickOverlay">
+						<Size>
+							<AbsDimension x="110" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnClick>
+								Perl_Party_Target_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Target_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Target_DragStop(arg1);
+							</OnDragStop>
+							<OnEnter>
+								Perl_Party_Target_Tip();
+								UnitFrame_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								UnitFrame_OnLeave();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Backdrop bgFile="Interface\AddOns\Perl_Config\Perl_Black" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Fontstring name="$parent_NameBarText" inherits="GameFontNormal" text="Error!">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Fontstring>
+					</Layer>
+				</Layers>
+			</Frame>
+
+
+			<!-- Stats Frame -->
+			<Frame name="$parent_StatsFrame">
+				<Size>
+					<AbsDimension x="110" y="42"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_NameFrame">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\AddOns\Perl_Config\Perl_Black" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<Button name="$parent_CastClickOverlay">
+						<Size>
+							<AbsDimension x="110" y="42"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnClick>
+								Perl_Party_Target_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Target_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Target_DragStop(arg1);
+							</OnDragStop>
+						</Scripts>
+					</Button>
+
+					<!-- Health Bar -->
+					<StatusBar name="$parent_HealthBar" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="90" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_HealthBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0.8" b="0"/>
+						<Layers>
+							<!-- Text -->
+							<Layer level="OVERLAY">
+								<Fontstring name="$parent_HealthBarText" inherits="GameFontNormalSmall" text="Error!">
+									<FontHeight>
+										<AbsValue val="11"/>
+									</FontHeight>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="1"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Fontstring>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<StatusBar name="$parent_HealthBarFadeBar" inherits="TextStatusBar" hidden="true">
+						<Size>
+							<AbsDimension x="90" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_HealthBarFadeBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0.8" b="0" a="0.25"/>
+					</StatusBar>
+					<StatusBar name="$parent_HealthBarBG" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="90" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_HealthBarBGTex" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+						<BarColor r="0" g="0.8" b="0" a="0.25"/>
+					</StatusBar>
+					<Button name="$parent_HealthBar_CastClickOverlay">
+						<Size>
+							<AbsDimension x="150" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnEnter>
+								Perl_Party_Target_HealthShow();
+							</OnEnter>
+							<OnLeave>
+								Perl_Party_Target_HealthHide();
+							</OnLeave>
+							<OnClick>
+								Perl_Party_Target_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Target_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Target_DragStop(arg1);
+							</OnDragStop>
+						</Scripts>
+					</Button>
+
+					<!-- Mana Bar -->
+					<StatusBar name="$parent_ManaBar" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="90" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent_HealthBar">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_ManaBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0" b="1"/>
+						<Layers>
+							<!-- Text -->
+							<Layer level="OVERLAY">
+								<Fontstring name="$parent_ManaBarText" inherits="GameFontNormalSmall" text="Error!">
+									<FontHeight>
+										<AbsValue val="11"/>
+									</FontHeight>
+											<Anchors>
+												<Anchor point="CENTER" relativePoint="CENTER">
+													<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Fontstring>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<StatusBar name="$parent_ManaBarFadeBar" inherits="TextStatusBar" hidden="true">
+						<Size>
+							<AbsDimension x="90" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_ManaBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_ManaBarFadeBarTex" file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0.8" b="0" a="0.25"/>
+					</StatusBar>
+					<StatusBar name="$parent_ManaBarBG" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="90" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_ManaBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<BarTexture name="$parent_ManaBarBGTex" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+						<BarColor r="0" g="0" b="1" a="0.25"/>
+					</StatusBar>
+					<Button name="$parent_ManaBar_CastClickOverlay">
+						<Size>
+							<AbsDimension x="150" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$parent_ManaBar">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks('LeftButtonUp', 'RightButtonUp', 'MiddleButtonUp', 'Button4Up', 'Button5Up');
+								this:RegisterForDrag('LeftButton');
+							</OnLoad>
+							<OnEnter>
+								Perl_Party_Target_ManaShow();
+							</OnEnter>
+							<OnLeave>
+								Perl_Party_Target_ManaHide();
+							</OnLeave>
+							<OnClick>
+								Perl_Party_Target_MouseClick(arg1);
+							</OnClick>
+							<OnDragStart>
+								Perl_Party_Target_DragStart(arg1);
+							</OnDragStart>
+							<OnDragStop>
+								Perl_Party_Target_DragStop(arg1);
+							</OnDragStop>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+
+	<!-- The Real Frames -->
+	<Frame name="Perl_Party_Target1" inherits="Perl_Party_Target_FrameTemplate" parent="UIParent" movable="true" id="1">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame1_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-4" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- Frame for the drop down menu. -->
+			<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Perl_Party_Target1DropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="Perl_Party_Target2" inherits="Perl_Party_Target_FrameTemplate" parent="UIParent" movable="true" id="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame2_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-4" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- Frame for the drop down menu. -->
+			<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate" id="2" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Perl_Party_Target2DropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="Perl_Party_Target3" inherits="Perl_Party_Target_FrameTemplate" parent="UIParent" movable="true" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame3_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-4" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- Frame for the drop down menu. -->
+			<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate" id="3" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Perl_Party_Target3DropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="Perl_Party_Target4" inherits="Perl_Party_Target_FrameTemplate" parent="UIParent" movable="true" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Perl_Party_MemberFrame4_StatsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-4" y="20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<!-- Frame for the drop down menu. -->
+			<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate" id="4" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Perl_Party_Target4DropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+
+	<Frame name="Perl_Party_Target_Script_Frame" movable="true" parent="UIParent" hidden="false" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				Perl_Party_Target_Script_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+
+	<!-- The Script Frames -->
+	<Frame name="Perl_Party_Target1_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_One_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target2_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_Two_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target3_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_Three_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target4_HealthBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_Four_HealthBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target1_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_One_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target2_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_Two_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target3_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_Three_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="Perl_Party_Target4_ManaBar_Fade_OnUpdate_Frame" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnUpdate>
+				Perl_Party_Target_Four_ManaBar_Fade(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+</Ui>

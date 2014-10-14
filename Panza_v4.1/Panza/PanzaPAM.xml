@@ -1,0 +1,1101 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="PanzaPAM.lua"/>
+	<Frame name="PanzaPAMFrame" inherits="PanzaTemplateFrame">
+		<Size>
+			<AbsDimension x="600" y="510"/>
+		</Size>
+
+		<Layers>
+
+			<Layer level="BACKGROUND">
+
+				<FontString name="txtPanzaPAMHeal" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-50"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMBless" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMCure" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-110"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMRez" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-140"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMCore" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-170"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMUI" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-200"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMCoop" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-230"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaPAMOffen" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="254" y="-260"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+
+			<Slider name="SliderPanzaPAMHeal" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_HEAL);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						SliderPanzaPAMHeal:SetMinMaxValues(0,5);
+						SliderPanzaPAMHeal:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_DynamicTooltip(this, "Healing");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Heal = SliderPanzaPAMHeal:GetValue();
+						PA:PAM_UpdateHeal();
+						PA:PAM_DynamicTooltip(this, "Healing");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="cbxPanzaPAMHealParty" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMHeal">
+						<Offset>
+							<AbsDimension x="326" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("P");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamhealparty")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMHealRaid" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMHealParty">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("R");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamhealraid")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMHealWhis" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMHealRaid">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("W");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamhealwhisper")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMHealSay" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMHealWhis">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("S");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamhealsay")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMHealEM" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMHealSay">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("E");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamhealem")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="SliderPanzaPAMBless" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMHeal">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_BLESS);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						SliderPanzaPAMBless:SetMinMaxValues(0,5);
+						SliderPanzaPAMBless:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_DynamicTooltip(this, "Blessing");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Bless = SliderPanzaPAMBless:GetValue();
+						PA:PAM_UpdateBless();
+						PA:PAM_DynamicTooltip(this, "Blessing");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="cbxPanzaPAMBlessParty" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMBless">
+						<Offset>
+							<AbsDimension x="326" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("P");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamblessparty")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMBlessRaid" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMBlessParty">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("R");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamblessraid")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMBlessWhis" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMBlessRaid">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("W");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamblesswhisper")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMBlessSay" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMBlessWhis">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("S");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamblesssay")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMBlessEM" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMBlessSay">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("E");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamblessEM")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="SliderPanzaPAMCure" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMBless">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_CURE);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						SliderPanzaPAMCure:SetMinMaxValues(0,5);
+						SliderPanzaPAMCure:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_DynamicTooltip(this, "Cure");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Cure = SliderPanzaPAMCure:GetValue();
+						PA:PAM_UpdateCure();
+						PA:PAM_DynamicTooltip(this, "Cure");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="cbxPanzaPAMCureParty" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMCure">
+						<Offset>
+							<AbsDimension x="326" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("P");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamcureparty")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMCureRaid" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMCureParty">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("R");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamcureraid")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMCureWhis" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMCureRaid">
+						<Offset>
+							<AbsDimension x="50" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("W");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamcurewhisper")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMCureSay" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMCureWhis">
+						<Offset>
+							<AbsDimension x="50" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("S");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamcuresay")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMCureEM" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMCureSay">
+						<Offset>
+							<AbsDimension x="50" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("E");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamcureem")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="SliderPanzaPAMRez" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMCure">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_REZ);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 5);
+						this:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_DynamicTooltip(this, "Rez");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Rez = this:GetValue();
+						PA:PAM_UpdateRez();
+						PA:PAM_DynamicTooltip(this, "Rez");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="cbxPanzaPAMRezParty" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMRez">
+						<Offset>
+							<AbsDimension x="326" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("P");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamrezparty");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMRezRaid" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMRezParty">
+						<Offset>
+							<AbsDimension x="50" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("R");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamrezraid");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMRezWhis" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMRezRaid">
+						<Offset>
+							<AbsDimension x="50" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("W");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamrezwhisper");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMRezSay" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMRezWhis">
+						<Offset>
+							<AbsDimension x="50" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("S");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamrezsay");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMRezEM" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMRezSay">
+						<Offset>
+							<AbsDimension x="50" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("E");
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("pamrezem");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="SliderPanzaPAMCore" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMRez">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_CORE);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						SliderPanzaPAMCore:SetMinMaxValues(0,5);
+						SliderPanzaPAMCore:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Core = SliderPanzaPAMCore:GetValue();
+						PA:PAM_UpdateCore();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaPAMUI" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMCore">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_UI);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						SliderPanzaPAMUI:SetMinMaxValues(0,5);
+						SliderPanzaPAMUI:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.UI = SliderPanzaPAMUI:GetValue();
+						PA:PAM_UpdateUI();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaPAMCoop" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMUI">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_COOP);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						SliderPanzaPAMCoop:SetMinMaxValues(0,5);
+						SliderPanzaPAMCoop:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Coop = SliderPanzaPAMCoop:GetValue();
+						PA:PAM_UpdateCoop();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaPAMOffen" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMCoop">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_OFFEN);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0,5);
+						this:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.MsgLevel.Offen = SliderPanzaPAMOffen:GetValue();
+						PA:PAM_UpdateOffen();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="cbxPanzaPAMSendProgress" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaPAMOffen">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_CBX_PROGRESS);
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						 Panza_SlashHandler("healprogress");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMNotifyFail" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMSendProgress">
+						<Offset>
+							<AbsDimension x="290" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_CBX_NOTIFYFAIL);
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						 Panza_SlashHandler("notfail");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMShowRanks" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMSendProgress">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_SHOWRANKS);
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						 Panza_SlashHandler("showranks");
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPAMQuietNotRequired" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPAMShowRanks">
+						<Offset>
+							<AbsDimension x="290" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_PAM_QUIETNOTREQUIRED);
+					</OnLoad>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						 PASettings.Switches.QuietOnNotRequired = not PASettings.Switches.QuietOnNotRequired;
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="btnPanzaPAMDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="24" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PA:PAM_btnDone_OnClick();
+						if (PanzaTreeFrame:IsVisible()) then
+							PanzaTreeFrame:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPAMQuiet" inherits="OptionsButtonTemplate" text="Quiet">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="btnPanzaPAMDone">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:PAM_btnQuiet_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPAMCustom" inherits="OptionsButtonTemplate" text="Custom">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="btnPanzaPAMQuiet">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:FrameToggle(PanzaPAMCustomFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPAMDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="btnPanzaPAMCustom">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:PAM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:PAM_Defaults();
+						PA:PAM_SetValues();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PA:PAM_OnLoad();
+				getglobal(this:GetName().."Title"):SetText(PANZA_PAM_TITLE);
+			</OnLoad>
+			<OnShow>
+				this:SetBackdropColor(0, 0, 0);
+				PA:PAM_OnShow();
+			</OnShow>
+			<OnHide>
+				PA:PAM_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

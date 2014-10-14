@@ -1,0 +1,255 @@
+<Ui>
+  <Script file="LilAddonMessage.lua"/>
+  <Button name = "LilAddonMessageEntryTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="730" y="16" />
+    </Size>
+    <Layers>
+      <Layer level="BORDER">
+        <FontString name="$parent_Text" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text="entry">
+        	<Size>
+		      <AbsDimension x="750" y="16" />
+			</Size>
+		</FontString>
+      </Layer>
+    </Layers>
+  </Button>
+
+  <Frame name="LilAddonMessageMain" parent="UIParent" enableMouse="true" movable="true">
+    <Size>
+      <AbsDimension x="900" y="192"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Scripts>
+      <OnLoad>
+        LilAddonMessage_OnLoad()
+		this:RegisterEvent("CHAT_MSG_ADDON"); 
+      </OnLoad>
+	  <OnEvent> 
+		if (event == "CHAT_MSG_ADDON") then
+        	LilAddonMessage_AddonMessage();
+        end
+      </OnEvent> 
+			<OnMouseDown>
+				if(arg1 == "LeftButton") then
+					this:StartMoving();
+				end
+			</OnMouseDown>
+			
+			<OnMouseUp>
+				if(arg1 == "LeftButton") then
+					this:StopMovingOrSizing();
+				end
+			</OnMouseUp>
+    </Scripts>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="4" right="4" top="4" bottom="4" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="16" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="16" />
+      </EdgeSize>
+    </Backdrop>
+    <Frames>
+			<Frame name="$parentTitle">
+				<Size>
+					<AbsDimension x="250" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackgroundTexture">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER"/>
+							</Anchors>
+							<Size>
+								<AbsDimension x="144" y="30"/>
+							</Size>
+							<Color r="0" g="0" b="0" a="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" text="Addon Message Monitor" inherits="GameFontNormalLarge">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>					
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0, 0, 0, 0.7);
+					</OnLoad>
+					<OnMouseDown>
+						if arg1 == "LeftButton" then
+							this:GetParent():StartMoving();
+							this:GetParent().isMoving = true;
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if (this:GetParent().isMoving) then
+							this:GetParent():StopMovingOrSizing();
+							this:GetParent().isMoving = false;
+						end
+					</OnMouseUp>
+					<OnHide>
+						if (this:GetParent().isMoving) then
+							this:GetParent():StopMovingOrSizing();
+							this:GetParent().isMoving = false;
+						end
+					</OnHide>
+				</Scripts>
+			</Frame>
+
+			<Button name="LilAddonMessage_Close_X_Button" inherits="UIPanelButtonTemplate" text=" X">
+				<Size>
+					<AbsDimension x="20" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LilAddonMessage_Toggle();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<ScrollingMessageFrame name="$parentScrollingMessageFrame" enableMouse="true" fade="false" maxLines="128" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-8" />
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="8" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString font="Fonts\FRIZQT__.TTF" justifyH="LEFT">
+					<FontHeight>
+						<AbsValue val="12" />
+					</FontHeight>
+					<Color r="1" g="0.8196079" b="0" />
+					<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+							<AbsDimension x="1" y="-1" />
+						</Offset>
+					</Shadow>
+				</FontString>
+				<TextInsets>
+					<AbsInset left="0" right="10" top="0" bottom="0" />
+				</TextInsets>
+				<Scripts>
+					<OnMouseWheel>
+						if(arg1 > 0) then
+							if( IsShiftKeyDown() ) then
+								this:PageUp();
+							else
+								this:ScrollUp();
+							end
+						else
+							if( IsShiftKeyDown() ) then
+								this:PageDown();
+							else
+								this:ScrollDown();
+							end
+						end
+					</OnMouseWheel>
+					<OnMessageScrollChanged>
+						LilAddonMessage_UpdateScrollBars(this);
+					</OnMessageScrollChanged>
+				</Scripts>
+			</ScrollingMessageFrame>
+			<Button name="$parentScrollUp">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						if( IsShiftKeyDown() ) then
+							getglobal(this:GetParent():GetName().."ScrollingMessageFrame"):PageUp();
+						else
+							getglobal(this:GetParent():GetName().."ScrollingMessageFrame"):ScrollUp();
+						end
+						LilAddonMessage_UpdateScrollBars(getglobal(this:GetParent():GetName().."ScrollingMessageFrame"));
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDown">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						if( IsShiftKeyDown() ) then
+							getglobal(this:GetParent():GetName().."ScrollingMessageFrame"):PageDown();
+						else
+							getglobal(this:GetParent():GetName().."ScrollingMessageFrame"):ScrollDown();
+						end
+						LilAddonMessage_UpdateScrollBars(getglobal(this:GetParent():GetName().."ScrollingMessageFrame"));
+					</OnClick>
+				</Scripts>
+			</Button>
+
+    </Frames>
+  </Frame>
+</Ui>

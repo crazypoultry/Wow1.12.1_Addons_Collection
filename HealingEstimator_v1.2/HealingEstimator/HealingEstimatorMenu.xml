@@ -1,0 +1,386 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Files -->
+	<Script file="HealingEstimatorMenu.lua"/>
+
+	<!-- Button template -->
+	<Button name="HealingEstimatorMenuTemplate" inherits="OptionsButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>HealingEstimatorMenu_OnClick();</OnClick>			
+			<OnEnter>HealingEstimatorButton_Tooltip();</OnEnter>
+		</Scripts>
+	</Button>
+
+	<!-- Pie chart -->
+	<Frame name="HealingEstimatorPieChart" frameStrata="LOW" parent="UIParent" enableMouse="true" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="26" y="26"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Rotating "slice" texture -->
+				<Texture name="$parentSlice" file="Interface\AddOns\HealingEstimator\PieChart">
+					<Size>
+						<AbsDimension x="26" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<!-- Left and right halves which will hide part of slice -->
+				<Texture name="$parentLeftHalf" file="Interface\AddOns\HealingEstimator\PieChart">
+					<Size>
+						<AbsDimension x="12" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightHalf" file="Interface\AddOns\HealingEstimator\PieChart">
+					<Size>
+						<AbsDimension x="12" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!-- Center part which will fix 0% and 100% overhealing display -->
+				<Texture name="$parentCenter" file="Interface\AddOns\HealingEstimator\PieChart">
+					<Size>
+						<AbsDimension x="3" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Artwork part which will make this look prettier -->
+				<Texture name="$parentArtwork" file="Interface\Minimap\Minimap-TrackingBorder">
+					<Size>
+						<AbsDimension x="52" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<Scripts>
+			<!-- Image left side is red and right side is green -->
+			<OnLoad>
+				getglobal(this:GetName().."LeftHalf"):SetTexCoord(1,0.55, 1,0);
+				getglobal(this:GetName().."RightHalf"):SetTexCoord(0.45,0, 1,0);
+				getglobal(this:GetName().."Center"):SetTexCoord(0.52,0.6, 0.5,1);
+			</OnLoad>
+			<OnEnter>HealingEstimatorPie_Tooltip();</OnEnter>
+			<OnLeave>GameTooltip:Hide();</OnLeave>
+			<OnMouseUp>
+				if( arg1 == "LeftButton" and this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if (HealingEstimatorPie_OnClick(arg1)) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+ 				if( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+ 				end
+			</OnHide>			
+		</Scripts>
+	</Frame>
+
+	<!-- Menu -->
+	<Frame name="HealingEstimatorMenu" parent="UIParent" enableMouse="false" movable="false" frameStrata="DIALOG" hidden="true">
+		<Backdrop name="HealingEstimatorMenuBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>	
+		<Size>
+			<AbsDimension x="232" y="345"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Overheal -->
+				<FontString name="$parentOverhealTitle" inherits="GameFontHighlight" text="OverhealTitle">
+					<Size>
+						<AbsDimension x="200" y="16"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentOverhealLine" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar">
+					<Size>
+						<AbsDimension x="210" y="2"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentOverhealTitle" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-64"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				
+				<!-- Healing bar -->
+				<FontString name="$parentBarTitle" inherits="GameFontHighlight" text="BarTitle">
+					<Size>
+						<AbsDimension x="200" y="16"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentOverhealLine" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentBarLine" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar">
+					<Size>
+						<AbsDimension x="210" y="2"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBarTitle" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-68"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				
+				<!-- Minimap button -->
+				<FontString name="$parentMinimapTitle" inherits="GameFontHighlight" text="MinimapTitle">
+					<Size>
+						<AbsDimension x="200" y="16"/>
+					</Size>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentBarLine" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentMinimapLine" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar">
+					<Size>
+						<AbsDimension x="210" y="2"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentMinimapTitle" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-84"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		
+		<Frames>
+			<!-- Overheal handling -->
+			<Slider name="$parentLimitSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentOverhealTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>HealingEstimatorMenu_OnClick();</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<CheckButton name="$parentCritCheck" inherits="OptionsCheckButtonTemplate" checked="true">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentLimitSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>HealingEstimatorMenu_ConvertCrits_Toggle();</OnClick>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentCheckText" inherits="GameFontHighlight" text="Ignore crits" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="184" y="16"/>
+							</Size>
+							<Color r="1.0" g="1.0" b="1.0"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="22" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			
+			<!-- Healing bar handling -->
+			<Slider name="$parentScaleSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBarTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>HealingEstimatorMenu_OnClick();</OnValueChanged>
+				</Scripts>
+			</Slider>			
+			<Button name="$parentButtonResetPos" inherits="HealingEstimatorMenuTemplate" text="Reset pos">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentScaleSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- Minimap button handling -->
+			<Slider name="$parentPosSlider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMinimapTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>HealingEstimatorMenu_OnClick();</OnValueChanged>
+				</Scripts>
+			</Slider>			
+			<Button name="$parentButtonHide" inherits="HealingEstimatorMenuTemplate" text="Hide">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPosSlider" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<CheckButton name="$parentMinimapCheck" inherits="OptionsCheckButtonTemplate" checked="true">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButtonHide" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>HealingEstimatorMenu_Minimap_Toggle();</OnClick>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentCheckText" inherits="GameFontHighlight" text="Anchor at minimap" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="184" y="16"/>
+							</Size>
+							<Color r="1.0" g="1.0" b="1.0"/>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="22" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			
+			
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>HealingEstimatorMenu_Hide();GameTooltip:Hide();</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentButtonClear" inherits="HealingEstimatorMenuTemplate" text="Clear data">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>HealingEstimatorMenu_OnLoad();</OnLoad>
+			<OnEvent>HealingEstimatorMenu_OnEvent(event);</OnEvent>
+			<OnShow>HealingEstimatorMenu_OnShow();</OnShow>
+		</Scripts>
+	</Frame>
+	
+</Ui>

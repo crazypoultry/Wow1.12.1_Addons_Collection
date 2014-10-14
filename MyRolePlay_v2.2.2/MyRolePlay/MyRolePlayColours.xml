@@ -1,0 +1,1319 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+
+	<!-- The lua scripts that this addon will use -->
+	<Script file="MyRolePlayColours.lua" />
+
+	<CheckButton name="mrpColourButton" parent="mrpUniversalFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="32" y="32" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="mrpCharacterButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+			ColorPickerFrame:SetFrameStrata("DIALOG");
+			 mrpCPF = ColorPickerFrame;
+
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(MRP_LOCALE_COLOURXML_FRAME_BUTTON_TT1, 0.5, 0.2, 0.7, 1 );
+				GameTooltip:AddLine(MRP_LOCALE_COLOURXML_FRAME_BUTTON_TT2, 1.0, 1.0, 1.0, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				mrpCheckButtons();
+				mrpHideAllFrames();
+				mrpColourButton:Disable();
+				mrpColourFrame:Show();
+			</OnClick>
+
+		</Scripts>
+
+		<NormalTexture file="Interface\AddOns\MyRolePlay\Buttons\ButtonColour.tga" />
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+
+	</CheckButton>
+
+	<Frame name="mrpColourFrame" parent="mrpUniversalFrame" toplevel="true" movable="true" hidden="true" enableMouse="true" >
+		<Size>
+			<AbsDimension x="300" y="240" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="mrpUniversalFrame" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnShow>
+				mrpColourTextSetAll();
+			</OnShow>
+			<OnEscapePressed>
+				this:Hide();
+			</OnEscapePressed>
+		</Scripts>
+	</Frame>
+
+	<Frame name="mrpColourTooltipFrame" parent="mrpColourFrame"  enableMouse="TRUE" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="300" y="220" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="mrpUniversalFrame" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="-12" y="30" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+		<Layer level="ARTWORK">
+				<Texture name="mrpColourFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="200" y="40" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="10" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="ColourHeaderText" inherits="GameFontNormal" text="MRP_LOCALE_COLOURXML_FRAME_BUTTON_TT1" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="80" y="15" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="6" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.2" g="0.5" b="1.0" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" >
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="50"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>			
+	</Frame>
+
+	<Button name="mrpNameColourLine" parent="mrpColourTooltipFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="300" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourTooltipFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="10" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="NameLine" inherits="GameFontNormal" text="Prefix Name Middlename Surname" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("This color cannot be changed.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpHouseColourLine" parent="mrpColourTooltipFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="200" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpNameColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="HouseLine" inherits="GameFontNormal" text="Of House Housename" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectHouse();
+				ColorPickerFrame.func = mrpColourHouse
+				ColorPickerFrame.cancelFunc = mrpColourHouseCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of housename.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpTitleColourLine" parent="mrpHouseColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="150" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpHouseColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="TitleLine" inherits="GameFontNormal" text="Full Title" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectTitle();
+				ColorPickerFrame.func = mrpColourTitle
+				ColorPickerFrame.cancelFunc = mrpColourTitleCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of character's title.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpNicknameColourLine" parent="mrpTitleColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="150" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpTitleColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-30" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="NicknameLine" inherits="GameFontNormal" text="Character Nickname" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectNickname();
+				ColorPickerFrame.func = mrpColourNickname
+				ColorPickerFrame.cancelFunc = mrpColourNicknameCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of character's nickname.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpGuildColourLine" parent="mrpNicknameColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="150" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpNicknameColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="GuildLine" inherits="GameFontNormal" text="Guild Rank and Affilliation" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectGuild();
+				ColorPickerFrame.func = mrpColourGuild
+				ColorPickerFrame.cancelFunc = mrpColourGuildCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of character's guild.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpFactionColourLine" parent="mrpGuildColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="150" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpGuildColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="FactionLine" inherits="GameFontNormal" text="Faction Rank and Affilliation" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("You cannot change the colour of this line.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpRPStatColourLine" parent="mrpFactionColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="150" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpFactionColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-30" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="RPStatLine" inherits="GameFontNormal" text="RolePlay Status" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectRPStat();
+				ColorPickerFrame.func = mrpColourRPStat
+				ColorPickerFrame.cancelFunc = mrpColourRPStatCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of character's RolePlay status.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpCharacterTextColourLine" parent="mrpRPStatColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="108" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpRPStatColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CharTextLine" inherits="GameFontNormal" text="Character status: " justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectCharStatText();
+				ColorPickerFrame.func = mrpColourCharStatText
+				ColorPickerFrame.cancelFunc = mrpColourCharStatTextCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of 'Character status:'.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpCharacterStatusColourLine" parent="mrpRPStatColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="150" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpRPStatColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="115" y="-15" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CharStatLine" inherits="GameFontNormal" text="RolePlay flag" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectCharStat();
+				ColorPickerFrame.func = mrpColourCharStat
+				ColorPickerFrame.cancelFunc = mrpColourCharStatCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the RolePlay flag.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpCharacterLevelColourLine" parent="mrpRPStatColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="30" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpRPStatColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-40" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CharacterLevelLine" inherits="GameFontNormal" text="Level" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectLevel();
+				ColorPickerFrame.func = mrpColourLevel
+				ColorPickerFrame.cancelFunc = mrpColourLevelCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the character's level.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpCharacterRaceColourLine" parent="mrpCharacterLevelColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="30" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpCharacterLevelColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="45" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CharacterRaceLine" inherits="GameFontNormal" text="Race" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectRace();
+				ColorPickerFrame.func = mrpColourRace
+				ColorPickerFrame.cancelFunc = mrpColourRaceCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the character's race.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpCharacterClassColourLine" parent="mrpCharacterRaceColourLine" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="30" y="12" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpCharacterRaceColourLine" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="40" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="CharacterClassLine" inherits="GameFontNormal" text="Class" justifyV="TOP" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="380" y="10" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				if (MyRolePlay.Settings.ColourClassSpecific == 1) then
+			    		mrpColourClassSpecificFrame:Show();
+				else	
+					mrpCPF = ColorPickerFrame;
+					if (mrpColourEdit == 0) then
+						mrpColourEdit = 1;	
+						ColorPickerFrame.func = nil;
+						mrpColourSelectClass();
+						ColorPickerFrame.func = mrpColourClass
+						ColorPickerFrame.cancelFunc = mrpColourClassCancel
+						ColorPickerFrame = mrpCPF;
+					end
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the character's class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpDefaultColourButton" text="MRP_LOCALE_COLOURXML_DEFAULT_COLOURS" parent="mrpColourTooltipFrame" hidden="false" toplevel="true">
+		<Size>
+			<AbsDimension x="125" y="25" />
+		</Size>
+		<Anchors>
+		   <Anchor point="CENTER" relativeTo="mrpColourTooltipFrame" relativePoint="CENTER">
+			<Offset>
+			    <AbsDimension x="0" y="-130" />
+			</Offset>
+		    </Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText(MRP_LOCALE_COLOURXML_DEFAULT_COLOURS_TT, 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				mrpColourSetDefaultVars();
+			</OnClick>
+		</Scripts>
+		
+		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625" />
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-DialogBox-Button-Down">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625" />
+		</PushedTexture>
+		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625" />
+		</HighlightTexture>
+		<NormalText name="$parentText" inherits="GameFontNormal" />
+		<HighlightText inherits="GameFontHighlightSmall" />
+	</Button>
+
+	<Button name="mrpColourHelpButton" parent="mrpColourFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="26" y="26" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="mrpUniversalFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-45" y="5" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(MRP_LOCALE_HELP, 1.0, 0.2, 0.2, 1 );
+				GameTooltip:AddLine(MRP_LOCALE_COLOURXML_HELP, 1.0, 1.0, 1.0, 1);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+
+		<NormalTexture file="Interface\AddOns\MyRolePlay\Buttons\ButtonHelp.tga" />
+	</Button>
+
+	<Frame name="mrpColourClassSpecificFrame" toplevel="true" movable="false" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="315" y="235"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" >
+			<EdgeSize>
+				<AbsValue val="24"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="50"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				if (mrpColourEdit == 1) then
+				mrpColourEdit = 0;
+				end
+			</OnShow>
+			<OnHide>
+				if (mrpColourEdit == 1) then
+				mrpColourEdit = 0;
+				end				
+			</OnHide>
+		</Scripts>
+
+	</Frame>
+	<Button name="mrpDefaultColourSpecificButton" text="MRP_LOCALE_COLOURXML_DEFAULT_COLOURS" parent="mrpColourClassSpecificFrame" hidden="false" toplevel="true">
+		<Size>
+			<AbsDimension x="125" y="25" />
+		</Size>
+		<Anchors>
+		   <Anchor point="CENTER" relativePoint="CENTER">
+			<Offset>
+			    <AbsDimension x="0" y="-90" />
+			</Offset>
+		    </Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText(MRP_LOCALE_COLOURXML_DEFAULT_COLOURS_TT, 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				mrpColourSpecificDefaultVars();
+			</OnClick>
+		</Scripts>
+		
+		<NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625" />
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-DialogBox-Button-Down">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625" />
+		</PushedTexture>
+		<HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+			<TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625" />
+		</HighlightTexture>
+		<NormalText name="$parentText" inherits="GameFontNormal" />
+		<HighlightText inherits="GameFontHighlightSmall" />
+	</Button>
+	
+	<Button name="mrpColourSpecificRogue" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="79" y="-35" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificRogueText" inherits="GameFontNormalLarge" text="Rogue" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectRogue();
+				ColorPickerFrame.func = mrpColourRogue
+				ColorPickerFrame.cancelFunc = mrpColourRogueCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Rogue class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpColourSpecificWarrior" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="55" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="185" y="-35" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificWarriorText" inherits="GameFontNormalLarge" text="Warrior" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectWarrior();
+				ColorPickerFrame.func = mrpColourWarrior
+				ColorPickerFrame.cancelFunc = mrpColourWarriorCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Warrior class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="mrpColourSpecificPriest" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="79" y="-70" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificPriestText" inherits="GameFontNormalLarge" text="Priest" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectPriest();
+				ColorPickerFrame.func = mrpColourPriest
+				ColorPickerFrame.cancelFunc = mrpColourPriestCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Priest class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="mrpColourSpecificMage" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="185" y="-70" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificMageText" inherits="GameFontNormalLarge" text="Mage" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectMage();
+				ColorPickerFrame.func = mrpColourMage
+				ColorPickerFrame.cancelFunc = mrpColourMageCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Mage class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpColourSpecificShaman" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="79" y="-105" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificShamanText" inherits="GameFontNormalLarge" text="Shaman" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectShaman();
+				ColorPickerFrame.func = mrpColourShaman
+				ColorPickerFrame.cancelFunc = mrpColourShamanCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Shaman class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="mrpColourSpecificPaladin" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="185" y="-105" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificPaladinText" inherits="GameFontNormalLarge" text="Paladin" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectPaladin();
+				ColorPickerFrame.func = mrpColourPaladin
+				ColorPickerFrame.cancelFunc = mrpColourPaladinCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Paladin class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpColourSpecificDruid" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="79" y="-140" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificDruidText" inherits="GameFontNormalLarge" text="Druid" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectDruid();
+				ColorPickerFrame.func = mrpColourDruid
+				ColorPickerFrame.cancelFunc = mrpColourDruidCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Druid class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpColourSpecificWarlock" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="185" y="-140" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificWarlockText" inherits="GameFontNormalLarge" text="Warlock" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectWarlock();
+				ColorPickerFrame.func = mrpColourWarlock
+				ColorPickerFrame.cancelFunc = mrpColourWarlockCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Warlock class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Button name="mrpColourSpecificHunter" parent="mrpColourClassSpecificFrame" toplevel="true" hidden="false">
+		<Size>
+			<AbsDimension x="42" y="20" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="mrpColourClassSpecificFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="135" y="-175" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="mrpColourSpecificHunterText" inherits="GameFontNormalLarge" text="Hunter" justifyV="TOP" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="380" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			
+			<OnClick>
+				mrpCPF = ColorPickerFrame;
+				if (mrpColourEdit == 0) then
+				mrpColourEdit = 1;	
+				ColorPickerFrame.func = nil;
+				mrpColourSelectHunter();
+				ColorPickerFrame.func = mrpColourHunter
+				ColorPickerFrame.cancelFunc = mrpColourHunterCancel
+				ColorPickerFrame = mrpCPF;
+				end
+			</OnClick>		
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Click to change the colour of the Hunter class.", 1.0, 0.8, 0.0, 1 );
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+
+</Ui>

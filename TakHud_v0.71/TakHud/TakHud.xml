@@ -1,0 +1,217 @@
+<Ui>
+	<Script file="TakHud.lua"/>
+	<Font name="TakHud_SpecialFont" font="Fonts\skurri.ttf" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="20"/>
+		</FontHeight>
+		<Color r="0.8" g="0.0" b="0.0"/>
+	</Font>
+	<Frame name="TakHud_BarTemplate"  frameStrata="MEDIUM" enableMouse="true" movable="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="180" y="16"/>
+		</Size>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" setAllPoints="true" tile="true">
+			<EdgeSize>
+				<AbsValue val="12"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLeft" inherits="TakHud_SpecialFont">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="8" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRight" inherits="TakHud_SpecialFont">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-8" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentBar">
+				<Size>
+					<AbsDimension x="174" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.4"/> 
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentTex" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="0.0" g="0.0" b="0.0"/>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.8)
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnEvent>
+				TakHud_BarUpdate(this, arg1)
+			</OnEvent>
+			<OnMouseDown>
+				if not this.locked then
+					this:StartMoving(); this.moving = true;
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if this.moving then
+					this:StopMovingOrSizing(); this.moving = false;
+				end
+			</OnMouseUp>
+			<OnHide>
+				if this.moving then
+					this:StopMovingOrSizing(); this.moving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="TakHud_EditBoxTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="120" y="16"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="3" bottom="3"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="12"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="12"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<EditBox name="$parentBox"  letters="64" historyLines="0" autoFocus="false" enableMouse="true">
+				<Size>
+					<AbsDimension x="110" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Scripts>
+					<OnEscapePressed>
+						this:ClearFocus()
+					</OnEscapePressed>
+					<OnEnterPressed>
+						this:ClearFocus()
+					</OnEnterPressed>
+					<OnEditFocusLost>
+						this:HighlightText(0, 0)
+					</OnEditFocusLost>
+					<OnEditFocusGained>
+						this:HighlightText()
+					</OnEditFocusGained>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0.6, 0.6, 0.6, 0.9)
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="TakHud_EditTemplate"  frameStrata="DIALOG" enableMouse="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="360" y="16"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentText" inherits="TakHud_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentLeft" inherits="TakHud_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentText" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRight" inherits="TakHud_EditBoxTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="TakHud_PlayerHealthBar" inherits="TakHud_BarTemplate"/>
+	<Frame name="TakHud_PlayerHealthBarEdit" inherits="TakHud_EditTemplate">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="TakHud_PlayerHealthBar"/>
+		</Anchors>
+	</Frame>
+	<Frame name="TakHud_PlayerEnergyBar" inherits="TakHud_BarTemplate"/>
+	<Frame name="TakHud_PlayerEnergyBarEdit" inherits="TakHud_EditTemplate">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="TakHud_PlayerEnergyBar"/>
+		</Anchors>
+	</Frame>
+	<Frame name="TakHud_TargetHealthBar" inherits="TakHud_BarTemplate"/>
+	<Frame name="TakHud_TargetHealthBarEdit" inherits="TakHud_EditTemplate">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="TakHud_TargetHealthBar"/>
+		</Anchors>
+	</Frame>
+	<Frame name="TakHud_TargetEnergyBar" inherits="TakHud_BarTemplate"/>
+	<Frame name="TakHud_TargetEnergyBarEdit" inherits="TakHud_EditTemplate">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="TakHud_TargetEnergyBar"/>
+		</Anchors>
+	</Frame>
+	<Frame name="TakHud_TargetTargetBar" inherits="TakHud_BarTemplate"/>
+	<Frame name="TakHud_TargetTargetBarEdit" inherits="TakHud_EditTemplate">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="TakHud_TargetTargetBar"/>
+		</Anchors>
+	</Frame>
+	<Frame name="TakHud_UpdateFrame">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED")
+				this:RegisterEvent("PLAYER_COMBO_POINTS")
+				this:RegisterEvent("PLAYER_AURAS_CHANGED")
+				this:RegisterEvent("PLAYER_ENTER_COMBAT")
+				this:RegisterEvent("PLAYER_LEAVE_COMBAT")
+				this:RegisterEvent("PLAYER_REGEN_DISABLED")
+				this:RegisterEvent("PLAYER_REGEN_ENABLED")
+				TakHud_OnLoad()
+			</OnLoad>
+			<OnUpdate>
+				TakHud_OnUpdate(arg1)
+			</OnUpdate>
+			<OnEvent>
+				TakHud_OnEvent(event)
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<GameTooltip name="TakHud_Tooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" parent="UIParent"/>
+</Ui>

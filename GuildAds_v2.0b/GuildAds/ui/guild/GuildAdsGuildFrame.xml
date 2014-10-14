@@ -1,0 +1,651 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+
+	<Script file="GuildAdsGuildFrame.lua"/>
+	
+	<Button name="GuildAdsGuildColumnHeaderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="10" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="5" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.078125" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="53" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.078125" right="0.90625" top="0" bottom="0.75"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\FriendsFrame\WhoFrame-ColumnTabs">
+					<Size>
+						<AbsDimension x="4" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.90625" right="0.96875" top="0" bottom="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				if ( this.sortType ) then
+					GuildAdsGuild.sortGuildAdsRoster(this.sortType);
+				end
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<NormalText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="8" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+	</Button>
+	
+	<Button name="GuildAdsGuildAdButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="490" y="16"/>
+		</Size>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="505" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentOwner" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="93" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLevel" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="32" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentOwner" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="92" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRace" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentClass" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+			</OnLoad>
+			<OnClick>
+				GuildAdsGuild.peopleButton.onClick();
+			</OnClick>
+			<OnEnter>
+				GuildAdsGuild.peopleButton.onEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	
+	
+	<Frame name="GuildAdsGuildFrame" parent="GuildAdsMainWindowFrame" hidden="true" setAllPoints="true">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="GuildAds_Filter_ClassDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="false">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildAdsMainWindowFrame" >
+						<Offset>
+							<AbsDimension x="-5" y="-42"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		
+			<Frame name="GuildListPeopleFrame" hidden="false" setAllPoints="true">
+				<Layers>
+				<Layer level="BACKGROUND">
+				<FontString name="GuildAdsCountText" inherits="GameFontNormalSmall" text="">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="GuildAdsMainWindowFrame" relativeFrom="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-138" y="-40"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>	
+						<FontString name="GuildAdsCountOnlineText" inherits="GameFontNormalSmall" text="">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="GuildAdsMainWindowFrame" relativeFrom="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-138" y="-55"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>	
+						</Layer>
+				</Layers>
+				<Frames>
+				
+				
+					<Button name="GuildAdsGuildColumnHeader1" inherits="GuildAdsGuildColumnHeaderTemplate" text="NAME">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="GuildAdsMainWindowFrame" >
+										<Offset>
+											<AbsDimension x="17" y="-76"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(113);
+										this.sortType = "name";
+									</OnLoad>
+								</Scripts>
+					</Button>
+				
+					<Button name="GuildAdsGuildColumnHeader2" inherits="GuildAdsGuildColumnHeaderTemplate" text="LEVEL_ABBR">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildAdsGuildColumnHeader1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(32);
+										this.sortType = "level";
+									</OnLoad>
+								</Scripts>
+							</Button>
+					<Button name="GuildAdsGuildColumnHeader3" inherits="GuildAdsGuildColumnHeaderTemplate" text="CLASS">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildAdsGuildColumnHeader2" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(92);
+										this.sortType = "class";
+									</OnLoad>
+								</Scripts>
+							</Button>
+					<Button name="GuildAdsGuildColumnHeader4" inherits="GuildAdsGuildColumnHeaderTemplate" text="RACE">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="GuildAdsGuildColumnHeader3" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="-2" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										WhoFrameColumn_SetWidth(100);
+										this.sortType = "race";
+									</OnLoad>
+								</Scripts>
+							</Button>
+					<Button name="GuildAdsPeopleGlobalAdButton1" inherits="GuildAdsGuildAdButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsGuildColumnHeader1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+			
+					<Button name="GuildAdsPeopleGlobalAdButton2" inherits="GuildAdsGuildAdButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y=""/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton3" inherits="GuildAdsGuildAdButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton4" inherits="GuildAdsGuildAdButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton5" inherits="GuildAdsGuildAdButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton6" inherits="GuildAdsGuildAdButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton7" inherits="GuildAdsGuildAdButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton8" inherits="GuildAdsGuildAdButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton9" inherits="GuildAdsGuildAdButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton10" inherits="GuildAdsGuildAdButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton11" inherits="GuildAdsGuildAdButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton12" inherits="GuildAdsGuildAdButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton11" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton13" inherits="GuildAdsGuildAdButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton12" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton14" inherits="GuildAdsGuildAdButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton15" inherits="GuildAdsGuildAdButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton16" inherits="GuildAdsGuildAdButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton15" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton17" inherits="GuildAdsGuildAdButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton16" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton18" inherits="GuildAdsGuildAdButtonTemplate" id="18">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton17" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton19" inherits="GuildAdsGuildAdButtonTemplate" id="19">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton18" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton20" inherits="GuildAdsGuildAdButtonTemplate" id="20">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton19" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton21" inherits="GuildAdsGuildAdButtonTemplate" id="21">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton20" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton22" inherits="GuildAdsGuildAdButtonTemplate" id="22">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton21" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton23" inherits="GuildAdsGuildAdButtonTemplate" id="23">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton22" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton24" inherits="GuildAdsGuildAdButtonTemplate" id="24">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton23" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton25" inherits="GuildAdsGuildAdButtonTemplate" id="25">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton24" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="GuildAdsPeopleGlobalAdButton26" inherits="GuildAdsGuildAdButtonTemplate" id="26">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton25" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="GuildAdsPeopleGlobalAdButton27" inherits="GuildAdsGuildAdButtonTemplate" id="27">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton26" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<ScrollFrame name="GuildAdsPeopleGlobalAdScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="505" y="443"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="GuildAdsPeopleGlobalAdButton1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(GuildAdsGuild.GUILDADS_ADBUTTONSIZEY, GuildAdsGuild.peopleButtonsUpdate);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					
+				<CheckButton name="GuildAdsGroupByAccountCheckButton" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildAdsMainWindowFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="75" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="GuildAdsGroupByAccountCheckButtonText" inherits="GameFontNormalSmall" text="GUILDADS_GROUPBYACCOUNT">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="5" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							GuildAdsGuild.setProfileValue(nil, "GroupByAccount", true);
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							GuildAdsGuild.setProfileValue(nil, "GroupByAccount", false);
+						end
+					</OnClick>
+				</Scripts>
+				
+			</CheckButton>
+			
+			<CheckButton name="GuildAdsGuildShowOfflinesCheckButton" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GuildAdsMainWindowFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="75" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="GuildAdsGuildShowOfflinesCheckButtonText" inherits="GameFontNormalSmall" text="SHOW_OFFLINE_MEMBERS">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="5" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>	
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							GuildAdsGuild.setProfileValue(nil, "HideOfflines", nil);
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							GuildAdsGuild.setProfileValue(nil, "HideOfflines", true);
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+					
+				</Frames>
+				
+				
+			</Frame>
+			
+			<Button name="GuildAdsGuildTab" inherits="GuildAdsWindowTabTemplate" text="GUILDADS_HEADER_ANNONCE" />
+		</Frames>
+		
+		<Scripts> 
+			<OnShow>
+				GuildAdsGuild.onShow();
+			</OnShow>
+			<OnUpdate>
+				GuildAdsGuild.onUpdate();
+			</OnUpdate>
+		</Scripts> 
+	</Frame>
+	
+	<Frame name="GuildAdsGuildContextMenu" inherits="UIDropDownMenuTemplate">
+		<Scripts>
+			<OnLoad>
+				GuildAdsGuild.contextMenu.onLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+</Ui>

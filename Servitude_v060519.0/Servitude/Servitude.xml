@@ -1,0 +1,698 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+    <Script file="localization.fr.lua"/>
+    <Script file="localization.de.lua"/>	
+	<Script file="Servitude.lua"/>
+	<Include file="BuffDatabase.xml"/>
+	<Include file="SpellDatabase.xml"/>
+	<Include file="ClassDatabase.xml"/>
+	<Include file="FireShieldClassDatabase.xml"/>
+	<Include file="AlertFrame.xml"/>
+	<GameTooltip name="ServitudeTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	<!-- Event Frame -->
+	<Frame name="ServitudeEventFrame">
+		<Scripts>
+			<OnUpdate>Servitude_OnUpdate();</OnUpdate>
+			<OnLoad>Servitude_OnLoad();</OnLoad>
+			<OnEvent>Servitude_OnEvent(event);</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Slider Template -->
+	<Slider name="ServitudeSliderTemplate" inherits="OptionsSliderTemplate" minValue="1" maxValue="100" valueStep="1" virtual="true">
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(this:GetValue());
+			</OnEnter>
+			<OnValueChanged>
+				GameTooltip:SetText(this:GetValue());
+			</OnValueChanged>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Slider>
+
+	<!-- Config Dialog -->
+	<Frame name="ServitudeConfigFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="790" y="650"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="ServitudeConfigFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="356" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="ServitudeConfigMenuTitle">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ServitudeConfigFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ServitudeConfigFrameVoidwalker" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="375" y="200"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="VWAutoShadow_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					<Slider name="VWAutoShadowRatio_Slider" inherits="ServitudeSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-18" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>		
+					<CheckButton name="VWAutoSacrif_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VWAutoSacrifCombat_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="VWSacrificeAlert_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-160"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					<Slider name="VWAutoSacrifPetRatio_Slider" inherits="ServitudeSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-18" y="-90"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="VWAutoSacrifPlayerRatio_Slider" inherits="ServitudeSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-18" y="-120"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(VoidwalkerOptions);
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			<Frame name="ServitudeConfigFrameImp" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="375" y="200"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="ServitudeConfigFrameVoidwalker">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="ImpSmartFireshield_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ImpSmartFireshieldNeutral_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="205" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ImpSmartFireshieldAlways_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="205" y="-40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>				
+					<CheckButton name="ImpSmartFireshieldSolo_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ImpFireShieldAlert_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					<Button name="FireShieldClassPriorityButton" inherits="GameMenuButtonTemplate" text="FireShieldClassDatabaseTitle">
+						<Size>
+							<AbsDimension x="100" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="224" y="-160"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ServitudeConfigFrameOkay_OnClick();
+								FireShieldClassDatabaseFrame:Show();
+							</OnClick>
+						</Scripts>
+					</Button>					
+				</Frames>
+				<Scripts>
+					<OnShow>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(ImpOptions);
+					</OnShow>
+				</Scripts>
+			</Frame>			
+			
+			<Frame name="ServitudeConfigFrameSuccubus" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="375" y="290"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ServitudeConfigFrameVoidwalker">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="ScbAutoInvisib_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="ScbAutoInvisibManaRatio_Slider" inherits="ServitudeSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-18" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<CheckButton name="ScbInvisDelay_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ScbSeduceCOS_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="205" y="-100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ScbSeduceCOE_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="205" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ScbSeduceAnnounce_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-160"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ScbSeduceAnnounceRaid_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-190"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="ScbSeduceAlert_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+				</Frames>
+				<Scripts>
+					<OnShow>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(SuccubusOptions);
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			<Frame name="ServitudeConfigFrameFelhunter" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="375" y="290"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ServitudeConfigFrameImp">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="FHNonCombatDevour_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+		
+					<CheckButton name="FHHungerDevour_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="FHHungerDevourRatio_Slider" inherits="ServitudeSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-18" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+
+					<CheckButton name="FHPartyDevour_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="FHDevourSelf_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="130" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="FHDevourPets_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="245" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					
+					<CheckButton name="FHRaidDevour_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="FHDevourIgnoreSelf_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="130" y="-100"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					
+					<CheckButton name="FHDevourMindVision_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="FHSpellLockPVP_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="245" y="-95"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="FHSpellLockPVE_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="245" y="-125"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="FHDisableNotification_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-160"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="FHClassAsPriority_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-190"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="FHPriorityUnitOnly_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="130" y="-190"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="FHDevourAlert_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-220"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="FHSpellLockAlert_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="150" y="-220"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					<Button name="DebuffPriorityButton" inherits="GameMenuButtonTemplate" text="BuffDatabaseTitle">
+						<Size>
+							<AbsDimension x="100" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-250"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ServitudeConfigFrameOkay_OnClick();
+								BuffDatabaseFrame:Show();								
+							</OnClick>
+						</Scripts>
+					</Button>
+
+					<Button name="SpellLockButton" inherits="GameMenuButtonTemplate" text="SpellDatabaseTitle">
+						<Size>
+							<AbsDimension x="100" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="119" y="-250"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ServitudeConfigFrameOkay_OnClick();
+								SpellDatabaseFrame:Show();
+							</OnClick>
+						</Scripts>
+					</Button>
+					
+					<Button name="ClassPriorityButton" inherits="GameMenuButtonTemplate" text="ClassDatabaseTitle">
+						<Size>
+							<AbsDimension x="100" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="224" y="-250"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ServitudeConfigFrameOkay_OnClick();
+								ClassDatabaseFrame:Show();
+							</OnClick>
+						</Scripts>
+					</Button>
+					
+				</Frames>
+				<Scripts>
+					<OnShow>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(FelhunterOptions);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="ServitudeConfigFrameGeneral" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="760" y="45"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ServitudeConfigFrameSuccubus">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="OneButton_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="14" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="HealthWarning_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="130" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="HealthWarningRatio_Slider" inherits="ServitudeSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-80" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<CheckButton name="HealthWarningVocal_CheckButton" inherits="OptionsCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="260" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+				</Frames>
+				<Scripts>
+					<OnShow>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(GeneralOptions);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Button name="ServitudeConfigFrameDefaults" inherits="GameMenuButtonTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="100" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-60" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ServitudeConfigFrameLoadSetting(Default_Servitude_Config);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ServitudeConfigFrameOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="100" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="10" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ServitudeConfigFrameOkay_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ServitudeConfigFrameCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="100" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="60" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ServitudeConfigFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+			<Scripts>
+				<OnShow>
+					ServitudeConfigFrame_OnShow();
+				</OnShow>				
+			</Scripts>
+	</Frame>
+</Ui>

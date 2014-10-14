@@ -1,0 +1,43 @@
+-- All the slots on the character sheet.
+CompareStats_itemLocations = {
+	INVTYPE_2HWEAPON = "MainHandSlot", -- Two-Hand
+	INVTYPE_BODY = "ShirtSlot", -- Shirt
+	INVTYPE_CHEST = "ChestSlot", -- Chest
+	INVTYPE_CLOAK = "BackSlot", -- Back
+	INVTYPE_FEET = "FeetSlot", -- Feet
+	INVTYPE_FINGER = "Finger0Slot", -- Finger
+	INVTYPE_FINGER_OTHER = "Finger1Slot", -- Finger_other
+	INVTYPE_HAND = "HandsSlot", -- Hands
+	INVTYPE_HEAD = "HeadSlot", -- Head
+	INVTYPE_HOLDABLE = "SecondaryHandSlot", -- Held In Off-hand
+	INVTYPE_LEGS = "LegsSlot", -- Legs
+	INVTYPE_NECK = "NeckSlot", -- Neck
+	INVTYPE_RANGED = "RangedSlot", -- Ranged
+	INVTYPE_RELIC = "RangedSlot", -- Relic
+	INVTYPE_ROBE = "ChestSlot", -- Chest
+	INVTYPE_SHIELD = "SecondaryHandSlot", -- Off Hand
+	INVTYPE_SHOULDER = "ShoulderSlot", -- Shoulder
+	INVTYPE_TABARD = "TabardSlot", -- Tabard
+	INVTYPE_TRINKET = "Trinket0Slot", -- Trinket
+	INVTYPE_TRINKET_OTHER = "Trinket1Slot", -- Trinket_other
+	INVTYPE_WAIST = "WaistSlot", -- Waist
+	INVTYPE_WEAPON = "MainHandSlot", -- One-Hand
+	INVTYPE_WEAPON_OTHER = "SecondaryHandSlot", -- One-Hand_other
+	INVTYPE_WEAPONMAINHAND = "MainHandSlot", -- Main Hand
+	INVTYPE_WEAPONOFFHAND = "SecondaryHandSlot", -- Off Hand
+	INVTYPE_WRIST = "WristSlot", -- Wrist
+	INVTYPE_WAND = "RangedSlot", -- Wand
+	INVTYPE_RANGEDRIGHT = "RangedSlot", -- Guns
+	INVTYPE_GUN = "RangedSlot", -- Gun - Though almost all seem to use the above.
+	INVTYPE_AMMO = "AmmoSlot", -- Gun and Bow ammo
+	INVTYPE_GUNPROJECTILE = "AmmoSlot", -- Projectile
+	INVTYPE_BOWPROJECTILE = "AmmoSlot", -- Projectile
+	INVTYPE_CROSSBOW = "RangedSlot", -- Crossbow
+	INVTYPE_THROWN = "RangedSlot", -- Thrown
+};
+
+COMPARESTATS_LOAD_MESSAGE = "CompareStats Loaded: ";
+CS_ARMOR = "Armor";
+CS_WEAPON = "Weapon";
+CS_RACE_TAUREN = "Tauren";
+CS_RACE_GNOME = "Gnome";

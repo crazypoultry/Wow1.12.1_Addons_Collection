@@ -1,0 +1,307 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="PanzaBLP.lua"/>
+	<Frame name="PanzaBLPFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="400" y="350"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="PanzaBLPFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="360" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="PANZA_BLP_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PanzaBLPFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+
+			<Layer level="BACKGROUND">
+
+				<FontString name="txtPanzaBLPNPCount" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PanzaBLPFrame">
+							<Offset>
+								<AbsDimension x="260" y="-90"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="txtPanzaBLPNearRestart" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="txtPanzaBLPNPCount">
+							<Offset>
+								<AbsDimension x="0" y="-35"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+
+				<FontString name="txtPanzaBLPRebless" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="txtPanzaBLPNearRestart">
+							<Offset>
+								<AbsDimension x="0" y="-35"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="btnPanzaBLPClose" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="PanzaBLPFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                        </Button>
+			<CheckButton name="cbxPanzaEnableNPC" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PanzaBLPFrame">
+						<Offset>
+							<AbsDimension x="24" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_OPTS_CBX_NPC);
+					</OnLoad>
+					<OnEnter>
+							PA:BLP_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("enableNPC")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="SliderPanzaBLPNPC" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaEnableNPC">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_BLP_NPCS);
+						getglobal(this:GetName().."High"):SetText("100");
+						getglobal(this:GetName().."Low"):SetText("1");
+						SliderPanzaBLPNPC:SetMinMaxValues(1,100);
+						SliderPanzaBLPNPC:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:BLP_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.NPCount = SliderPanzaBLPNPC:GetValue();
+						PA:BLP_UpdateNPCS();
+						PA:BLP_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaBLPNearRestart" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaBLPNPC">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_BLP_NEAR_RESTART);
+						getglobal(this:GetName().."High"):SetText("300");
+						getglobal(this:GetName().."Low"):SetText("1");
+						SliderPanzaBLPNearRestart:SetMinMaxValues(1,300);
+						SliderPanzaBLPNearRestart:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:BLP_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.NearRestart = SliderPanzaBLPNearRestart:GetValue();
+						PA:BLP_UpdateNearRestart();
+						PA:BLP_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Slider name="SliderPanzaBLPRebless" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaBLPNearRestart">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_BLP_RESTART);
+						getglobal(this:GetName().."High"):SetText("300");
+						getglobal(this:GetName().."Low"):SetText("1");
+						SliderPanzaBLPRebless:SetMinMaxValues(1,300);
+						SliderPanzaBLPRebless:SetValueStep(1);
+					</OnLoad>
+ 					<OnEnter>
+						PA:BLP_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnValueChanged>
+						PASettings.Switches.CycleRestart = SliderPanzaBLPRebless:GetValue();
+						PA:BLP_UpdateRebless();
+						PA:BLP_ShowTooltip(this);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="cbxPanzaEnableCycle" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="SliderPanzaBLPRebless">
+						<Offset>
+							<AbsDimension x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_OPTS_CBX_CYCLE);
+					</OnLoad>
+					<OnEnter>
+							PA:BLP_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						Panza_SlashHandler("enablecycle")
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+
+			<Button name="btnPanzaBLPDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PanzaBLPFrame">
+						<Offset>
+							<AbsDimension x="24" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PA:BLP_btnDone_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+			<Button name="btnPanzaBLPDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="PanzaBLPFrame">
+						<Offset>
+							<AbsDimension x="-24" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:BLP_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:BLP_SetValues();
+						if (PanzaSTAFrame:IsVisible()) then
+							PA:STA_SetValues();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PA:BLP_OnLoad();
+			</OnLoad>
+			<OnShow>
+				this:SetBackdropColor(0, 0, 0);
+				PA:BLP_OnShow();
+			</OnShow>
+			<OnHide>
+				PA:BLP_OnHide();
+			</OnHide>
+			<OnMouseDown>
+				PA:BLP_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				PA:BLP_OnMouseUp(arg1);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

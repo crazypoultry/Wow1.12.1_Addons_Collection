@@ -1,0 +1,730 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="Healcap.lua"/>
+	<Script file="localization.lua"/>
+	<Button name="HealcapBarTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="180" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBar" file="Interface\AddOns\Healcap\Background">
+					<Size>
+						<AbsDimension x="1" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT">
+							<Offset><AbsDimension x="0" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalSmall" text="(player)">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="3" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="$parentText" inherits="GameFontNormalSmall" text="-1">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this.color = {0,0,0};
+				this.totalFadeTime = 0.3;
+				this.fadeTime = 0;
+			</OnLoad>
+			<OnUpdate>
+				if this.fadeTime &gt; 0 then
+					this.fadeTime = this.fadeTime - arg1;
+					local color = HCFlashTexture(this.color, this.fadeTime, this.totalFadeTime);
+					getglobal(this:GetName() .. "Bar"):SetVertexColor(color.r, color.g, color.b, 1);
+				elseif this.fadeTime &lt; 0 then
+					getglobal(this:GetName() .. "Bar"):SetVertexColor(this.color[1], this.color[2], this.color[3], 1);
+					this.fadeTime = 0;
+				end
+			</OnUpdate>
+			<OnClick>
+				if ( arg1 == "LeftButton" and not IsShiftKeyDown() ) then
+					HealcapActiveDetails = getglobal(this:GetName() .. "Name"):GetText();
+					HealcapShowDetails();
+					HealcapPopulateDetails();
+					HealcapVertDetailsFrame:Hide();
+				elseif ( arg1 == "LeftButton" and IsShiftKeyDown() ) then
+					HealcapReport("SINGLEENTRY", getglobal(this:GetName() .. "Name"):GetText());
+				end
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName() .. "Bar"):SetVertexColor(1, 1, 1, 1);
+				GameTooltip:ClearLines();
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:AddLine("Left click for details");
+				GameTooltip:AddLine("Shift-click to report.");
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName() .. "Bar"):SetVertexColor(this.color[1], this.color[2], this.color[3], 1);
+				GameTooltip:Hide();			
+			</OnLeave>			
+		</Scripts>
+	</Button>
+	<Button name="HealcapDetailBarTemplate" inherits="HealcapBarTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				if ( arg1 == "LeftButton" and not IsShiftKeyDown() ) then
+					local oldActiveHeal = HealcapActiveHeal;
+					HealcapActiveHeal = getglobal(this:GetName() .. "Name"):GetText();
+					HealcapVertDetailsFrameTitle:SetText(HealcapActiveHeal);
+					if HealcapVertDetailsFrame:IsVisible() and oldActiveHeal == HealcapActiveHeal then
+						HealcapVertDetailsFrame:Hide();
+					else
+						HealcapVertDetailsFrame:Show();
+					end
+					HCSetDetailChart();
+				elseif ( arg1 == "LeftButton" and IsShiftKeyDown() ) then
+					HealcapReport("HEALENTRY", getglobal(this:GetName() .. "Name"):GetText());
+				end
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName() .. "Bar"):SetVertexColor(1, 1, 1, 1);
+				GameTooltip:ClearLines();
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:AddLine("Left click for details");
+				GameTooltip:AddLine("Shift-click to report.");
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName() .. "Bar"):SetVertexColor(this.color[1], this.color[2], this.color[3], 1);
+				GameTooltip:Hide();			
+			</OnLeave>	
+		</Scripts>
+	</Button>
+	
+	<Button name="HealcapBarTemplateVert" virtual="true">
+		<Size>
+			<AbsDimension x="9" y="50"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBar" file="Interface\Buttons\Ui-Listbox-Highlight2">
+					<Size>
+						<AbsDimension x="9" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+							<Offset><AbsDimension x="0" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>		
+		<Scripts>
+			<OnLoad>
+				this.maxHeight = 50;
+				this.tooltip = "";
+				color = HCfadeRedGreen(this:GetID(), 20);
+				getglobal(this:GetName() .. "Bar"):SetVertexColor(color.r, color.g, color.b, 1);
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:ClearLines();
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:AddLine(HealcapActiveDetails);
+				GameTooltip:AddLine(HealcapActiveHeal);
+				GameTooltip:AddLine(this.tooltip);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();			
+			</OnLeave>
+			
+		</Scripts>
+	</Button>
+	<Frame name="HealcapEvtFrame" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				Healcap_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				Healcap_OnEvent(event, arg1);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="HealcapFrame" toplevel="true" enableKeyboard="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="230" y="238"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		   <EdgeSize>
+		       <AbsValue val="16"/>
+		   </EdgeSize>
+		   <TileSize>
+		       <AbsValue val="32"/>
+		   </TileSize>
+		   <BackgroundInsets>
+		       <AbsInset left="5" right="5" top="5" bottom="5"/>
+		   </BackgroundInsets>
+		</Backdrop>
+		<Scripts>
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" ) then
+					this:StartMoving();
+				--elseif ( arg1 == "RightButton" ) then
+				--	this:GetParent():ClearAllPoints();
+				--	this:GetParent():SetPoint("CENTER", "UIParent", "CENTER");
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnEnter>
+				GameTooltip:ClearLines();
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText("Left-click to drag");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>	
+		<Frames>
+			<Button>
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>				
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentName" inherits="GameFontNormal" text="HEALCAP_TITLE">
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="3" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-20" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</HighlightTexture>
+		    <Anchors>
+		        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+		            <Offset>
+		                <AbsDimension x="6" y="-6"/>
+		            </Offset>
+		        </Anchor>
+		    </Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if ( arg1 == "LeftButton" and not IsShiftKeyDown() ) then
+							this:GetParent():StartMoving();
+						elseif ( arg1 == "LeftButton" and IsShiftKeyDown() ) then
+							HealcapReport("OVERALL");
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						this:GetParent():StopMovingOrSizing();
+					</OnMouseUp>
+					<OnEnter>
+						GameTooltip:ClearLines();
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("Left-click to drag\nShift-click to report");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>			    
+			</Button>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="HealcapBarIP" inherits="HealcapBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter></OnEnter>
+					<OnLeave></OnLeave>
+					<OnClick></OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="HealcapBarOP" inherits="HealcapBarTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapBarIP"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter></OnEnter>
+					<OnLeave></OnLeave>
+					<OnClick></OnClick>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+				   <EdgeSize>
+				       <AbsValue val="16"/>
+				   </EdgeSize>
+				   <TileSize>
+				       <AbsValue val="32"/>
+				   </TileSize>
+				   <BackgroundInsets>
+				       <AbsInset left="5" right="0" top="5" bottom="5"/>
+				   </BackgroundInsets>
+				</Backdrop>			
+				<Size>
+					<AbsDimension x="195" y="130"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(20, HealcapUpdateBars);
+					</OnVerticalScroll>
+				</Scripts>
+				<Frames>
+					<Button name="HealcapBar1" inherits="HealcapBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-5" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="HealcapBar2" inherits="HealcapBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapBar1"/>
+						</Anchors>
+					</Button>
+      		
+					<Button name="HealcapBar3" inherits="HealcapBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapBar2"/>
+						</Anchors>
+					</Button>
+      		
+					<Button name="HealcapBar4" inherits="HealcapBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapBar3"/>
+						</Anchors>
+					</Button>
+      		
+					<Button name="HealcapBar5" inherits="HealcapBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapBar4"/>
+						</Anchors>
+					</Button>
+      		
+					<Button name="HealcapBar6" inherits="HealcapBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapBar5"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</ScrollFrame>
+			<Button name="HealcapResetButton" text="Reset">
+				<Size>
+					<AbsDimension x="60" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HealcapReset();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+			</Button>	
+			<Frame name="HealcapDetailsFrame" movable="true" hidden="true">
+			
+				<Size>
+					<AbsDimension x="230" y="160"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+				   <EdgeSize>
+				       <AbsValue val="16"/>
+				   </EdgeSize>
+				   <TileSize>
+				       <AbsValue val="32"/>
+				   </TileSize>
+				   <BackgroundInsets>
+				       <AbsInset left="5" right="5" top="5" bottom="5"/>
+				   </BackgroundInsets>
+				</Backdrop>
+				<Frames>
+					<Button>
+						<Size>
+							<AbsDimension x="200" y="20"/>
+						</Size>				
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="HealcapDetailsFrameTitle" inherits="GameFontHighlightLarge" text="(player)">
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="3" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-5"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-20" y="-25"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</HighlightTexture>
+				    <Anchors>
+				        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+				            <Offset>
+				                <AbsDimension x="6" y="-6"/>
+				            </Offset>
+				        </Anchor>
+				    </Anchors>
+						<Scripts>
+							<OnMouseDown>
+								if ( arg1 == "LeftButton" and not IsShiftKeyDown() ) then
+									this:GetParent():StartMoving();
+								elseif ( arg1 == "LeftButton" and IsShiftKeyDown() ) then
+									HealcapReport("DETAILS");
+								end
+							</OnMouseDown>
+							<OnMouseUp>
+								this:GetParent():StopMovingOrSizing();
+							</OnMouseUp>
+							<OnEnter>
+								GameTooltip:ClearLines();
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText("Left-click to drag\nShift-click to report");
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>			    
+					</Button>		
+				
+					<Button inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+						   <EdgeSize>
+						       <AbsValue val="16"/>
+						   </EdgeSize>
+						   <TileSize>
+						       <AbsValue val="32"/>
+						   </TileSize>
+						   <BackgroundInsets>
+						       <AbsInset left="5" right="0" top="5" bottom="5"/>
+						   </BackgroundInsets>
+						</Backdrop>			
+						<Size>
+							<AbsDimension x="195" y="130"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-30" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(20, HealcapPopulateDetails);
+							</OnVerticalScroll>
+						</Scripts>
+						<Frames>
+							<Button name="HealcapDetailsBar1" inherits="HealcapDetailBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="-4" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="HealcapDetailsBar2" inherits="HealcapDetailBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapDetailsBar1"/>
+								</Anchors>
+							</Button>
+  				
+							<Button name="HealcapDetailsBar3" inherits="HealcapDetailBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapDetailsBar2"/>
+								</Anchors>
+							</Button>
+  				
+							<Button name="HealcapDetailsBar4" inherits="HealcapDetailBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapDetailsBar3"/>
+								</Anchors>
+							</Button>
+  				
+							<Button name="HealcapDetailsBar5" inherits="HealcapDetailBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapDetailsBar4"/>
+								</Anchors>
+							</Button>
+  				
+							<Button name="HealcapDetailsBar6" inherits="HealcapDetailBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="HealcapDetailsBar5"/>
+								</Anchors>
+							</Button>	
+						</Frames>
+					</ScrollFrame>		
+					<Frame name="HealcapVertDetailsFrame" hidden="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitle" inherits="GameFontHighlight" text="(player)">
+								    <Color r="0.94" g="0.77" b="0.01"/>
+								    <Anchors>
+								        <Anchor point="TOPLEFT">
+								            <Offset>
+								                <AbsDimension x="6" y="-6"/>
+								            </Offset>
+								        </Anchor>
+								    </Anchors>
+								</FontString>			
+							</Layer>
+						</Layers>
+					
+						<Size>
+							<AbsDimension x="230" y="80"/>
+						</Size>
+						<Anchors>
+			        <Anchor point="TOP" relativePoint="BOTTOM">
+    		        <Offset>
+    		          <AbsDimension x="0" y="2"/>
+    		        </Offset>
+			        </Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+						   <EdgeSize>
+						       <AbsValue val="16"/>
+						   </EdgeSize>
+						   <TileSize>
+						       <AbsValue val="32"/>
+						   </TileSize>
+						   <BackgroundInsets>
+						       <AbsInset left="5" right="5" top="5" bottom="5"/>
+						   </BackgroundInsets>
+						</Backdrop>
+						<Frames>
+							<Button name="HealcapVertBar1" id="1" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="24" y="5" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar2" id="2" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar1" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar3" id="3" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar2" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar4" id="4" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar3" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar5" id="5" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar4" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar6" id="6" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar5" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar7" id="7" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar6" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar8" id="8" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar7" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar9" id="9" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar8" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar10" id="10" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar9" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar11" id="11" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar10" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar12" id="12" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar11" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar13" id="13" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar12" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar14" id="14" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar13" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar15" id="15" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar14" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar16" id="16" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar15" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar17" id="17" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar16" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar18" id="18" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar17" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar19" id="19" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar18" />
+								</Anchors>
+							</Button>		
+    		  		
+							<Button name="HealcapVertBar20" id="20" inherits="HealcapBarTemplateVert">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="HealcapVertBar19" />
+								</Anchors>
+							</Button>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						if ( arg1 == "LeftButton" ) then
+							this:StartMoving();
+						--elseif ( arg1 == "RightButton" ) then
+						--	this:GetParent():ClearAllPoints();
+						--	this:GetParent():SetPoint("CENTER", "UIParent", "CENTER");
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						this:StopMovingOrSizing();
+					</OnMouseUp>
+					<OnEnter>
+						GameTooltip:ClearLines();
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("Left-click to drag");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>		
+			</Frame>					
+		</Frames>
+	</Frame>
+</Ui>

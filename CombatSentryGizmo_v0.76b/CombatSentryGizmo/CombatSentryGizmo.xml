@@ -1,0 +1,2008 @@
+<!--
+//////////////////////////////////////////////
+//
+//		CSGizmo.xml
+//
+//		V 0.1
+//
+//////////////////////////////////////////////
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="CSG_AbilityList.lua"/>
+	<Script file="CombatSentryGizmo.lua"/>
+
+	<FontString name="CSGFontText" inherits="MasterFont" font="Interface\AddOns\CombatSentryGizmo\framd.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="4"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+ 		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</FontString>
+
+	<FontString name="CSGFontTextDMG" inherits="MasterFont" font="Interface\AddOns\CombatSentryGizmo\framd.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+ 		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</FontString>
+
+	<FontString name="CSGFontTextSmall" inherits="MasterFont" font="Interface\AddOns\CombatSentryGizmo\framd.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</FontString>
+
+	<FontString name="CSGFontTextSmaller" inherits="MasterFont" font="Interface\AddOns\CombatSentryGizmo\framd.ttf" virtual="true">
+		<FontHeight>
+			<AbsValue val="9"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+<!-- 		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow> -->
+	</FontString>
+
+	<FontString name="CSGFontTextSuperSmall" inherits="MasterFont" font="Fonts\ARIALN.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="8"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+<!-- 		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow> -->
+	</FontString>
+
+	<!-- PANEL CHECKBUTTON TEMPLATE -->
+	<CheckButton name="CSG_CheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="26" y="26"/>
+		</Size>
+
+		<NormalTexture file="Interface\AddOns\CombatSentryGizmo\gfx\button_on"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down" alphaMode="ADD"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				end
+			</OnClick>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+				if ( this.tooltipRequirement ) then
+					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+ 			<OnLeave>
+				GameTooltip:Hide();
+				CSG_AddMessage("|cff3366ffLeaving Button");
+				UIDropDownMenu_StartCounting(this:GetParent());
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<!-- MENU CHECKBOX TEMPLATE -->
+	<CheckButton name="CSG_MenuCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-50" top="0" bottom="0"/>
+		</HitRectInsets>
+		<OnClick>
+			if ( this:GetChecked() ) then
+				PlaySound("igMainMenuOptionCheckBoxOff");
+			else
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			end
+		</OnClick>
+	</CheckButton>
+
+	<!-- TEMPLATE FOR SLIDERS THAT HAVE A TEXT UPDATE SHOWING THE CURRENT STATE -->
+	<Slider name="CSG_SliderWithText_Template" inherits="OptionsSliderTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTextUpdate" inherits="GameFontNormalSmall" text="XXX">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate>
+				if ( this.updatetext ) then
+					if ( (this:GetName() == ( "CSG_OptionsFrame_Slider1" )) ) then
+						this.updatetext:SetText( format("%.1f", ( this:GetValue() ) ) );
+					else
+						this.updatetext:SetText( this:GetValue() );
+					end
+					return;
+				end
+				this.updatetext = getglobal( this:GetName().."TextUpdate");
+			</OnUpdate>	
+		</Scripts>
+	</Slider>
+
+	<!-- HEALER FRAME TEMPLATE -->
+	<Frame name="CSG_Healer_Template" frameStrata="HIGH" toplevel="true" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="2" right="2" top="2" bottom="2"/>
+		</HitRectInsets>
+		<Frames>
+			<Frame name="$parent_NameFrame">
+				<Size>
+					<AbsDimension x="122" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>	
+
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentNameText" inherits="CSGFontTextSmall" justifyH="LEFT" text="Unknown">
+							<Size>
+								<AbsDimension x="90" y="12" />
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parent_Icon" file="Interface\Icons\INV_Enchant_EssenceMysticalLarge">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBranch" file="Interface\TalentFrame\UI-TalentBranches">
+							<Size>
+								<AbsDimension x="18" y="18"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-16" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.640625" right="0.515625" top="0.5" bottom="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.1, 0.1, 1);
+						this:SetBackdropColor(0.3, 0.3, 0.8);
+						this:SetAlpha( 0.8 );
+						local branch = getglobal(this:GetName().."Branch");
+						branch:SetVertexColor( 0.5, 0.5, 1);
+					</OnLoad>
+					<OnEvent>
+					
+					</OnEvent>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Highlight" hidden="true">
+				<Size>
+					<AbsDimension x="142" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentArt" file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="148" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentButton">
+				<Size>
+					<AbsDimension x="128" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="2" right="2" top="2" bottom="2"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp");
+					</OnLoad>
+					<OnEnter>
+						local slot = this:GetParent():GetParent():GetID();
+						local hslot = this:GetParent():GetID();
+						local hlFrame = getglobal("CSG_Attacker"..slot.."_Heal_"..hslot.."_Highlight");
+
+						if (not AttackerList[slot].pvp) then
+								return;	
+						end
+						
+						hlFrame:SetAlpha(0.25);
+						hlFrame:Show();
+					</OnEnter>
+					<OnLeave>
+						local slot = this:GetParent():GetParent():GetID();
+						local hslot = this:GetParent():GetID();
+						local hlFrame = getglobal("CSG_Attacker"..slot.."_Heal_"..hslot.."_Highlight");
+						hlFrame:Hide();				
+					</OnLeave>
+					<OnMouseDown>
+						local slot = this:GetParent():GetParent():GetID();
+						local hslot = this:GetParent():GetID();
+						local hlFrame = getglobal("CSG_Attacker"..slot.."_Heal_"..hslot.."_Highlight");
+						hlFrame:SetAlpha(1);
+					</OnMouseDown>
+					<OnMouseUp>
+						local slot = this:GetParent():GetParent():GetID();
+						local hslot = this:GetParent():GetID();
+						local hlFrame = getglobal("CSG_Attacker"..slot.."_Heal_"..hslot.."_Highlight");
+						hlFrame:SetAlpha(0.25);
+						CSG_HealFrame_OnClick();
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+			<OnShow>
+				CSG_HealFrame_OnShow( this );
+			</OnShow>
+			<OnHide>
+				CSG_HealFrame_OnHide();
+			</OnHide>
+			<OnUpdate>
+				CSG_HealFrame_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CSG_Attacker_Template" frameStrata="HIGH" toplevel="true" parent="UIParent" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnLoad>
+ 				<!-- this:RegisterForClicks("LeftButtonDown", "LeftButtonUp"); -->
+				this:SetBackdropBorderColor(0.3, 0.3, 0.3);
+				this:SetBackdropColor(0.5, 0.5, 0.6);
+			</OnLoad>
+			<OnEvent>
+			
+			</OnEvent>
+			<OnShow>
+				CSG_Frame_OnShow( this );
+  				local slot = this:GetID();
+				local idNum = getglobal("CSG_Attacker"..slot.."_Text_ID");
+				if (CSGiz.debug and CSGiz.debug == 1) then
+					idNum:SetText(slot);
+					idNum:Show();
+				else
+					idNum:Hide();
+				end
+
+				local rank = getglobal(this:GetName().."_Text_RankIcon");
+				local kills = getglobal(this:GetName().."_Kills");
+				local slot = this:GetID();
+				if (kills:IsVisible()) then
+					kills:SetPoint("RIGHT", this:GetName(), "LEFT", 3, 0);
+					rank:SetPoint("RIGHT", "CSG_Attacker"..slot.."_Kills", "LEFT", 0, 0);
+				else
+					rank:SetPoint("RIGHT", "CSG_Attacker"..slot, "LEFT", 0, 0);
+				end
+			</OnShow>
+			<OnHide>
+				local slot = this:GetID();
+				local portrait = getglobal("CSG_Attacker"..slot.."_PortraitArt");
+				portrait:SetTexture("Interface\\CharacterFrame\\TempPortrait");
+				portrait:SetDesaturated(1);
+				portrait:SetVertexColor(0.2,0.2,0.2);
+				CSG_Frame_RemoveDamager( slot );
+				AttackerList[slot] = nil;
+				CSG_CurList = CSG_CurList - 1;
+				CSG_MainFrame_Toggle();
+			</OnHide>
+			<OnUpdate>
+				CSG_AttackerFrame_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+		<Frames>
+			<Frame name="$parent_Text" frameStrata="HIGH" toplevel="true">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parent_NameText" inherits="CSGFontTextSmall" justifyH="LEFT" text="Name">
+							<Size>
+								<AbsDimension x="100" y="12" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="55" y="-3.5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parent_LevelText" inherits="CSGFontText" justifyH="RIGHT" text="??">
+							<Size>
+								<AbsDimension x="24" y="14" />
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="54" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parent_ClassText" inherits="CSGFontText" justifyH="LEFT" text="Unknown">
+							<Size>
+								<AbsDimension x="64" y="12" />
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parent_RankIcon">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<FontString name="$parent_ID" inherits="CSGFontText" justifyH="LEFT" setAllPoints="true">
+							<Size>
+								<AbsDimension x="22" y="22" />
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-32" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+	<!-- HEALTH / MANA -->
+			<Frame name="$parent_HealthManaFrame" hidden="true" frameStrata="HIGH" toplevel="true">
+				<Size>
+					<AbsDimension x="156" y="22"/>
+				</Size>
+<!-- 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="1"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0"/>
+					</BackgroundInsets>
+				</Backdrop> -->
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+<!-- 				<Scripts>
+					<OnLoad>
+						TipBuddy_OnLoad("mouseover");
+					</OnLoad>
+				</Scripts> -->
+				<Scripts>
+<!-- 					<OnLoad>
+						this:SetBackdropBorderColor(0.01, 0.01, 0.01);
+						this:SetBackdropColor(0.01, 0.01, 0.01);
+					</OnLoad> -->
+					<OnEvent>
+					
+					</OnEvent>
+					<OnUpdate>
+						CSG_HealthManaFrame_OnUpdate();
+					</OnUpdate>
+				</Scripts>
+				<Frames>
+					<StatusBar name="$parentHealthBar" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="156" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+ 						<Scripts>
+							<OnLoad>
+								TextStatusBar_Initialize();
+								this.textLockable = 1;
+							</OnLoad>
+							<OnEvent>
+								UnitFrameHealthBar_Update(this, arg1);
+							</OnEvent>
+							<OnShow>
+
+							</OnShow>
+<!-- 							<OnValueChanged>
+								UnitFrameHealthBar_OnValueChanged(arg1);
+							</OnValueChanged> -->
+						</Scripts> 
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+					</StatusBar>
+
+<!-- 					<StatusBar name="$parentManaBar" inherits="TextStatusBar">
+						<Size>
+							<AbsDimension x="80" y="2"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="4" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								TextStatusBar_Initialize();
+								this.textLockable = 1;
+							</OnLoad>
+							<OnEvent>
+								UnitFrameManaBar_Update(this, arg1);
+							</OnEvent>
+						</Scripts>
+						<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+						<BarColor r="0" g="0" b="1.0"/>
+					</StatusBar> -->
+				</Frames>
+			</Frame>
+			<Button name="$parentButton">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="2" right="2" top="2" bottom="2"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp");
+						this:SetFrameLevel(this:GetFrameLevel() + 2);
+					</OnLoad>
+					<OnEnter>
+						local hlFrame = getglobal(this:GetParent():GetName().."_Highlight");
+						local slot = this:GetParent():GetID();
+						if (AttackerList[slot].pvp or this:GetParent().party) then
+							hlFrame:SetAlpha(0.25);
+							hlFrame:Show();
+						end
+						if (not AttackerList[slot].cls) then
+							AttackerList[slot].cls = CSG_UNKNOWN;	
+						end
+						GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+						GameTooltip:SetText(AttackerList[slot].cls);
+						GameTooltipTextLeft1:SetTextColor(CSG[(AttackerList[slot].cls)].r, CSG[(AttackerList[slot].cls)].g, CSG[(AttackerList[slot].cls)].b);
+
+					</OnEnter>
+					<OnLeave>
+						local hlFrame = getglobal(this:GetParent():GetName().."_Highlight");
+						hlFrame:Hide();		
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseDown>
+						local hlFrame = getglobal(this:GetParent():GetName().."_Highlight");
+						hlFrame:SetAlpha(1);
+					</OnMouseDown>
+					<OnMouseUp>
+						local hlFrame = getglobal(this:GetParent():GetName().."_Highlight");
+						hlFrame:SetAlpha(0.25);
+						CSG_AttackerFrame_OnClick();
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Frame name="$parent_Portrait">
+				<Size>
+					<AbsDimension x="46" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="3.5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="1"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="0" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentArt">
+							<Size>
+								<AbsDimension x="23" y="23"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="1" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentClassIcon">
+							<Size>
+								<AbsDimension x="19" y="19"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="26" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.01, 0.01, 0.01);
+						this:SetBackdropColor(0.01, 0.01, 0.01);
+						this:SetAlpha( 1 );
+					</OnLoad>
+					<OnEvent>
+					
+					</OnEvent>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Kills" hidden="true">
+				<Size>
+					<AbsDimension x="20" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>	
+
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentPlus" inherits="CSGFontTextSmaller" justifyH="CENTER" text="0">
+							<Size>
+								<AbsDimension x="10" y="10" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentMinus" inherits="CSGFontTextSmaller" justifyH="CENTER" text="0">
+							<Size>
+								<AbsDimension x="10" y="10" />
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local p = getglobal(this:GetName().."Plus");
+						local m = getglobal(this:GetName().."Minus");
+						p:SetTextColor(0, 0.7, 0);
+						m:SetTextColor(0.7, 0, 0);
+						this:SetBackdropBorderColor(0.1, 0.1, 0.1);
+						this:SetBackdropColor(0.2, 0.2, 0.2);
+						this:SetAlpha( 0.8 );
+					</OnLoad>
+					<OnShow>
+						local rank = getglobal(this:GetParent():GetName().."_RankIcon");
+						local slot = this:GetParent():GetID();
+						if (rank:IsVisible()) then
+							this:SetPoint("RIGHT", "CSG_Attacker"..slot, "LEFT", 3, 0);
+							rank:SetPoint("RIGHT", this:GetName(), "LEFT", 0, 0);
+						end
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_PARTY">
+				<Size>
+					<AbsDimension x="160" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>	
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentPartyText" inherits="CSGFontTextSmall" justifyH="CENTER" text="">
+							<Size>
+								<AbsDimension x="160" y="10" />
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local text = getglobal(this:GetName().."PartyText");
+						text:SetTextColor(1, 0, 0);
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.1, 0.1, 0.1);
+						this:SetAlpha( 0.8 );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_DMG">
+				<Size>
+					<AbsDimension x="42" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>	
+
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentTitleText" inherits="CSGFontTextSmaller" justifyH="CENTER" text="DMG">
+							<Size>
+								<AbsDimension x="30" y="12" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentText" inherits="CSGFontTextDMG" justifyH="CENTER" text="??">
+							<Size>
+								<AbsDimension x="42" y="12" />
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local text = getglobal(this:GetName().."TitleText");
+						text:SetTextColor(0.8, 0, 0);
+						this:SetBackdropBorderColor(0.1, 0.1, 0.1);
+						this:SetBackdropColor(0.5, 0.5, 0.6);
+						this:SetAlpha( 0.8 );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Glow" hidden="true">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentArt" file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="180" y="86"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parent_Highlight" hidden="true">
+				<Size>
+					<AbsDimension x="160" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentArt" file="Interface\Glues\CharacterSelect\Glue-CharacterSelect-Highlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="168" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parent_Heal_1" inherits="CSG_Healer_Template" id="1">
+				<Size>
+					<AbsDimension x="160" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parent_Heal_2" inherits="CSG_Healer_Template" id="2">
+				<Size>
+					<AbsDimension x="160" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Heal_1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<!-- OPTIONS BAR -->
+	<Frame name="CSG_OptionsBarParent" setAllPoints="true" frameStrata="BACKGROUND" enableMouse="true" hidden="false" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="54" y="20"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-4" y="8"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="CSG_OptionsBarSml" setAllPoints="true" frameStrata="BACKGROUND" enableMouse="true" hidden="false" movable="true" parent="CSG_OptionsBarParent">
+				<Size>
+					<AbsDimension x="48" y="26"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CSG_OptionsBarParent" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parent_Text" inherits="GameFontNormal" justifyH="RIGHT" setAllPoints="true" text="">
+							<Size>
+								<AbsDimension x="56" y="26" />
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-24" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentHelmet" file="Interface\AddOns\CombatSentryGizmo\gfx\Icon">
+							<Size>
+								<AbsDimension x="55" y="57"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="4" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentArt" file="Interface\MoneyFrame\Arrow-Left-Down">
+							<Size>
+								<AbsDimension x="22" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-16" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+<!-- 				<Frames>
+					<Button name="CSG_OptionsBarSml_CloseButton">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset>
+									<AbsDimension x="-1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(CSG_OptionsBarSml);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+					</Button>
+				</Frames> -->
+
+				<Scripts>
+					<OnLoad>
+						<!-- this:SetBackdropBorderColor(0.9, 0.8, 0); -->
+						this:SetBackdropBorderColor(0.8, 0.8, 0.8);
+						this:SetBackdropColor(0.09, 0.09, 0.19);
+						this:SetAlpha( 0.9 );
+						CSG_OptionsBarSml_Text:SetTextColor(FACTION_BAR_COLORS[2].r, FACTION_BAR_COLORS[2].g, FACTION_BAR_COLORS[2].b);
+					</OnLoad>
+					<OnEnter>
+						this:Hide();
+						CSG_OptionsBarLrg:Show();
+						PlaySoundFile("Sound\\Interface\\UnsheathMetal.wav");
+					</OnEnter>
+					<OnMouseDown>
+						CSG_OptionsOnMouseDown(arg1);
+					</OnMouseDown>
+					<OnMouseUp>
+						CSG_OptionsOnMouseUp(arg1);
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			<Frame name="CSG_OptionsBarLrg" setAllPoints="true" frameStrata="BACKGROUND" enableMouse="true" hidden="true" movable="true" parent="CSG_OptionsBarParent">
+				<Size>
+					<AbsDimension x="250" y="26"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CSG_OptionsBarParent" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<HitRectInsets>
+					<AbsInset left="-64" right="-32" top="-32" bottom="-32"/>
+				</HitRectInsets>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parent_Text" inherits="GameFontNormal" justifyH="RIGHT" setAllPoints="true" text="CSG_TITLE_NOSPACE">
+							<Size>
+								<AbsDimension x="190" y="26" />
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-21" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+<!-- 					<Layer level="OVERLAY">
+						<Texture name="$parentHelmet" file="Interface\PvPRankBadges\PvPRank12">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="-18" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer> -->
+				</Layers>
+				<Frames>
+					<Button name="CSG_OptionsBarLrg_CloseButton">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset>
+									<AbsDimension x="-1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								HideUIPanel(CSG_OptionsBarLrg);
+								HideUIPanel(CSG_OptionsBarSml);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+					</Button>
+					<CheckButton name="CSG_Button_On" inherits="CSG_CheckButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset>
+									<AbsDimension x="1" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CSG_EnableDisable_Toggle();
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+ 							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOP");
+								GameTooltip:SetText(CSG_OPTION_ON_TOOLTIP, nil, nil, nil, nil, 1);
+								CSG_AddMessage("|cff3366ffEntering Button");
+								UIDropDownMenu_StopCounting(this:GetParent());
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\CombatSentryGizmo\gfx\button_on"/>
+					</CheckButton>
+					<CheckButton name="CSG_Button_Detect" inherits="CSG_CheckButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CSG_Button_On" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CSG_DetectEnemies_Toggle();
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+ 							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOP");
+								GameTooltip:SetText(CSG_OPTION_DETECT_TOOLTIP, nil, nil, nil, nil, 1);
+								CSG_AddMessage("|cff3366ffEntering Button");
+								UIDropDownMenu_StopCounting(this:GetParent());
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\CombatSentryGizmo\gfx\button_detect"/>
+					</CheckButton>
+					<CheckButton name="CSG_Button_Creatures" inherits="CSG_CheckButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CSG_Button_Detect" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CSG_ShowCreatures_Toggle();
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+ 							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOP");
+								GameTooltip:SetText(CSG_OPTION_CREATURES_TOOLTIP, nil, nil, nil, nil, 1);
+								CSG_AddMessage("|cff3366ffEntering Button");
+								UIDropDownMenu_StopCounting(this:GetParent());
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\CombatSentryGizmo\gfx\button_creatures"/>
+					</CheckButton>
+					<CheckButton name="CSG_Button_InfoTarget" inherits="CSG_CheckButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CSG_Button_Creatures" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CSG_InfoTarget_Toggle();
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnClick>
+ 							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOP");
+								GameTooltip:SetText(CSG_OPTION_INFOTARGET_TOOLTIP, nil, nil, nil, nil, 1);
+								CSG_AddMessage("|cff3366ffEntering Button");
+								UIDropDownMenu_StopCounting(this:GetParent());
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\CombatSentryGizmo\gfx\button_infotarget"/>
+					</CheckButton>
+					<CheckButton name="CSG_Button_OptionsMenu" inherits="CSG_CheckButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="CSG_Button_InfoTarget" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								CSG_ToggleOptionsFrame();
+								if ( not this:GetChecked() ) then
+									this:SetChecked( 0 );
+								else
+									this:SetChecked( 0 );
+								end
+								PlaySound("igMainMenuOptionCheckBoxOn");
+							</OnClick>
+ 							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOP");
+								GameTooltip:SetText(CSG_OPTION_MENU_TOOLTIP, nil, nil, nil, nil, 1);
+								CSG_AddMessage("|cff3366ffEntering Button");
+								UIDropDownMenu_StopCounting(this:GetParent());
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\CombatSentryGizmo\gfx\button_showbar"/>
+					</CheckButton>
+				</Frames>
+
+				<Scripts>
+					<OnLoad>
+						<!-- this:SetBackdropBorderColor(0.9, 0.8, 0); -->
+						this:SetBackdropBorderColor(0.8, 0.8, 0.8);
+						this:SetBackdropColor(0.09, 0.09, 0.19);
+						this:SetAlpha( 0.8 );
+						CSG_OptionsBarLrg_Text:SetTextColor(FACTION_BAR_COLORS[2].r, FACTION_BAR_COLORS[2].g, FACTION_BAR_COLORS[2].b);
+					</OnLoad>
+					<OnEnter>
+						UIDropDownMenu_StopCounting(this);
+					</OnEnter>
+					<OnLeave>
+						UIDropDownMenu_StartCounting(this);
+					</OnLeave>
+					<OnHide>
+						CSG_OptionsBarSml:Show();
+						PlaySoundFile("Sound\\Interface\\SheathMetal.wav");
+					</OnHide>
+					<OnMouseDown>
+						CSG_OptionsOnMouseDown(arg1);
+					</OnMouseDown>
+					<OnMouseUp>
+						CSG_OptionsOnMouseUp(arg1);
+					</OnMouseUp>
+					<OnUpdate>
+						UIDropDownMenu_OnUpdate(arg1);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+
+		</Scripts>
+	</Frame>
+
+	<Frame name="CSG_Parent_Frame" hidden="false" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="64" y="64"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="128" y="128"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+<!-- 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="2" right="2" top="2" bottom="2"/>
+			</BackgroundInsets>
+		</Backdrop> -->
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<!-- MAIN FRAME -->
+			<Frame name="CSG_Main_Frame" frameStrata="HIGH" hidden="true" enableMouse="true">
+				<Size>
+					<AbsDimension x="160" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parent_Text" inherits="GameTooltipText" justifyH="CENTER" setAllPoints="true" text="CSG_TITLE">
+							<Size>
+								<AbsDimension x="158" y="16" />
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="CSG_MainFlash_Frame" parent="CSG_Main_Frame">
+						<Size>
+							<AbsDimension x="128" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentArt" file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+									<Size>
+										<AbsDimension x="142" y="42"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP">
+											<Offset>
+												<AbsDimension x="0" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(1, 0, 0);
+							</OnLoad>
+							<OnShow>
+		<!-- 						CSG_MainFlashIn( this );
+								this.isFlashing = 1; -->
+								<!-- UIFrameFlash(this, 1, 2, 0, 0, 0.1, 0.1); -->
+								CSG_MainFrame_Toggle();
+							</OnShow>
+							<OnHide>
+								this.isFlashing = nil;
+							</OnHide>
+							<OnUpdate>
+								CSG_MainFlash_OnUpdate();
+							</OnUpdate>
+						</Scripts>
+					</Frame>
+					<Frame name="CSG_Attacker1" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Main_Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker2" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker3" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker4" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker5" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker6" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker7" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker8" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker9" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker8" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker10" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker9" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker11" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker12" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker11" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker13" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker12" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker14" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker15" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker14" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker16" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="16">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker15" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker17" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="17">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker16" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker18" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="18">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker17" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker19" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="19">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker18" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker20" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="20">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker19" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker21" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="21">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker20" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker22" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="22">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker21" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker23" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="23">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker22" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker24" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="24">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker23" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker25" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="25">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker24" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker26" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="26">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker25" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker27" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="27">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker26" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker28" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="28">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker27" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker29" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="29">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker28" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="CSG_Attacker30" inherits="CSG_Attacker_Template" parent="CSG_Main_Frame" id="30">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CSG_Attacker29" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						CSG_OnLoad();
+						this:SetBackdropColor(0.1, 0.1, 0.1, 0.9);
+						this:SetAlpha( 0.9 );
+					</OnLoad>
+					<OnEvent>
+						CSG_OnEvent(event, arg1);
+					</OnEvent>
+					<OnUpdate>
+						CSG_Main_OnUpdate();
+					</OnUpdate>
+					<OnShow>
+						CSG_MainFrame_OnShow();
+					</OnShow>
+					<OnMouseDown>
+						CSG_OnMouseDown(arg1);
+					</OnMouseDown>
+					<OnMouseUp>
+						CSG_OnMouseUp(arg1);
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CSG_OptionsFrame" parent="UIParent" enableMouse="true" enableKeyboard="true" hidden="true">
+		<Size>
+			<AbsDimension x="420" y="370"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				CSG_OptionsFrame_OnLoad();
+			</OnLoad>
+			<OnKeyDown>
+				if ( arg1 == "ESCAPE" ) then
+					CSG_ToggleOptionsFrame();
+				elseif ( arg1 == "ENTER") then
+					ChatFrame_OpenChat("", chatFrame);
+				elseif ( arg1 == "/") then
+					ChatFrame_OpenChat("/", chatFrame);
+				elseif ( arg1 == strupper(GetBindingKey("SCREENSHOT"))) then
+					RunBinding("SCREENSHOT");
+				end
+			</OnKeyDown>
+			<OnShow>
+ 				if (MYADDONS_ACTIVE_OPTIONSFRAME == this) then
+					HideUIPanel(GameMenuFrame);
+					HideUIPanel(myAddOnsFrame);
+<!-- 					CSG_OptionsFrame_UpdateCheckboxes();-->
+					CSG_OptionsFrame_UpdateSliders();
+					PlaySound("igMainMenuQuit");
+				end
+			</OnShow>
+		</Scripts>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="CSG_OptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="310" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="CSG_OptionsFrameHeaderText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CSG_OptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="CSG_AnchorBarDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Size>
+					<AbsDimension x="40" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Anchor Bar Visibility">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="18" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						CSG_AnchorBarDropDown_OnLoad();
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(CSG_OPTION_ANCHOR_TOOLTIP, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<CheckButton name="CSG_OptionsFrame_CheckButton1" inherits="CSG_MenuCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="32" y="-90"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Slider name="CSG_OptionsFrame_Slider1" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="CSG_OptionsFrame_Slider2" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CSG_OptionsFrame_Slider1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="CSG_OptionsFrame_Slider3" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CSG_OptionsFrame_Slider2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="CSG_OptionsFrame_Slider4" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CSG_OptionsFrame_Slider3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="CSG_OptionsFrame_Slider5" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CSG_OptionsFrame_Slider4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="CSG_OptionsFrame_Slider6" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CSG_OptionsFrame_Slider5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Slider name="CSG_OptionsFrame_Slider7" inherits="CSG_SliderWithText_Template">
+				<Size>
+					<AbsDimension x="128" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CSG_OptionsFrame_Slider6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Slider>
+			<Button name="CSG_OptionsFrameApply" inherits="GameMenuButtonTemplate" text="Apply">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CSG_OptionsFrame_OnSave();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CSG_OptionsFrameCancel" inherits="GameMenuButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CSG_OptionsFrameApply" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CSG_ToggleOptionsFrame();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CSG_OptionsFrameOkay" inherits="GameMenuButtonTemplate" text="Okay">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="CSG_OptionsFrameCancel" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CSG_OptionsFrame_OnSave();
+						CSG_ToggleOptionsFrame();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+
+	</Frame>
+	
+</Ui>

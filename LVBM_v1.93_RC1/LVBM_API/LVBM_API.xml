@@ -1,0 +1,390 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Frame name="LVBM_API" hidden="false">
+		<Scripts>
+			<OnLoad>				
+				LVBM.OnLoad();
+				this.elapsed = 0;
+			</OnLoad>
+			<OnEvent>
+				LVBM.OnEvent(event, arg1);
+			</OnEvent>
+			<OnUpdate>
+				this.elapsed = this.elapsed + arg1;
+				if this.elapsed > 0.066 then					
+					LVBM.OnUpdate(this.elapsed);
+					this.elapsed = 0;
+				end
+				LVBM.SpecialWarningsOnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<MessageFrame name="LVBMWarningFrame" displayDuration="5" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="768" y="60"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="235"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<FontString inherits="ErrorFont" justifyH="CENTER"/>
+	</MessageFrame>	
+	
+	
+	<Frame name="LVBMUpdateDialog" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-230"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="430" y="90"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="CENTER" justifyV="TOP" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="410" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton2">
+				<Size>
+					<AbsDimension x="144" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="-122" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						LVBMPatchnoteFrameMessageFrame:Clear();
+						LVBMPatchnoteFrame:Show();
+						LVBM.RequestPatchnotes(LVBM.UpdateDialogShown);
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<ButtonText text="LVBM_SHOW_PATCHNOTES"/>
+				<NormalFont inherits="GameFontNormal"/>
+				<HighlightFont inherits="GameFontHighlight"/>
+			</Button>
+			<Button name="$parentButton3">
+				<Size>
+					<AbsDimension x="144" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("COPY_LVBM_URL");
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<ButtonText text="LVBM_COPY_PASTE_URL"/>
+				<NormalFont inherits="GameFontNormal"/>
+				<HighlightFont inherits="GameFontHighlight"/>
+			</Button>
+			<Button name="$parentButton">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture inherits="DialogButtonNormalTexture"/>
+				<PushedTexture inherits="DialogButtonPushedTexture"/>
+				<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+				<ButtonText text="LVBM_CLOSE"/>
+				<NormalFont inherits="GameFontNormal"/>
+				<HighlightFont inherits="GameFontHighlight"/>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="LVBMPatchnoteFrame" parent="UIParent" frameStrata="DIALOG" toplevel="true" hidden="true" enableMouse="true" movable="true">
+		<Size>
+			<AbsDimension x="600" y="450"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="50"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Frame name="$parentTitle">
+				<Size>
+					<AbsDimension x="150" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2.5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackgroundTexture">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER"/>
+							</Anchors>
+							<Size>
+								<AbsDimension x="144" y="30"/>
+							</Size>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" text="LVBM_PATCHNOTES" inherits="GameFontNormalLarge">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>					
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0, 0, 0, 0.7);
+					</OnLoad>
+					<OnMouseDown>
+						if arg1 == "LeftButton" then
+							this:GetParent():StartMoving();
+							this:GetParent().isMoving = true;
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if (this:GetParent().isMoving) then
+							this:GetParent():StopMovingOrSizing();
+							this:GetParent().isMoving = false;
+						end
+					</OnMouseUp>
+					<OnHide>
+						if (this:GetParent().isMoving) then
+							this:GetParent():StopMovingOrSizing();
+							this:GetParent().isMoving = false;
+						end
+					</OnHide>
+				</Scripts>
+			</Frame>
+			<ScrollingMessageFrame name="$parentMessageFrame" maxLines="9999" displayDuration="999">
+				<Size>
+					<AbsDimension x="590" y="425"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="2" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parentUpButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Scripts>
+							<OnLoad>
+								MessageFrameScrollButton_OnLoad();
+								this:ClearAllPoints()
+								this:SetPoint("LEFT", this:GetParent(), "RIGHT", -2, 16)
+							</OnLoad>
+							<OnUpdate>
+								MessageFrameScrollButton_OnUpdate(arg1);
+							</OnUpdate>
+							<OnClick>
+								if ( this:GetButtonState() == "PUSHED" ) then
+									this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+								else
+									PlaySound("igChatScrollUp");
+									this:GetParent():ScrollUp();
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentDownButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Scripts>
+							<OnLoad>
+								MessageFrameScrollButton_OnLoad();
+								this:ClearAllPoints();
+								this:SetPoint("TOP", getglobal(this:GetParent():GetName().."UpButton"), "BOTTOM", 0, 0);
+							</OnLoad>
+							<OnUpdate>
+								MessageFrameScrollButton_OnUpdate(arg1);
+							</OnUpdate>
+							<OnClick>
+								if ( this:GetButtonState() == "PUSHED" ) then
+									this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+								else
+									PlaySound("igChatScrollDown");
+									this:GetParent():ScrollDown();
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentButton">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():GetParent():Hide();
+								LVBMUpdateDialog:Show();
+							</OnClick>
+						</Scripts>
+						<NormalTexture inherits="DialogButtonNormalTexture"/>
+						<PushedTexture inherits="DialogButtonPushedTexture"/>
+						<HighlightTexture inherits="DialogButtonHighlightTexture"/>
+						<ButtonText text="LVBM_CLOSE"/>
+						<NormalFont inherits="GameFontNormal"/>
+						<HighlightFont inherits="GameFontHighlight"/>
+					</Button>
+				</Frames>
+				<FontString inherits="GameFontHighlight" justifyH="LEFT"/>
+			</ScrollingMessageFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor(0, 0, 0, 0.7);
+			</OnLoad>
+		</Scripts>
+	</Frame>	
+	
+	<Frame name="LVBMSpecialWarningFrame" parent="UIParent" frameStrata="DIALOG" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="1000" y="60"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="75"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="1000" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="50"/>
+					</FontHeight>
+					<Color r="0" g="0" b="1.0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Text"):SetFont("Fonts\\FRIZQT__.TTF", 50, "THICKOUTLINE");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<GameTooltip name="LVBMTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate"> 
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

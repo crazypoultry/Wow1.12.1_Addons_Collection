@@ -1,0 +1,206 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+    <Script file="Interface\AddOns\WhisperCast\Gui\Gui.lua"/>
+
+    <!-- Font for the WhisperCast interface -->
+    <FontString name="WhisperCast_title_font" font="Fonts\FRIZQT__.TTF" virtual="true">
+        <FontHeight>
+            <AbsValue val="9"/>
+        </FontHeight>
+        <Color r="0.9" g="0.82" b="0.0"/>
+    </FontString>
+
+    <!-- Font for the WhisperCast queue -->
+    <FontString name="WhisperCast_queue_font" inherits="GameFontNormalSmall" virtual="true">
+        <Color r="1.0" g="1.0" b="1.0"/>
+    </FontString>
+
+    <!-- The WhisperCast monitor -->
+    <Frame name="WhisperCastGuiFrame" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="LEFT"/>
+        </Anchors>
+        <Size>
+            <AbsDimension x="228" y="126"/>
+        </Size>
+        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+        </Backdrop>
+        <TitleRegion setAllPoints="true"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="WhisperCastStatusText" inherits="WhisperCast_title_font" text="-QUEUE-">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="68" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- control buttons at top of window -->
+            <Button name="WhisperCastCastButton" inherits="OptionsButtonTemplate" text="-CAST-">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="4" y="-4"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="60" y="16"/>
+                </Size>
+                <Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+                    <OnClick>
+						if ( arg1 == "LeftButton" ) then
+						    WhisperCast_Cast();
+						else
+							WhisperCastGui_ToggleDropDown();
+						end
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <Button name="WhisperCastHideButton">
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-4" y="-4"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        WhisperCastGui_ShowTooltip(WCLocale.UI.text.mouseoverHide);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        WhisperCastGui_ToggleHidden();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\WhisperCast\CloseButton-Up"/>
+                <PushedTexture file="Interface\AddOns\WhisperCast\CloseButton-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+            </Button>
+
+            <Button name="WhisperCastMinimizeButton">
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="WhisperCastHideButton" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="-4" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        WhisperCastGui_ShowTooltip(WCLocale.UI.text.mouseoverMinimize);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                    <OnClick>
+                        WhisperCastGui_ToggleMinimized();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\WhisperCast\MinimizeButton-Up"/>
+                <PushedTexture file="Interface\AddOns\WhisperCast\MinimizeButton-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+            </Button>
+
+            <Button name="WhisperCastClearButton" inherits="OptionsButtonTemplate" text="-CLEAR-">
+                <Size>
+                    <AbsDimension x="60" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="WhisperCastMinimizeButton" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="-4" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        WhisperCast_Clear();
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <!-- queue display -->
+            <ScrollFrame name="WhisperCastScrollFrame" inherits="UIPanelScrollFrameTemplate">
+                <Size>
+                    <AbsDimension x="200" y="100"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WhisperCastGuiFrame">
+                        <Offset>
+                            <AbsDimension x="0" y="-21"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <ScrollChild>
+                    <Frame name="WhisperCastScrollChild">
+                        <Size>
+                            <AbsDimension x="200" y="100"/>
+                        </Size>
+                        <Layers>
+                            <Layer>
+                                <FontString name="WhisperCastQueueText" inherits="WhisperCast_queue_font" justifyH="LEFT">
+                                    <Size>
+                                        <AbsDimension x="200" y="0"/>
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT">
+                                            <Offset>
+                                                <AbsDimension x="5" y="0"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                </ScrollChild>
+            </ScrollFrame>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                WhisperCastGui_OnLoad();
+            </OnLoad>
+            <OnEvent>
+                WhisperCastGui_OnEvent(event);
+            </OnEvent>
+        </Scripts>
+    </Frame>
+	<Frame name="WhisperCastGuiDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Scripts>
+			<OnLoad>
+				WhisperCastGuiDropDown_OnLoad();
+			</OnLoad>
+			<OnShow>
+				WhisperCastGuiDropDown_OnLoad();
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,769 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+  <!-- Custom color checkbox -->
+  <CheckButton name="CleanChatColorTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        getglobal(this:GetName() .. "Text"):SetText(string.format(CLEANCHAT_STATUS4, CLEANCHAT_STATUS5[this:GetID()], "", "", ""));
+      </OnLoad>
+      <OnClick>
+        if this:GetChecked() then
+          CleanChat_Colors[this:GetID()] = "|cff" .. CleanChat_ToHex(math.floor(255 * CleanChat_GuiColors[this:GetID()].r))
+                                                  .. CleanChat_ToHex(math.floor(255 * CleanChat_GuiColors[this:GetID()].g))
+                                                  .. CleanChat_ToHex(math.floor(255 * CleanChat_GuiColors[this:GetID()].b));
+        else
+          CleanChat_Colors[this:GetID()] = nil;
+        end
+      </OnClick>
+      <OnShow>
+        if CleanChat_Colors[this:GetID()] then
+          this:SetChecked(1);
+        else
+          this:SetChecked(0);
+        end
+        CleanChat_UpdateCheckboxes();
+      </OnShow>
+    </Scripts>
+  </CheckButton>
+
+  <!-- Custom color selector -->
+  <Button name="CleanChatColorPickerTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="16" y="16"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentSwatchBg">
+          <Size>
+            <AbsDimension x="14" y="14"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+          <Color r="1.0" g="1.0" b="1.0"/>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+        CloseMenus();
+        ColorPickerFrame.func = CleanChat_PickColor;
+        ColorPickerFrame.cancelFunc = CleanChat_PickColor;
+        ColorPickerFrame.index = this:GetID();
+        ColorPickerFrame.texture = getglobal(this:GetName() .. "NormatTexture");
+        ColorPickerFrame.opacityFunc = nil;
+        ColorPickerFrame.opacity = nil;
+        ColorPickerFrame.hasOpacity = nil;
+        ColorPickerFrame.previousValues = { r = CleanChat_GuiColors[this:GetID()].r,
+                                            g = CleanChat_GuiColors[this:GetID()].g,
+                                            b = CleanChat_GuiColors[this:GetID()].b }
+        ColorPickerFrame:SetColorRGB(CleanChat_GuiColors[this:GetID()].r,
+                                     CleanChat_GuiColors[this:GetID()].g,
+                                     CleanChat_GuiColors[this:GetID()].b);
+        --ShowUIPanel(ColorPickerFrame);
+        ColorPickerFrame:Show();
+      </OnClick>
+      <OnShow>
+        getglobal(this:GetName() .. "NormatTexture"):SetVertexColor(CleanChat_GuiColors[this:GetID()].r,
+                                                                    CleanChat_GuiColors[this:GetID()].g,
+                                                                    CleanChat_GuiColors[this:GetID()].b);
+      </OnShow>
+      <OnEnter>
+        getglobal(this:GetName().."SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+      </OnEnter>
+      <OnLeave>
+        getglobal(this:GetName().."SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+      </OnLeave>
+    </Scripts>
+    <NormalTexture name="$parentNormatTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+  </Button>
+
+
+  <!-- =========== -->
+  <!-- Main window -->
+  <!-- =========== -->
+  <Frame name="CleanChatOptionsFrame" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+    <Size>
+      <AbsDimension x="500" y="700"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="CleanChatHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="200" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="12"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString name="CleanChatTitle" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="CleanChatHeader">
+              <Offset>
+                <AbsDimension x="0" y="-14"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+
+    <Frames>
+      <!-- Combo box for show / hide channel names -->
+      <Frame name="CleanChatChannels" inherits="UIDropDownMenuTemplate" enableMouse="true">
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="110" y="-40"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT">
+              <Anchors>
+                <Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+                  <Offset>
+                    <AbsDimension x="10" y="-6"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            CleanChatChannelsLabel:SetText(CLEANCHAT_CHANNELS_LABEL);
+            UIDropDownMenu_Initialize(CleanChatChannels, function()
+              local info1 = { text = CLEANCHAT_STATUS3[1],
+                              value = 1,
+                              func = function()
+                                CleanChat_HideChannelnames = 1;
+                                UIDropDownMenu_SetSelectedValue(CleanChatChannels, 1);
+                              end }
+
+              local info2 = { text = CLEANCHAT_STATUS3[2],
+                              value = 2,
+                              func = function()
+                                CleanChat_HideChannelnames = 2;
+                                UIDropDownMenu_SetSelectedValue(CleanChatChannels, 2);
+                              end }
+
+              local info3 = { text = CLEANCHAT_STATUS3[3],
+                              value = 3,
+                              func = function()
+                                CleanChat_HideChannelnames = 3;
+                                UIDropDownMenu_SetSelectedValue(CleanChatChannels, 3);
+                              end }
+
+              local info4 = { text = CLEANCHAT_STATUS3[4],
+                              value = 4,
+                              func = function()
+                                CleanChat_HideChannelnames = 4;
+                                UIDropDownMenu_SetSelectedValue(CleanChatChannels, 4);
+                              end }
+
+              local info5 = { text = CLEANCHAT_STATUS3[5],
+                              value = 5,
+                              func = function()
+                                CleanChat_HideChannelnames = 5;
+                                UIDropDownMenu_SetSelectedValue(CleanChatChannels, 5);
+                              end }
+
+              local info6 = { text = CLEANCHAT_STATUS3[6],
+                              value = 6,
+                              func = function()
+                                CleanChat_HideChannelnames = 6;
+                                UIDropDownMenu_SetSelectedValue(CleanChatChannels, 6);
+                              end }
+
+              UIDropDownMenu_AddButton(info1);
+              UIDropDownMenu_AddButton(info2);
+              UIDropDownMenu_AddButton(info3);
+              UIDropDownMenu_AddButton(info4);
+              UIDropDownMenu_AddButton(info5);
+              UIDropDownMenu_AddButton(info6);
+            end);
+
+            UIDropDownMenu_SetWidth(330, CleanChatChannels);
+            CleanChatChannelsText:ClearAllPoints();
+            CleanChatChannelsText:SetPoint("LEFT", "CleanChatChannels", "LEFT", 25, 3);
+            CleanChatChannelsText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            UIDropDownMenu_SetSelectedValue(CleanChatChannels, CleanChat_HideChannelnames);
+            UIDropDownMenu_SetText(CLEANCHAT_STATUS3[CleanChat_HideChannelnames], CleanChatChannels);
+          </OnShow>
+        </Scripts>
+      </Frame>
+
+      <!-- Checkbox to show / hide chat prefix -->
+      <CheckButton name="CleanChatPrefix" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatChannels" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="-90" y="-1"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatPrefixText:SetText(CLEANCHAT_CHECKBOX_PREFIX);
+            CleanChatPrefixText:SetTextHeight(12);
+            CleanChatPrefixText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_IsHidePrefix then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_SetupPrefix(not CleanChat_IsHidePrefix);
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to use cursor keys directly -->
+      <CheckButton name="CleanChatCursorKey" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatPrefix" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatCursorKeyText:SetText(CLEANCHAT_USE_CURSORKEYS);
+            CleanChatCursorKeyText:SetTextHeight(12);
+            CleanChatCursorKeyText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_UseCursorKeys then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_UseCursorKeys = not CleanChat_UseCursorKeys;
+            CleanChat_SetupCursorMode(CleanChat_UseCursorKeys);
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to hide chat buttons -->
+      <CheckButton name="CleanChatHideButtons" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatCursorKey" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatHideButtonsText:SetText(CLEANCHAT_HIDE_CHATBUTTONS);
+            CleanChatHideButtonsText:SetTextHeight(12);
+            CleanChatHideButtonsText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_HideChatButtons then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_HideChatButtons = not CleanChat_HideChatButtons
+            CleanChat_SetupButtons(CleanChat_HideChatButtons);
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to collect data -->
+      <CheckButton name="CleanChatCollectData" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatHideButtons" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatCollectDataText:SetText(CLEANCHAT_COLLECTDATA);
+            CleanChatCollectDataText:SetTextHeight(12);
+            CleanChatCollectDataText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_CollectData then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_CollectData = not CleanChat_CollectData;
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to enable persistent data -->
+      <CheckButton name="CleanChatPersistentData" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatCollectData" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatPersistentDataText:SetText(CLEANCHAT_PERSISTENT);
+            CleanChatPersistentDataText:SetTextHeight(12);
+            CleanChatPersistentDataText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_IsPersistent then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_IsPersistent = not CleanChat_IsPersistent;
+            CleanChat_SetupPersistent(CleanChat_IsPersistent);
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to show level -->
+      <CheckButton name="CleanChatShowLevel" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatPersistentData" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatShowLevelText:SetText(CLEANCHAT_SHOWLEVEL);
+            CleanChatShowLevelText:SetTextHeight(12);
+            CleanChatShowLevelText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_ShowLevel then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_ShowLevel = not CleanChat_ShowLevel;
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to enable mouse wheel -->
+      <CheckButton name="CleanChatMouseWheel" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatShowLevel" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatMouseWheelText:SetText(CLEANCHAT_MOUSEWHEEL);
+            CleanChatMouseWheelText:SetTextHeight(12);
+            CleanChatMouseWheelText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_EnableMouseWheel then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_EnableMouseWheel = not CleanChat_EnableMouseWheel;
+            CleanChat_SetupMouseWheel(CleanChat_EnableMouseWheel);
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to pop up message -->
+      <CheckButton name="CleanChatPopupMessage" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatMouseWheel" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatPopupMessageText:SetText(CLEANCHAT_POPUP);
+            CleanChatPopupMessageText:SetTextHeight(12);
+            CleanChatPopupMessageText:SetJustifyH("LEFT");
+          </OnLoad>
+          <OnShow>
+            if CleanChat_Popup then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+          <OnClick>
+            CleanChat_Popup = not CleanChat_Popup;
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to colorize nicks -->
+      <CheckButton name="CleanChatNicks" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatPopupMessage" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatNicksText:SetText(CLEANCHAT_COLORIZE_NICKS);
+            CleanChatNicksText:SetTextHeight(12);
+          </OnLoad>
+          <OnShow>
+            if CleanChat_IsColorizeNicks then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+            CleanChat_UpdateCheckboxes();
+          </OnShow>
+          <OnClick>
+            CleanChat_IsColorizeNicks = not CleanChat_IsColorizeNicks;
+            CleanChat_UpdateCheckboxes();
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Custom color for myself -->
+      <CheckButton name="CleanChatMyselfColor" inherits="CleanChatColorTemplate" id="7">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatNicks" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="35" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerMyself" inherits="CleanChatColorPickerTemplate" id="7">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatMyselfColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Custom color for guild -->
+      <CheckButton name="CleanChatGuildColor" inherits="CleanChatColorTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatMyselfColor" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerGuild" inherits="CleanChatColorPickerTemplate" id="1">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatGuildColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Custom color for friends -->
+      <CheckButton name="CleanChatFriendColor" inherits="CleanChatColorTemplate" id="2">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatGuildColor" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerFriend" inherits="CleanChatColorPickerTemplate" id="2">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatFriendColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Custom color for party -->
+      <CheckButton name="CleanChatPartyColor" inherits="CleanChatColorTemplate" id="4">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatFriendColor" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerParty" inherits="CleanChatColorPickerTemplate" id="4">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatPartyColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Custom color for raid -->
+      <CheckButton name="CleanChatRaidColor" inherits="CleanChatColorTemplate" id="5">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatPartyColor" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerRaid" inherits="CleanChatColorPickerTemplate" id="5">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatRaidColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Custom color for other -->
+      <CheckButton name="CleanChatOtherColor" inherits="CleanChatColorTemplate" id="3">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatRaidColor" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerOther" inherits="CleanChatColorPickerTemplate" id="3">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatOtherColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Use random colors as fallback -->
+      <CheckButton name="CleanChatUseRandom" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatOtherColor" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatUseRandomText:SetText(CLEANCHAT_STATUS6);
+          </OnLoad>
+          <OnClick>
+             CleanChat_IsRandomColor = not CleanChat_IsRandomColor;
+          </OnClick>
+          <OnShow>
+            if CleanChat_IsRandomColor then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Do not colorize emotes -->
+      <CheckButton name="CleanChatIgnoreEmote" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatUseRandom" relativePoint="BOTTOMLEFT"/>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatIgnoreEmoteText:SetText(CLEANCHAT_IGNORE_EMOTES);
+          </OnLoad>
+          <OnClick>
+             CleanChat_IgnoreEmotes = not CleanChat_IgnoreEmotes;
+          </OnClick>
+          <OnShow>
+            if CleanChat_IgnoreEmotes then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+          </OnShow>
+        </Scripts>
+      </CheckButton>
+
+      <!-- Checkbox to use class based colors -->
+      <CheckButton name="CleanChatUseClass" inherits="OptionsCheckButtonTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatIgnoreEmote" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CleanChatUseClassText:SetText(CLEANCHAT_USE_CLASS_COLORS);
+            CleanChatUseClassText:SetTextHeight(12);
+          </OnLoad>
+          <OnShow>
+            if CleanChat_IsClassColor then
+              this:SetChecked(1);
+            else
+              this:SetChecked(0);
+            end
+            CleanChat_UpdateCheckboxes();
+          </OnShow>
+          <OnClick>
+            CleanChat_IsClassColor = not CleanChat_IsClassColor;
+            CleanChat_UpdateCheckboxes();
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+
+     <!-- Custom color for unknown class -->
+      <CheckButton name="CleanChatClassColor" inherits="CleanChatColorTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="CleanChatUseClass" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="35" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <Button name="CleanChatColorPickerClass" inherits="CleanChatColorPickerTemplate" id="6">
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="CleanChatClassColor" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-5" y="-6"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Close button -->
+      <Button name="ItemMagicClose" inherits="OptionsButtonTemplate">
+        <Size>
+          <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-5" y="-5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+        <Scripts>
+          <OnClick>
+            CleanChatOptionsFrame:Hide();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+    </Frames>
+
+    <Scripts>
+      <OnLoad>
+        this:RegisterForDrag("LeftButton");
+        -- Hold colors for color picker
+        CleanChat_GuiColors = { { r = 1.0, g = 1.0, b = 1.0 },
+                                { r = 1.0, g = 1.0, b = 1.0 },
+                                { r = 1.0, g = 1.0, b = 1.0 },
+                                { r = 1.0, g = 1.0, b = 1.0 },
+                                { r = 1.0, g = 1.0, b = 1.0 },
+                                { r = 1.0, g = 1.0, b = 1.0 },
+                                { r = 1.0, g = 1.0, b = 1.0 } };
+
+        table.insert(UISpecialFrames, "CleanChatOptionsFrame");
+        CleanChatTitle:SetText(CLEANCHAT_NAME);
+
+        -- User pressed ok or cancel on color picker
+        function CleanChat_PickColor(previousColors)
+          local r, g, b;
+          local index = ColorPickerFrame.index;
+          if previousColors then
+            r = previousColors.r;
+            g = previousColors.g;
+            b = previousColors.b;
+          else
+            r, g, b = ColorPickerFrame:GetColorRGB();
+          end
+          ColorPickerFrame.texture:SetVertexColor(r, g, b);
+          CleanChat_GuiColors[index].r = r;
+          CleanChat_GuiColors[index].g = g;
+          CleanChat_GuiColors[index].b = b;
+
+          -- if checkbox is selected for this color then we copy over new color
+          if CleanChat_Colors[index] then
+            CleanChat_Colors[index] = "|cff" .. CleanChat_ToHex(math.floor(255 * r)) .. CleanChat_ToHex(math.floor(255 * g)) .. CleanChat_ToHex(math.floor(255 * b));
+          end
+        end
+
+        -- Enable / Disable custom colors checkboxes if Colorize nicks is disabled
+        function CleanChat_UpdateCheckboxes()
+          if CleanChatNicks:GetChecked() then
+            OptionsFrame_EnableCheckBox(CleanChatMyselfColor, true, CleanChatMyselfColor:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatGuildColor, true, CleanChatGuildColor:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatFriendColor, true, CleanChatFriendColor:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatPartyColor, true, CleanChatPartyColor:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatRaidColor, true, CleanChatRaidColor:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatOtherColor, true, CleanChatOtherColor:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatUseRandom, true, CleanChatUseRandom:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatIgnoreEmote, true, CleanChatIgnoreEmote:GetChecked());
+            OptionsFrame_EnableCheckBox(CleanChatUseClass, true, CleanChatUseClass:GetChecked());
+          else
+            OptionsFrame_DisableCheckBox(CleanChatMyselfColor);
+            OptionsFrame_DisableCheckBox(CleanChatGuildColor);
+            OptionsFrame_DisableCheckBox(CleanChatFriendColor);
+            OptionsFrame_DisableCheckBox(CleanChatPartyColor);
+            OptionsFrame_DisableCheckBox(CleanChatRaidColor);
+            OptionsFrame_DisableCheckBox(CleanChatOtherColor);
+            OptionsFrame_DisableCheckBox(CleanChatUseRandom);
+            OptionsFrame_DisableCheckBox(CleanChatUseClass);
+            OptionsFrame_DisableCheckBox(CleanChatIgnoreEmote);
+          end
+
+          if CleanChatUseClass:GetChecked() and CleanChatNicks:GetChecked() then
+            OptionsFrame_EnableCheckBox(CleanChatClassColor, true, CleanChatClassColor:GetChecked());
+          else
+            OptionsFrame_DisableCheckBox(CleanChatClassColor);
+          end
+        end
+      </OnLoad>
+      <OnDragStart>
+        this:StartMoving();
+      </OnDragStart>
+      <OnDragStop>
+        this:StopMovingOrSizing();
+      </OnDragStop>
+    </Scripts>
+
+  </Frame>
+</Ui>

@@ -1,0 +1,413 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="ShammyBuff.lua" />
+    <Script file="XMLFunctions.lua" />
+
+   <Frame name="SBDialog" hidden="false" toplevel="true" movable="true" virtual="true" frameStrata="DIALOG" parent="UIParent">
+        <Size> <AbsDimension x="590" y="570"/> </Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+			<BackgroundInsets><AbsInset left="11" right="12" top="12" bottom="11"/></BackgroundInsets>
+        </Backdrop>
+        <Anchors> <Anchor point="CENTER"/> </Anchors>
+		<Scripts>
+			<OnLoad> SB_OnLoad(); </OnLoad>
+			<OnMouseDown> this:StartMoving() </OnMouseDown>
+			<OnMouseUp>  this:StopMovingOrSizing() </OnMouseUp>
+			<OnDragStop> this:StopMovingOrSizing() </OnDragStop>
+			<OnEvent> SB_OnEvent(event, arg1) </OnEvent>
+		</Scripts>
+		<Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parent_Texture" file="\\Interface\\Addons\\ShammyBuff\\options.tga">
+                    <Size><AbsDimension x="630" y="610"/></Size>
+                    <Anchors><Anchor point="CENTER" relativePoint="CENTER" /></Anchors>
+                        <TexCoords left="0" right="1" top="0" bottom="1"/>
+                </Texture>
+            </Layer>
+        </Layers>
+	</Frame>
+	<Frame name="SBBG1" inherits="SBDialog" hidden="true">
+		<Layers>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### Misc -->
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text0" inherits="GameFontNormal" text="Shammy Buff Options">
+					<Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="ARFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="400" y="60"/></Size>
+					<Anchors><Anchor point="TOP"><Offset><AbsDimension x="0" y="12"/></Offset></Anchor></Anchors>
+				</Texture>
+			</Layer>
+
+			<!-- ############################################################################# -->
+			<!-- ####################################################### Buffing -->
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text9" inherits="GameFontNormal" text="Threshold:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="340" y="-255"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text9" inherits="GameFontNormal" text="Threshold:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="340" y="-305"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+
+			<!-- ############################################################################# -->
+			<!-- ####################################################### General -->
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text9" inherits="GameFontNormal" text="Buff to cast first:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-440"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text9" inherits="GameFontNormal" text="Threshold for Lightning Shield and Weapon Buffing:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-400"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text9" inherits="GameFontNormal" text="Mana:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="30" y="-416"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text9" inherits="GameFontNormal" text="Health:">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="175" y="-416"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+            <Layer level="Artwork">
+                <Texture name="$parent_ColorArea">
+                    <Size><AbsDimension x="18" y="18"/></Size>
+                    <Anchors><Anchor point="TOPLEFT" ><Offset><AbsDimension x="25" y="-485"/></Offset></Anchor></Anchors>
+                </Texture>
+            </Layer>
+		</Layers>
+		<Frames>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### SLIDER -->
+			<!-- ############################################################################# -->
+            <Slider name="$parent_Slider1" inherits="OptionsSliderTemplate"  minValue="-300" maxValue="300" valueStep="2">
+                <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="80" y="-300" /></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnLoad> SB_InitSlider(this:GetName()) </OnLoad>
+                    <OnShow>
+                        this:SetValue("".. SBVAR["SliderValue"])
+                        getglobal(this:GetName().."Text"):SetText("Alert frame Offset - ".. getglobal(this:GetName()):GetValue())
+                    </OnShow>
+                    <OnValueChanged>
+                        getglobal(this:GetName().."Text"):SetText("Alert frame Offset - ".. getglobal(this:GetName()):GetValue())
+                        SB_SliderValue(getglobal(this:GetName()):GetValue())
+                        SBMessageFrame:ClearAllPoints(); SBMessageFrame:SetPoint("CENTER", "UIParent", "CENTER", 0, SBVAR["SliderValue"])
+                    </OnValueChanged>
+                </Scripts>
+            </Slider>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### INPUT BOX -->
+			<!-- ############################################################################# -->
+			<EditBox name="$parent_InputBox1" inherits="InputBoxTemplate" numeric="true" letters="false" autoFocus="false">
+				<Size><AbsDimension x="40" y="26"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="95" y="-411"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnShow> this:SetText("" .. SBVAR["minmana"]); </OnShow>
+					<OnEnterPressed> SB_ManaSet(); this:ClearFocus(); </OnEnterPressed>
+					<OnEscapePressed> this:ClearFocus(); </OnEscapePressed>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+			<EditBox name="$parent_InputBox2" inherits="InputBoxTemplate" numeric="true" letters="false" autoFocus="false">
+				<Size><AbsDimension x="40" y="26"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="240" y="-411"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnShow> this:SetText("" .. SBVAR["minhealth"]); </OnShow>
+					<OnEnterPressed> SB_HealthSet(); this:ClearFocus(); </OnEnterPressed>
+					<OnEscapePressed> this:ClearFocus(); </OnEscapePressed>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+			<EditBox name="$parent_InputBox4" inherits="InputBoxTemplate" numeric="true" letters="false" autoFocus="false">
+				<Size><AbsDimension x="40" y="26"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="420" y="-250"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnShow> this:SetText("" .. SBVAR["NSHealValue"]); </OnShow>
+					<OnEnterPressed> SB_NSHealthSet(); this:ClearFocus(); </OnEnterPressed>
+					<OnEscapePressed> this:ClearFocus(); </OnEscapePressed>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+			<EditBox name="$parent_InputBox5" inherits="InputBoxTemplate" numeric="true" letters="false" autoFocus="false">
+				<Size><AbsDimension x="40" y="26"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="420" y="-300"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnShow> this:SetText("" .. SBVAR["BezerkHealValue"]); </OnShow>
+					<OnEnterPressed> SB_BezerkHealthSet(); this:ClearFocus(); </OnEnterPressed>
+					<OnEscapePressed> this:ClearFocus(); </OnEscapePressed>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### RADIO BUTTONS -->
+			<!-- ############################################################################# -->
+			<CheckButton name="$parent_RadioButton1" inherits="SendMailRadioButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension  x="330" y="-150"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Windfury");
+					</OnLoad>
+					<OnClick>
+						SBBG1_RadioButton1:SetChecked(1); SBBG1_RadioButton2:SetChecked(nil); SBBG1_RadioButton3:SetChecked(nil); SBBG1_RadioButton4:SetChecked(nil); SB_WeaponXMLCheck()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_RadioButton2" inherits="SendMailRadioButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension  x="430" y="-150"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Rockbiter");
+					</OnLoad>
+					<OnClick>
+						SBBG1_RadioButton2:SetChecked(1); SBBG1_RadioButton1:SetChecked(nil); SBBG1_RadioButton3:SetChecked(nil); SBBG1_RadioButton4:SetChecked(nil); SB_WeaponXMLCheck()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_RadioButton3" inherits="SendMailRadioButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension  x="330" y="-165"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Flametongue");
+					</OnLoad>
+					<OnClick>
+						SBBG1_RadioButton3:SetChecked(1); SBBG1_RadioButton1:SetChecked(nil); SBBG1_RadioButton2:SetChecked(nil); SBBG1_RadioButton4:SetChecked(nil); SB_WeaponXMLCheck()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_RadioButton4" inherits="SendMailRadioButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension  x="430" y="-165"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Frostbrand");
+					</OnLoad>
+					<OnClick>
+						SBBG1_RadioButton4:SetChecked(1); SBBG1_RadioButton1:SetChecked(nil); SBBG1_RadioButton2:SetChecked(nil); SBBG1_RadioButton3:SetChecked(nil); SB_WeaponXMLCheck()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_RadioButton5" inherits="SendMailRadioButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension  x="30" y="-460"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Weapon Buff");
+					</OnLoad>
+					<OnClick>
+						SBBG1_RadioButton5:SetChecked(1); SBBG1_RadioButton6:SetChecked(nil); SB_ListCheck()
+					</OnClick>
+					<OnShow>SB_RadioShowCheck()</OnShow>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_RadioButton6" inherits="SendMailRadioButtonTemplate">
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension  x="150" y="-460"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Lightning Shield");
+					</OnLoad>
+					<OnClick>
+						SBBG1_RadioButton6:SetChecked(1); SBBG1_RadioButton5:SetChecked(nil); SB_ListCheck()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### CHECK BUTTONS -->
+			<!-- ############################################################################# -->
+
+			<!-- ############################################################################# -->
+			<!-- ####################################################### ALERTS -->
+			<CheckButton name="$parent_CheckButton1" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-80"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnShow> if SBVAR["LSMessage"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Alert for Lightning Shield"); </OnLoad>
+					<OnClick> SB_CheckBoxCheck1() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_CheckButton2" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-105"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnShow> if SBVAR["WepMessage"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Alert for Weapon Buffs"); </OnLoad>
+					<OnClick> SB_CheckBoxCheck2() </OnClick>
+				</Scripts>
+			</CheckButton>
+ 			<CheckButton name="$parent_CheckButton3" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-130"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Alert for Cureable debuffs on you"); </OnLoad>
+					<OnShow> if SBVAR["DebuffMsg"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck3() </OnClick>
+				</Scripts>
+			</CheckButton>
+ 			<CheckButton name="$parent_CheckButton4" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-155"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Alert for Nature's Swiftness"); </OnLoad>
+					<OnShow> if SBVAR["NSMsg"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck4() </OnClick>
+				</Scripts>
+			</CheckButton>
+ 			<CheckButton name="$parent_CheckButton5" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-180"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Alert for Troll Beserking"); </OnLoad>
+					<OnShow> if SBVAR["BeserkMsg"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck5() </OnClick>
+				</Scripts>
+			</CheckButton>
+ 			<CheckButton name="$parent_CheckButton6" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-205"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Play sounds with Alerts (global setting)"); </OnLoad>
+					<OnShow> if SBVAR["PlaySounds"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck6() </OnClick>
+				</Scripts>
+			</CheckButton>
+ 			<CheckButton name="$parent_CheckButton7" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-230"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Only alert if hp/mana threshold is good"); </OnLoad>
+					<OnShow> if SBVAR["HealthThreshold"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck7() </OnClick>
+				</Scripts>
+			</CheckButton>
+ 			<CheckButton name="$parent_CheckButton8" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-255"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Only alert if not in a major city"); </OnLoad>
+					<OnShow> if SBVAR["City"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck8() </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- ############################################################################# -->
+			<!-- ####################################################### Self Buffs -->
+                <CheckButton name="$parent_CheckButton10" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="305" y="-80"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Self buff Lightning Shield"); </OnLoad>
+					<OnShow> if SBVAR["AutoLSCast"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck10() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_CheckButton11" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="305" y="-130"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Self buff Weapon with choice:"); </OnLoad>
+					<OnShow> if SBVAR["WeaponBuffTog"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck11() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_CheckButton12" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="305" y="-180"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Cleanse yourself of poison/disease"); </OnLoad>
+					<OnShow> if SBVAR["DebuffToggle"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck12() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_CheckButton13" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="305" y="-230"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Cast NS + Big heal when health is below:"); </OnLoad>
+					<OnShow> if SBVAR["NSHeal"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck13() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_CheckButton14" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="305" y="-280"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Activate troll Bezerking if health is below:"); </OnLoad>
+					<OnShow> if SBVAR["TrollBezerk"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck14() </OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- ############################################################################# -->
+			<!-- ####################################################### General -->
+			<CheckButton name="$parent_CheckButton20" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="30" y="30"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-480"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Click to change Alert message color") </OnLoad>
+					<OnClick>
+                        SB_FrameToggle()
+                        this:SetChecked(0)
+                        PlaySound("igMainMenuOptionCheckBoxOn")
+                        ColorPickerFrame:SetColorRGB(0.5,0.5,0.5)
+                        ColorPickerFrame.previousValues = {r = 0.5, g = 0.5, b = 0.5}
+                        ColorPickerFrame.func = SB_ChangeColor
+                        ShowUIPanel(ColorPickerFrame)
+                    </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_CheckButton21" inherits="UICheckButtonTemplate" text="">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="20" y="-510"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" If nothing else to do, cast Lesser Healing Wave"); </OnLoad>
+					<OnShow> if SBVAR["LazyAssNamsar"]==1 then this:SetChecked(1) else this:SetChecked(0) end </OnShow>
+					<OnClick> SB_CheckBoxCheck21() </OnClick>
+				</Scripts>
+			</CheckButton>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### BUTTONS -->
+			<!-- ############################################################################# -->
+			<Button name="$parent_Button1" inherits="UIPanelButtonTemplate" text="Save and Close">
+				<Size><AbsDimension x="130" y="30"/></Size>
+				<Anchors><Anchor point="CENTER" relativePoint="BOTTOM"><Offset><AbsDimension x="0" y="25"/></Offset></Anchor></Anchors>
+				<Scripts>
+						<OnClick>SB_SaveButton()</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				SB_RadioShowCheck(); SB_ColorSet()
+			</OnShow>
+		</Scripts>
+	</Frame>
+			<!-- ############################################################################# -->
+			<!-- ####################################################### MESSAGE BOX -->
+			<!-- ############################################################################# -->
+
+	<MessageFrame name="SBMessageFrame" insertMode="TOP" hidden="false" frameStrata="LOW" toplevel="true" movable="true">
+		<Size><AbsDimension x="1024" y="20"/></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+		<FontString inherits="NumberFontNormalLarge" justifyH="CENTER"/>
+		<Scripts>
+        <OnLoad> SBMessageFrame:SetFadeDuration(1.5); SBMessageFrame:SetTimeVisible(1.5) </OnLoad>
+        <OnUpdate> SB_OnUpdate() </OnUpdate>
+        </Scripts>
+	</MessageFrame>
+
+	<!-- ############ The below code is credit to Tyndral [root@brokengod.net] for the mod IsBuffActive -->
+	<GameTooltip name="SBuff_IsBuffActiveTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(UIParent, "ANCHOR_NONE")
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

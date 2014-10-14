@@ -1,0 +1,418 @@
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+  <Script file="localization.lua" />
+  <Script file="WhispersSettings.lua" />
+
+  <Slider name="WhispersSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+          getglobal(this:GetName().."High"):SetText("180 secs")
+          getglobal(this:GetName().."Low"):SetText("0 secs")
+          this:SetMinMaxValues(0, 180)
+          this:SetValueStep(10)
+          this:SetValue(0)
+      </OnLoad>
+      <OnValueChanged>
+        TNE_WhispersSettings_OptionsSlider_OnValueChanged()
+      </OnValueChanged>
+    </Scripts>
+  </Slider>
+
+  <Frame name="WhispersSettingsFrame" toplevel="true" movable="true" enableMouse="true" parent="UIParent" hidden="true">
+
+    <Size>
+      <AbsDimension x="384" y="380" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+        <Offset>
+          <AbsDimension x="0" y="-184"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32" />
+      </EdgeSize>
+    </Backdrop>
+
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="340" y="64" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="12" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString name="$parentLabel1" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parentHeader">
+              <Offset>
+                <AbsDimension x="0" y="-14" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentVersion" inherits="GameFontNormal" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="-20" y="-20" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parentLabel2" inherits="GameFontNormal" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="RIGHT" relativeTo="$parentVersion" relativePoint="LEFT">
+              <Offset>
+                <AbsDimension x="-4" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+
+    <Frames>
+
+      <Frame name="$parentGeneralOptions" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="360" y="110" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="12" y="-45"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+
+          <CheckButton name="$parentCheckButton1" inherits="OptionsCheckButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="20" y="-10" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </CheckButton>
+
+          <CheckButton name="$parentCheckButton2" inherits="OptionsCheckButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentCheckButton1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-10" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </CheckButton>
+
+          <Slider name="$parentThresholdSlider1" inherits="WhispersSliderTemplate">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentCheckButton2" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="130" y="-5" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Slider>
+
+          <Button name="$parentColorSwatch" frameStrata="HIGH" hidden="false">
+            <Size>
+              <AbsDimension x="25" y="25" />
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentCheckButton1" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="190" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+              <EdgeSize>
+                <AbsValue val="16" />
+              </EdgeSize>
+              <TileSize>
+                <AbsValue val="16" />
+              </TileSize>
+              <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5" />
+              </BackgroundInsets>
+            </Backdrop>
+            <Layers>
+              <Layer level="MEDIUM">
+                <FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="RIGHT" text="COLOR" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnShow>
+                getglobal(this:GetName().. "Label"):SetPoint("RIGHT", this, "LEFT", -10, 0)
+                this:SetBackdropColor(unpack(TNE_Whispers_Color))
+              </OnShow>
+              <OnClick>
+                ColorPickerFrame.previousValues = TNE_Whispers_Color
+                ColorPickerFrame.func = function()
+                  TNE_Whispers_Color = { ColorPickerFrame:GetColorRGB() }
+                  WhispersFrameTexture:SetVertexColor(unpack(TNE_Whispers_Color))
+                  WhispersSettingsFrameGeneralOptionsColorSwatch:SetBackdropColor(unpack(TNE_Whispers_Color))
+                end
+                ColorPickerFrame.hasOpacity = false
+                ColorPickerFrame.cancelFunc = function()
+                  TNE_Whispers_Color = ColorPickerFrame.previousValues
+                  WhispersFrameTexture:SetVertexColor(unpack(TNE_Whispers_Color))
+                  WhispersSettingsFrameGeneralOptionsColorSwatch:SetBackdropColor(unpack(TNE_Whispers_Color))
+                end
+                ColorPickerFrame:SetColorRGB(unpack(TNE_Whispers_Color))
+                ColorPickerFrame:Show()
+              </OnClick>
+            </Scripts>
+          </Button>
+
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4)
+            this:SetBackdropColor(0.15, 0.15, 0.15)
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+      <Frame name="$parentParametersOptions" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="360" y="150" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentGeneralOptions" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+
+          <Slider name="$parentThresholdSlider1" inherits="WhispersSliderTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="20" y="-30" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                  getglobal(this:GetName().."High"):SetText("2.0 secs")
+                  getglobal(this:GetName().."Low"):SetText("0.1 secs")
+                  this:SetMinMaxValues(0.1, 2)
+                  this:SetValueStep(0.1)
+                  this:SetValue(0)
+              </OnLoad>
+            </Scripts>
+          </Slider>
+
+          <Slider name="$parentThresholdSlider2" inherits="WhispersSliderTemplate">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentThresholdSlider1" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="50" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                  getglobal(this:GetName().."High"):SetText("2.0 secs")
+                  getglobal(this:GetName().."Low"):SetText("0.1 secs")
+                  this:SetMinMaxValues(0.1, 2)
+                  this:SetValueStep(0.1)
+                  this:SetValue(0)
+              </OnLoad>
+            </Scripts>
+          </Slider>
+
+          <Slider name="$parentThresholdSlider3" inherits="WhispersSliderTemplate">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="$parentThresholdSlider1" relativePoint="BOTTOM">
+                <Offset>
+                  <AbsDimension x="0" y="-30" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                  getglobal(this:GetName().."High"):SetText("10 secs")
+                  getglobal(this:GetName().."Low"):SetText("0 secs")
+                  this:SetMinMaxValues(0, 10)
+                  this:SetValueStep(1)
+                  this:SetValue(0)
+              </OnLoad>
+            </Scripts>
+          </Slider>
+
+          <Slider name="$parentThresholdSlider4" inherits="WhispersSliderTemplate">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentThresholdSlider3" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="50" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                  getglobal(this:GetName().."High"):SetText("10 secs")
+                  getglobal(this:GetName().."Low"):SetText("0 secs")
+                  this:SetMinMaxValues(0, 10)
+                  this:SetValueStep(1)
+                  this:SetValue(0)
+              </OnLoad>
+            </Scripts>
+          </Slider>
+<!--
+          <Slider name="$parentThresholdSlider5" inherits="WhispersSliderTemplate">
+            <Anchors>
+              <Anchor point="TOP" relativeTo="$parentThresholdSlider3" relativePoint="BOTTOM">
+                <Offset>
+                  <AbsDimension x="0" y="-10" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Slider>
+-->
+
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4)
+            this:SetBackdropColor(0.15, 0.15, 0.15)
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+      <Button name="$parentButton1" inherits="OptionsButtonTemplate">
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="16" y="16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            if (WhispersSettingsFrameButton4 and WhispersSettingsFrameButton4.state == "preview") then
+              WhispersSettingsFrameButton4:Click()
+              UIFrameFlashRemoveFrame(WhispersFrame)
+              UIFrameFadeRemoveFrame(WhispersFrame)
+              UIFrameFadeIn(WhispersFrame, 1, 0, 1)
+            end
+            TNE_WhispersSettings_ResetSettings()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButton2" inherits="OptionsButtonTemplate">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-16" y="16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            if (WhispersSettingsFrameButton4 and WhispersSettingsFrameButton4.state == "preview") then
+              WhispersSettingsFrameButton4:Click()
+              UIFrameFlashRemoveFrame(WhispersFrame)
+              UIFrameFadeRemoveFrame(WhispersFrame)
+            end
+            HideUIPanel(this:GetParent())
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButton3" inherits="OptionsButtonTemplate">
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="$parentButton2" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-12" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            TNE_WhispersSettings_ApplySettings()
+            if (WhispersSettingsFrameButton4 and WhispersSettingsFrameButton4.state == "preview") then
+              WhispersSettingsFrameButton4:Click()
+              UIFrameFlashRemoveFrame(WhispersFrame)
+              UIFrameFadeRemoveFrame(WhispersFrame)
+            end
+            HideUIPanel(this:GetParent())
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parentButton4" inherits="OptionsButtonTemplate">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parentParametersOptions" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-12" y="12" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this.state = "normal"
+          </OnLoad>
+          <OnClick>
+            if (this.state == "preview") then
+              this.state = "normal"
+              getglobal(this:GetName().. "Text"):SetText(TNE_WhispersSettings_Buttons[4])
+              TNE_WhispersSettings_StopPreview()
+            else
+              this.state = "preview"
+              getglobal(this:GetName().. "Text"):SetText(TNE_WhispersSettings_Stop)
+              TNE_WhispersSettings_StartPreview()
+            end
+          </OnClick>
+        </Scripts>
+      </Button>
+
+    </Frames>
+
+    <Scripts>
+      <OnLoad>
+        TNE_WhispersSettings_OnLoad()
+      </OnLoad>
+      <OnShow>
+        TNE_WhispersSettings_OnShow()
+        local frame = WhispersFrame
+        UIFrameFlashRemoveFrame(frame)
+        UIFrameFadeRemoveFrame(frame)
+        UIFrameFadeIn(frame, 1, 0, 1)
+        frame.locked = true
+        PlaySound("igCharacterInfoOpen")
+      </OnShow>
+      <OnHide>
+        PlaySound("igCharacterInfoClose")
+        UIFrameFadeOut(WhispersFrame, 1, 1, 0)
+        WhispersFrame.locked = nil
+      </OnHide>
+    </Scripts>
+
+  </Frame>
+
+</Ui>

@@ -1,0 +1,1728 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+  <Script file="localization.lua"/>
+  <Script file="localization.de.lua"/>
+  <Script file="localization.fr.lua"/>
+  <Script file="localization.tw.lua"/>
+
+	<!-- ================================================================== -->
+	<!-- The options frame -->
+	<CheckButton name="CECBOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+	</CheckButton>
+
+	<Frame name="CECBOptionsFrame" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true" parent="UIParent">
+	    <Scripts>
+			<OnUpdate> CEnemyCastBar_Options_OnUpdate(); </OnUpdate>
+	    </Scripts>
+		<Size>
+			<AbsDimension x="" y="" /> <!--x y menuesize set through mainlua -->
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="250" y="-100" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<TitleRegion setAllPoints="true"/>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="500" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="Options">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Text"):SetText("Natur EnemyCastBar |cffcccc00("..CECB_status_version_txt..")\n\n|cffffffff"..CECB_menue_txt);
+			</OnLoad>
+		</Scripts>
+
+		<Frames>
+
+		        <Button name="$parentX" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+		            <Anchors>
+		                <Anchor point="CENTER" relativePoint="TOPRIGHT">
+		                    <Offset>
+		                        <AbsDimension x="-24" y="-32"/>
+		                    </Offset>
+		                </Anchor>
+		            </Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_Handler("");
+						CEnemyCastBar_ShowHideColorOptions("hide");
+					</OnClick>
+				</Scripts>
+		        </Button>
+
+			<CheckButton name="$parentCECB_status_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" >
+						<Offset>
+							<AbsDimension x="10" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					if (CEnemyCastBar.bStatus) then
+					CEnemyCastBar_Options("disable");
+					else
+					CEnemyCastBar_Options("enable");
+					end
+					
+						-- CEnemyCastBar.bStatus = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_status_txt);
+						getglobal(this:GetName()).tooltipText = CECB_status_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bStatus) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentBGFrame1" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="31"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_status_check">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.1, 0.1, 0.1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<Button name="$parentBGFrameFPSBar" inherits="CarniEnemyCastBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentCECB_status_check">
+								<Offset>
+									<AbsDimension x="255" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:EnableMouse(0);
+								this:Show();
+								getglobal(this:GetName().."_StatusBar_Spark"):Hide();
+							</OnLoad>
+						</Scripts>
+			</Button>
+			<CheckButton name="$parentBGFrameFPSBar_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBGFrameFPSBar">
+						<Offset>
+							<AbsDimension x="-15" y="2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("fpsbar");
+						-- CEnemyCastBar.bFPSBar = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						--getglobal(this:GetName().."Text"):SetText(CECB_fps_txt);
+						getglobal(this:GetName()).tooltipText = CECB_fps_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bTempFPSBar) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_pvp_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_status_check">
+						<Offset>
+							<AbsDimension x="0" y="-45" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("pvp");
+						-- CEnemyCastBar.bPvP = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_pvp_txt);
+						getglobal(this:GetName()).tooltipText = CECB_pvp_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bPvP) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentBGFrame2" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="360"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_pvp_check">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="Options">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.2, 0.1, 0.1);
+						getglobal(this:GetName().."Text"):SetText("|cffffffaa"..CECB_menuesub1_txt);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<CheckButton name="$parentCECB_globalpvp_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_pvp_check">
+						<Offset>
+							<AbsDimension x="10" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("globalpvp");
+						-- CEnemyCastBar.bGlobalPvP = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_globalpvp_txt);
+						getglobal(this:GetName()).tooltipText = CECB_globalpvp_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bGlobalPvP) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_gains_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_globalpvp_check">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("gains");
+						-- CEnemyCastBar.bGains = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_gains_txt);
+						getglobal(this:GetName()).tooltipText = CECB_gains_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bGains) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_gainsonly_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_gains_check">
+						<Offset>
+							<AbsDimension x="10" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("gainsonly");
+						-- CEnemyCastBar.bGainsOnly = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_gainsonly_txt);
+						getglobal(this:GetName()).tooltipText = CECB_gainsonly_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bGainsOnly) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_cdown_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_gainsonly_check">
+						<Offset>
+							<AbsDimension x="-10" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("cdown");
+						-- CEnemyCastBar.bCDown = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_cdown_txt);
+						getglobal(this:GetName()).tooltipText = CECB_cdown_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bCDown) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_cdownshort_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_cdown_check">
+						<Offset>
+							<AbsDimension x="10" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("cdownshort");
+						-- CEnemyCastBar.bCDownShort = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_cdownshort_txt);
+						getglobal(this:GetName()).tooltipText = CECB_cdownshort_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bCDownShort) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_usecddb_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_cdownshort_check">
+						<Offset>
+							<AbsDimension x="0" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("usecddb");
+						-- CEnemyCastBar.bUseCDDB = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_usecddb_txt);
+						getglobal(this:GetName()).tooltipText = CECB_usecddb_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bUseCDDB) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_spellbreak_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_usecddb_check">
+						<Offset>
+							<AbsDimension x="-10" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("spellbreak");
+						-- CEnemyCastBar.bSpellBreakLight = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_spellbreak_txt);
+						getglobal(this:GetName()).tooltipText = CECB_spellbreak_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bSpellBreakLight) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_pve_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_spellbreak_check">
+						<Offset>
+							<AbsDimension x="-10" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("pve");
+						-- CEnemyCastBar.bPvE = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_pve_txt);
+						getglobal(this:GetName()).tooltipText = CECB_pve_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bPvE) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<Frame name="$parentBGLine1" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="4"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_pve_check">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+			<CheckButton name="$parentCECB_pvew_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_pve_check">
+						<Offset>
+							<AbsDimension x="10" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("pveraidw");
+						-- CEnemyCastBar.bPvEWarn = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_pvew_txt);
+						getglobal(this:GetName()).tooltipText = CECB_pvew_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bPvEWarn) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_afflict_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_pvew_check">
+						<Offset>
+							<AbsDimension x="-10" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("afflict");
+						-- CEnemyCastBar.bShowafflict = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_afflict_txt);
+						getglobal(this:GetName()).tooltipText = CECB_afflict_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bShowafflict) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<Frame name="$parentBGLine2" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="4"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_afflict_check">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+			<CheckButton name="$parentCECB_globalfrag_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_afflict_check">
+						<Offset>
+							<AbsDimension x="10" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("globalfrag");
+						-- CEnemyCastBar.bGlobalFrag = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_globalfrag_txt);
+						getglobal(this:GetName()).tooltipText = CECB_globalfrag_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bGlobalFrag) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_magecold_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_globalfrag_check">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("magecold");
+						-- CEnemyCastBar.bMageC = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_magecold_txt);
+						getglobal(this:GetName()).tooltipText = CECB_magecold_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bMageC) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_solod_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_magecold_check">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("solod");
+						-- CEnemyCastBar.bSoloD = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_solod_txt);
+						getglobal(this:GetName()).tooltipText = CECB_solod_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bSoloD) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_drtimer_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_solod_check">
+						<Offset>
+							<AbsDimension x="10" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("drtimer");
+						-- CEnemyCastBar.bDRTimer = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_drtimer_txt);
+						getglobal(this:GetName()).tooltipText = CECB_drtimer_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bDRTimer) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_classdr_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_drtimer_check">
+						<Offset>
+							<AbsDimension x="0" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("classdr");
+						-- CEnemyCastBar.bClassDR = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_classdr_txt);
+						getglobal(this:GetName()).tooltipText = CECB_classdr_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bClassDR) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_sdots_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_classdr_check">
+						<Offset>
+							<AbsDimension x="-10" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("sdots");
+						-- CEnemyCastBar.bSDoTs = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_sdots_txt);
+						getglobal(this:GetName()).tooltipText = CECB_sdots_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bSDoTs) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_affuni_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_sdots_check">
+						<Offset>
+							<AbsDimension x="0" y="-20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("affuni");
+						-- CEnemyCastBar.bAfflictuni = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_affuni_txt);
+						getglobal(this:GetName()).tooltipText = CECB_affuni_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bAfflictuni) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_parseC_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_affuni_check">
+						<Offset>
+							<AbsDimension x="-10" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("parsec");
+						-- CEnemyCastBar.bParseC = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_parsec_txt);
+						getglobal(this:GetName()).tooltipText = CECB_parsec_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bParseC) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<Frame name="$parentBGFrameNet" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_parseC_check">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.1, 0.1, 0.2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<CheckButton name="$parentCECB_broadcast_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_parseC_check">
+						<Offset>
+							<AbsDimension x="10" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("broadcast");
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_broadcast_txt);
+						getglobal(this:GetName()).tooltipText = CECB_broadcast_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bBCaster) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_targetM_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_pvp_check">
+						<Offset>
+							<AbsDimension x="240" y="0" /> -- adapt to width
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("targetm");
+						-- CEnemyCastBar.bTargetM = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_targetm_txt);
+						getglobal(this:GetName()).tooltipText = CECB_targetm_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bTargetM) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<Frame name="$parentBGFrame3" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="440"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_targetM_check">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.1, 0.2, 0.1);
+						getglobal(this:GetName().."Text"):SetText("|cffffffaa"..CECB_menuesub2_txt);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<CheckButton name="$parentCECB_timer_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_targetM_check">
+						<Offset>
+							<AbsDimension x="0" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("timer");
+						-- CEnemyCastBar.bTimer = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_timer_txt);
+						getglobal(this:GetName()).tooltipText = CECB_timer_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bTimer) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_tsize_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_timer_check">
+						<Offset>
+							<AbsDimension x="0" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("tsize");
+						-- CEnemyCastBar.bSmallTSize = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_tsize_txt);
+						getglobal(this:GetName()).tooltipText = CECB_tsize_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bSmallTSize) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_flipb_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_tsize_check">
+						<Offset>
+							<AbsDimension x="0" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("flipb");
+						-- CEnemyCastBar.bFlipB = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_flipb_txt);
+						getglobal(this:GetName()).tooltipText = CECB_flipb_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bFlipB) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_flashit_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_flipb_check">
+						<Offset>
+							<AbsDimension x="0" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("flashit");
+						-- CEnemyCastBar.bFlashit = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_flashit_txt);
+						getglobal(this:GetName()).tooltipText = CECB_flashit_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bFlashit) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCECB_showicon_check" inherits="CECBOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_flashit_check">
+						<Offset>
+							<AbsDimension x="0" y="-25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Options("showicon");
+						-- CEnemyCastBar.bShowIcon = (this:GetChecked() == 1);
+					</OnClick>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(CECB_showicon_txt);
+						getglobal(this:GetName()).tooltipText = CECB_showicon_tooltip;
+					</OnLoad>
+					<OnShow>
+						if (CEnemyCastBar.bShowIcon) then
+							this:SetChecked(1);
+						else
+							this:SetChecked(0);
+						end
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="$parentCECB_scale_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_showicon_check">
+						<Offset>
+							<AbsDimension x="10" y="-47" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_scale_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_scale_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_scale_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentCECB_alpha_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_scale_Slider">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_alpha_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_alpha_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_alpha_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentCECB_numbars_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_alpha_Slider">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_numbars_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_numbars_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_numbars_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentCECB_space_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_numbars_Slider">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_space_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_space_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_space_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentCECB_blength_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_space_Slider">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_blength_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_blength_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_blength_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentCECB_MiniMap_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_blength_Slider">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_MiniMap_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_MiniMap_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_minimap_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Slider name="$parentCECB_Throttle_Slider" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_MiniMap_Slider">
+						<Offset>
+							<AbsDimension x="0" y="-40" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						CECB_Throttle_Slider_OnValueChanged();
+					</OnValueChanged>
+					<OnShow>
+						CECB_Throttle_Slider_OnShow();
+						getglobal(this:GetName()).tooltipText = CECB_throttle_tooltip;
+					</OnShow>
+				</Scripts>
+			</Slider>
+
+			<Frame name="$parentEPTimer" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="240" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCECB_Throttle_Slider">
+						<Offset>
+							<AbsDimension x="-10" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="EngageProtection: disabled">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="5" y="-4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.1, 0.1, 0.1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<Button name="$parentEPTimerReset" inherits="UIPanelButtonTemplate" text="Reset" hidden="false">
+				<NormalFont inherits="GameFontNormalSmall"/>
+				<HighlightFont inherits="GameFontHighlightSmall"/>
+				<DisabledFont inherits="GameFontDisableSmall"/>
+			        <Size>
+			            <AbsDimension x="50" y="16"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentEPTimer">
+						<Offset>
+							<AbsDimension x="-2" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					if (necbengagecd) then
+						necbengagecd = GetTime() - necbEPTime;
+					end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentHelp" inherits="GameMenuButtonTemplate" text="CECB_menue_help">
+			        <Size>
+			            <AbsDimension x="100" y="20"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="20" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CEnemyCastBar_Handler("help");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentColors" inherits="UIPanelButtonTemplate" text="CECB_menue_colors">
+			        <Size>
+			            <AbsDimension x="100" y="20"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentHelp">
+						<Offset>
+							<AbsDimension x="120" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_ShowHideColorOptions();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentReset" inherits="UIPanelButtonTemplate" text="CECB_menue_reset">
+			        <Size>
+			            <AbsDimension x="100" y="20"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentColors">
+						<Offset>
+							<AbsDimension x="-120" y="23" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					CECBApplyResetFrame:Show();
+					--CEnemyCastBar_Options("reset");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentMoveBar" inherits="UIPanelButtonTemplate" text="CECB_menue_mbar">
+			        <Size>
+			            <AbsDimension x="100" y="20"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentReset">
+						<Offset>
+							<AbsDimension x="120" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_Options("show");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+
+	</Frame>
+
+
+	<!-- ================================================================== -->
+	<!-- The ApplyReset? frame -->
+	<Frame name="CECBApplyResetFrame" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="150" />
+		</Size>
+
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+
+		<TitleRegion setAllPoints="true"/>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="220" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" text="WARNING">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Text"):SetText(CECB_menue_rwarning);
+			</OnLoad>
+		</Scripts>
+
+		<Frames>
+
+			<Button name="$parentNoButton" inherits="GameMenuButtonTemplate" text="CECB_menue_rno">
+			        <Size>
+			            <AbsDimension x="80" y="21"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOM" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CECBApplyResetFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentYesButton" inherits="GameMenuButtonTemplate" text="CECB_menue_ryes">
+			        <Size>
+			            <AbsDimension x="80" y="21"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parentNoButton">
+						<Offset>
+							<AbsDimension x="0" y="25" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CECBApplyResetFrame:Hide();
+						CEnemyCastBar_Options("reset");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+
+	</Frame>
+
+	<!-- ================================================================== -->
+	<!-- COLORs FRAME -->
+	<Button name="CECBColorRectangle" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT">
+				<Offset>
+					<AbsDimension x="30" y="-20"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_SwatchBg">
+					<Size>
+						<AbsDimension x="18" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				CEnemyCastBar_ColorWheel(this:GetParent());
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."_SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."_SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+
+	</Button>
+
+
+	<Frame name="CECBPickColorOptions" frameStrata="MEDIUM" toplevel="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="210" y="310"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CECBOptionsFrame">
+				<Offset>
+					<AbsDimension x="0" y="-35" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="280" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentHeadline" inherits="GameFontNormal" text="Change Colors">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="$parentText1" inherits="GameFontHighlightSmall" text="Hostile">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CECBPickColorOptions">
+							<Offset>
+								<AbsDimension x="45" y="-39"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText2" inherits="GameFontHighlightSmall" text="Friendly">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText1">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText3" inherits="GameFontHighlightSmall" text="Cooldown">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText2">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText4" inherits="GameFontHighlightSmall" text="Gains, Buffs">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText3">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText5" inherits="GameFontHighlightSmall" text="Selfmade Countdown">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText4">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText6" inherits="GameFontHighlightSmall" text="DeBuffs, Afflictions">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText5">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText7" inherits="GameFontHighlightSmall" text="Stuns">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText6">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText8" inherits="GameFontHighlightSmall" text="Own DoTs, Curses">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText7">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+		        <Button name="$parentX" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+		            <Anchors>
+		                <Anchor point="CENTER" relativePoint="TOPRIGHT">
+		                    <Offset>
+		                        <AbsDimension x="-20" y="-20"/>
+		                    </Offset>
+		                </Anchor>
+		            </Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_ShowHideColorOptions();
+					</OnClick>
+				</Scripts>
+		        </Button>
+
+			<Button name="$parentReset" inherits="UIPanelButtonTemplate" text="Standard">
+			        <Size>
+			            <AbsDimension x="100" y="20"/>
+			        </Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CEnemyCastBar_SetBarColors();
+						CEnemyCastBar_SetBarColors("SetColors");
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parent_Hostile" inherits="CECBColorRectangle" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CECBPickColorOptions">
+						<Offset>
+							<AbsDimension x="20" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parent_Friendly" inherits="CECBColorRectangle" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Hostile">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Cooldown" inherits="CECBColorRectangle" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Friendly">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Gains" inherits="CECBColorRectangle" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Cooldown">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Grey" inherits="CECBColorRectangle" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Gains">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Afflict" inherits="CECBColorRectangle" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Grey">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Stuns" inherits="CECBColorRectangle" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Afflict">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Cursetype" inherits="CECBColorRectangle" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Stuns">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+  <Script file="CECB_Options.lua"/>
+
+</Ui>

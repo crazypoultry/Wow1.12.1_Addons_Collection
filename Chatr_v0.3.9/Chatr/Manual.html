@@ -1,0 +1,818 @@
+<html>
+<head>
+<title>Chatr User Manual</title>
+<style>
+body{line-height:140%;font-family:georgia,times,serif;font-size:12pt;margin:3em;margin-top:0}
+#main { color:#000; font-size: 44pt; border-bottom:2px solid #630; text-align:center;padding:0.6em;margin-bottom:0}
+#verinfo { text-align:center; margin:0; background:#fed; border:1px solid #630;margin-top:2px}
+a { color: #960; font-weight: bold}
+a:visited { color: #630;}
+a:hover { color: #a90}
+table {border:1px solid #630;border-collapse:collapse}
+th {background:#fed}
+td+td,th+th{border-left:1px solid #630}
+td,th{padding-left:5px; padding-right:5px}
+h1{border-bottom:1px solid #960;color:#960}
+p{margin:0;margin-bottom:2px}
+</style>
+<script type="text/javascript">
+
+/*
+  http://www.quirksmode.org/dom/toc.html
+  http://www.quirksmode.org/dom/getElementsByTagNames.html
+*/
+
+function getElementsByTagNames(list,obj)
+{
+	if (!obj) var obj = document;
+	var tagNames = list.split(',');
+	var resultArray = new Array();
+	for (var i=0;i<tagNames.length;i++)
+	{
+		var tags = obj.getElementsByTagName(tagNames[i]);
+		for (var j=0;j<tags.length;j++)
+		{
+			resultArray.push(tags[j]);
+		}
+	}
+	var testNode = resultArray[0];
+	if (testNode.sourceIndex)
+	{
+		resultArray.sort(function (a,b) {
+				return a.sourceIndex - b.sourceIndex;
+		});
+	}
+	else if (testNode.compareDocumentPosition)
+	{
+		resultArray.sort(function (a,b) {
+				return 3 - (a.compareDocumentPosition(b) & 6);
+		});
+	}
+	return resultArray;
+}
+
+function createTOC()
+{
+	var x = document.body.childNodes;
+	var y = document.createElement('div');
+	y.id = 'toc';
+	var tocList = document.getElementById('tochere');
+	var toBeTOCced = getElementsByTagNames('h1,h2');
+	if (toBeTOCced.length < 2) return;
+
+	for (var i=0;i<toBeTOCced.length;i++)
+	{
+		if(toBeTOCced[i].className.indexOf("notoc")==-1)
+		{
+			var anchor = document.createElement('a');
+			anchor.id = 'link' + i;
+			toBeTOCced[i].parentNode.insertBefore(anchor,toBeTOCced[i]);
+			var link = document.createElement('a');
+			link.innerHTML = toBeTOCced[i].innerHTML;
+			link.href = '#'+anchor.id;
+			var listItem=document.createElement('li');
+			listItem.appendChild(link);
+			if (toBeTOCced[i].nodeName == 'H1')
+			{
+				tocList.appendChild(listItem);
+				prevItem=listItem;
+				prevList=0;
+			}
+			else
+			{
+				if(prevList==0)
+				{
+					prevList=document.createElement('ol');
+					prevItem.appendChild(prevList);
+				}
+				prevList.appendChild(listItem);
+			}
+
+			//if (toBeTOCced[i].nodeName == 'H2')
+			//	tmp.className += ' indent';
+
+
+		}
+	}
+	document.getElementById("tocdis").style.display="none";
+}
+
+window.onload = createTOC;
+
+var TOCstate = 'none';
+
+
+</script>
+</head>
+<body>
+<h1 id="main" class="notoc">Chatr User Manual</h1>
+<p id="verinfo">Version 0.3.9 / 16 August 2006</p>
+<h1 class="notoc">Table Of Contents</h1>
+<ol id="tochere"></ol>
+<div id="tocdis">If you can't see anything interesting here, you don't have JavaScript on. Sorry.</div>
+
+<!-- START OF GENERATED CONTENT -->
+<h1>Welcome to Chatr!</h1>
+
+<p>Chatr is a World of Warcraft addon which makes private chats easier, simpler, more powerful and best of all actually intuitive by opening a new window for each conversation. This is reminiscent of (m)IRC query windows, MSN Messenger, AIM, ICQ, Jabber or other instant messaging systems. Also this is not an original idea - <a href="http://ui.worldofwar.net/ui.php?id=1686">ForgottenChat</a> beat me to it a long time ago. Thank you for the inspiration! :)</p>
+
+<p>Also, with the included Channeler plugin, you can actually chat on party, guild, raid and custom channels using Chatr.</p>
+
+<p>Due to all the confusion, feature requests and such on ui.worldofwar.net I decided to write this documentation to clarify <em>all</em> the features in Chatr.</p>
+
+<h1>Installation and Configuration</h1>
+
+<h2>Installing</h2>
+
+<p>Installing Chatr goes pretty much like all the other addons you see - just copy the folders contained in the archive file to your Interface/Addons folder. WoW will not recognize new addons unless it is restarted, so (re)start it now.</p>
+
+<h2>Addons Window and Plugins</h2>
+
+<p>When you log in, you should see an <em>Addons</em> button in the lower left corner of the character selection screen. This will bring up the Addons window. If you scroll the list roughly to C (and have installed the addons correctly), there should be Chatr and a menagerie of accompanied plugins.</p>
+
+<p>"Plugins?", I hear you cry. Chatr is modular. The core functions are provided by the addon named (surprisingly enough) Chatr, the rest are plugins. I would suggest you start off with all the plugins enabled, then disable what you don't need later. Also, if you deselect Chatr from the list, the Chatr plugins are disabled as well, as they require Chatr to be loaded. Simple, don't you think?</p>
+
+<p>When you're overwhelmed enough by this, just click Okay and enter the world with the character you want.</p>
+
+<h1>Using Chatr in Azeroth</h1>
+
+<p>Chatr notifies you of itself by telling you it's loaded in the chat frame. (Each plugin also does this.)</p>
+
+<p>There's no real configuration that needs to be done (unless you want to), so just whisper someone. Lo and behold! A Chatr window pops up (or should ;) bearing the name of whoever you just whispered and whatever you just said. You can now use this Chatr window to chat with your buddy.</p>
+
+<p>Below the main box (this is called the chatbox) there's the entry line (ahem, yes, this is called the entry line). When it's inactive, it's translucent, so if you think your screen has a funny horizontal smudge just there, it probably doesn't. If you click the entry line, it'll be focused and you will be able to type in it. When you press Enter, the message is sent. If you happen to press ESC, the box is cleared and defocused to allow you to, say, fend off Ragnaros, if that is what you happened to be doing.</p>
+
+<p>The rest of the box? There's the multi-purpose close button in the corner.</p>
+
+<ul>
+<li>If you left-click it, the window will close without a trace.</li>
+<li>If you right-click (or shift-click, if your mouse only has one button), the window will minimize to a tiny box, or alternately, had it been already minimized, restore back to the normal version. This minimized box will turn orange if the person you were talking to has something to say. <em>You can also minimize windows by double-clicking their title bars.</em></li>
+<li>If you middle-click (alt-click) it, the window will dock (or undock). More information on the dock to follow.</li>
+</ul>
+
+<p>Next to the close button is the M (menu) button. By clicking this, you activate a context menu with actions to</p>
+
+<ul>
+<li>Invite the person to your group</li>
+<li>Target and inspect him or her</li>
+<li>Do a /who query (this is reflected in the title bar of the window)</li>
+<li>Follow the person</li>
+<li>Trade with the person (Hello, "water plz")</li>
+<li>Duel with him/her and his/her pets</li>
+</ul>
+
+<p>You can move the window by grabbing an edge or the titlebar. You can resize it by grabbing the little red resizer box in the corner. If you hold SHIFT while resizing, the size of the window is set as the new default size. To scroll the chat window, use the scrollwheel. There is (nor will be) any other way to scroll it. If you hold SHIFT while scrolling, the window is scrolled to the top or the very bottom.</p>
+
+<h1>Docking</h1>
+
+<p>Ever used <a href="http://www.getfirefox.com">Firefox</a> or any <a href="http://www.opera.com">other</a> <a href="http://www.maxthon.com/">Internet browser</a> <a href="http://www.avantbrowser.com/">with</a> <a href="http://www.netcaptor.com/">tab support</a>? ;) The dock does just this. All docked conversations show up as tabs, which are browseable by clicking on them or through keybinds.</p>
+
+<p>As stated before, alt-click on a chat window close button to dock or undock it. Moving docked windows moves the dock (and the tabs, etc) instead. There's a small translucent red button next to the tabs. This is used to minimize and restore the dock. You can select the dock orientation (left, right or smart) as well as the tab positioning in the Chatr settings. (More on this later.)</p>
+
+<h1>Settings and Slash Commands</h1>
+
+<h2>Slash Commands</h2>
+
+<p>Chatr provides several slash commands, but configuration is mostly done via a fancy graphical interface. The slash commands are (in usefulness order and ripped straight from <em>/chatr help</em>):</p>
+
+<table>
+<thead>
+<tr>
+  <th>Command</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>/chatr</td>
+  <td>Opens the settings screen</td>
+</tr>
+<tr>
+  <td>/chatr on/off</td>
+  <td>Turn new windows on/off (if you don't have any other way of seeing whispers, you might miss a couple...)</td>
+</tr>
+<tr>
+  <td>/chatr clear</td>
+  <td>Closes all boxes</td>
+</tr>
+<tr>
+  <td>/chatr credits</td>
+  <td>Toggles the credits screen :)</td>
+</tr>
+<tr>
+  <td>/chatr forget</td>
+  <td>Resets remembered frame positions</td>
+</tr>
+<tr>
+  <td>/chatr reset</td>
+  <td>Resets all options for all profiles</td>
+</tr>
+<tr>
+  <td>/chatr debug</td>
+  <td>Turns debugging mode on and off</td>
+</tr>
+<tr>
+  <td>/chatr t</td>
+  <td>Opens testing boxes</td>
+</tr>
+<tr>
+  <td>/chatr size <w> <h></td>
+  <td>Sets the default size to <w> x <h> (pixels)</td>
+</tr>
+<tr>
+  <td>/chatr pos <x> <y></td>
+  <td>Sets default position to <x>,<y> measured as an offset from the screen center</td>
+</tr>
+<tr>
+  <td>/chatr load <profile></td>
+  <td>Loads settings from profile <profile>. (name@realm)</td>
+</tr>
+<tr>
+  <td>/chatr dm <text></td>
+  <td>A comma-separated list of window titles which will not be minimized in combat. Omit <em>text</em> to only show the current list</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Settings</h2>
+
+<p>The settings window (opened via /chatr) provides pretty much everything you need for Chatr configuration.</p>
+
+<p>On the left side of the window are the settings buttons provided by plugins. Clicking one of these will open the corresponding plugin option window. They are described in the plugins documentation below.</p>
+
+<p>The first two boxes in the main window - Text Format and Note Format - are used to customize the way messages are displayed. The special <em>%X</em> symbols modify the timestamp, the <em>$...</em> ones denote the text.</p>
+
+<p>The time symbols are as follows:</p>
+
+<table>
+<thead>
+<tr>
+  <th>Symbol</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>%a</td>
+  <td>Locale's abbreviated weekday name.</td>
+</tr>
+<tr>
+  <td>%A</td>
+  <td>Locale's full weekday name.</td>
+</tr>
+<tr>
+  <td>%b</td>
+  <td>Locale's abbreviated month name.</td>
+</tr>
+<tr>
+  <td>%B</td>
+  <td>Locale's full month name.</td>
+</tr>
+<tr>
+  <td>%c</td>
+  <td>Locale's appropriate date and time representation.</td>
+</tr>
+<tr>
+  <td>%d</td>
+  <td>Day of the month as a decimal number [01,31].</td>
+</tr>
+<tr>
+  <td>%H</td>
+  <td>Hour (24-hour clock) as a decimal number [00,23].</td>
+</tr>
+<tr>
+  <td>%I</td>
+  <td>Hour (12-hour clock) as a decimal number [01,12].</td>
+</tr>
+<tr>
+  <td>%j</td>
+  <td>Day of the year as a decimal number [001,366].</td>
+</tr>
+<tr>
+  <td>%m</td>
+  <td>Month as a decimal number [01,12].</td>
+</tr>
+<tr>
+  <td>%M</td>
+  <td>Minute as a decimal number [00,59].</td>
+</tr>
+<tr>
+  <td>%p</td>
+  <td>Locale's equivalent of either AM or PM.</td>
+</tr>
+<tr>
+  <td>%S</td>
+  <td>Second as a decimal number [00,61].</td>
+</tr>
+<tr>
+  <td>%U</td>
+  <td>Week number of the year (Sunday as the first day of the week) as a decimal number [00,53]</td>
+</tr>
+<tr>
+  <td>%w</td>
+  <td>Weekday as a decimal number [0(Sunday),6].</td>
+</tr>
+<tr>
+  <td>%W</td>
+  <td>Week number of the year (Monday as the first day of the week) as a decimal number [00,53]</td>
+</tr>
+<tr>
+  <td>%x</td>
+  <td>Locale's appropriate date representation.</td>
+</tr>
+<tr>
+  <td>%X</td>
+  <td>Locale's appropriate time representation.</td>
+</tr>
+<tr>
+  <td>%y</td>
+  <td>Year without century as a decimal number [00,99].</td>
+</tr>
+<tr>
+  <td>%Y</td>
+  <td>Year with century as a decimal number.</td>
+</tr>
+<tr>
+  <td>%Z</td>
+  <td>Time zone name (no characters if no time zone exists).</td>
+</tr>
+</tbody>
+</table>
+
+<p>Currently, the text symbols available are:</p>
+
+<table>
+<thead>
+<tr>
+  <th>Symbol</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>$name</td>
+  <td>Whoever talked. Not available for notes.</td>
+</tr>
+<tr>
+  <td>$text</td>
+  <td>The message or note text.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Notes are, for example "Zerun is AFK (getting coffee, coffee is good)".</p>
+
+<p>Next up are the color settings. These are simply used to set the color settings for chat boxes. Should be quite self-explanatory. After those is the font size slider. You set the font size with it. :)</p>
+
+<p>Then you see a veritable plethora of checkboxes. These affect highly how Chatr behaves.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Setting</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Automatic /who</td>
+  <td>Whenever a window is opened, a /who query is made to make it easier to see where the target is.</td>
+</tr>
+<tr>
+  <td>Automatic Fading</td>
+  <td>If this is on, the Chatr windows turn translucent when your mouse is not on top of them.</td>
+</tr>
+<tr>
+  <td>Dock By Default</td>
+  <td>All new windows will pop up in the dock instead of as free-floating windows.</td>
+</tr>
+<tr>
+  <td>Entry Box Inside Frame</td>
+  <td>Inlines the entry box.</td>
+</tr>
+<tr>
+  <td>Execute Slash Commands</td>
+  <td>Allows you to use "standard" slash commands inside Chatr. This does not include emotes, channel or whisper commands. Additionally, /me will be always be transmitted as-is through Chatr. Other Chatr users will see this "correctly".</td>
+</tr>
+<tr>
+  <td>Focus by Click</td>
+  <td>Allows you to focus the edit box by clicking a non-active part of the chat box.</td>
+</tr>
+<tr>
+  <td>Minimize in Combat</td>
+  <td>Minimizes all Chatr windows and the dock when you enter combat and restores them upon ending combat.</td>
+</tr>
+<tr>
+  <td>Open Minimized</td>
+  <td>Opens new conversations as minimized Chatrs. Mutually exclusive with "Dock By Default".</td>
+</tr>
+<tr>
+  <td>Play Incoming Sound</td>
+  <td>Will play the WoW default whisper sound whenever you get a whisper.</td>
+</tr>
+<tr>
+  <td>Sync Docked Sizes</td>
+  <td>Whenever you resize a docked window, all other docked windows will be resized to that size too.</td>
+</tr>
+<tr>
+  <td>Vertical Dock</td>
+  <td>The dock buttons will show up as a column instead of a row.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Right at the bottom is the "Save Per Character" checkbox. If this is checked, the set settings are saved only for the current character. Other characters (with no per-character profiles) will still use the global profile.</p>
+
+<h1>Key Bindings</h1>
+
+<p>Chatr provides a couple of handy keybindings.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Keybinding</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Focus Last Clicked Chat</td>
+  <td>Focuses the entry box that was last clicked.</td>
+</tr>
+<tr>
+  <td>Open Chatr to Reply</td>
+  <td>Opens a Chatr box to reply to the last received whisper (in the base UI)</td>
+</tr>
+<tr>
+  <td>QuickToggle</td>
+  <td>Toggles the visibility of every Chatr box and dock on and off.</td>
+</tr>
+<tr>
+  <td>Dock: Focus Current Tab</td>
+  <td>Focuses the entry box of the current dock tab.</td>
+</tr>
+<tr>
+  <td>Dock: Next Tab</td>
+  <td>Browses to the next chat tab, wrapping around if needed.</td>
+</tr>
+<tr>
+  <td>Dock: Previous Tab</td>
+  <td>Browses to the previous chat tab, wrapping around if needed.</td>
+</tr>
+<tr>
+  <td>Dock: Close Tab</td>
+  <td>Closes the current dock tab.</td>
+</tr>
+</tbody>
+</table>
+
+<h1>Plugins</h1>
+
+<p>As stated before, Chatr is modular, plugin-based and generally a lovely little widget to play around with. ;) Here listed are the plugins Chatr comes with.</p>
+
+<h2>ChatrAlterEgo</h2>
+
+<p>ChatrAlterEgo adds alternate name support.</p>
+
+<p>Like ChatrCrayons and ChatrFilter, its configuration consists of lines in the format <code>&lt;oldname&gt;:&lt;newname&gt;</code>. Additionally, if <em>oldname</em> starts with a tilde (~), the rest of it is considered a Lua pattern that must be found in the name to match it. The lines are applied sequentially from top to bottom.</p>
+
+<h2>ChatrBacklog</h2>
+
+<p>ChatrBacklog keeps track of your previous conversations over Chatr window closures. If you (accidentally) close the chat, Backlog will fill it with the latest 5 messages when next opened. Currently there are no options for ChatrBacklog except for the big red Clear button, which will (surprisingly enough) clear the Backlog buffer.</p>
+
+<h2>ChatrBuddies</h2>
+
+<p>ChatrBuddies is a tiny little buddy list window plugin with a handful of neat features. The window is disabled by default, so you'll have to either use <em>/chatr buddies</em> or the ChatrBuddies options window to enable it. When enabled, it will show up as a little box with the names of your online friends (or at least, the first 32 of them). If you mouseover one of these, the relevant information (current zone, level, etc) will be shown next to the name. If you double-click a name, a Chatrbox will pop up, already focused to the chatbox and ready to go.</p>
+
+<p>The various color shades in ChatrBuddies are:</p>
+
+<ul>
+<li>White - online</li>
+<li>Gray - offline</li>
+<li>Blue - in your zone</li>
+<li>Dark Red - DND</li>
+<li>Orangeish - AFK</li>
+<li>Yellow - leveled up (be the first to congratulate ;)</li>
+<li>Greenish - Guildmate</li>
+</ul>
+
+<p>These vary.</p>
+
+<h3>ChatrBuddies Options</h3>
+
+<ul>
+<li>Show Count - if you don't want a huge buddies box, limit it here.</li>
+<li>Show At Start - show the buddy list when you log in</li>
+<li>Show Offline - shows your offline friends as well</li>
+<li>Show Guildies - shows your guildmates (not counted in the buddies online/offline counter)</li>
+<li>Custom Labels - a comma-separated list of names or channels you want always to show up in the buddy list (but within the built-in 64 name limit).</li>
+</ul>
+
+<h2>ChatrChanneler</h2>
+
+<p>ChatrChanneler has undoubtedly the best usability-to-configuration ratio in Chatr's plugins. It has absolutely no configuration, but allows you to chat in arbitrary channels, such as the party, raid, guild and officer channels as well as custom channels (/join <em>channel</em> style) in Chatr windows. To open such a chat window, either</p>
+
+<ul>
+<li>Set one up as a custom label in ChatrBuddies</li>
+<li>Use /chch <em>channel</em> (guild, party, raid, officer and say channels are "guild", "party", "raid", "officer" and "say").</li>
+<li>Use Chatr_OpenFor("#channel") in scripts</li>
+</ul>
+
+<p>Easy as that.</p>
+
+<h2>ChatrCrayons</h2>
+
+<p>If you want to customize the look of your Chatr frames, this is the best bet. ChatrCrayons (described as <em>Creative Coloring. Suitable for Level 3+, May Contain Small Parts</em>) allows you to set the border and background colors of your Chatr frames depending on their name, guild, zone or whether they are a friend of yours.</p>
+
+<h3>ChatrCrayons Configuration</h3>
+
+<p>Crayons are set as lines in the configuration window for ChatrCrayons.</p>
+
+<p>Lines starting with # are ignored. (For testing, or comments.)
+The lines follow the format <code>&lt;ident&gt;:&lt;mode&gt;:&lt;color&gt;</code>.
+Ident defines when the crayon is applied.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Ident</th>
+  <th>Description</th>
+  <th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>n...</td>
+  <td>Name must match ...</td>
+  <td><code>nZerun</code> - name must be Zerun</td>
+</tr>
+<tr>
+  <td>g...</td>
+  <td>Guild must match ...</td>
+  <td><code>gThe Great Foobars</code> - target guild must be The Great Foobars</td>
+</tr>
+<tr>
+  <td>zmatch</td>
+  <td>In the same zone as you are</td>
+  <td><code>zmatch</code> - they're right behind you</td>
+</tr>
+<tr>
+  <td>z...</td>
+  <td>Zone must match ...</td>
+  <td><code>zAlterac Valley</code> - they're fighting in AV</td>
+</tr>
+<tr>
+  <td>friend</td>
+  <td>They're a friend of yours (this requires Buddies enabled)</td>
+  <td><code>friend</code> - they're your chums!</td>
+</tr>
+</tbody>
+</table>
+
+<p>Mode defines what part of the frame to change.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Mode</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>bo</td>
+  <td>The border color</td>
+</tr>
+<tr>
+  <td>bg</td>
+  <td>The background color</td>
+</tr>
+<tr>
+  <td>boa</td>
+  <td>The border alpha value (transparency)</td>
+</tr>
+<tr>
+  <td>bga</td>
+  <td>The background alpha value (transparency)</td>
+</tr>
+</tbody>
+</table>
+
+<p>Color is either a RRGGBB (red-green-blue) <a href="http://en.wikipedia.org/wiki/Web_colors">hex triplet</a> or a named color (there are a couple common ones included). For alpha value modes, the value must be a number from 0 to 1, zero being totally transparent and 1 totally solid.</p>
+
+<p>Example: everyone from 'MyGuild' have an orange border: <code>gmyguild:bo:orange</code></p>
+
+<h2>ChatrFilter</h2>
+
+<p>ChatrFilter is probably the most versatile plugin in Chatr. It allows you to selectively ignore, modify, mangle etc. etc. the incoming or outgoing text. (However, this is merely visual. Outgoing text isn't <em>really</em> altered.)</p>
+
+<h3>ChatrFilter Options</h3>
+
+<p>As with ChatrCrayons, ChatrFilter's configuration is basically a collection of lines which determine the behavior.</p>
+
+<p>Lines not starting with I or O are disregarded.
+The line format is as follows: <code>&lt;Direction&gt;:&lt;Type&gt;:&lt;Match&gt;:&lt;Action&gt;</code></p>
+
+<ul>
+<li>Direction may be I (inbound) or O (outbound).</li>
+<li>Type may be M (message), ML (message, lowercased) or N (name).</li>
+<li>Match is a <a href="http://lua-users.org/wiki/PatternsTutorial">Lua pattern</a> to match against.</li>
+<li>Action may be one of the following:</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+  <th>Action</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>i</td>
+  <td>Ignores the line (it never shows up for you)</td>
+</tr>
+<tr>
+  <td>s <pattern></td>
+  <td>Substitutes the matched part with <pattern>.</td>
+</tr>
+<tr>
+  <td>r <text></td>
+  <td>Replaces the entire message/name with text.</td>
+</tr>
+<tr>
+  <td>l <lua></td>
+  <td>Runs the specified LUA code.</td>
+</tr>
+<tr>
+  <td>e <reply></td>
+  <td>Replies to the message with <reply>.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Examples:</p>
+
+<ul>
+<li>Filter "OMG" to "Oh gosh!": <code>I:M:OMG:s Oh gosh!</code></li>
+<li>Never show anything with "DKP" (in any CaSe) that is whispered to you: <code>I:ML:dkp:i</code></li>
+</ul>
+
+<h2>ChatrShoo</h2>
+
+<p>ChatrShoo closes windows after a set period of inactivity. This is disabled by default; check the options.</p>
+
+<h3>ChatrShoo Options</h3>
+
+<p>There's one slider here, which allows you to set the inactivity timer.</p>
+
+<h1>Other Addons and Chatr</h1>
+
+<p>Chatr has built-in support for many Blizzard features and third-party addons such as</p>
+
+<ul>
+<li>Inventory/Tradeskill/Craft/AH linking - you can link items from wherever to Chatr</li>
+<li>EnhTooltip/Auctioneer/other tooltip mods - items in Chatr show up with proper information</li>
+<li>Fizzwidget's Linkerator - you can just use Linkerator as you would with any chat frame from Chatr</li>
+<li>Inventory mods
+** EnchantDB
+** EngInventory
+** All-in-One Inventory
+** Bagnon/Banknon</li>
+</ul>
+
+<p>Additionally, I've been trying to hook as little functions as possible and generally tried to play nice all around. Chatr should cause <em>minimum interference</em> with other addons.</p>
+
+<h1>Oft-asked Questions and Answers to Them</h1>
+
+<h2>Hey, my whispers show up in the chat panel as well! :(</h2>
+
+<p>Use the WoW chat frame options to disable them. Right-click the chat frame tab and find the "Whisper" option in the menu.</p>
+
+<h2>If I bind a character-producing key to "Reply"/"Focus", I get that character in the entry box! :(</h2>
+
+<p>Actually, this has been cleverly worked around in WoW's interface source code as well, so you could say it's a known problem. Because I didn't want to include an OnUpdate handler (basically running code every frame -> slight speed decrease), I worked around this by using the <a href="http://ui.worldofwar.net/ui.php?id=1354">Chronos</a> timing library. I've heard that there's been bad things being said about Chronos, but I assure you, it doesn't do bad things... like, for example, the Sky addon communication/chat system. (No offense, but ... Sky makes kittens cry.) So, if you don't want that character to pop up, just install Chronos.</p>
+
+<h2>I can't link from my <em>non-standard inventory/tradeskill/item linking addon</em> :(</h2>
+
+<p>It's not supported. Drop me a line on ui.worldofwar.net.</p>
+
+<h2>My Chatr windows aren't showing up properly! :(</h2>
+
+<p>Try <em>/chatr clear</em> and <em>/chatr forget</em> to clear the "last positions" table.</p>
+
+<h1>Credits, Thanks, Contacting Me</h1>
+
+<h2>Credits</h2>
+
+<p>Coding and such by AKX. This project was started 23rd June 2006.</p>
+
+<h2>Thanks and greets</h2>
+
+<ul>
+<li>shouden, yacoob, Kovah, harl, Unne, toazron, Flarin, trefaes for suggestions, bug reports and such</li>
+<li>everyone who commented on ui.worldofwar.net</li>
+<li>YOU for downloading this addon</li>
+<li>Wrath, MHRC, Lost Order - wuv ya guys</li>
+<li>All my guinea pig posse at Moonglade, including but not limited to: Cleaver, Gha, Golkahar, Conall, Goren, Wara</li>
+<li>My guinea pig(s) on Steamwheedle Cartel</li>
+<li>ui.worldofwar.net for <a href="http://ui.worldofwar.net/ui.php?id=2766">hosting this damn thing</a></li>
+</ul>
+
+<h2>Contacting the Author</h2>
+
+<ul>
+<li>ui.worldofwar.net: <a href="http://ui.worldofwar.net/users.php?name=akx">akx</a> - Feedback on this addon is preferred as <a href="http://ui.worldofwar.net/ui.php?id=2766">a comment here</a></li>
+<li>EU-Moonglade: Zerun (troll), Lethn (undead), Hooves (tauren, while developing)</li>
+<li>EU-Steamwheedle Cartel: Rainfall (NE)</li>
+<li>IRC: AKX @ QuakeNet / IRCnet</li>
+<li>Email: theakx at gmail dot com</li>
+</ul>
+
+<h2>Other Stuff</h2>
+
+<ul>
+<li>The HTML documentation is generated from the Readme.txt via <a href="http://www.michelf.com/projects/php-markdown/dingus/">Markdown</a>. Thanks for making it all so easy Michel (and Mr. Gruber too)</li>
+<li>Look!</li>
+</ul>
+
+<h1>Changelog</h1>
+
+<h2>0.3.7</h2>
+
+<ul>
+<li>Shift-resizing a window will set the default size</li>
+<li>Some settings are now correctly loaded</li>
+<li>Smarter checkbox system</li>
+<li>Crayons: added color picker</li>
+<li>Autofading: All docked chatrs will now fade simultanioueousouesusueeusouly. That is, synced.</li>
+<li>Windows try to overlap each other less now. This may cause slight lag when opening windows at times and will spread out windows on the screen.</li>
+<li>Moving a docked window by the titlebar will now move the dock instead.</li>
+<li>Added Focus by Clicking option.</li>
+<li>Fixed Chronos missing bug.</li>
+<li>Added EngInventory support.</li>
+<li>Tradeskill linking should work now. Not tested on Enchanting yet, though</li>
+</ul>
+
+<h2>0.3.7b</h2>
+
+<ul>
+<li>EngInventory support WORKS.</li>
+<li>Tradeskill and craft support works flawlessly.</li>
+<li>Added preliminary color code support. {{red}} {{green}} {{blue}}</li>
+</ul>
+
+<h2>0.3.7c</h2>
+
+<ul>
+<li>Added Credits... /chatr credits :P</li>
+<li>Raised window limit to 20</li>
+<li>I can't reproduce the /nil/ bug - but I added some extra safety checks <em>shrug</em> Hope it works</li>
+</ul>
+
+<h2>0.3.7c2</h2>
+
+<ul>
+<li>Fixed a silly bug.</li>
+</ul>
+
+<h2>0.3.7c3</h2>
+
+<ul>
+<li>Removed experimental minimization code.</li>
+<li>DOCUMENTED THE DAMN THING! Seriously, this was the hardest thing since I started developing Chatr :D</li>
+<li>Silly version number, don't you think?</li>
+</ul>
+
+<h2>0.3.8</h2>
+
+<ul>
+<li>Added "Open Minimized".</li>
+<li>May have fixed silly dock button bug.</li>
+<li>If Sync Sizes is on, new docked windows will adapt to the size of the first docked window..</li>
+<li>Added middle-click close button to dock/undock.</li>
+<li>Added character entry hook.</li>
+<li>Added AIOI support.</li>
+<li>Added "Don't Minimize" slash command (allows autohide exclusions).</li>
+<li>Added "Show Guildies" to Buddies.</li>
+<li>Hiked buddies limit to 64 O_o.</li>
+<li>Added AlterEgo plugin.</li>
+<li>Buddies will eliminate duplicate entries.</li>
+<li>Added FAQ to the manual.</li>
+</ul>
+
+<h2>0.3.9</h2>
+
+<ul>
+<li>Added EnchantDB (or whatever) support</li>
+<li>Added auction frame linking support</li>
+<li>Beautified "set size from this frame".</li>
+<li>Filter: Added exact matching, edited help text.</li>
+<li>Added standard context menu for player names.</li>
+<li>Split hooks to a different file.</li>
+<li>Added pinning support (see the M menu)</li>
+</ul>
+<!-- End of generated -->
+
+</body>
+</html>

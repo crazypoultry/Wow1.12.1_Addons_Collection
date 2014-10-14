@@ -1,0 +1,287 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TitanAggro_Init.lua"/>
+	<Script file="TitanAggro_Core.lua"/>
+	<Script file="TitanAggro_Localization.lua"/>
+	<Script file="TitanAggro_Localization-DE.lua"/>
+	<Script file="TitanAggro_Localization-FR.lua"/>
+	<Script file="TitanAggro.lua"/>
+	<Script file="TitanAggro_Menu.lua"/>
+	<Script file="TitanAggro_Scan.lua"/>
+	<Script file="TitanAggro_Cmd.lua"/>
+	<Frame name="TitanAggroMain" parent="UIParent" hidden="false">
+		<Scripts>
+			<OnUpdate>
+				TitanAggro_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<!-- TitanPanel button START -->
+	<Frame parent="UIParent">
+		<Frames>
+			<Button name="TitanPanelAggroButton" inherits="TitanPanelTextTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+						TitanAggroButton_OnLoad()
+					</OnLoad>
+					<OnEvent>
+						TitanAggroButton_OnEvent();
+					</OnEvent>
+					<OnClick>
+						TitanAggroButton_OnClick(arg1, 1);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Frames name="TitanPanelAggroButtonFrame" toplevel="true" frameStrata="LOW">
+		<Size>
+			<AbsDimension x="100" y="15"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="TitanAggro" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		</Frames>
+	</Frame>
+	<!-- TitanPanel button END -->
+
+	<Frame name="TitanAggro_DragTabTemplate" hidden="true" virtual="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+		</Backdrop>
+		<Size>
+			<AbsDimension x="120" y="25"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyh="CENTER">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				if (arg1 == "LeftButton") and this:IsVisible() then
+					this:GetParent():StartMoving();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				this:GetParent():StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- TitanAggro target's target name START -->
+	<Frame name="TitanAggro_TargetTextTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="120" y="25"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeto="TitanAggro_HPStatusBar" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-4" y="-16"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" />
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton" id="1">
+				<Size>
+					<AbsDimension x="120" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeto="TitanAggro_HPStatusBar" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-4" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if (arg1 == "LeftButton") and this:IsVisible() then
+							this:GetParent():GetParent():StartMoving();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						this:GetParent():GetParent():StopMovingOrSizing();
+					</OnMouseUp>
+					<OnClick>
+						TitanAggroButton_OnClick(arg1);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<!-- TitanAggro target's target name END -->
+
+	<!-- TitanAggro target's target status START -->
+	<Frame name="TitanAggro_HPStatusBar" toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="110" y="25"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				TitanAggroButton_OnClicks(arg1);
+			</OnClick>
+		</Scripts>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="TargetFrame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="62" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<StatusBar name="TitanAggro_AggroStatusBG" toplevel="true" minValue="0" maxValue="1" defaultValue="1" parent="TitanAggro_HPStatusBar">
+				<Size>
+					<AbsDimension x="110" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="bottom" relativeto="TitanAggro_HPStatusBar">
+						<Offset>
+							<AbsDimension x="0" y="-23"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\BarFill2"/>
+				<BarColor r="0.0" g="0.0" b="0.0" a="0.0"/>
+			</StatusBar>
+			<StatusBar name="TitanAggro_HPStatusBG" toplevel="true" minValue="0" maxValue="1" defaultValue="1" parent="TitanAggro_HPStatusBar" hidden="true">
+				<Size>
+					<AbsDimension x="100" y="5"/>
+				</Size>
+				<Anchors>
+					<Anchor point="bottom" relativeto="TitanAggro_HPStatusBar">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.0" g="0.5" b="0.0"/>
+			</StatusBar>
+			<StatusBar name="TitanAggro_HPStatus" toplevel="true" minValue="0" maxValue="1" defaultValue="1" parent="TitanAggro_HPStatusBar" hidden="true">
+				<Size>
+					<AbsDimension x="100" y="5"/>
+				</Size>
+				<Anchors>
+					<Anchor point="bottom" relativeto="TitanAggro_HPStatusBar">
+						<Offset>
+							<AbsDimension x="0" y="-14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.0" g="1.0" b="0.0"/>
+			</StatusBar>
+			<StatusBar name="TitanAggro_MPStatusBG" toplevel="true" minValue="0" maxValue="1" defaultValue="1" parent="TitanAggro_HPStatusBar" hidden="true">
+				<Size>
+					<AbsDimension x="100" y="5"/>
+				</Size>
+				<Anchors>
+					<Anchor point="bottom" relativeto="TitanAggro_HPStatusBar">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.0" g="0.0" b="0.0"/>
+			</StatusBar>
+			<StatusBar name="TitanAggro_MPStatus" toplevel="true" minValue="0" maxValue="1" defaultValue="1" parent="TitanAggro_HPStatusBar" hidden="true">
+				<Size>
+					<AbsDimension x="100" y="5"/>
+				</Size>
+				<Anchors>
+					<Anchor point="bottom" relativeto="TitanAggro_HPStatusBar">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.0" g="0.0" b="1.0"/>
+			</StatusBar>
+			<Frame name="TitanAggro_ToT" toplevel="true" parent="TitanAggro_HPStatusBar" movable="true">
+				<Size>
+					<AbsDimension x="120" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeto="TitanAggro_HPStatusBar" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="1" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="TitanAggro_ToTText" inherits="GameFontNormalSmall" parent="TitanAggro_HPStatusBar" />
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="TitanAggro_ToTButton" id="1">
+						<Size>
+							<AbsDimension x="120" y="25"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeto="TitanAggro_ToT" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseDown>
+								if ((arg1 == "LeftButton") and TitanAggro_HPStatusBar:IsVisible() and (TitanAggroGetVar("DragableTT_HP") and TitanAggroGetVar("DragableTT_HP") == 1)) then
+									TitanAggro_HPStatusBar:StartMoving();
+								end
+							</OnMouseDown>
+							<OnMouseUp>
+								TitanAggro_HPStatusBar:StopMovingOrSizing();
+							</OnMouseUp>
+							<OnClick>
+								TitanAggroButton_OnClick(arg1);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="TitanAggro_DropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-80" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:RegisterEvent("VARIABLES_LOADED");
+					</OnLoad>
+					<OnEvent>
+						UIDropDownMenu_Initialize(TitanAggro_DropDown, TitanAggro_PrepareMenu, "MENU", 1);
+					</OnEvent>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<!-- TitanAggro target's target status END -->
+</Ui>

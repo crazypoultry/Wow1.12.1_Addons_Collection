@@ -1,0 +1,635 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
+   <!-- ********************************************
+         BookStore 2.0
+         BookStore.xml
+         
+         Author      : Ed Farrow
+         URL         : http://wow-kaboom.com/bookstore/
+         Description : 
+                        BookStore is intended to help roleplayers by allowing
+                        them to save copies of in-game books for reading at a
+                        later date. This means that players can essentially
+                        'carry' books with them. Although they do not take up
+                        any real space and currently cannot be transfered.
+
+                        Merci à Laranor, Les Sentinelles, EN-EU, pour la
+                        traduction française. ;-)
+        ******************************************** -->
+
+         <!-- [ Required Files ] -->
+         <Script file="localization.lua"/>
+         <Script file="BookStore.lua"/>
+
+         <FontString name="BookFont" font="Fonts\MORPHEUS.ttf" justifyH="LEFT" virtual="true">
+            <FontHeight>
+               <AbsValue val="14"/>
+            </FontHeight>
+            <Color r="0.1" g="0.1" b="0.1"/>
+         </FontString>
+
+         <!-- [ Book Template ] -->
+         <Frame name="BookStoreBook" movable="true" toplevel="true" parent="UIParent" hidden="true">
+            <Size>
+               <AbsDimension x="384" y="512"/>
+            </Size>
+            <Anchors>
+               <Anchor point="CENTER"/>
+            </Anchors>
+            <Layers>
+               <Layer level="BACKGROUND">
+                  <Texture file="Interface\Spellbook\Spellbook-Icon">
+                     <Size>
+                        <AbsDimension x="58" y="58"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="TOPLEFT">
+                           <Offset>
+                              <AbsDimension x="10" y="-8"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </Texture>
+                  <Texture file="Interface\ItemTextFrame\UI-ItemText-TopLeft">
+                     <Size>
+                        <AbsDimension x="256" y="256"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                     </Anchors>
+                  </Texture>
+                  <Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+                     <Size>
+                        <AbsDimension x="128" y="256"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="TOPRIGHT"/>
+                     </Anchors>
+                  </Texture>
+                  <Texture file="Interface\ItemTextFrame\UI-ItemText-BotLeft">
+                     <Size>
+                        <AbsDimension x="256" y="256"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="BOTTOMLEFT"/>
+                     </Anchors>
+                  </Texture>
+                  <Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+                     <Size>
+                        <AbsDimension x="128" y="256"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="BOTTOMRIGHT"/>
+                     </Anchors>
+                  </Texture>
+                  <FontString name="$parentTitle" inherits="GameFontNormal" justifyH="CENTER" text="BookStore">
+                     <Anchors>
+                        <Anchor point="TOP">
+                           <Offset>
+                              <AbsDimension x="0" y="-19"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+                  <FontString name="$parentPageNumber" inherits="GameFontNormal" justifyH="CENTER" text="1">
+                     <Anchors>
+                        <Anchor point="TOP">
+                           <Offset>
+                              <AbsDimension x="0" y="-48"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                  </FontString>
+               </Layer>
+            </Layers>
+            <Frames>
+               <SimpleHTML name="BookStoreTextWrap">
+                  <Size>
+                     <AbsDimension x="270" y="500"/>
+                  </Size>
+                  <Anchors>
+                     <Anchor point="TOPLEFT">
+                        <Offset>
+                           <AbsDimension x="40" y="-90"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <FontString justifyV="TOP" justifyH="LEFT" font="Fonts\MORPHEUS.ttf">
+                     <FontHeight><AbsValue val="14"/></FontHeight>
+                     <Color r="0.1" g="0.1" b="0.1"/>
+                    <Size>
+                       <AbsDimension x="270" y="0"/>
+                    </Size>
+                </FontString>
+               </SimpleHTML>
+               <Button name="$parentPrevPage">
+                  <Size>
+                     <AbsDimension x="33" y="33"/>
+                  </Size>
+                  <HitRectInsets>
+                     <AbsInset left="0" right="-26" top="0" bottom="0"/>
+                  </HitRectInsets>
+                  <Anchors>
+                     <Anchor point="TOPLEFT">
+                        <Offset>
+                           <AbsDimension x="72" y="-39"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Layers>
+                     <Layer level="ARTWORK">
+                        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" text="Prev">
+                           <Anchors>
+                              <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                                 <Offset>
+                                    <AbsDimension x="1" y="1"/>
+                                 </Offset>
+                              </Anchor>
+                           </Anchors>
+                        </FontString>
+                     </Layer>
+                  </Layers>
+                  <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+                  <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+                  <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+                  <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+                  <Scripts>
+                     <OnLoad>
+                        tinsert(UISpecialFrames,"BookStoreBook");
+                        this:Hide()
+                     </OnLoad>
+                     <OnClick>
+                        BookStore_PrevPage(this)
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="$parentNextPage">
+                  <Size>
+                     <AbsDimension x="33" y="33"/>
+                  </Size>
+                  <HitRectInsets>
+                     <AbsInset left="-26" right="0" top="0" bottom="0"/>
+                  </HitRectInsets>
+                  <Anchors>
+                     <Anchor point="TOPRIGHT">
+                        <Offset>
+                           <AbsDimension x="-40" y="-39"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Layers>
+                     <Layer level="ARTWORK">
+                        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="RIGHT" text="Next">
+                           <Anchors>
+                              <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+                                 <Offset>
+                                    <AbsDimension x="-1" y="1"/>
+                                 </Offset>
+                              </Anchor>
+                           </Anchors>
+                        </FontString>
+                     </Layer>
+                  </Layers>
+                  <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+                  <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+                  <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+                  <Scripts>
+                     <OnLoad>
+                        this:Hide()
+                     </OnLoad>
+                     <OnClick>
+                        BookStore_NextPage(this)
+                     </OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="$parentClose" inherits="UIPanelCloseButton">
+                  <Anchors>
+                     <Anchor point="TOPRIGHT" relativeTo="BookStoreBook" relativePoint="TOPRIGHT">
+                        <Offset>
+                           <AbsDimension x="-28" y="-9"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Scripts>
+                     <OnClick>
+                        BookStore_CloseBook()
+                     </OnClick>
+                  </Scripts>
+               </Button>
+                  <Button name="$parentDelete">
+                     <Size>
+                        <AbsDimension x="48" y="48"/>
+                     </Size>
+                     <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                           <Offset>
+                              <AbsDimension x="24" y="86"/>
+                           </Offset>
+                        </Anchor>
+                     </Anchors>
+                     <NormalTexture file="Interface\Buttons\CancelButton-Up"/>
+                     <PushedTexture file="Interface\Buttons\CancelButton-Down"/>
+                     <Scripts>
+                        <OnClick>BookStore_DeleteBook()</OnClick>
+                        <OnEnter>BookStore_DeleteBook_OnEnter()</OnEnter>
+                        <OnLeave>BookStore_DeleteBook_OnLeave()</OnLeave>
+                     </Scripts>
+                  </Button>
+            </Frames>
+            <Scripts>
+               <OnLoad>tinsert(UISpecialFrames, "BookStoreBook");BookStore_Book_OnLoad();</OnLoad>
+               <OnDragStart>this:StartMoving()</OnDragStart>
+               <OnDragStop>this:StopMovingOrSizing()</OnDragStop>
+               <OnMouseWheel>BookStore_Book_OnMouseWheel(arg1);</OnMouseWheel>
+            </Scripts>
+         </Frame>
+
+
+           <!-- [ Book Icon, Button Template ] -->
+           <Button name="BookIconButtonTemplate" virtual="true">
+              <Size>
+                 <AbsDimension x="37" y="37"/>
+              </Size>
+              <Layers>
+                 <Layer level="BORDER">
+                    <Texture name="$parentIcon"/>
+                    <FontString name="$parentCount" inherits="NumberFontNormal" justifyH="LEFT" hidden="true">
+                       <Anchors>
+                          <Anchor point="BOTTOMLEFT">
+                             <Offset>
+                                 <AbsDimension x="5" y="2"/>
+                             </Offset>
+                           </Anchor>
+                        </Anchors>
+                     </FontString>
+                  </Layer>
+               </Layers>
+               <NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+               <Size>
+                  <AbsDimension x="64" y="64"/>
+               </Size>
+               <Anchors>
+                  <Anchor point="CENTER">
+                     <Offset>
+                        <AbsDimension x="0" y="-1"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </NormalTexture>
+            <PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+            <HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+         </Button>
+
+         <!-- [ Book Slots, Button Template ] -->
+         <Button name="BookStoreSlotTemplate" inherits="BookIconButtonTemplate" virtual="true" hidden="false">
+            <NormalTexture name="$parentNormalTexture" file="Interface\Icons\INV_Misc_Book_09">
+               <Size>
+                  <AbsDimension x="33" y="33"/>
+               </Size>
+               <Anchors>
+                  <Anchor point="TOPLEFT">
+                     <Offset>
+                        <AbsDimension x="1" y="-2"/>
+                     </Offset>
+                  </Anchor>
+               </Anchors>
+            </NormalTexture>
+            <PushedTexture file="Interface\Icons\INV_Misc_Book_09"/>
+            <DisabledTexture/>
+            <Scripts>
+               <OnLeave>   <!-- [ Mouse has stopped hovering over the book icon. ] -->
+                  GameTooltip:Hide()
+               </OnLeave>
+               <OnLoad>
+                  this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+                  this:Disable();
+               </OnLoad>
+            </Scripts>
+         </Button>
+
+         <!-- [ BookStoreBag Container, Holds the Book Slots ] -->
+         <Frame name="BookStoreBag" enablemouse="true" movable="true" toplevel="true" parent="UIParent" hidden="false">
+            <Size><AbsDimension x="256" y="256"/></Size><!-- 190 -->
+            <Anchors><Anchor point="CENTER"/></Anchors>
+            <Layers>
+               <Layer level="BACKGROUND">
+                  <Texture file="Interface\ContainerFrame\UI-Bag-3x4">
+                     <Size><AbsDimension x="256" y="256"/></Size>
+                     <Anchors><Anchor point="TOPLEFT"/></Anchors>
+                     <!-- [Crop left by 25.78125% ] -->
+					 <TexCoords left="0" right="1" top="0" bottom="1"/>
+                  </Texture>
+                  <FontString name="$parentTitle" inherits="GameFontNormal" justifyH="CENTER" text="BookStore">
+                     <Anchors><Anchor point="TOP"><Offset><AbsDimension x="40" y="-11"/></Offset></Anchor></Anchors>
+                  </FontString>
+                  <Texture file="Interface\Spellbook\Spellbook-Icon">
+                     <Size><AbsDimension x="32" y="32"/></Size>
+                     <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="72" y="-7"/></Offset></Anchor></Anchors>
+                  </Texture>
+               </Layer>
+            </Layers>
+            <Frames>
+               <!-- [ Close Window Button ] -->
+               <Button name="$parentClose" inherits="UIPanelCloseButton">
+                  <Anchors><Anchor point="TOPRIGHT" relativeTo="BookStoreBag" relativePoint="TOPRIGHT">
+                     <Offset><AbsDimension x="0" y="-1"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnClick>BookStore_ToggleDisplay()</OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="$parentPrevShelf">
+                  <Size>
+                     <AbsDimension x="33" y="33"/>
+                  </Size>
+                  <HitRectInsets>
+                     <AbsInset left="0" right="-26" top="0" bottom="0"/>
+                  </HitRectInsets>
+                  <Anchors>
+                     <Anchor point="TOPLEFT">
+                        <Offset>
+                           <AbsDimension x="102" y="-22"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Layers>
+                     <Layer level="ARTWORK">
+                        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" text="Prev">
+                           <Anchors>
+                              <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                                 <Offset>
+                                    <AbsDimension x="1" y="1"/>
+                                 </Offset>
+                              </Anchor>
+                           </Anchors>
+                        </FontString>
+                     </Layer>
+                  </Layers>
+                  <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+                  <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+                  <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+                  <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+                  <Scripts>
+                     <OnLoad>this:Hide()</OnLoad>
+                     <OnClick>BookStore_PrevShelf(this)</OnClick>
+                  </Scripts>
+               </Button>
+               <Button name="$parentNextShelf">
+                  <Size>
+                     <AbsDimension x="33" y="33"/>
+                  </Size>
+                  <HitRectInsets>
+                     <AbsInset left="-26" right="0" top="0" bottom="0"/>
+                  </HitRectInsets>
+                  <Anchors>
+                     <Anchor point="TOPRIGHT">
+                        <Offset>
+                           <AbsDimension x="0" y="-22"/>
+                        </Offset>
+                     </Anchor>
+                  </Anchors>
+                  <Layers>
+                     <Layer level="ARTWORK">
+                        <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="RIGHT" text="Next">
+                           <Anchors>
+                              <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+                                 <Offset>
+                                    <AbsDimension x="-1" y="1"/>
+                                 </Offset>
+                              </Anchor>
+                           </Anchors>
+                        </FontString>
+                     </Layer>
+                  </Layers>
+                  <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+                  <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+                  <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+                  <Scripts>
+                     <OnLoad>this:Hide()</OnLoad>
+                     <OnClick>BookStore_NextShelf(this)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 1 ] -->
+               <Button name="$parentItem1" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="82" y="-50"/></Offset></Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(1)</OnEnter>
+                     <OnClick>BookStore_OpenBook(1)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 2 ] -->
+               <Button name="$parentItem2" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem1" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(2)</OnEnter>
+                     <OnClick>BookStore_OpenBook(2)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 3 ] -->
+               <Button name="$parentItem3" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem2" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(3)</OnEnter>
+                     <OnClick>BookStore_OpenBook(3)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 4 ] -->
+               <Button name="$parentItem4" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem3" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(4)</OnEnter>
+                     <OnClick>BookStore_OpenBook(4)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 5 (Second Row) ] -->
+               <Button name="$parentItem5" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="TOP" relativeTo="$parentItem1" relativePoint="BOTTOM">
+                     <Offset><AbsDimension x="0" y="-4"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(5)</OnEnter>
+                     <OnClick>BookStore_OpenBook(5)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 6 ] -->
+               <Button name="$parentItem6" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem5" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(6)</OnEnter>
+                     <OnClick>BookStore_OpenBook(6)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 7 ] -->
+               <Button name="$parentItem7" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem6" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(7)</OnEnter>
+                     <OnClick>BookStore_OpenBook(7)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 8 ] -->
+               <Button name="$parentItem8" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem7" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(8)</OnEnter>
+                     <OnClick>BookStore_OpenBook(8)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 9 (Third Row) ] -->
+               <Button name="$parentItem9" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="TOP" relativeTo="$parentItem5" relativePoint="BOTTOM">
+                     <Offset><AbsDimension x="0" y="-4"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(9)</OnEnter>
+                     <OnClick>BookStore_OpenBook(9)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 10 ] -->
+               <Button name="$parentItem10" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem9" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(10)</OnEnter>
+                     <OnClick>BookStore_OpenBook(10)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 11 ] -->
+               <Button name="$parentItem11" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem10" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(11)</OnEnter>
+                     <OnClick>BookStore_OpenBook(11)</OnClick>
+                  </Scripts>
+               </Button>
+               <!-- [ Book Slot 12 ] -->
+               <Button name="$parentItem12" inherits="BookStoreSlotTemplate">
+                  <Anchors><Anchor point="LEFT" relativeTo="$parentItem11" relativePoint="RIGHT">
+                     <Offset><AbsDimension x="5" y="0"/></Offset>
+                  </Anchor></Anchors>
+                  <Scripts>
+                     <OnEnter>BookStore_ViewTip(12)</OnEnter>
+                     <OnClick>BookStore_OpenBook(12)</OnClick>
+                  </Scripts>
+               </Button>
+            </Frames>
+            <Scripts>
+               <OnLoad>tinsert(UISpecialFrames, "BookStoreBag");BookStore_Load();</OnLoad>
+               <OnDragStart>this:StartMoving()</OnDragStart>
+               <OnDragStop>this:StopMovingOrSizing()</OnDragStop>
+               <OnClick>BookStore_ToggleDisplay()</OnClick>
+               <OnEvent>
+                  if (event == "VARIABLES_LOADED") then BookStore_LoadMore() end
+               </OnEvent>
+               <OnMouseUp>this:StopMovingOrSizing()</OnMouseUp>
+               <OnMouseDown>this:StartMoving()</OnMouseDown>
+               <OnHide></OnHide>
+               <OnMouseWheel>BookStore_OnMouseWheel(arg1)</OnMouseWheel>
+            </Scripts>
+         </Frame>
+
+         <!-- [ Copy Button, in the Books ] -->
+         <Button name="BookStoreCopyButton" parent="ItemTextFrame" inherits="UIPanelButtonTemplate" text="Make a Copy" id="12">
+            <Size> 
+               <AbsDimension x="160" y="24"/> 
+            </Size> 
+            <Anchors> 
+               <Anchor point="BOTTOMLEFT">
+                  <Offset>
+                     <AbsDimension x="28" y="95"/>
+                  </Offset>
+               </Anchor>
+            </Anchors> 
+            <Scripts>
+               <OnClick>BookStore_CopyBook()</OnClick>
+               <OnLoad>BookStore_CopyBook_OnLoad()</OnLoad>
+            </Scripts>
+         </Button>
+
+         <!-- [ MiniMap Icon ] -->
+   <Button name="BookStoreMiniIcon" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+        <NormalTexture file="Interface\AddOns\BookStore\MMIcon"/>
+        <HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+        <Size><AbsDimension x="33" y="33"/></Size>
+        <Anchors>
+            <Anchor point="CENTER" relativeTo="Minimap" relativePoint="CENTER"/>
+        </Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture name="BookStoreMinimapIcon" file="Interface\AddOns\BookStore\MMIcon">
+                    <Size>
+                        <AbsDimension x="18" y="18"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+                    <Size>
+                        <AbsDimension x="52" y="52"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <!--Anchors>
+        <Anchor point="BOTTOM" relativeTo="Minimap">
+            <Offset><AbsDimension x="-72" y="112"/></Offset>
+        </Anchor>
+        </Anchors-->
+        <Scripts>
+            <OnLoad>BookStore_MM_OnLoad()</OnLoad>
+            <OnClick>BookStore_ToggleDisplay()</OnClick>
+            <OnEnter>BookStore_MM_OnEnter()</OnEnter>
+            <OnLeave>BookStore_MM_OnLeave()</OnLeave>
+            <OnDragStart>BookStore_MM_Moving(true)</OnDragStart>
+            <OnDragStop>BookStore_MM_Moving(false)</OnDragStop>
+            <OnUpdate>BookStore_MM_Drag()</OnUpdate>
+        </Scripts>
+   </Button>
+
+	<!-- Titan Panel Support -->
+	<Frame parent="UIParent">
+		<Frames>
+			<Button name="TitanPanelBookStoreButton" inherits="TitanPanelComboTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+						if TitanPanelButton_OnLoad then TitanPanelBookStoreButton_OnLoad(); TitanPanelButton_OnLoad(); end
+					</OnLoad>
+					<OnEvent>
+						TitanPanelBookStoreButton_OnEvent();
+					</OnEvent>
+					<OnClick>
+						TitanPanelBookStoreButton_OnClick(arg1);
+						TitanPanelButton_OnClick(arg1, 1);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+</Ui>

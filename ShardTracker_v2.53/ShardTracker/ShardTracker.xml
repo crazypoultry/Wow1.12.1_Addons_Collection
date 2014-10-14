@@ -1,0 +1,862 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="localization.lua"/>
+    <Script file="ShardTracker_Sorting.lua"/>
+    <Script file="ShardTracker.lua"/>
+    <GameTooltip name="ShardTrackerTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				ShardTrackerTooltip:SetOwner(WorldFrame,"ANCHOR_NONE")
+			</OnLoad>
+		</Scripts>
+    </GameTooltip>
+	<Button name="STTimerButton" parent="Minimap" toplevel="true" hidden="true" frameStrata="LOW" enableMouse="true" movable="true">	
+		<NormalTexture file="Interface\AddOns\ShardTracker\Images\SpellTimerButton"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\ShardTracker\Images\SpellTimerButton"/>
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="Minimap">
+                <Offset>
+                    <AbsDimension x="-150" y="100"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+		<Scripts>
+		    <OnLoad>
+        		ShardTracker_Button_OnLoad(this);
+			</OnLoad>
+			<OnMouseUp>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnMouseUp>
+			<OnMouseDown>
+			 if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+			  this:StartMoving();
+			  this.isMoving = true;
+			 end
+			</OnMouseDown>
+			<OnHide>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnHide>
+		</Scripts>
+	</Button>
+    <Button name="ShardTrackerMinimapButton" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+        <NormalTexture file="Interface\AddOns\ShardTracker\Images\ShardBlank"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\ShardTracker\Images\ShardBlank"/>
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="Minimap">
+                <Offset>
+                    <AbsDimension x="-68" y="136"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+            <OnLoad>
+        		ShardTracker_Button_OnLoad(this);
+			</OnLoad>
+            <OnEnter>
+                ShardTracker_ShowShardButtonTooltip(SHARDTRACKER_SHARDBUTTON_TIP1, SHARDTRACKER_SHARDBUTTON_TIP2, SHARDTRACKER_SHARDBUTTON_TIP3, SHARDTRACKER_SHARDBUTTON_TIP4);
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+			<OnClick>
+			 if (this.isLocked ) then
+			  ShardTracker_SortShards(arg1);
+			 end
+			</OnClick>
+			<OnMouseUp>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnMouseUp>
+			<OnMouseDown>
+			 if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+			  this:StartMoving();
+			  this.isMoving = true;
+			 end
+			</OnMouseDown>
+			<OnHide>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnHide>
+        </Scripts>
+    </Button>
+    <Button name="ShardTrackerMinimapButtonHealth" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+        <NormalTexture file="Interface\AddOns\ShardTracker\Images\ShardHealth"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\ShardTracker\Images\ShardHealth"/>
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="Minimap">
+                <Offset>
+                    <AbsDimension x="-72" y="112"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+           	<OnLoad>
+        		ShardTracker_Button_OnLoad(this);
+			</OnLoad>
+            <OnEnter>
+                ShardTracker_ShowShardButtonTooltip(SHARDTRACKER_HEALTHBUTTON_TIP1, SHARDTRACKER_HEALTHBUTTON_TIP2, SHARDTRACKER_HEALTHBUTTON_TIP3, SHARDTRACKER_HEALTHBUTTON_TIP4);
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+			<OnClick>
+			 if (this.isLocked ) then
+			  ShardTracker_OnHealthButtonClick(arg1);
+			 end
+			</OnClick>
+			<OnMouseUp>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnMouseUp>
+			<OnMouseDown>
+			 if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+			  this:StartMoving();
+			  this.isMoving = true;
+			 end
+			</OnMouseDown>
+			<OnHide>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnHide>
+        </Scripts>
+	</Button>
+    <Button name="ShardTrackerMinimapButtonSoul" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+        <NormalTexture file="Interface\AddOns\ShardTracker\Images\ShardSoulGrey"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\ShardTracker\Images\ShardSoul"/>
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="Minimap">
+                <Offset>
+                    <AbsDimension x="-70" y="88"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+   			<OnLoad>
+        		ShardTracker_Button_OnLoad(this);
+			</OnLoad>
+            <OnEnter>
+                ShardTracker_ShowShardButtonTooltip(SHARDTRACKER_SOULBUTTON_TIP1, SHARDTRACKER_SOULBUTTON_TIP2, SHARDTRACKER_SOULBUTTON_TIP3, SHARDTRACKER_SOULBUTTON_TIP4, SHARDTRACKER_SOULBUTTON_TIP5);
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+			<OnClick>
+			 if (this.isLocked ) then
+			  ShardTracker_OnSoulButtonClick(arg1);
+			 end
+			</OnClick>
+			<OnMouseUp>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnMouseUp>
+			<OnMouseDown>
+			 if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+			  this:StartMoving();
+			  this.isMoving = true;
+			 end
+			</OnMouseDown>
+			<OnHide>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnHide>
+        </Scripts>
+    </Button>
+    <Button name="ShardTrackerMinimapButtonSpell" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+        <NormalTexture file="Interface\AddOns\ShardTracker\Images\ShardSpell"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\ShardTracker\Images\ShardSpell"/>
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="Minimap">
+                <Offset>
+                    <AbsDimension x="-62" y="64"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Scripts>
+   			<OnLoad>
+        		ShardTracker_Button_OnLoad(this);
+			</OnLoad>
+            <OnEnter>
+                ShardTracker_ShowShardButtonTooltip(SHARDTRACKER_SPELLBUTTON_TIP1, SHARDTRACKER_SPELLBUTTON_TIP2, SHARDTRACKER_SPELLBUTTON_TIP3, SHARDTRACKER_SPELLBUTTON_TIP4, SHARDTRACKER_SPELLBUTTON_TIP5);
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+			<OnClick>
+			 if (this.isLocked ) then
+			  ShardTracker_OnSpellButtonClick(arg1);
+			 end
+			</OnClick>
+			<OnMouseUp>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnMouseUp>
+			<OnMouseDown>
+			 if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+			  this:StartMoving();
+			  this.isMoving = true;
+			 end
+			</OnMouseDown>
+			<OnHide>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnHide>
+        </Scripts>
+    </Button>    
+	<Frame name="ShardTrackerText" toplevel="true" enableMouse="false" movable="true" parent="UIParent" hidden="false">
+    	<Size>
+       		<AbsDimension x="50" y="50"/>
+     	</Size>
+     	<Anchors>
+       		<Anchor point="CENTER">
+        		<Offset>
+           			<AbsDimension x="0" y="0"/>
+         		</Offset>
+       		</Anchor>
+     	</Anchors>
+	     <Layers>
+	       <Layer level="ARTWORK">
+	            <FontString name="ShardTrackerSoulText" inherits="GameFontNormalLarge" text="" hidden="true">
+	                <Anchors>
+	                        <Anchor point="CENTER" relativeTo="ShardTrackerMinimapButtonSoul" relativePoint="CENTER">
+	                            <Offset>
+	                                <AbsDimension x="0" y="0"/>
+	                            </Offset>
+	                        </Anchor>
+	                </Anchors>
+	            </FontString>
+	            <FontString name="ShardTrackerHealthText" inherits="GameFontNormalLarge" text="" hidden="true">
+	                <Anchors>
+	                        <Anchor point="CENTER" relativeTo="ShardTrackerMinimapButtonHealth" relativePoint="CENTER">
+	                            <Offset>
+	                                <AbsDimension x="0" y="0"/>
+	                            </Offset>
+	                        </Anchor>
+	                </Anchors>
+	            </FontString>
+	            <FontString name="ShardTrackerSpellText" inherits="GameFontHighlightSmallOutline" text="" hidden="true">
+	                <Anchors>
+	                        <Anchor point="CENTER" relativeTo="ShardTrackerMinimapButtonSpell" relativePoint="CENTER">
+	                            <Offset>
+	                                <AbsDimension x="0" y="0"/>
+	                            </Offset>
+	                        </Anchor>
+	                </Anchors>
+	            </FontString>               
+	            <FontString name="ShardTrackerText" inherits="GameFontHighlightSmall" text="" hidden="true">
+	                <Anchors>
+	                    <Anchor point="CENTER" relativeTo="ShardTrackerMinimapButton" relativePoint="CENTER">
+	                        <Offset>
+	                            <AbsDimension x="0" y="2"/>
+	                        </Offset>
+	                    </Anchor>
+	                </Anchors>
+	            </FontString>
+	            <FontString name="ST_Time_Text" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="STTimerButton" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+				</FontString>
+		  		<FontString name="ST_Time_TextSmall" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="STTimerButton" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+				</FontString>
+		  		<FontString name="ST_Time_TextLarge" inherits="GameFontNormalLarge" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="STTimerButton" relativeFrom="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+				</FontString>
+			</Layer>
+    	</Layers>
+    </Frame>
+    
+    <Frame name="ShardTrackerSortFrame" toplevel="true" frameStrata="BACKGROUND" hidden="false">
+        <Size>
+            <AbsDimension x="225" y="54"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+         </Backdrop>
+         <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="ShardTrackerSortText" inherits="GameFontHighlightLarge" text="SHARDTRACKERSORT_SORTING">
+                    <Color r="0.52" g="0.22" b="0.86"/>
+                    <Size>
+                        <AbsDimension x="225" y="14"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="ShardTrackerSortFrame" relativePoint="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-18"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <!-- party member icon BEGIN -->
+    <Button name="UnitFrameShardTrackerIconTemplatePerl" level="OVERLAY" enableMouse="true" toplevel="true" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="25" y="25"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPRIGHT">
+                <Offset>
+                    <AbsDimension x="15" y="10"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\AddOns\ShardTracker\Images\ShardHealth"/>
+    </Button>
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="Perl_party1_NameFrame" id="1" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="Perl_party2_NameFrame" id="2" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="Perl_party3_NameFrame" id="3" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="Perl_party4_NameFrame" id="4" />
+
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="MGParty_Member1" id="1" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="MGParty_Member2" id="2" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="MGParty_Member3" id="3" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplatePerl" parent="MGParty_Member4" id="4" />
+
+    <Button name="UnitFrameShardTrackerIconTemplate" level="OVERLAY" enableMouse="true" toplevel="true" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="25" y="25"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOMLEFT">
+                <Offset>
+                    <AbsDimension x="25" y="35"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\AddOns\ShardTracker\Images\ShardHealth"/>
+    </Button>
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplate" parent="PartyMemberFrame1" id="1" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplate" parent="PartyMemberFrame2" id="2" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplate" parent="PartyMemberFrame3" id="3" />
+    <Button name="$parentShardTrackerIcon" inherits="UnitFrameShardTrackerIconTemplate" parent="PartyMemberFrame4" id="4" />
+    <!-- party member icon END -->
+
+    
+    <!-- Summoning Menu START -->
+    <Frame name="SummonerMenu" frameStrata="MEDIUM" toplevel="true" >
+		<Size>
+			<AbsDimension x="290" y="36"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="ShardTrackerMinimapButtonHealth" relativePoint="TOPRIGHT"/>
+		</Anchors>
+		<Frames>
+			<Button name="SummonerButtonDemon1" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerMenu" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-34" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Nature_RemoveCurse"/>
+					</Layer>
+				    <Layer level="ARTWORK">
+			            <FontString name="SummonerMenuFelDominationText" inherits="GameFontNormalLarge" text="" hidden="true">
+			                <Anchors>
+			                        <Anchor point="CENTER" relativePoint="CENTER">
+			                            <Offset>
+			                                <AbsDimension x="0" y="0"/>
+			                            </Offset>
+			                        </Anchor>
+			                </Anchors>
+			            </FontString>
+			         </Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Fel Domination");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Fel Domination");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Nature_RemoveCurse"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon2" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon1" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_SummonImp"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Summon Imp");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Summon Imp");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_SummonImp"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon3" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon2" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_SummonVoidWalker"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Summon Voidwalker");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Summon Voidwalker");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_SummonVoidWalker"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon4" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon3" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_SummonSuccubus"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Summon Succubus");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Summon Succubus");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_SummonSuccubus"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon5" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon4" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_SummonFelHunter"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Summon Felhunter");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Summon Felhunter");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_SummonFelHunter"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon6" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon5" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_PsychicScream"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Demonic Sacrifice");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						SummonerMenu:Hide();
+						ST_Cast("Demonic Sacrifice");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_PsychicScream"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon7" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon1" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_Twilight"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Ritual of Summoning");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Ritual of Summoning");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_Twilight"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon8" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon7" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_EvilEye"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Eye of Kilrog");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						ST_Cast("Eye of Kilrog");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_EvilEye"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon9" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon8" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_Metamorphosis"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Sense Demons");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						SummonerMenu:Hide();
+						ST_Cast("Sense Demons");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_Metamorphosis"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon10" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon9" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_AntiMagicShell"/>
+					</Layer>
+				    <Layer level="ARTWORK">
+			            <FontString name="SummonerMenuRitualofDoomText" inherits="GameFontNormalLarge" text="" hidden="true">
+			                <Anchors>
+			                        <Anchor point="CENTER" relativePoint="CENTER">
+			                            <Offset>
+			                                <AbsDimension x="0" y="0"/>
+			                            </Offset>
+			                        </Anchor>
+			                </Anchors>
+			            </FontString>
+			         </Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Ritual of Doom");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						SummonerMenu:Hide();
+						ST_Cast("Ritual of Doom");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_AntiMagicShell"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon11" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon10" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_SummonInfernal"/>
+					</Layer>
+				    <Layer level="ARTWORK">
+			            <FontString name="SummonerMenuInfernoText" inherits="GameFontNormalLarge" text="" hidden="true">
+			                <Anchors>
+			                        <Anchor point="CENTER" relativePoint="CENTER">
+			                            <Offset>
+			                                <AbsDimension x="0" y="0"/>
+			                            </Offset>
+			                        </Anchor>
+			                </Anchors>
+			            </FontString>
+			         </Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Inferno");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						SummonerMenu:Hide();
+						ST_Cast("Inferno");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_SummonInfernal"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+			<Button name="SummonerButtonDemon12" frameStrata="MEDIUM" enableMouse="true" movable="true">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SummonerButtonDemon16" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Icons\Spell_Shadow_GatherShadows"/>
+					</Layer>
+				    <Layer level="ARTWORK">
+			            <FontString name="SummonerMenuSoulLinkText" inherits="GameFontNormalLarge" text="" hidden="true">
+			                <Anchors>
+			                        <Anchor point="CENTER" relativePoint="CENTER">
+			                            <Offset>
+			                                <AbsDimension x="0" y="0"/>
+			                            </Offset>
+			                        </Anchor>
+			                </Anchors>
+			            </FontString>
+			         </Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ShardTracker_ShowShardButtonTooltip("Soul Link");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						SummonerMenu:Hide();
+						ST_Cast("Soul Link");
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Icons\Spell_Shadow_GatherShadows"/>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+		</Frames>
+		<Scripts>
+        	<OnLoad>
+				this:Hide();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<!-- Summoning Menu END -->  
+    <Frame name="ShardTrackerScriptFrame" parent="UIParent" hidden="false" justifyH="LEFT">
+        <Scripts>
+            <OnEvent>
+            	STTimer_OnEvent(event);
+                ShardTracker_OnEvent(event);
+            </OnEvent>
+            <OnLoad>
+            	STTimer_OnLoad(this);
+                ShardTracker_OnLoad(this);
+                ShardTrackerScriptFrame:Show();
+            </OnLoad>
+            <OnUpdate>
+   				STTimer_OnUpdate(arg1);
+                ShardTracker_OnUpdate(arg1);
+            </OnUpdate>
+        </Scripts>
+    </Frame>
+</Ui>
+

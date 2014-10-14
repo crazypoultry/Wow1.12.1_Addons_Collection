@@ -1,0 +1,777 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Script file="Map.lua" />
+
+	<Frame name="BFC_Map_UnitTemplate" inherits="WorldMapUnitTemplate" enableMouse="true" virtual="true" hidden="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+				BFC_Map.Unit_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnMouseDown>
+				if(arg1 == "LeftButton") then
+					BFC_Map.Unit_OnClick();
+				end
+			</OnMouseDown>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BFC_Map_RaidUnitTemplate" inherits="BFC_Map_UnitTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this.unit = "raid"..this:GetID();
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BFC_Map_ObjectiveTemplate" virtual="true" enableMouse="false">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" file="Interface\Addons\BattlefieldCommander2\images\sword">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				BFC_Map.Unit_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<Button name="BFC_Map_Tab" hidden="true" frameStrata="LOW" parent="UIParent" movable="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="64" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\ChatFrame\ChatFrameTab">
+					<Size>
+						<AbsDimension x="16" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.25" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\ChatFrame\ChatFrameTab">
+					<Size>
+						<AbsDimension x="44" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.25" right="0.75" top="0.0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ChatFrame\ChatFrameTab">
+					<Size>
+						<AbsDimension x="16" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="1.0" top="0.0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentFlash" hidden="true">
+				<Size>
+					<AbsDimension x="5" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLeft">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT" relativeTo="$parentRight">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-80" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonDown", "LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+				BFC_Map_Tab:SetAlpha(0);
+			</OnLoad>
+			<OnClick>
+				BFC_Map.Tab_OnClick(arg1);
+				PlaySound("UChatScrollButton");
+			</OnClick>
+			<OnDragStart>
+				if ( BFC_Options.get("locked") ) then
+					return;
+				end
+				BFC_Map_Container:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				BFC_Map_Container:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+		<ButtonText name="$parentText" inherits="GameFontNormalSmall" text="BFC">
+			<Size>
+				<AbsDimension x="50" y="8"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont inherits="GameFontNormalSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentLeft">
+					<Offset>
+						<AbsDimension x="0" y="-7"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT" relativeTo="$parentRight">
+					<Offset>
+						<AbsDimension x="0" y="-7"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+	
+	<Frame name="BFC_Map_Container" resizable="true" parent="UIParent" frameStrata="BACKGROUND" hidden="true">
+		<Size>
+			<AbsDimension x="225" y="150"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="BFC_Map_Tab" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-5"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="BFC_Map_Frame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BFC_Map_Container" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="BFC_Map_Container" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="BFC_Map_Texture1">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture2">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture1" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture3">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture2" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture4">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture3" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture5">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture1" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture6">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture2" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture7">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture3" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture8">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture4" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture9">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture5" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture10">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture6" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture11">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture7" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="BFC_Map_Texture12">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BFC_Map_Texture8" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="BFC_Map_Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-2" y="3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="BFC_Map_BackgroundTL" file="Interface\Addons\BattlefieldCommander2\images\topleft">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-12" y="12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundBL" file="Interface\Addons\BattlefieldCommander2\images\bottomleft">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-12" y="-13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundTR" file="Interface\Addons\BattlefieldCommander2\images\topright">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="12" y="12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundBR" file="Interface\Addons\BattlefieldCommander2\images\bottomright">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="10" y="-10"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundL" file="Interface\Addons\BattlefieldCommander2\images\left">
+							<Size>
+								<AbsDimension x="32" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-12" y="-20"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-12" y="19"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundR" file="Interface\Addons\BattlefieldCommander2\images\right">
+							<Size>
+								<AbsDimension x="32" y="128"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="17" y="-20"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="17" y="22"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundT" file="Interface\Addons\BattlefieldCommander2\images\top">
+							<Size>
+								<AbsDimension x="128" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="12"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-20" y="12"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						
+						<Texture name="BFC_Map_BackgroundB" file="Interface\Addons\BattlefieldCommander2\images\bottom">
+							<Size>
+								<AbsDimension x="128" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-18"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-22" y="-18"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="BFC_Map_ResizeHandle">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="BFC_Map_ResizeHandleImg" file="Interface\Addons\BattlefieldCommander2\images\resizearrow">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnMouseDown>
+								if ( BFC_Options.get("locked") ) then
+									return;
+								end
+								BFC_Map_Container:StartSizing("BOTTOMRIGHT");
+								BFC_Map_Container.resizing = 1;
+							</OnMouseDown>
+							<OnMouseUp>
+								BFC_Map_Container:StopMovingOrSizing();
+								BFC_Map_Container.resizing = nil;
+								BFC_Map.SnapResizeAnchor();
+							</OnMouseUp> 
+							<OnShow>
+								BFC_Map.ColorizeRaidIcons();
+							</OnShow>
+						</Scripts>
+					</Button>
+					
+					<Button name="BFC_Map_CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								BFC_Map.SetVisible(false);
+							</OnClick>
+						</Scripts>
+					</Button>
+					
+					<Frame name="BFC_Map_Party1" inherits="BFC_Map_UnitTemplate" id="1"/>
+					<Frame name="BFC_Map_Party2" inherits="BFC_Map_UnitTemplate" id="2"/>
+					<Frame name="BFC_Map_Party3" inherits="BFC_Map_UnitTemplate" id="3"/>
+					<Frame name="BFC_Map_Party4" inherits="BFC_Map_UnitTemplate" id="4"/>
+					<Frame name="BFC_Map_Raid1" inherits="BFC_Map_RaidUnitTemplate" id="1"/>
+					<Frame name="BFC_Map_Raid2" inherits="BFC_Map_RaidUnitTemplate" id="2"/>
+					<Frame name="BFC_Map_Raid3" inherits="BFC_Map_RaidUnitTemplate" id="3"/>
+					<Frame name="BFC_Map_Raid4" inherits="BFC_Map_RaidUnitTemplate" id="4"/>
+					<Frame name="BFC_Map_Raid5" inherits="BFC_Map_RaidUnitTemplate" id="5"/>
+					<Frame name="BFC_Map_Raid6" inherits="BFC_Map_RaidUnitTemplate" id="6"/>
+					<Frame name="BFC_Map_Raid7" inherits="BFC_Map_RaidUnitTemplate" id="7"/>
+					<Frame name="BFC_Map_Raid8" inherits="BFC_Map_RaidUnitTemplate" id="8"/>
+					<Frame name="BFC_Map_Raid9" inherits="BFC_Map_RaidUnitTemplate" id="9"/>
+					<Frame name="BFC_Map_Raid10" inherits="BFC_Map_RaidUnitTemplate" id="10"/>
+					<Frame name="BFC_Map_Raid11" inherits="BFC_Map_RaidUnitTemplate" id="11"/>
+					<Frame name="BFC_Map_Raid12" inherits="BFC_Map_RaidUnitTemplate" id="12"/>
+					<Frame name="BFC_Map_Raid13" inherits="BFC_Map_RaidUnitTemplate" id="13"/>
+					<Frame name="BFC_Map_Raid14" inherits="BFC_Map_RaidUnitTemplate" id="14"/>
+					<Frame name="BFC_Map_Raid15" inherits="BFC_Map_RaidUnitTemplate" id="15"/>
+					<Frame name="BFC_Map_Raid16" inherits="BFC_Map_RaidUnitTemplate" id="16"/>
+					<Frame name="BFC_Map_Raid17" inherits="BFC_Map_RaidUnitTemplate" id="17"/>
+					<Frame name="BFC_Map_Raid18" inherits="BFC_Map_RaidUnitTemplate" id="18"/>
+					<Frame name="BFC_Map_Raid19" inherits="BFC_Map_RaidUnitTemplate" id="19"/>
+					<Frame name="BFC_Map_Raid20" inherits="BFC_Map_RaidUnitTemplate" id="20"/>
+					<Frame name="BFC_Map_Raid21" inherits="BFC_Map_RaidUnitTemplate" id="21"/>
+					<Frame name="BFC_Map_Raid22" inherits="BFC_Map_RaidUnitTemplate" id="22"/>
+					<Frame name="BFC_Map_Raid23" inherits="BFC_Map_RaidUnitTemplate" id="23"/>
+					<Frame name="BFC_Map_Raid24" inherits="BFC_Map_RaidUnitTemplate" id="24"/>
+					<Frame name="BFC_Map_Raid25" inherits="BFC_Map_RaidUnitTemplate" id="25"/>
+					<Frame name="BFC_Map_Raid26" inherits="BFC_Map_RaidUnitTemplate" id="26"/>
+					<Frame name="BFC_Map_Raid27" inherits="BFC_Map_RaidUnitTemplate" id="27"/>
+					<Frame name="BFC_Map_Raid28" inherits="BFC_Map_RaidUnitTemplate" id="28"/>
+					<Frame name="BFC_Map_Raid29" inherits="BFC_Map_RaidUnitTemplate" id="29"/>
+					<Frame name="BFC_Map_Raid30" inherits="BFC_Map_RaidUnitTemplate" id="30"/>
+					<Frame name="BFC_Map_Raid31" inherits="BFC_Map_RaidUnitTemplate" id="31"/>
+					<Frame name="BFC_Map_Raid32" inherits="BFC_Map_RaidUnitTemplate" id="32"/>
+					<Frame name="BFC_Map_Raid33" inherits="BFC_Map_RaidUnitTemplate" id="33"/>
+					<Frame name="BFC_Map_Raid34" inherits="BFC_Map_RaidUnitTemplate" id="34"/>
+					<Frame name="BFC_Map_Raid35" inherits="BFC_Map_RaidUnitTemplate" id="35"/>
+					<Frame name="BFC_Map_Raid36" inherits="BFC_Map_RaidUnitTemplate" id="36"/>
+					<Frame name="BFC_Map_Raid37" inherits="BFC_Map_RaidUnitTemplate" id="37"/>
+					<Frame name="BFC_Map_Raid38" inherits="BFC_Map_RaidUnitTemplate" id="38"/>
+					<Frame name="BFC_Map_Raid39" inherits="BFC_Map_RaidUnitTemplate" id="39"/>
+					<Frame name="BFC_Map_Raid40" inherits="BFC_Map_RaidUnitTemplate" id="40"/>
+					<Frame name="BFC_Map_Corpse" inherits="WorldMapCorpseTemplate"/>
+					<Frame name="BFC_Map_Flag1" inherits="WorldMapFlagTemplate" id="1">
+						<Size>
+							<AbsDimension x="18" y="18"/>
+						</Size>
+					</Frame>
+					<Frame name="BFC_Map_Flag2" inherits="WorldMapFlagTemplate" id="2">
+						<Size>
+							<AbsDimension x="18" y="18"/>
+						</Size>
+					</Frame>
+					
+					<!--  a clear frame for mouseovers -->
+					<Frame name="BFC_Map_Player" id="0">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTexture" file="Interface\Addons\BattlefieldCommander2\images\viewport3">
+									<Size>
+										<AbsDimension x="32" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER" />
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this.unit = "player";
+								this:SetFrameLevel(this:GetFrameLevel()+2);
+							</OnLoad>
+							<OnEnter>
+								BFC_Map.Unit_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					
+					<!-- <Button name="BFC_Objective0" inherits="BFC_ObjectiveTemplate" id="0" hidden="true"/>
+					<Button name="BFC_Objective1" inherits="BFC_ObjectiveTemplate" id="1" hidden="true"/>
+					<Button name="BFC_Objective2" inherits="BFC_ObjectiveTemplate" id="2" hidden="true"/>
+					<Button name="BFC_Objective3" inherits="BFC_ObjectiveTemplate" id="3" hidden="true"/>
+					<Button name="BFC_Objective4" inherits="BFC_ObjectiveTemplate" id="4" hidden="true"/>
+					<Button name="BFC_Objective5" inherits="BFC_ObjectiveTemplate" id="5" hidden="true"/>
+					<Button name="BFC_Objective6" inherits="BFC_ObjectiveTemplate" id="6" hidden="true"/>
+					<Button name="BFC_Objective7" inherits="BFC_ObjectiveTemplate" id="7" hidden="true"/>
+					<Button name="BFC_Objective8" inherits="BFC_ObjectiveTemplate" id="8" hidden="true"/> -->
+			
+					
+					<Model name="BFC_Map_Ping" file="Interface\MiniMap\Ping\MinimapPing.mdx" scale="0.4" hidden="true">
+						<Size>
+							<AbsDimension x="50" y="50"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="BFC_Map_Frame"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								BFC_Map.Ping_OnLoad();
+							</OnLoad>
+							<OnUpdate>
+								BFC_Map.Ping_OnUpdate(arg1);
+							</OnUpdate>
+						</Scripts>
+					</Model>
+					
+				
+					<Frame name="BFC_Map_LocatorBlip" hidden="true">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel(this:GetFrameLevel() + 3);
+							</OnLoad>
+							<OnUpdate>
+								BFC_Map.LocatorBlip_OnUpdate(arg1);
+							</OnUpdate>
+						</Scripts>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTexture" file="Interface\Addons\BattlefieldCommander2\images\locator">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<!-- <Frame name="BFC_RadioBlip" hidden="true">
+						<Size>
+							<AbsDimension x="16" y="16"/>
+						</Size>
+						<Scripts>
+							<OnLoad>
+								this:SetFrameLevel(this:GetFrameLevel() + 1);
+							</OnLoad>
+							<OnUpdate>
+								BFC_RadioBlip_OnUpdate(arg1);
+							</OnUpdate>
+						</Scripts>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentTexture" file="Interface\Addons\BattlefieldCommander\images\radio">
+									<Size>
+										<AbsDimension x="16" y="16"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame> -->
+				</Frames>
+				<Scripts>
+					<OnShow>
+						SetMapToCurrentZone();
+						BFC_Map.UpdateMap();
+						PanelTemplates_TabResize(5, BFC_Map_Tab);
+						BFC_Map_Tab:Show();
+			
+					</OnShow>
+					<OnMouseDown>
+							local x, y = GetCursorPosition();
+							if(arg1 == "LeftButton" and IsShiftKeyDown()) then
+								BFC_Map.SendPing(x,y);
+							end
+					</OnMouseDown>
+					<OnHide>
+						BFC_Map_Tab:Hide();
+						BFC_Waypoints_Frame:Hide();
+					</OnHide>
+					<OnEvent>
+						BFC_Map.OnEvent();
+					</OnEvent>
+					<OnUpdate>
+						BFC_Map.OnUpdate(arg1);
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	<GameTooltip name="BFC_Tooltip" frameStrata="TOOLTIP" hidden="true" parent="BFC_Map_Container" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	
+	<!-- This frame is a hack so that Blizzard's auto-show stuff doesn't puke -->
+	<Frame name="BattlefieldMinimap" hidden="false" parent="UIParent">
+		<Size>
+			<AbsDimension x="1" y="1"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+
+</Ui>

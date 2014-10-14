@@ -1,0 +1,916 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="ImmersionRPLocalizationEnglish.lua" />
+	<Script file="ImmersionRPLocalizationFrench.lua" />
+	<Script file="ImmersionRPDatabase.lua" />
+	<Script file="ImmersionRPChatHandler.lua" />
+	<Script file="ImmersionRPflagRSPHandler.lua" />
+	<Script file="ImmersionRPTooltipConstants.lua" />
+	<Script file="ImmersionRPTooltipHandler.lua" />
+	<Script file="ImmersionRP.lua" />
+
+	<Button name="ImmersionRPTabTemplate" inherits="TabButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+		<DisabledFont inherits="GameFontDarkGraySmall" />
+	</Button>
+	<EditBox name="ImmersionRPEditBoxTemplate" autoFocus="false" virtual="true">
+		<Scripts>
+			<OnEscapePressed>
+				this:ClearFocus();
+			</OnEscapePressed>
+		</Scripts>
+	</EditBox>
+	<ScrollFrame name="ImmersionRPPanelTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="545" y="410" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="18" y="-55" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</ScrollFrame>
+	<CheckButton name="ImmersionRPCheckboxTemplate" virtual="true" inherits="OptionsCheckButtonTemplate">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormalSmall" name="$parentText" justifyH="LEFT" />
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>	
+			<OnClick>
+				ImmersionRP.HandleCheckbox();
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				end
+			</OnClick>
+		</Scripts>	
+	</CheckButton>
+
+  <Frame name="ImmersionRPMainFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true" frameStrata="DIALOG">
+    <Size>
+      <AbsDimension x="640" y="512" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="44" top="0" bottom="13" />
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\HelpFrame\HelpFrame-TopLeft">
+          <Size>
+            <AbsDimension x="256" y="256" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT" />
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\HelpFrame\HelpFrame-Top">
+          <Size>
+            <AbsDimension x="256" y="256" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="256" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\HelpFrame\HelpFrame-TopRight">
+          <Size>
+            <AbsDimension x="128" y="256" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT" />
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
+          <Size>
+            <AbsDimension x="256" y="256" />
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT" />
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\HelpFrame\HelpFrame-Bottom">
+          <Size>
+            <AbsDimension x="256" y="256" />
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="256" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\HelpFrame\HelpFrame-BotRight">
+          <Size>
+            <AbsDimension x="128" y="256" />
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT" />
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+        <FontString name="ImmersionRPTitle" inherits="NumberFontNormalHuge" font="Fonts\skurri.ttf" text="ImmersionRP">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="20" y="-20" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="25" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+        </FontString>
+	<FontString name="ImmersionRPVersion" inherits="GameFontNormal" text="IRP_VERSION">
+          <Anchors>
+            <Anchor point="BOTTOMLEFT" relativeTo="ImmersionRPTitle" relativePoint="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="5" y="5" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="25" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+		<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-42" y="-3" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="$parentTab1" inherits="ImmersionRPTabTemplate" text="IRP_STRING_HELP">
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-70" y="-20" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ImmersionRP.ShowHelp();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="$parentTab2" inherits="ImmersionRPTabTemplate" text="IRP_STRING_SETTINGS">
+			<Anchors>
+				<Anchor point="TOPRIGHT"  relativeTo="$parentTab1" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-5" y="0" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ImmersionRP.ShowSettings();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="$parentTab3" inherits="ImmersionRPTabTemplate" text="IRP_STRING_SOCIAL">
+			<Anchors>
+				<Anchor point="TOPRIGHT"  relativeTo="$parentTab2" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-5" y="0" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ImmersionRP.ShowSocial();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="$parentTab4" inherits="ImmersionRPTabTemplate" text="IRP_STRING_CHARACTERINFO">
+			<Anchors>
+				<Anchor point="TOPRIGHT"  relativeTo="$parentTab3" relativePoint="TOPLEFT">
+					<Offset>
+						<AbsDimension x="-5" y="0" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ImmersionRP.ShowCharacterInfo();
+				</OnClick>
+			</Scripts>
+		</Button>
+		<ScrollFrame name="ImmersionRPHelpFrame" inherits="ImmersionRPPanelTemplate" toplevel="false" movable="false" hidden="True">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\AddOns\ImmersionRP\Graphics\Duskwood1">
+						<Size>
+							<AbsDimension x="440" y="410" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" />				
+						</Anchors>
+					</Texture>
+					<Texture file="Interface\AddOns\ImmersionRP\Graphics\Duskwood2">
+						<Size>
+							<AbsDimension x="128" y="410" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="440" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Texture>
+				</Layer>
+
+				<Layer level="ARTWORK">
+					<FontString name="ImmersionRPHelpTitle" inherits="NumberFontNormalHuge" font="Fonts\skurri.ttf" text="IRP_STRING_HELP">
+						<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="-5" />
+									</Offset>
+								</Anchor>
+						</Anchors>
+						<FontHeight>
+								<AbsValue val="25" />
+						</FontHeight>
+						<Color r="1" g="0.82" b="0" />
+					</FontString>
+					<FontString name="ImmersionRPThanks" inherits="NumberFontNormalHuge" font="Fonts\skurri.ttf" text="Thank you for choosing ImmersionRP!">
+						<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="-50" />
+									</Offset>
+								</Anchor>
+						</Anchors>
+						<FontHeight>
+								<AbsValue val="35" />
+						</FontHeight>
+						<Color r="1" g="0.82" b="0" />
+					</FontString>
+					<FontString name="ImmersionRPCredits" inherits="ChatFontNormal" text="ImmersionRP was written by Seagale of the Silver Dawn guild on Earthen Ring EU.">
+						<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ImmersionRPThanks" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-10" />
+									</Offset>
+								</Anchor>
+						</Anchors>
+					</FontString>
+					<FontString name="ImmersionRPPurpose" inherits="ChatFontNormal" text="It was designed to be an easy to use, lightweight successor to flagRSP.">
+						<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ImmersionRPCredits" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-5" />
+									</Offset>
+								</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<ScrollFrame name="ImmersionRPExtendedHelp" inherits="UIPanelScrollFrameTemplate">
+					<Size>
+						<AbsDimension x="300" y="250" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-25" y="-145" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<ScrollChild>
+							<EditBox name="ImmersionRPExtendedHelpText" visible="true" multiLine="true" inherits="ImmersionRPEditBoxTemplate">
+								<Size>
+									<AbsDimension x="300" y="600" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+								</Anchors>
+								<FontString inherits="ChatFontNormal"/>
+								<Scripts>
+									<OnTextChanged>this:GetParent():UpdateScrollChildRect();</OnTextChanged>
+									<OnEditFocusGained>this:ClearFocus()</OnEditFocusGained>
+								</Scripts>
+							</EditBox>
+					</ScrollChild>
+					<Scripts>
+						<OnLoad>ImmersionRPExtendedHelpText:SetText(IRP_STRING_EXTENDEDHELP); ImmersionRPExtendedHelpText:SetWidth(this:GetWidth());</OnLoad>
+					</Scripts>
+				</ScrollFrame>
+			</Frames>
+		</ScrollFrame>
+		<ScrollFrame name="ImmersionRPSettingsFrame" inherits="ImmersionRPPanelTemplate" toplevel="false" movable="false" hidden="True">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\AddOns\ImmersionRP\Graphics\Moonglade1">
+						<Size>
+							<AbsDimension x="440" y="410" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="128" y="0"/>
+								</Offset>
+							</Anchor>
+							
+						</Anchors>
+					</Texture>
+					<Texture file="Interface\AddOns\ImmersionRP\Graphics\Moonglade2">
+						<Size>
+							<AbsDimension x="128" y="410" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+
+				<Layer level="ARTWORK">
+					<FontString name="ImmersionRPSettingsTitle" inherits="NumberFontNormalHuge" font="Fonts\skurri.ttf" text="IRP_STRING_SETTINGS">
+          					<Anchors>
+            						<Anchor point="TOPRIGHT">
+              							<Offset>
+                							<AbsDimension x="-5" y="-5" />
+              							</Offset>
+            						</Anchor>
+          					</Anchors>
+          					<FontHeight>
+            						<AbsValue val="25" />
+          					</FontHeight>
+          					<Color r="1" g="0.82" b="0" />
+        				</FontString>
+					<!--FontString name="ImmersionRPSettingsProtocolText" inherits="GameFontNormal" text="IRP_STRING_COMM_PROTOCOL">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="30" y="-200" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString-->
+					<FontString name="ImmersionRPSettingsChannelText" inherits="GameFontNormal" text="IRP_STRING_COMM_CHANNEL">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-200" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture name="$parentBackground">
+										<Color r="0" g="0" b="0" a="0.5" />
+									</Texture>
+								</Layer>
+							</Layers>
+					</FontString>
+				</Layer>
+			</Layers>
+
+				<Frames>
+					<CheckButton name="ImmersionRPSettingsModifyTooltip" inherits="ImmersionRPCheckboxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="25" y="-70"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(IRP_STRING_MODIFY_TOOLTIP);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Button name="ImmersionRPSettingsGuildNames" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsModifyTooltip" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+		
+						<Scripts>
+							<OnShow>
+								HideDropDownMenu(1);
+								UIDropDownMenu_Initialize(this, ImmersionRP.InitialiseGuildDropdown);
+								UIDropDownMenu_SetSelectedID(ImmersionRPSettingsGuildNames,ImmersionRPSettings["SHOW_GUILDS"],false);
+								UIDropDownMenu_SetWidth(200, ImmersionRPSettingsGuildNames);	
+							</OnShow>
+						</Scripts>
+					</Button>
+					<Button name="ImmersionRPSettingsPvPRanks" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsGuildNames" relativePoint="TOPRIGHT" />
+						</Anchors>
+		
+						<Scripts>
+							<OnShow>
+								HideDropDownMenu(1);
+								UIDropDownMenu_Initialize(ImmersionRPSettingsPvPRanks, ImmersionRP.InitialisePvPDropdown);
+								UIDropDownMenu_SetSelectedID(ImmersionRPSettingsPvPRanks,ImmersionRPSettings["SHOW_RANKS"]);
+								UIDropDownMenu_SetWidth(200, ImmersionRPSettingsPvPRanks);	
+							</OnShow>
+						</Scripts>
+					</Button>
+					<CheckButton name="ImmersionRPSettingsHideUnknown" inherits="ImmersionRPCheckboxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsGuildNames" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(IRP_STRING_HIDE_UNKNOWN_PLAYERS);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="ImmersionRPSettingsRelativeLevels" inherits="ImmersionRPCheckboxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsPvPRanks" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName() .. "Text"):SetText(IRP_STRING_SHOW_RELATIVE);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<!--Button name="ImmersionRPSettingsCommProtocol" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsProtocolText" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="10" y="5" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+		
+						<Scripts>
+							<OnShow>
+								HideDropDownMenu(1);
+								UIDropDownMenu_Initialize(this, ImmersionRP.InitialiseProtocolDropdown);
+								UIDropDownMenu_SetSelectedID(ImmersionRPSettingsCommProtocol,ImmersionRPSettings["COMM_PROTOCOL"], 1);
+								UIDropDownMenu_SetWidth(100,ImmersionRPSettingsCommProtocol);
+							</OnShow>
+						</Scripts>
+					</Button-->
+					<EditBox name="ImmersionRPSettingsCommChannel" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+						<Size>
+							<AbsDimension x="120" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsChannelText" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="30" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<FontString inherits="ChatFontNormal" />
+					</EditBox>
+					<Button name="ImmersionRPSettingsChangeChannel" inherits="OptionsButtonTemplate" text="IRP_STRING_CHANGE">
+						<Size>
+							<AbsDimension x="80" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsCommChannel" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ImmersionRP.ImmersionRPSettingsChangeChannel_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="ImmersionRPSettingsJoinChannel" inherits="OptionsButtonTemplate" text="IRP_STRING_JOINCHANNEL">
+						<Size>
+							<AbsDimension x="100" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="ImmersionRPSettingsChangeChannel" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								ImmersionRP.ImmersionRPSettingsJoinChannel_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						ImmersionRP.RefreshSettingsTab();
+					</OnShow>
+				</Scripts>
+		</ScrollFrame>
+		<ScrollFrame name="ImmersionRPCharacterFrame" inherits="ImmersionRPPanelTemplate" toplevel="false" movable="false" hidden="True">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\AddOns\ImmersionRP\Graphics\Barrens1">
+						<Size>
+							<AbsDimension x="440" y="410" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" />				
+						</Anchors>
+					</Texture>
+					<Texture file="Interface\AddOns\ImmersionRP\Graphics\Barrens2">
+						<Size>
+							<AbsDimension x="128" y="410" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="440" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Texture>
+				</Layer>
+
+				<Layer level="ARTWORK">
+					<FontString name="ImmersionRPCharacterInfoTitle" inherits="NumberFontNormalHuge" font="Fonts\skurri.ttf" text="IRP_STRING_CHARACTERINFO">
+          					<Anchors>
+            						<Anchor point="TOPRIGHT">
+              							<Offset>
+                							<AbsDimension x="-5" y="-5" />
+              							</Offset>
+            						</Anchor>
+          					</Anchors>
+          					<FontHeight>
+            						<AbsValue val="25" />
+          					</FontHeight>
+          					<Color r="1" g="0.82" b="0" />
+        				</FontString>
+					<FontString name="ImmersionRPCharacterDescriptionTitle" inherits="GameFontNormal" text="IRP_STRING_CHARACTER_DESCRIPTION">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-150" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+					<FontString name="ImmersionRPCharacterFirstNameText" inherits="GameFontNormal" text="IRP_STRING_CHARACTER_FIRST_NAME">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="40" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+					<FontString name="ImmersionRPCharacterLastNameText" inherits="GameFontNormal" text="IRP_STRING_CHARACTER_LAST_NAME">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="40" y="-90"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+					<FontString name="ImmersionRPCharacterTitleText" inherits="GameFontNormal" text="IRP_STRING_CHARACTER_TITLE">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="40" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<ScrollFrame name="ImmersionRPCharacterDescriptionScroll" inherits="UIPanelScrollFrameTemplate">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture>
+								<Color r="0" g="0" b="0" a="0.25" />
+							</Texture>
+						</Layer>
+					</Layers>
+					<Size>
+						<AbsDimension x="200" y="300" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ImmersionRPCharacterDescriptionTitle" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-30" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<ScrollChild>
+						<Frame enableMouse="true">
+							<Size>
+								<AbsDimension x="200" y="300"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<Frames>
+								<EditBox name="ImmersionRPCharacterDescription" inherits="ImmersionRPEditBoxTemplate" letters="1600" visible="true" enableMouse="true" multiLine="true">
+									<Size>
+										<AbsDimension x="200" y="600" />
+									</Size>	
+									<Anchors>
+										<Anchor point="TOPLEFT" />
+									</Anchors>
+									<FontString inherits="ChatFontNormal" />
+									<Scripts>
+										<OnTextChanged>
+											ScrollingEdit_OnTextChanged(ImmersionRPCharacterDescriptionScroll);
+											if (ImmersionRPCharacterInfo["DESCRIPTION"] ~= ImmersionRPCharacterDescription:GetText()) then ImmersionRPCharacterRevert:Enable(); end
+										</OnTextChanged>
+										<OnCursorChanged>
+											ScrollingEdit_OnCursorChanged(arg1, arg2, arg3, arg4);
+										</OnCursorChanged>
+										<OnUpdate>
+											ScrollingEdit_OnUpdate(ImmersionRPCharacterDescriptionScroll);
+										</OnUpdate>
+									</Scripts>
+								</EditBox>
+							</Frames>
+							<Scripts>
+								<OnMouseUp>ImmersionRPCharacterDescription:SetFocus();</OnMouseUp>
+							</Scripts>
+						</Frame>
+					</ScrollChild>		
+				</ScrollFrame>
+				<EditBox name="ImmersionRPCharacterFirstName" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture>
+								<Color r="0" g="0" b="0" a="0.25" />
+							</Texture>
+						</Layer>
+					</Layers>
+					<Size>
+						<AbsDimension x="172" y="15" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ImmersionRPCharacterFirstNameText" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="10" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnTextChanged>if (ImmersionRPCharacterInfo["FIRSTNAME"] ~= ImmersionRPCharacterFirstNameText:GetText()) then ImmersionRPCharacterRevert:Enable(); end</OnTextChanged>
+					</Scripts>
+					<FontString inherits="ChatFontNormal" />
+				</EditBox>
+				<EditBox name="ImmersionRPCharacterLastName" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture>
+								<Color r="0" g="0" b="0" a="0.25" />
+							</Texture>
+						</Layer>
+					</Layers>
+					<Size>
+						<AbsDimension x="172" y="15" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="ImmersionRPCharacterFirstName" relativePoint="BOTTOMRIGHT" />
+						<Anchor point="TOPLEFT" relativeTo="ImmersionRPCharacterLastNameText" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="12" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnTextChanged>if (ImmersionRPCharacterInfo["LASTNAME"] ~= ImmersionRPCharacterLastNameText:GetText()) then ImmersionRPCharacterRevert:Enable(); end</OnTextChanged>
+					</Scripts>
+					<FontString inherits="ChatFontNormal" />
+				</EditBox>
+				<EditBox name="ImmersionRPCharacterTitle" inherits="ImmersionRPEditBoxTemplate" visible="true" enableMouse="true">
+					<Layers>
+						<Layer level="BACKGROUND">
+							<Texture>
+								<Color r="0" g="0" b="0" a="0.25" />
+							</Texture>
+						</Layer>
+					</Layers>
+					<Size>
+						<AbsDimension x="200" y="15" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="ImmersionRPCharacterFirstName" relativePoint="BOTTOMRIGHT" />
+						<Anchor point="TOPLEFT" relativeTo="ImmersionRPCharacterTitleText" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="17" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontString inherits="ChatFontNormal" />
+					<Scripts>
+						<OnTextChanged>if (ImmersionRPCharacterInfo["TITLE"] ~= ImmersionRPCharacterTitleText:GetText()) then ImmersionRPCharacterRevert:Enable(); end</OnTextChanged>
+					</Scripts>
+				</EditBox>
+				<Button name="ImmersionRPCharacterRPStyle" inherits="UIDropDownMenuTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ImmersionRPCharacterTitleText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-20" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Button>
+				<Button name="ImmersionRPCharacterRevert" inherits="OptionsButtonTemplate" text="IRP_STRING_REVERT">
+					<Size>
+						<AbsDimension x="80" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ImmersionRPCharacterRPStyle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="18" y="-10" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ImmersionRP.ImmersionRPCharacterRevert_OnClick();
+						</OnClick>
+					</Scripts>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnShow>
+					ImmersionRP.RefreshCharacterInfoTab();
+				</OnShow>
+				<OnHide>
+					ImmersionRP.SaveCharacterInfo();
+				</OnHide>
+			</Scripts>
+		</ScrollFrame>
+    </Frames>
+    <Scripts>
+		<OnLoad>		    	
+      		this:RegisterForDrag("LeftButton");
+      		tinsert(UISpecialFrames,this:GetName());
+			ImmersionRPMainFrameTab3:Disable();
+			ImmersionRP.OnLoad();
+    	</OnLoad>
+		<OnEvent>
+			ImmersionRP.OnEvent(event);
+		</OnEvent>
+		<OnShow>
+			PlaySound("igCharacterInfoOpen");
+			ImmersionRP.ShowCharacterInfo();
+		</OnShow>
+		<OnHide>
+			 PlaySound("igCharacterInfoClose");
+		</OnHide>
+		<OnDragStart>
+			this:StartMoving();
+		</OnDragStart>
+		<OnDragStop>
+			this:StopMovingOrSizing();
+		</OnDragStop>
+    </Scripts>
+  </Frame>
+
+  <Frame name="ImmersionRPRPModeFrame" parent="WorldFrame" enableKeyboard="true" visible="false">
+	<Size>
+		<AbsDimension x="0" y="0" />
+	</Size>
+	<Scripts>
+		<OnLoad>tinsert(UISpecialFrames,this:GetName());</OnLoad>
+		<OnUpdate>if (not UIParent:IsVisible()) then UIFrameFadeUpdate(arg1); UIFrameFlashUpdate(arg1); FCF_OnUpdate(arg1); end</OnUpdate>
+		<OnHide>if (ImmersionRP.RPMode == 1) then ImmersionRP.DisableRPMode(); end</OnHide>
+	</Scripts>
+  </Frame>
+  <Frame name="ImmersionRPHiddenFrame" inherits="SecureFrameTemplate" parent="WorldFrame">
+	<Size>
+		<AbsDimension x="0" y="0" />
+	</Size>
+	<Scripts>
+		<OnLoad>hooksecurefunc("UnitPopup_OnClick", ImmersionRP.UnitPopupHook);</OnLoad>
+		<OnUpdate>ImmersionRP.OnUpdate(arg1);</OnUpdate>
+	</Scripts>
+  </Frame>
+	<Button name="ImmersionRPRPModeButton" movable="true" parent="ChatFrame1">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="$parentBottomButton" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				ImmersionRP.ToggleRPMode();
+			</OnClick>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\ImmersionRP\Graphics\RPModeButtonUp"/>
+		<PushedTexture file="Interface\AddOns\ImmersionRP\Graphics\RPModeButtonDown"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+	<Button name="ImmersionRPMinimapIcon" hidden="true" enableMouse="true" movable="true" parent="Minimap" toplevel="true">
+		<Size>
+			<AbsDimension x="33" y="33"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="Minimap" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="-37" y="-74"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTexture" file="Interface\Addons\ImmersionRP\Graphics\IRPMinimapIcon">
+					<Size>
+						<AbsDimension x="33" y="33"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ImmersionRPMinimapIconMenu" visible="false" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT" />
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(this, ImmersionRP.InitialiseMinimapDropdown, "MENU");
+					</OnLoad>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				UIDropDownMenu_Refresh(ImmersionRPMinimapIconMenu);
+				if (ImmersionRPMinimapIcon:GetLeft() >= GetScreenWidth() / 2) then ToggleDropDownMenu(1, nil, ImmersionRPMinimapIconMenu, "ImmersionRPMinimapIcon", -215, 0); else ToggleDropDownMenu(1, nil, ImmersionRPMinimapIconMenu, "ImmersionRPMinimapIcon", 0, 0); end
+			</OnClick>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+	   </Scripts>
+	</Button>
+</Ui>

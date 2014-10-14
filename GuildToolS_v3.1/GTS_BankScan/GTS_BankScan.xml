@@ -1,0 +1,341 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="localization.lua"/>
+<Script file="GTS_BankScan.lua"/>
+
+<Frame name="GTS_Menu_BS" hidden="false" parent="GTS_Menu_Tab2">
+		<Size> 
+			<AbsDimension x="455" y="135"/> 
+		</Size> 
+		<Anchors> 
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-25"/>
+				</Offset>
+			</Anchor>
+		</Anchors> 
+			
+		<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<CheckButton name="$parent_loadBS" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then GTS_Options[GTS_Position].BSON = true; else GTS_Options[GTS_Position].BSON = false; end
+					</OnClick>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName().."Text");
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_scanOnOpen" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-43"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then GTS_Options[GTS_Position].BSAUTO = true; else GTS_Options[GTS_Position].BSAUTO = false; end
+					</OnClick>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName().."Text");
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_useSort" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-58"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (this:GetChecked()) then GTS_Options[GTS_Position].BSSORT = 1; else GTS_Options[GTS_Position].BSSORT = 2; end
+					</OnClick>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName().."Text");
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parent_loadNow" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						this:Disable();
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>GTS_LoadAddon("GTS_BankScan", this);</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Scan" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						this:Disable();
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>
+						GTS_BS_PreScannedItems = {};
+						GTS_Debug("GTS_BS_DoScan is called.");
+						GTS_BS_DoScan();
+						GTS_Debug("GTS_BS_DoScan exited.");
+						GTS_BS_Finalize();
+						GTS_Echo(GTS_MSG["BS_DONE"]);
+						GTS_BS_MenuUpdate();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Update" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>
+						local index, element;
+						for index, element in GTS_Data.BS.ScannedItems[UnitName("player")] do
+							local name = string.sub(element.name,2,string.len(element.name)-1);
+							if (IsAddOnLoaded("LootLink") and ItemLinks and ItemLinks[name] and ItemLinks[name].p and (not element.price or element.price == " 0 ")) then
+								GTS_Data.BS.ScannedItems[UnitName("player")][index].price = " "..ItemLinks[name].p.." ";
+								GTS_Debug(element.name..":Price is updated.");
+							end
+						end
+						GTS_BS_MenuUpdate();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_Clear" inherits="UIPanelButtonTemplate">
+				<Size> 
+					<AbsDimension x="80" y="24"/> 
+				</Size> 
+				<Anchors> 
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="365" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors> 
+				<Scripts>
+					<OnLoad>
+						GTS_SetGUIName(this:GetName());
+					</OnLoad>
+					<OnClick>
+						GTS_Data.BS.ScannedItems[UnitName("player")] = {};
+						GTS_Data.BS.Money[UnitName("player")] = nil;
+						GTS_Data.BS.Date[UnitName("player")] = nil;
+						GTS_Echo(GTS_MSG["BS_SORTOFF"]);
+						GTS_BS_MenuUpdate();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Header text -->
+				<FontString name="$parent_Header" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="180" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="0"/>
+				</FontString>
+				<FontString name="$parent_Ver" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="320" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="0"/>
+				</FontString>
+				<FontString name="$parent_Loaded" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="0" g="1" b="0"/>
+				</FontString>
+				<FontString name="$parent_LastScan" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0.85" b="0"/>
+				</FontString>
+				<FontString name="$parent_BankFrame" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0.85" b="0"/>
+				</FontString>
+				
+				<FontString name="$parent_numVendorPrice" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0.85" b="0"/>
+				</FontString>
+				<FontString name="$parent_VendorAddon" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-115"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0.85" b="0"/>
+				</FontString>
+				<FontString name="$parent_LastScanStatus" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="105" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				<FontString name="$parent_BankFrameStatus" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="295" y="-85"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				
+				<FontString name="$parent_numVendorPrice1" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="80" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				<FontString name="$parent_numVendorPrice2" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="85" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				
+				<FontString name="$parent_VendorAddonStatus" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="180" y="-115"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+				
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				GTS_SetGUIName("GTS_Menu_BS_Header");
+				GTS_SetGUIName("GTS_Menu_BS_Ver");
+				GTS_SetGUIName("GTS_Menu_BS_Loaded");
+				GTS_SetGUIName("GTS_Menu_BS_LastScan");
+				GTS_SetGUIName("GTS_Menu_BS_BankFrame");
+				GTS_SetGUIName("GTS_Menu_BS_numVendorPrice");
+				GTS_SetGUIName("GTS_Menu_BS_VendorAddon");
+				GTS_SetGUIName("GTS_Menu_BS_LastScanStatus");
+				GTS_SetGUIName("GTS_Menu_BS_BankFrameStatus");
+				GTS_SetGUIName("GTS_Menu_BS_numVendorPrice1");
+				GTS_SetGUIName("GTS_Menu_BS_numVendorPrice2");
+				GTS_SetGUIName("GTS_Menu_BS_VendorAddonStatus");
+			</OnLoad>
+		</Scripts> 
+</Frame>
+
+<Frame name="GTS_BS_Main">
+	<Scripts>
+		<OnLoad>
+			GTS_BS_OnLoad(); 
+		</OnLoad>
+	</Scripts>
+</Frame>
+</Ui>

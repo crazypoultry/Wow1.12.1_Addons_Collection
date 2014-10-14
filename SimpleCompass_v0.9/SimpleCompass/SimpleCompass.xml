@@ -1,0 +1,621 @@
+<Ui>
+	<Script file="SimpleCompass.lua"/>
+	<Font name="SimpleCompassFont" font="Fonts\FRIZQT__.TTF" outline="NORMAL" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+	</Font>
+	
+	<Frame name="SimpleCompassFrame" parent="UIParent" movable="true" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="70" y="70"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-90"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="SimpleCompassBody" enablemouse="true">
+				<Size>
+					<AbsDimension x="76" y="76"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<HighlightTexture name="SimpleCompassHighlight" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="88" y="88"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-2.8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</HighlightTexture>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="SimpleCompassBack" file="Interface\AddOns\SimpleCompass\CompassBack.blp">
+							<Size>
+								<AbsDimension x="64" y="64"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="SimpleCompassMain" file="Interface\AddOns\SimpleCompass\CompassMain.blp">
+							<Size>
+								<AbsDimension x="96" y="96"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>					
+					<Button name="SimpleCompassButton">
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="4"/>
+						</HitRectInsets>
+						<Size>
+							<AbsDimension x="32" y="30"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5.5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\SimpleCompass\CompassChainRing">
+							<Size>
+								<AbsDimension x="32" y="30"/>
+							</Size>
+							<TexCoords left="0" right="1" top="0.109375" bottom="1.05"/>
+						</NormalTexture>
+						<PushedTexture file="Interface\AddOns\SimpleCompass\CompassChainRing">
+							<Size>
+								<AbsDimension x="32" y="30"/>
+							</Size>
+							<TexCoords left="0" right="1" top="0.06" bottom="1.000625"/>
+						</PushedTexture>
+						<HighlightTexture name="$parentHighlight" file="Interface\AddOns\SimpleCompass\CompassHighlight" alphaMode="ADD">
+							<TexCoords left="0" right="0.5" top="0.109375" bottom="1.05"/>							
+							<Size>
+								<AbsDimension x="32" y="30"/>
+							</Size>
+						</HighlightTexture>
+						<Scripts>
+							<OnLoad>
+								SimpleCompassButtonHighlight:SetVertexColor(1,1,1,0.75);
+								this:SetFrameLevel(this:GetParent():GetFrameLevel()-1);
+							</OnLoad>
+							<OnMouseDown>
+								if ( arg1 == "LeftButton" ) then
+									SimpleCompassButtonHighlight:SetTexCoord(0,0.5,0.06,1.000625);
+									SimpleCompass_StartScaling();
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnMouseDown>
+							<OnMouseUp>
+								if ( arg1 == "LeftButton" ) then
+									SimpleCompassButtonHighlight:SetTexCoord(0,0.5,0.109375,1.05);
+									SimpleCompass_StopScaling();
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnMouseUp>
+							<OnEnter>
+								GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+								GameTooltip:AddLine("Simple Compass");
+								GameTooltip:AddLine("Left click and drag to scale",0.6,0.6,0.6);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SimpleCompassLock">
+						<Size>
+							<AbsDimension x="32" y="24"/>
+						</Size>
+						<HighlightTexture name="SimpleCompassLockHighlight" file="Interface\AddOns\SimpleCompass\CompassHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="24"/>
+							</Size>
+							<TexCoords left="0.53125" right="1" top="0.125" bottom="0.875"/>								
+						</HighlightTexture>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="0" y="16"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if ( arg1 == "LeftButton" ) then
+									if ( SimpleCompass_Saved.lock ) then
+										SC_Lock:SetChecked();
+										SimpleCompass_Saved.lock = nil;
+										PlaySound("igMiniMapOpen");
+										SimpleCompassHelpSetText("Unlocked");
+									else
+										SC_Lock:SetChecked(1);
+										SimpleCompass_Saved.lock = 0;
+										PlaySound("igMiniMapClose");
+										SimpleCompassHelpSetText("Locked");
+									end
+								end
+								GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+								GameTooltip:AddLine("Simple Compass");
+								if ( SimpleCompass_Saved.lock ) then
+									GameTooltip:AddLine("Left click to unlock",0.6,0.6,0.6);
+								else
+									GameTooltip:AddLine("Left click to lock",0.6,0.6,0.6);
+									GameTooltip:AddLine("Right click and drag to scale",0.6,0.6,0.6);
+								end
+								GameTooltip:Show();
+								SimpleCompass_Setup();
+							</OnClick>
+							<OnMouseDown>
+								if ( arg1 == "RightButton" and not SimpleCompass_Saved.lock ) then
+									SimpleCompassButtonHighlight:SetPoint("CENTER", SimpleCompassButton,"CENTER", 0.5, -3.8);
+									SimpleCompass_StartScaling();
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								end
+							</OnMouseDown>
+							<OnMouseUp>
+								if ( arg1 == "RightButton" and not SimpleCompass_Saved.lock ) then
+									SimpleCompassButtonHighlight:SetPoint("CENTER", SimpleCompassButton,"CENTER", 0.5, -2);
+									SimpleCompass_StopScaling();
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+							</OnMouseUp>
+							<OnLoad>
+								SimpleCompassLockHighlight:SetVertexColor(1,1,1,0.75);
+								this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+								GameTooltip:AddLine("Simple Compass");
+								if ( SimpleCompass_Saved.lock ) then
+									GameTooltip:AddLine("Left click to unlock",0.6,0.6,0.6);
+								else
+									GameTooltip:AddLine("Left click to lock",0.6,0.6,0.6);
+									GameTooltip:AddLine("Right click and drag to scale",0.6,0.6,0.6);
+								end
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Frame name="SimpleCompassHelp" enableMouse="false">
+						<Size>
+							<AbsDimension x="80" y="80"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="SimpleCompassHelpText" inherits="SimpleCompassFont"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								FadingFrame_OnLoad();
+								FadingFrame_SetFadeInTime(this, 0.05);
+								FadingFrame_SetHoldTime(this, 0.5);
+								FadingFrame_SetFadeOutTime(this, 1);
+							</OnLoad>
+							<OnUpdate>
+								FadingFrame_OnUpdate();
+							</OnUpdate>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("RightButtonUp");
+					</OnLoad>
+					<OnClick>
+						if ( arg1 == "RightButton" ) then
+							SimpleCompass_OptionsToggle();
+						end
+					</OnClick>
+					<OnMouseDown>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StartMoving();
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							SimpleCompassHelpSetText("Moving",1);
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StopMovingOrSizing();
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							SimpleCompassHelpFadeText();
+						end
+					</OnMouseUp>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						GameTooltip:AddLine("Simple Compass");
+						GameTooltip:AddLine("Left click and drag to move",0.6,0.6,0.6);
+						GameTooltip:AddLine("Right click for options",0.6,0.6,0.6);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SimpleCompassHighlight:SetVertexColor(1,1,1,0.75);
+				this:RegisterEvent("ADDON_LOADED");
+				this:RegisterEvent("UNIT_COMBAT");
+			</OnLoad>
+			<OnEvent>
+				SimpleCompass_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				SimpleCompass_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<Frame name="SimpleCompassOptions" parent="UIParent" movable="true" enableMouse="true" toplevel="true" frameStrata="HIGH" hidden="true">	
+		<TitleRegion setAllPoints="true"/>
+		<Size>
+			<AbsDimension x="270" y="230"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="360" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Simple Compass Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>	
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<CheckButton name="SC_HardLock" inherits="UIOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-50" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Hard Lock Compass");
+						this.tooltipText = "Lock the compass in place and disable all buttons";
+					</OnLoad>
+					<OnShow>
+						if ( SimpleCompass_Saved.hardlock ) then
+							this:SetChecked(1);
+							OptionsFrame_DisableCheckBox(SC_Lock);
+						else
+							this:SetChecked();
+							OptionsFrame_EnableCheckBox(SC_Lock);
+							SC_Lock:SetChecked( 1 - (SimpleCompass_Saved.lock or 1) );
+						end
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							SimpleCompass_Saved.hardlock = 0;
+							OptionsFrame_DisableCheckBox(SC_Lock);
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							SimpleCompass_Saved.hardlock = nil;
+							OptionsFrame_EnableCheckBox(SC_Lock);
+							SC_Lock:SetChecked( 1 - (SimpleCompass_Saved.lock or 1) );
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						SimpleCompass_Setup();
+					</OnClick>	
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SC_Lock" inherits="UIOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SC_HardLock" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="15" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Lock Compass");
+						this.tooltipText = "Lock the compass in place";
+					</OnLoad>
+					<OnShow>
+						this:SetChecked( 1 - (SimpleCompass_Saved.lock or 1) );
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							SimpleCompass_Saved.lock = 0;
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							SimpleCompass_Saved.lock = nil;
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						SimpleCompass_Setup();
+					</OnClick>	
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SC_Show" inherits="UIOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SC_Lock" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-15" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Show Compass");
+						this.tooltipText = "Show or hide the compass";
+					</OnLoad>
+					<OnShow>
+						this:SetChecked( not SimpleCompass_Saved.hide );
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							SimpleCompass_Saved.hide = nil;
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							SimpleCompass_Saved.hide = 1;
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						SimpleCompass_Setup();
+					</OnClick>	
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SC_Wobble" inherits="UIOptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SC_Show" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Wobble Animation");
+						this.tooltipText = "Toggle more realistic movement of the compass";
+					</OnLoad>
+					<OnShow>
+						this:SetChecked( not SimpleCompass_Saved.stable );
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							SimpleCompass_Saved.stable = nil;
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							SimpleCompass_Saved.stable = 1;
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+						SimpleCompass_Setup();
+					</OnClick>	
+				</Scripts>
+			</CheckButton>
+			<Slider name="SC_Alpha" inherits="OptionsSliderTemplate" minValue="0.2" maxValue="1" valueStep="0.05" defaultValue="0">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SC_Wobble" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."High"):SetText("100%");
+						getglobal(this:GetName().."Low"):SetText("20%");
+					</OnLoad>
+					<OnShow>
+						this:SetValue(SimpleCompass_Saved.alpha or 1);
+					</OnShow>
+					<OnValueChanged>
+						SimpleCompass_Saved.alpha = this:GetValue();
+						SimpleCompass_Setup();
+						getglobal(this:GetName().."Text"):SetText("Alpha "..(tonumber(format("%0.2f",SimpleCompass_Saved.alpha)) * 100) .."%");
+					</OnValueChanged>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						GameTooltip:SetText("Change the opacity of the compass", nil, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="SC_Scale" inherits="OptionsSliderTemplate" minValue="0.25" maxValue="4" valueStep="0.05" defaultValue="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SC_Alpha" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."High"):SetText("400%");
+						getglobal(this:GetName().."Low"):SetText("25%");
+					</OnLoad>
+					<OnShow>
+						this:SetValue(SimpleCompass_Saved.scale or 1);
+					</OnShow>
+					<OnValueChanged>
+						SimpleCompass_Saved.scale = this:GetValue();
+						SimpleCompass_Setup();
+						getglobal(this:GetName().."Text"):SetText("Scale "..(tonumber(format("%0.2f",SimpleCompass_Saved.scale)) * 100) .."%");
+					</OnValueChanged>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						GameTooltip:SetText("Change the scale of the compass", nil, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+			<Slider name="SC_Strata" orientation="VERTICAL" minValue="1" maxValue="6" valueStep="1" defaultValue="4">
+				<Size>
+					<AbsDimension x="16" y="128"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="50" y="-10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="3" right="3" top="6" bottom="6"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled">
+							<TexCoords left="0" right="1" top="0" bottom="0.9"/>
+							<Size>
+								<AbsDimension x="20" y="18"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+							<TexCoords left="0" right="1" top="0.1" bottom="1"/>
+							<Size>
+								<AbsDimension x="20" y="18"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="Depth">
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="32"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</ThumbTexture>
+				<Scripts>
+					<OnShow>
+						this:SetValue(SimpleCompass_Saved.strata or 4);
+					</OnShow>
+					<OnValueChanged>
+						SimpleCompass_Saved.strata = this:GetValue();
+						SimpleCompass_Setup();
+					</OnValueChanged>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						GameTooltip:SetText("Change the depth of the compass to place it over or under other frames", nil, nil, nil, nil, 1);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+		</Frames>
+	</Frame>
+</Ui>

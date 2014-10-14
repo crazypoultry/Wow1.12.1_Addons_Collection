@@ -1,0 +1,742 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	
+	<!--
+	Add-On developped by Ben a.k.a Blackdove (KirinTor Europe server), from Pandaren Empire Guild
+	-->
+
+	<Script file="localization.lua" />
+	<Script file="BookOfCrafts.lua" />
+	
+	<!-- ====================================================================== -->
+	<!--                               TEMPLATES                                -->
+	<!-- ====================================================================== -->
+	
+	<Button name="BCUI_TabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				BCUI_TabTemplate_OnClick()
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+    <Button name="BCUI_LineTemplate" virtual = "true">
+        <Size>
+            <AbsDimension x="250" y="16"/>
+        </Size>
+        <Layers>
+            <Layer level = "BORDER">
+                <FontString name="$parentText" inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="..."/>
+            </Layer>
+        </Layers>
+    </Button>
+
+	<CheckButton name="BCUI_CheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-50" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnShow>
+				BCUI_CheckButtonTemplate_OnShow()
+			</OnShow>
+			<OnClick>
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff")
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn")
+				end
+				BCUI_CheckButtonTemplate_OnClick()
+			</OnClick>
+			<OnEnter>
+				BCUI_SetInfo( "help" )
+			</OnEnter>
+			<OnLeave>
+				BCUI_SetInfo()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="BCUI_ColorTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="22"/>
+		</Size>
+		<Frames>
+			<Button name="$parent_ColorSwatch">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentSwatchBg">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="125" y="15" />
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="5" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						BCUI_OpenColorPicker()
+					</OnClick>
+					<OnEnter>
+						BCUI_SetInfo( "help" )
+						getglobal( this:GetName().."SwatchBg" ):SetVertexColor( NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b )
+					</OnEnter>
+					<OnLeave>
+						BCUI_SetInfo()
+						getglobal( this:GetName().."SwatchBg" ):SetVertexColor( HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b )
+					</OnLeave>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+			</Button>
+		</Frames>
+	</Frame>
+
+
+
+	<!-- ====================================================================== -->
+	<!--                     CONFIGURATION FRAME (384x400)                      -->
+	<!-- ====================================================================== -->
+	
+	<Frame name="BCUI" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+
+		<Size>
+			<AbsDimension x="384" y="400"/>
+		</Size>
+		
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="BCUI_TitleTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="384" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="BC_CONFIG_TITLE">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+
+		<Frames>
+		
+			<!-- ++++++++++++++++++++++++++++++ -->
+			<!--              TABS              -->
+			<!-- ++++++++++++++++++++++++++++++ -->
+			
+			<Button name="BCUITab1" inherits="BCUI_TabTemplate" id="1" text="BC_TAB_OPTIONS" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<Button name="BCUITab2" inherits="BCUI_TabTemplate" id="2" text="BC_TAB_DATA" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="BCUITab1" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<!-- ++++++++++++++++++++++++++++++ -->
+			<!--          CLOSE BUTTON          -->
+			<!-- ++++++++++++++++++++++++++++++ -->
+			
+			<Button name="BCUI_CloseButton" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel( this:GetParent() )
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			
+			<!-- ++++++++++++++++++++++++++++++ -->
+			<!--            INFO BOX            -->
+			<!-- ++++++++++++++++++++++++++++++ -->
+			
+			<Frame name="BCUI_InfoFrame" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="360" y="65" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="12" y="45" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="BCUI_InfoText" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BCUI_InfoFrame">
+									<Offset>
+										<AbsDimension x="10" y="-10" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						getglobal( this:GetName().."Title" ):SetText( BC_CONFIG_INFO )
+						this:SetBackdropBorderColor( 0.6, 0.6, 0.6 )
+						this:SetBackdropColor( 0.2, 0.2, 0.2 )
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+
+			<!-- ++++++++++++++++++++++++++++++ -->
+			<!--       TAB PAGE : OPTIONS       -->
+			<!-- ++++++++++++++++++++++++++++++ -->
+			
+			<Frame name="BCUI_Options" hidden="false">
+			
+				<Size>
+					<AbsDimension x="360" y="390" />
+				</Size>
+				
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+		
+				<Frames>
+					
+					<!-- Option page : tooltips box -->
+					
+					<Frame name="BCUI_Tooltips" inherits="OptionFrameBoxTemplate">
+
+						<Size>
+							<AbsDimension x="360" y="240" />
+						</Size>
+
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						
+						<Frames>
+
+							<CheckButton name="BCUI_CheckButton_SameFaction" inherits="BCUI_CheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+
+							<CheckButton name="BCUI_CheckButton_ShowSkillRank" inherits="BCUI_CheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_CheckButton_SameFaction" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+
+							<CheckButton name="BCUI_CheckButton_ShowChatMsg" inherits="BCUI_CheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_CheckButton_ShowSkillRank" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+
+							<CheckButton name="BCUI_CheckButton_ShowCurPlayer" inherits="BCUI_CheckButtonTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_CheckButton_ShowChatMsg" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+
+							<CheckButton name="BCUI_CheckButton_UseSideTooltip" inherits="BCUI_CheckButtonTemplate" hidden="false">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_CheckButton_ShowCurPlayer" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+
+							<Frame name="BCUI_Color_Tooltips" inherits="BCUI_ColorTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_CheckButton_ShowSkillRank" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="220" y="-10"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+
+							<Frame name="BCUI_Color_TooltipsKnownBy" inherits="BCUI_ColorTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_Color_Tooltips" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+
+							<Frame name="BCUI_Color_TooltipsMayLearn" inherits="BCUI_ColorTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_Color_TooltipsKnownBy" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+
+							<Frame name="BCUI_Color_TooltipsRankTooHigh" inherits="BCUI_ColorTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="BCUI_Color_TooltipsMayLearn" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+
+
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.6, 0.6, 0.6)
+								this:SetBackdropColor(0.2, 0.2, 0.2)
+								getglobal(this:GetName().."Title"):SetText(BC_CONFIG_TOOLTIPS)
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<!-- Option page : other box -->
+				</Frames>
+			</Frame>
+			
+			
+			<!-- ++++++++++++++++++++++++++++++ -->
+			<!--    TAB PAGE : Data edition     -->
+			<!-- ++++++++++++++++++++++++++++++ -->
+			
+			<Frame name="BCUI_Data" inherits="OptionFrameBoxTemplate" hidden="true">
+			
+				<Size>
+					<AbsDimension x="360" y="240" />
+				</Size>
+				
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+                <Frames>
+
+					<Frame name="BCUI_DropDownCharacters" inherits="UIDropDownMenuTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								BCUI_SetInfo( "help" )
+							</OnEnter>
+							<OnLeave>
+								BCUI_SetInfo()
+							</OnLeave>
+							<OnShow>
+								BCUI_DropDownCharacters_OnShow()
+							</OnShow>
+						</Scripts>
+					</Frame>
+
+					<Button name="BCUI_ButtonDelete" inherits="UIPanelButtonTemplate" text="BC_DELETECHAR" hidden="false">
+						<Size>
+							<AbsDimension x="80" y="22" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BCUI_DropDownCharacters">
+								<Offset>
+									<AbsDimension x="160" y="-3" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								BCUI_ButtonDelete_OnClick()
+							</OnClick>
+						</Scripts>
+					</Button>
+
+					<Button name="BCUI_ButtonConfirm" inherits="UIPanelButtonTemplate" text="BC_CONFIRMDELETE" hidden="true">
+						<Size>
+							<AbsDimension x="80" y="22" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="BCUI_ButtonDelete">
+								<Offset>
+									<AbsDimension x="5" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								BCUI_ButtonConfirm_OnClick()
+							</OnClick>
+						</Scripts>
+					</Button>
+					
+					<!-- cf. http://www.wowwiki.com/HOWTO:_Make_a_scrollable_list_using_FauxScrollFrameTemplate -->
+
+                    <ScrollFrame name="BCUI_Data_ScrollFrame" inherits="FauxScrollFrameTemplate">
+                        <Size>
+                            <AbsDimension x="280" y="192"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOP" relativeTo="BCUI_Data">
+                                <Offset>
+                                    <AbsDimension x="0" y="-40"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll( 16, BCUI_Data_OnScroll )
+							</OnVerticalScroll>
+                        </Scripts>
+                    </ScrollFrame>
+
+                    <Button name="BCUI_Data_Line1" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_ScrollFrame" relativePoint="TOPLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line2" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line1" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line3" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line2" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line4" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line3" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line5" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line4" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line6" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line5" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line7" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line6" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line8" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line7" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line9" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line8" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line10" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line9" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line11" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line10" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    <Button name="BCUI_Data_Line12" inherits="BCUI_LineTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="BCUI_Data_Line11" relativePoint="BOTTOMLEFT"/>
+                        </Anchors>
+                    </Button>
+                    
+                </Frames>
+
+				<Scripts>
+					<OnLoad>
+						getglobal( this:GetName().."Title" ):SetText( BC_CONFIG_INFO )
+						this:SetBackdropBorderColor( 0.6, 0.6, 0.6 )
+						this:SetBackdropColor( 0.2, 0.2, 0.2 )
+					</OnLoad>
+				</Scripts>
+
+			</Frame>
+
+		</Frames>
+
+		<Scripts>
+			<OnShow>
+				BCUI_OnShow()
+			</OnShow>
+			<OnHide>
+				if( MYADDONS_ACTIVE_OPTIONSFRAME==this ) then
+					ShowUIPanel(myAddOnsFrame)
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
+	
+	<!-- ====================================================================== -->
+	<!--                        ONUPDATE FRAME (visible)                        -->
+	<!--               OnUpdate is only called for visible frames               -->
+	<!-- ====================================================================== -->
+
+	<Frame name="BC_UpdateFrame" parent="UIParent">
+		<Scripts>
+			<OnUpdate>
+				BoC_OnUpdate( arg1 )
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+
+	<!-- ====================================================================== -->
+	<!--                              SIDE TOOLTIP                              -->
+	<!-- ====================================================================== -->
+
+	<Frame name="BCTooltip" frameStrata="TOOLTIP" parent="UIParent" hidden="true">
+
+		<Backdrop name="$parentBackdrop" bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="INFO">
+				<FontString name="$parentText1" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText2" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText3" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText4" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText3" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText5" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText4" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText6" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText5" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText7" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText6" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText8" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText7" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText9" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText8" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText10" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText9" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText11" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText10" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText12" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentText11" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad>
+				BoC_OnLoad()
+			</OnLoad>
+			<OnEvent>
+				BoC_OnEvent( event, arg1 )
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+</Ui>

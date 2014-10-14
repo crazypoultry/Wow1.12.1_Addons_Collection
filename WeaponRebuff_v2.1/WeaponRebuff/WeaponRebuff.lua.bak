@@ -1,0 +1,531 @@
+-- by thomas kriegel - opt
+-- mail: t.kriegel@gmx.de
+-- ingame: Lye <Epic> on EU/DE/Gorgonnash
+-- last update 2005/06/02
+-- TODO: nothing :D
+
+-- add whatever you want:
+-- french localization
+if ( GetLocale() == "frFR" ) then
+	chargeNames = {
+		'Poison instantané',
+		'Poison affaiblissant',
+		'Poison mortel',
+		'Poison de distraction mentale',
+		'Poison douloureux',
+		'Pierre \195\160 aiguiser',
+		'Caillou'
+    }
+    spellNames = {
+		'Arme des Vents',
+		'Arme Langue de Feu',
+		'Arme Croque-Roc',
+		'Arme de Glace',
+		'Augure de Clart\195\169'
+    }
+	WR_MINUTE = "min";
+	WR_SECOND = "sec";
+	ERROR_NO_BUFFS_REMEMBERED = "There are no buffs remembered!";
+-- german localization
+elseif ( GetLocale() == "deDE" ) then
+    chargeNames = {
+		'Sofort wirkendes Gift',
+		'Wundengift',
+		'T\195\182dliches Gift',
+		'Gedankenbenebelndes Gift',
+		'Verkr\195\188ppelndes Gift',
+		'Wetzstein',
+		'Gewichtsstein'
+	}
+    spellNames = {
+	    'Windfuror-Waffe',
+    	'Waffe der Flammenzunge',
+    	'Felsbei\195\159erwaffe',
+    	'Waffe des Frostbrands',
+    	'Omen der Klarsicht'
+    }
+   	WR_MINUTE = "Min.";
+	WR_SECOND = "Sek.";
+	ERROR_NO_BUFFS_REMEMBERED = "Keine Buffs gespeichert!";
+-- default (english) localization
+else
+    chargeNames = {
+        'Instant Poison',
+        'Wound Poison',
+        'Deadly Poison',
+        'Mind-numbing Poison',
+        'Crippling Poison',
+        'Sharpening Stone',
+        'Weightstone'
+    }
+    spellNames = {
+    	'Windfury Weapon',
+    	'Flametongue Weapon',
+    	'Rockbiter Weapon',
+    	'Frostbrand Weapon',
+    	'Omen of Clarity'
+    }
+	WR_MINUTE = "min";
+	WR_SECOND = "sec";
+	ERROR_NO_BUFFS_REMEMBERED = "There are no buffs remembered!";
+end
+
+-- do not change:
+wrLastUpdate = 0;
+lastFlag = 0;
+wRebuff_LAST_TEXTUPDATE = 0;
+wrDisableOffhandButton = 0;
+wrDisableRememberBuffText = 0;
+wrSkipReplacePopup = 1;
+wrDisableAddon = 0;
+weaponRebuff_locked = 1;
+local lOriginal_GameTooltip_ClearMoney;
+RememberBuff = {[16]={BuffName='',BuffType=1},[17]={BuffName='',BuffType=1}};
+WeaponRebuff_Save = {};
+wrfirstLOAD = 0;
+
+function optWeaponRebuff_Init()
+	SlashCmdList["WEAPONREBUFF"] = function(...)
+		if(arg[1] == "lock") then
+			weaponRebuff_locked = 1
+			DEFAULT_CHAT_FRAME:AddMessage("weaponrebuff> moving-mode |caaaaddffdisabled|r");
+			WeaponBuffBar:StopMovingOrSizing();
+			optWeaponRebuff_SavePosition();
+		elseif(arg[1] == "unlock") then
+			weaponRebuff_locked = 0
+			DEFAULT_CHAT_FRAME:AddMessage("weaponrebuff> moving-mode |caaaaddffenabled|r");
+		elseif(arg[1] == "reset") then
+			WeaponBuffBar:ClearAllPoints();
+			WeaponBuffBar:SetPoint("CENTER", "UIParent", "CENTER", 0, 0);
+			DEFAULT_CHAT_FRAME:AddMessage("weaponrebuff> buttonpositions |caaaaddffreseted|r");
+		else
+			DEFAULT_CHAT_FRAME:AddMessage("weaponrebuff> type |caaaaddff/weaponrebuff unlock|r to enable moving-mode");
+			DEFAULT_CHAT_FRAME:AddMessage("weaponrebuff> type |caaaaddff/weaponrebuff lock|r to disable moving-mode");
+			DEFAULT_CHAT_FRAME:AddMessage("weaponrebuff> type |caaaaddff/weaponrebuff reset|r to reset the buttonpositions");
+			optWeaponRebuff_ShowOptions();
+		end
+	end
+	SLASH_WEAPONREBUFF1 = "/weaponrebuff";
+	SLASH_WEAPONREBUFF1 = "/wr";
+	DEFAULT_CHAT_FRAME:AddMessage("opt's WeaponRebuff loaded, type |caaaaddff/weaponrebuff|r (or |caaaaddff/wr|r) for help");
+end
+
+function optWeaponRebuff_UpdateSavedVariables()
+	wrPROFILE = UnitName("player").."_".. GetCVar("RealmName");
+
+	if not WeaponRebuff_Save[wrPROFILE] then
+		WeaponRebuff_Save[wrPROFILE] = {}
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].DisableAddon then
+        wrDisableAddon = WeaponRebuff_Save[wrPROFILE].DisableAddon;
+	else
+		wrDisableAddon = 0;
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].wrSavedDisableOffhandButton then
+        wrDisableOffhandButton = WeaponRebuff_Save[wrPROFILE].wrSavedDisableOffhandButton;
+	else
+		wrDisableOffhandButton = 0;
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].wrSavedDisableRememberBuffText then
+        wrDisableRememberBuffText = WeaponRebuff_Save[wrPROFILE].wrSavedDisableRememberBuffText;
+    else
+	    wrDisableRememberBuffText = 0;
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].SkipReplacePopup then
+        wrSkipReplacePopup = WeaponRebuff_Save[wrPROFILE].SkipReplacePopup;
+    else
+	    wrSkipReplacePopup = 1;
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].RememberBuffMainhandName then
+        RememberBuff[16].BuffName = WeaponRebuff_Save[wrPROFILE].RememberBuffMainhandName;
+    else
+    	RememberBuff[16].BuffName = "-none-";
+    end
+
+	if WeaponRebuff_Save[wrPROFILE].RememberBuffOffhandName then
+		RememberBuff[17].BuffName = WeaponRebuff_Save[wrPROFILE].RememberBuffOffhandName;
+	else
+		RememberBuff[17].BuffName = "-none-";
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].RememberBuffMainhandType then
+		RememberBuff[16].BuffType = WeaponRebuff_Save[wrPROFILE].RememberBuffMainhandType;
+	else
+		RememberBuff[16].BuffType = 0;
+	end
+
+	if WeaponRebuff_Save[wrPROFILE].RememberBuffOffhandType then
+        RememberBuff[17].BuffType = WeaponRebuff_Save[wrPROFILE].RememberBuffOffhandType;
+    else
+    	RememberBuff[17].BuffType = 0;
+    end
+end
+
+function optWeaponRebuff_SaveVariables()
+	wrPROFILE = UnitName("player").."_".. GetCVar("RealmName");
+	WeaponRebuff_Save[wrPROFILE].DisableAddon = wrDisableAddon;
+	WeaponRebuff_Save[wrPROFILE].wrSavedDisableOffhandButton = wrDisableOffhandButton;
+	WeaponRebuff_Save[wrPROFILE].wrSavedDisableRememberBuffText = wrDisableRememberBuffText;
+	WeaponRebuff_Save[wrPROFILE].SkipReplacePopup = wrSkipReplacePopup;
+	WeaponRebuff_Save[wrPROFILE].RememberBuffMainhandName = RememberBuff[16].BuffName;
+	WeaponRebuff_Save[wrPROFILE].RememberBuffOffhandName = RememberBuff[17].BuffName;
+	WeaponRebuff_Save[wrPROFILE].RememberBuffMainhandType = RememberBuff[16].BuffType;
+	WeaponRebuff_Save[wrPROFILE].RememberBuffOffhandType = RememberBuff[17].BuffType;
+	RegisterForSave("WeaponRebuff");
+end
+
+function optWeaponRebuff_UpdateTextures()
+	if ( wrDisableAddon == 0 ) then
+        wrMainhandButton:Show();
+        wrOffhandButton:Show();
+        wrMainhandButton:SetNormalTexture(GetInventoryItemTexture("player", 16));
+        if ( wrDisableOffhandButton == 0 and GetInventoryItemTexture("player", 17) ) then
+            wrOffhandButton:SetNormalTexture(GetInventoryItemTexture("player", 17));
+        else
+            wrOffhandButton:Hide();
+        end
+    else
+	    wrMainhandButton:Hide();
+	    wrOffhandButton:Hide();
+    end
+end
+
+function optWeaponRebuff_OnEvent(event)
+	if ( event == "UNIT_INVENTORY_CHANGED" ) then
+		optWeaponRebuff_UpdateTextures();
+	elseif ( event == "VARIABLES_LOADED" ) then
+		wrfirstLOAD = GetTime();
+	end
+end
+function optWeaponRebuff_OnUpdate(elapsed)
+	if wrfirstLOAD ~= 0 then
+		local pName = UnitName("player");
+		if pName==nil or pName==UNKNOWNOBJECT or pName==UKNOWNBEING then
+			wrfirstLOAD = GetTime();
+			return
+		end
+		if ( wrfirstLOAD - GetTime() < -1 ) then
+			optWeaponRebuff_Init();
+            optWeaponRebuff_UpdateSavedVariables();
+            optWeaponRebuff_UpdateTextures();
+            wrfirstLOAD = 0;
+		end
+	end
+	wrLastUpdate = GetTime() + elapsed;
+	if WeaponBuffBar:IsVisible() and MouseIsOver(WeaponBuffBar) then
+		lastFlag = GetTime();
+	end
+	if ( wrLastUpdate - lastFlag > 3 ) then
+		newDropdown:Hide();
+	end
+end
+
+function optDropDown_Init(slot)
+	newDropdown:Show();
+	optDropDownMenu_ClearButtons();
+	local info;
+	-- adding charges
+	for i=1, table.getn(chargeNames), 1 do
+		local _,_,count = optWeaponRebuff_GetBagInfo(chargeNames[i]);
+		if ( count > 0 ) then
+            info = {
+                text = count.."x "..chargeNames[i];
+                buff = chargeNames[i];
+                invslot = slot;
+                bufftype = 1;
+            }
+            optDropDownMenu_AddButton(info);
+		end
+	end
+	--adding spells
+	for i=1, table.getn(spellNames), 1 do
+		if ( optWeaponRebuff_GetSpellId(spellNames[i]) > 0) then
+			info = {
+				text = spellNames[i];
+                buff = spellNames[i];
+                invslot = slot;
+                bufftype = 2;
+            }
+			optDropDownMenu_AddButton(info);
+		end
+	end
+	optDropDownMenu_Resize()
+end
+
+function optDropDownMenu_ClearButtons()
+	for i=1, 12, 1 do
+		local button = getglobal("WeaponRebuffDropdownButton"..i);
+		button:Hide();
+	end
+end
+
+function optDropDownMenu_AddButton(info)
+	for i=1, 12, 1 do
+		local button = getglobal("WeaponRebuffDropdownButton"..i);
+		if ( not button:IsVisible() ) then
+			button:SetText(info.text);
+			button.buff = info.buff;
+			button.bufftype = info.bufftype;
+			button.invslot = info.invslot;
+			button:Show();
+			return;
+		end
+	end
+end
+
+function optDropDownMenu_Resize()
+	if ( not WeaponRebuffDropdownButton1:IsVisible() ) then
+		newDropdown:Hide();
+		return
+	end
+
+	local width = 0;
+	local count = 0;
+	for i = 1, 12, 1 do
+		local button = getglobal("WeaponRebuffDropdownButton"..i);
+		if ( button:IsVisible() ) then
+			count = count + 1;
+            local iwidth = button:GetTextWidth();
+            if (iwidth > width) then
+                width = iwidth;
+            end
+        end
+	end
+	for i = 1, count, 1 do
+		local button = getglobal("WeaponRebuffDropdownButton"..i);
+		button:SetWidth(width);
+	end
+	newDropdown:SetWidth(width+20);
+	local height = 0;
+	for i = 1, count, 1 do
+		local button = getglobal("WeaponRebuffDropdownButton"..i);
+		if ( button:IsVisible() ) then
+            local iheight = button:GetHeight();
+            height = height + iheight;
+        end
+	end
+	newDropdown:SetHeight(height+18);
+end
+
+function optWeaponRebuff_ShowDropdown(frameName)
+    newDropdown:ClearAllPoints();
+	newDropdown:SetPoint("TOPLEFT", frameName, "TOPRIGHT", 0, 5);
+	optDropDown_Init(getglobal(frameName):GetID());
+end
+
+function optDropDownMenu_OnClick(invSlot)
+	optWeaponBuff_Apply(this.buff,this.bufftype,this.invslot);
+	optWeaponRebuff_SaveVariables();
+end
+
+function optWeaponRebuff_Rebuff(slot)
+    if ( RememberBuff[slot].BuffName and RememberBuff[slot].BuffName ~= "-none-" ) then
+		optWeaponBuff_Apply(RememberBuff[slot].BuffName,RememberBuff[slot].BuffType,slot);
+	else
+		UIErrorsFrame:AddMessage(ERROR_NO_BUFFS_REMEMBERED, 0.66, 0.66, 0.86, 1.0,UIERRORS_HOLD_TIME);
+	end
+end
+
+function optWeaponBuff_Apply(buff,bufftype,invslot)
+    RememberBuff[invslot].BuffName = buff;
+    RememberBuff[invslot].BuffType = bufftype;
+	if ( bufftype == 1 ) then -- charge
+		local bag,slot,count = optWeaponRebuff_GetBagInfo(buff);
+		if ( count > 0 ) then
+			UseContainerItem(bag,slot);
+			if ( SpellIsTargeting() ) then
+				PickupInventoryItem(invslot);
+				if ( wrSkipReplacePopup == 1 ) then
+					ReplaceEnchant();
+				end
+			end
+		end
+	elseif ( bufftype == 2 ) then -- spell
+		local spellId = optWeaponRebuff_GetSpellId(buff)
+		if ( spellId > 0 ) then
+			CastSpell(spellId,"spell");
+		end
+	end
+	newDropdown:Hide();
+end
+
+function optWeaponRebuff_GetBagInfo(item)
+	if ( item == nil or item == "") then
+		return -1,-1,-1;
+	end
+	local itemBag = 0;
+    local itemSlot = 0;
+    local itemCount = 0;
+	local temptooltip = getglobal("wrItemTempTooltip");
+    for checkbag=4, 0, -1 do
+		local size = GetContainerNumSlots(checkbag);
+		if (size > 0) then
+			for checkslot=1, size, 1 do
+				local _, count = GetContainerItemInfo(checkbag, checkslot);
+				if (count) then
+					local itemName = nil;
+					temptooltip:SetBagItem(checkbag, checkslot);
+					local check = getglobal("wrItemTempTooltipTextLeft1");
+					if (check and check:IsVisible() and check:GetText() ~= nil) then
+						if ( string.find(check:GetText(),item,1,true) ) then
+							itemCount = itemCount + count;
+							itemBag = checkbag;
+							itemSlot = checkslot;
+						end
+					end
+				end
+			end
+		end
+	end
+	return itemBag, itemSlot, itemCount;
+end
+
+function optWeaponRebuff_GetSpellId(spellName)
+	if ( spellName == nil or spellName == "") then
+		return;
+	end
+	local i = 1;
+	local spellId = 0;
+	local searchName;
+	searchName,rankName = GetSpellName(i,"spell");
+	while (searchName) do
+		if ( searchName == spellName ) then
+			spellId = i;
+		end
+		i = i + 1;
+		searchName,rankName = GetSpellName(i,"spell");
+	end
+	return spellId;
+end
+
+function optWeaponRebuff_SavePosition()
+	local left = WeaponBuffBar:GetLeft();
+	local bottom = WeaponBuffBar:GetBottom();
+    WeaponBuffBar:ClearAllPoints();
+    WeaponBuffBar:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", left, bottom);
+end
+
+function optWeaponRebuff_ShowOptions()
+	wrOptions:Show();
+	if wrDisableAddon == 1 then
+		wrDisableAddonCheckbutton:SetChecked(true);
+		OptionsFrame_DisableCheckBox(wrDisableOffhandCheckbutton);
+		OptionsFrame_DisableCheckBox(wrRebuffDisableRememberBuffTextCheckbutton);
+		OptionsFrame_DisableCheckBox(wrSkipReplacePopupCheckbutton);
+	end
+	if wrDisableOffhandButton == 1 then
+		wrDisableOffhandCheckbutton:SetChecked(true);
+	end
+	if wrDisableRememberBuffText == 1 then
+		wrRebuffDisableRememberBuffTextCheckbutton:SetChecked(true);
+	end
+	if wrSkipReplacePopup == 1 then
+		wrSkipReplacePopupCheckbutton:SetChecked(true);
+	end
+end
+
+function wrSaveAndExit_Onclick()
+	optWeaponRebuff_SaveVariables()
+	wrOptions:Hide();
+end
+
+function wrOptionsDefaultBuffDropdown_Initialize()
+	local id = this:GetParent():GetID();
+	local info = {}
+	for i=1, table.getn(chargeNames), 1 do
+		info.text = chargeNames[i];
+		info.value = chargeNames[i];
+		info.func = function (...)
+				wrOptionsSetDefaultBuff(1,id)
+			end
+		UIDropDownMenu_AddButton(info);
+	end
+	for i=1, table.getn(spellNames), 1 do
+		info.text = spellNames[i];
+		info.value = spellNames[i];
+		info.func = function (...)
+				wrOptionsSetDefaultBuff(2,id)
+			end
+		UIDropDownMenu_AddButton(info);
+	end
+end
+
+function wrOptionsSetDefaultBuff(buffType,invSlot)
+    RememberBuff[invSlot].BuffName = this.value;
+    RememberBuff[invSlot].BuffType = buffType;
+	if ( invSlot == 16 ) then
+		wrSetMainhandBuffDropdownText:SetText(this.value);
+	elseif ( invSlot == 17 ) then
+		wrSetOffhandBuffDropdownText:SetText(this.value);
+	end
+end
+
+-- got this code from Telo's ItemBuff and modified it to work with my mod
+function wrItemBuffButton_OnUpdate(elapsed)
+	wRebuff_LAST_TEXTUPDATE = wRebuff_LAST_TEXTUPDATE + elapsed;
+	if ( wRebuff_LAST_TEXTUPDATE > 1 ) then
+		wRebuff_LAST_TEXTUPDATE = GetTime();
+		wrItemBuff_UpdateText(16);
+		wrItemBuff_UpdateText(17);
+	end
+end
+
+function wrItemBuff_UpdateText(slot)
+	local index;
+	local field;
+	local text = "";
+	if ( slot == 16 ) then
+		textToUpdate = "wrMainhandButtonText";
+	elseif ( slot == 17 ) then
+		textToUpdate = "wrOffhandButtonText";
+	else
+		return
+	end
+
+	local button = getglobal(textToUpdate);
+	wrItemBuff_MoneyToggle();
+	wrItemTempTooltip:SetInventoryItem("player", slot);
+	wrItemBuff_MoneyToggle();
+	for index = 1, 16, 1 do
+		field = getglobal("wrItemTempTooltipTextLeft"..index);
+		if( field and field:IsVisible() ) then
+			text = field:GetText();
+			if( text ) then
+				if( string.find(text, "%(%d+ "..WR_MINUTE.."%)") ) then
+					button:SetTextColor(0.5, 0.5, 0.9);
+					button:SetText(text);
+					return;
+				elseif( string.find(text, "%(%d+ "..WR_SECOND.."%)") ) then
+					button:SetTextColor(1, 0, 0);
+					button:SetText(text);
+					return;
+				end
+			end
+		end
+	end
+	button:SetTextColor(1, 0, 0);
+	if ( RememberBuff[slot].BuffName and wrDisableRememberBuffText == 0 ) then
+		button:SetText("<<"..RememberBuff[slot].BuffName..">>");
+	else
+		button:SetText("");
+	end
+end
+
+function wrItemBuff_MoneyToggle()
+	if( lOriginal_GameTooltip_ClearMoney ) then
+	    GameTooltip_ClearMoney = lOriginal_GameTooltip_ClearMoney;
+	    lOriginal_GameTooltip_ClearMoney = nil;
+    else
+	    lOriginal_GameTooltip_ClearMoney = GameTooltip_ClearMoney;
+	    GameTooltip_ClearMoney = ItemBuff_GameTooltip_ClearMoney;
+	end
+end
+
+function ItemBuff_GameTooltip_ClearMoney()
+	-- Intentionally empty; don't clear money while we use hidden tooltips
+end

@@ -1,0 +1,324 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Frame name="LVBossModDropDownFrame" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+	</Frame>
+
+	<Button name="LVBMBossModFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(LVBMBossModFrame);
+				LVBMBossModFrame.selectedBossMod = 0;
+				LVBMBossModFrame.showPage = 1;
+				LVBMBossModFrame_OnShow();
+			</OnClick>
+			<OnEnter>
+				if(    getglobal("LVBMGUI_FRAMETAB_"..this:GetID().."_TT") ~= nil 
+				   and getglobal("LVBMGUI_FRAMETAB_"..this:GetID().."_TD") ~= nil ) then
+
+					GameTooltip_AddNewbieTip(getglobal("LVBMGUI_FRAMETAB_"..this:GetID().."_TT"), 1.0, 1.0, 1.0, getglobal("LVBMGUI_FRAMETAB_"..this:GetID().."_TD"), 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="LVBMOptionsFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(LVBMOptionsFrame);
+				LVBMOptionsFrame_OnShow();
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="LVBMBossModFrameButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="30"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentButtonText" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentBossMod" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentAuthor" inherits="GameFontDisableSmall">
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBossMod" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				LVBMBossModButton_OnClick(arg1);
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+			<OnEnter>
+				GameTooltip_AddNewbieTip( getglobal(this:GetName().."TTText"), 1.0, 1.0, 1.0, getglobal(this:GetName().."TTDesc"), 1);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+
+	<EditBox name="LVBMBossModFrameEditBoxTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+					<Size>
+						<AbsDimension x="32" y="32"/> 
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-14" y="0"/> 
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.125" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="32" y="32"/> 
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="6" y="0" /> 
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.875" right="1.0" top="0" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="1" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.9375" top="0" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<FontString inherits="ChatFontNormal"></FontString>
+	</EditBox>
+
+	<Slider name="LVBMSliderTemplate" virtual="true" enableMouse="true" orientation="HORIZONTAL">
+		<Size>
+			<AbsDimension x="190" y="20"/>
+		</Size>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="8" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="8" />
+			</EdgeSize>
+		</Backdrop>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32" />
+			</Size>
+		</ThumbTexture>
+		<Layers>
+			<Layer>
+				<FontString name="$parentTitle" inherits="GameFontNormalSmall" text="Title Text">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontNormalSmall" text="Value Text">
+							<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="10" />
+					</FontHeight>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Slider>
+
+	<!-- 
+		The next few Frames are needed for the INFO FRAME 
+	-->
+	<Frame name="LVBMInfoFrameTrash" hidden="true" frameStrata="BACKGROUND" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Size>
+			<AbsDimension x="1" y="1"/>
+		</Size>
+	</Frame>
+	
+
+	<Frame name="LVBMInfoFrameTemplate" hidden="true" frameStrata="DIALOG" movable="true" parent="UIParent" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Size>
+			<AbsDimension x="100" y="50"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText" inherits="ChatFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" setAllPoints="true" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+	</Frame>
+
+	<Frame name="LVBMInfoFrameTemplateTextField" virtual="true">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Size>
+			<AbsDimension x="100" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="ChatFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<StatusBar name="LVBMInfoFrameTemplateBar" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text="">
+					<Size>
+						<AbsDimension x="140" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLeftText" inherits="GameFontHighlightSmall" text="" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="140" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRightText" inherits="GameFontHighlightSmall" text="" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</StatusBar>
+
+</Ui>
+
+

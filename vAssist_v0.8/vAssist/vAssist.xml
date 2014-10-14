@@ -1,0 +1,202 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="localization.lua"/>
+	<Script file="vAssist.lua"/>
+	
+	<Frame name="vAssist" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				vAssist_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				vAssist_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				vAssist_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<!-- MT target template -->
+	<Button name="vAssist_MTTarget_Template" frameStrata="BACKGROUND" hidden="true" toplevel="true" movable="true" parent="UIParent" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="63"/>
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentMTName" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-9"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTargetName" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-21"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTargetsTarget" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="10" y="9"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHealthBar" frameStrata="BACKGROUND">
+				<BarTexture name="$parentTexture" file="Interface\AddOns\vAssist\statusbar.tga"/>
+				<Size>
+					<AbsDimension x="118" y="8"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTargetName" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="NumberFontNormal">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG" file="Interface\AddOns\vAssist\statusbar.tga" hidden="false">
+							<Size>
+								<AbsDimension x="1" y="1"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnValueChanged>
+						HealthBar_OnValueChanged(arg1, 1);
+					</OnValueChanged>	
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				vAssist_AssistMT(string.sub(this:GetName(),6,6));
+			</OnClick>
+			<OnUpdate>
+				if( not this.updateTime ) then
+					this.updateTime = 0;
+				else
+					this.updateTime = this.updateTime + arg1;
+				end
+				if( this.updateTime > 0.5 ) then
+					vAssist_UpdateMTFrame(this:GetName());
+					this.updateTime = 0;
+				end
+			</OnUpdate>
+			<OnMouseUp>
+				if( arg1 == "LeftButton" and this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if( arg1 == "LeftButton" and IsShiftKeyDown() ) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+ 				if( this.isMoving ) then
+  				this:StopMovingOrSizing();
+  				this.isMoving = false;
+ 				end
+			</OnHide>
+		</Scripts>
+	</Button>
+
+	<Button name="vA_MT1" inherits="vAssist_MTTarget_Template">
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	
+	<Button name="vA_MT2" inherits="vAssist_MTTarget_Template">
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	
+	<Button name="vA_MT3" inherits="vAssist_MTTarget_Template">
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	
+	<Button name="vA_MT4" inherits="vAssist_MTTarget_Template">
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	
+	<Button name="vA_MT5" inherits="vAssist_MTTarget_Template">
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	
+	<Button name="vA_MT6" inherits="vAssist_MTTarget_Template">
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+</Ui>

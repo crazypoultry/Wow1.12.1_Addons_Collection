@@ -1,0 +1,1508 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+  <Script file="G15Bar.lua"/>
+  <CheckButton name="G15BarButton" inherits="ActionButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        G15BarButton_OnLoad();
+      </OnLoad>
+      <OnShow>
+        G15BarButton_Update();
+      </OnShow>
+      <OnEvent>
+        G15BarButton_OnEvent(event);
+      </OnEvent>
+      <OnClick>
+        if ( IsShiftKeyDown() ) then
+          PickupAction(G15BarButton_GetID(this));
+        else
+          if( IsAltKeyDown() ) then
+            UseAction(G15BarButton_GetID(this), 1, 1);
+          else
+            UseAction(G15BarButton_GetID(this), 1);
+          end
+        end
+        G15BarButton_UpdateState();
+      </OnClick>
+	<OnDragStart>
+		if ( LOCK_ACTIONBAR ~= "1" ) then
+			PickupAction(G15BarButton_GetID(this));
+			ActionButton_UpdateState();
+		end
+	</OnDragStart>
+	<OnReceiveDrag>
+		if ( LOCK_ACTIONBAR ~= "1" ) then
+			PlaceAction(G15BarButton_GetID(this));
+			ActionButton_UpdateState();
+		end
+	</OnReceiveDrag>
+      <OnEnter>
+        G15BarButton_SetTooltip();
+      </OnEnter>
+      <OnLeave>
+        this.updateTooltip = nil;
+        GameTooltip:Hide();
+      </OnLeave>
+      <OnUpdate>
+        G15BarButton_OnUpdate(arg1);
+      </OnUpdate>
+    </Scripts>
+  </CheckButton>
+
+  <Frame name="G15GrabBarTemplate" virtual="true" hidden="true" movable="true">
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<Size>
+			<AbsDimension x="60" y="40"/>
+		</Size>
+		
+		<Scripts>
+			<OnEnter>
+				if((G15BarConfig[G15BarRealm][G15BarChar].bound == false or this:GetName() == "M1GrabBar") and G15BarConfig[G15BarRealm][G15BarChar].lock == false) then
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText("Left-click to drag");
+					G15Bar_Bind(G15BarConfig[G15BarRealm][G15BarChar].bound);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnMouseDown>
+				if (G15BarConfig[G15BarRealm][G15BarChar].lock == false and arg1 == "LeftButton" and (G15BarConfig[G15BarRealm][G15BarChar].bound == false or this:GetName() == "M1GrabBar")) then
+					this:StartMoving();
+					
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+  <Frame name="G15Bar" frameStrata="MEDIUM" parent="UIParent">
+	  <Frames>
+	  	<Frame name="M1Bar" frameStrata="MEDIUM" parent="G15Bar" hidden="true">
+	  	 <Frames>
+		  <CheckButton name="M1BarButton2" inherits="G15BarButton"  id="116">
+		    <Anchors>
+		      <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton1" inherits="G15BarButton"  id="115">
+		    <Anchors>
+		      <Anchor point="RIGHT" relativeTo="M1BarButton2" relativePoint="LEFT">
+		        <Offset>
+		          <AbsDimension x="-3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton3" inherits="G15BarButton"  id="117">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton2" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton4" inherits="G15BarButton"  id="118">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1BarButton1" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton5" inherits="G15BarButton"  id="119">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton4" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton6" inherits="G15BarButton"  id="120">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton5" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		
+		  <CheckButton name="M1BarButton7" inherits="G15BarButton"  id="73">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1BarButton4" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-12"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton8" inherits="G15BarButton"  id="74">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton7" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton9" inherits="G15BarButton"  id="75">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton8" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton10" inherits="G15BarButton"  id="76">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1BarButton7" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton11" inherits="G15BarButton"  id="77">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton10" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton12" inherits="G15BarButton"  id="78">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton11" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		
+		  <CheckButton name="M1BarButton13" inherits="G15BarButton"  id="79">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1BarButton10" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-12"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton14" inherits="G15BarButton"  id="80">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton13" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton15" inherits="G15BarButton"  id="81">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton14" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton16" inherits="G15BarButton"  id="82">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1BarButton13" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton17" inherits="G15BarButton"  id="83">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton16" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M1BarButton18" inherits="G15BarButton"  id="84">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1BarButton17" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		 </Frames>
+		</Frame>
+		
+	   <Frame name="M2Bar" frameStrata="MEDIUM" parent="G15Bar" hidden="true">
+	  	<Frames>
+		  <CheckButton name="M2BarButton2" inherits="G15BarButton"  id="86">
+		    <Anchors>
+		      <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton1" inherits="G15BarButton"  id="85">
+		    <Anchors>
+		      <Anchor point="RIGHT" relativeTo="M2BarButton2" relativePoint="LEFT">
+		        <Offset>
+		          <AbsDimension x="-3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton3" inherits="G15BarButton"  id="87">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton2" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton4" inherits="G15BarButton"  id="88">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2BarButton1" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton5" inherits="G15BarButton"  id="89">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton4" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton6" inherits="G15BarButton"  id="90">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton5" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		
+		  <CheckButton name="M2BarButton7" inherits="G15BarButton"  id="91">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2BarButton4" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-12"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton8" inherits="G15BarButton"  id="92">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton7" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton9" inherits="G15BarButton"  id="93">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton8" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton10" inherits="G15BarButton"  id="94">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2BarButton7" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton11" inherits="G15BarButton"  id="95">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton10" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton12" inherits="G15BarButton"  id="96">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton11" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		
+		  <CheckButton name="M2BarButton13" inherits="G15BarButton"  id="97">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2BarButton10" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-12"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton14" inherits="G15BarButton"  id="98">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton13" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton15" inherits="G15BarButton"  id="99">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton14" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton16" inherits="G15BarButton"  id="100">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2BarButton13" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton17" inherits="G15BarButton"  id="101">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton16" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M2BarButton18" inherits="G15BarButton"  id="102">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2BarButton17" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  </Frames>
+	   </Frame>
+		 
+	  	<Frame name="M3Bar" frameStrata="MEDIUM" parent="G15Bar" hidden="true">
+	  	 <Frames>
+		  <CheckButton name="M3BarButton2" inherits="G15BarButton"  id="104">
+		    <Anchors>
+		      <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton1" inherits="G15BarButton"  id="103">
+		    <Anchors>
+		      <Anchor point="RIGHT" relativeTo="M3BarButton2" relativePoint="LEFT">
+		        <Offset>
+		          <AbsDimension x="-3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton3" inherits="G15BarButton"  id="105">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton2" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton4" inherits="G15BarButton"  id="106">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3BarButton1" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton5" inherits="G15BarButton"  id="107">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton4" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton6" inherits="G15BarButton"  id="108">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton5" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		
+		  <CheckButton name="M3BarButton7" inherits="G15BarButton"  id="109">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3BarButton4" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-12"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton8" inherits="G15BarButton"  id="110">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton7" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton9" inherits="G15BarButton"  id="111">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton8" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton10" inherits="G15BarButton"  id="112">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3BarButton7" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton11" inherits="G15BarButton"  id="113">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton10" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton12" inherits="G15BarButton"  id="114">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton11" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		
+		  <CheckButton name="M3BarButton13" inherits="G15BarButton"  id="67">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3BarButton10" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-12"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton14" inherits="G15BarButton"  id="68">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton13" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton15" inherits="G15BarButton"  id="69">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton14" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton16" inherits="G15BarButton"  id="70">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3BarButton13" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-3"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton17" inherits="G15BarButton"  id="71">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton16" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  <CheckButton name="M3BarButton18" inherits="G15BarButton"  id="72">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3BarButton17" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </CheckButton>
+		  </Frames>
+		</Frame>
+	  </Frames>  
+  </Frame> 
+ 
+ 	<Frame name="M1GrabBar" toplevel="true" inherits="G15GrabBarTemplate" frameStrata="MEDIUM" parent="M1Bar">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="M1">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				M1BarButton2:ClearAllPoints();
+				M1BarButton2:SetPoint("TOP", this:GetName(), "BOTTOM", 0, -9);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="M2GrabBar" toplevel="true" inherits="G15GrabBarTemplate" frameStrata="MEDIUM" parent="M2Bar">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="M2">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				M2BarButton2:ClearAllPoints();
+				M2BarButton2:SetPoint("TOP", this:GetName(), "BOTTOM", 0, -9);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="M3GrabBar" toplevel="true" inherits="G15GrabBarTemplate" frameStrata="MEDIUM" parent="M3Bar">
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="M3">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				M3BarButton2:ClearAllPoints();
+				M3BarButton2:SetPoint("TOP", this:GetName(), "BOTTOM", 0, -9);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="G15BarConfigFrame" 
+    toplevel="true" parent="UIParent" frameStrata="DIALOG" 
+    hidden="false" enableMouse="true">
+		<Size><AbsDimension x="260" y="300"/></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+		
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
+			edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="256" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="G15bar Config">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-12" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> G15BarConfigFrame:Hide(); </OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentButtonAutoBind" inherits="OptionsButtonTemplate" text="AutoBind">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-12" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						keys = {"Q", "W", "E", "A", "S", "D", "R", "T", "Y", "F", "G", "H", "U", "I", "O", "J", "K", "L"};
+						modifiers = {"SHIFT", "CTRL", "ALT"};
+						for i=1,3 do
+							for j=1,18 do
+								command = "M"..i.."ACTIONBUTTON"..j;
+								key = modifiers[i].."-"..keys[j];
+								if(G15Bar_AutoBind(key, command) ~= true) then
+									DEFAULT_CHAT_FRAME:AddMessage(key.." was already bound to "..GetBindingAction(key).." cannot be bound to "..command);
+								end
+							end
+						end
+						if(not IsShiftKeyDown()) then DEFAULT_CHAT_FRAME:AddMessage("The AutoBind key can be shift-clicked to force all bindings."); end;
+						SaveBindings(GetCurrentBindingSet());
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentButtonResetPosition" inherits="OptionsButtonTemplate" text="Reset Position ">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+					<Offset><AbsDimension x="12" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> 
+						G15Bar_Bind(true);
+						getglobal("G15BarConfigFrameCheckButtonBound"):SetChecked(true);
+						G15Bar_Reset(); 
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<CheckButton name="$parentCheckButtonLock" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Lock"); </OnLoad>
+					<OnClick> G15Bar_Lock(this:GetChecked()); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="$parentCheckButtonLabels" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonLock" relativePoint="BOTTOM">
+					<Offset><AbsDimension x="" y="-5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Show Labels"); </OnLoad>
+					<OnClick> G15Bar_ShowLabels(this:GetChecked()); </OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="$parentCheckButtonBound" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonLabels" relativePoint="BOTTOM">
+					<Offset><AbsDimension x="" y="-5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Linked Together M-Bars"); </OnLoad>
+					<OnClick>G15Bar_Bind(this:GetChecked());</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="$parentCheckButtonGrid" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCheckButtonBound" relativePoint="BOTTOM">
+					<Offset><AbsDimension x="" y="-5"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText("Show Grid"); </OnLoad>
+					<OnClick>G15Bar_ShowGrid(this:GetChecked());</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<Slider name="$parentSliderNumBars" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonGrid" relativePoint="BOTTOMLEFT">
+				<Offset><AbsDimension x="0" y="-10"/></Offset>
+				</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("NumBars");
+						getglobal(this:GetName().."High"):SetText("3");
+						getglobal(this:GetName().."Low"):SetText("0");
+						this:SetMinMaxValues(0,3);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+						G15Bar_NumBars(this:GetValue());
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			
+			<Slider name="$parentSliderScale" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentSliderNumBars" relativePoint="BOTTOM">
+				<Offset><AbsDimension x="0" y="-20"/></Offset>
+				</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Scale");
+						getglobal(this:GetName().."High"):SetText("200%");
+						getglobal(this:GetName().."Low"):SetText("20%");
+						this:SetMinMaxValues(2,20);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+						if ( this:GetValue()/10 ~= G15BarConfig[G15BarRealm][G15BarChar].scale) then
+							G15Bar_Bind(true);
+							getglobal("G15BarConfigFrameCheckButtonBound"):SetChecked( true );
+							G15Bar_Scale(this:GetValue()/10);
+						end
+						percent = this:GetValue()*10;
+						getglobal(this:GetName().."Text"):SetText("Scale: "..percent.."%");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+		</Frames>
+			
+		<Scripts>
+		 	<OnShow>
+				if ( not G15BarVariablesLoaded ) then 
+					this:Hide();
+					return;
+				end
+				 
+				getglobal(this:GetName().."CheckButtonLock")	:SetChecked	( G15BarConfig[G15BarRealm][G15BarChar].lock );
+				getglobal(this:GetName().."CheckButtonLabels")	:SetChecked	( G15BarConfig[G15BarRealm][G15BarChar].labels );
+				getglobal(this:GetName().."CheckButtonGrid")	:SetChecked	( G15BarConfig[G15BarRealm][G15BarChar].grid );
+				getglobal(this:GetName().."CheckButtonBound")	:SetChecked	( G15BarConfig[G15BarRealm][G15BarChar].bound );
+				getglobal(this:GetName().."SliderScale")		:SetValue	( G15BarConfig[G15BarRealm][G15BarChar].scale * 10 );
+				getglobal(this:GetName().."SliderNumBars")		:SetValue	( G15BarConfig[G15BarRealm][G15BarChar].numbars );
+			</OnShow>
+		</Scripts>
+	 </Frame>
+	 
+<EditBox name="G15IdBox" virtual="true">
+	<FontString inherits="ChatFontNormal"/>
+	<Size>
+		<AbsDimension x="30" y="20"/>
+	</Size>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+				<Size>
+					<AbsDimension x="8" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+			</Texture>
+			<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+				<Size>
+					<AbsDimension x="8" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+			</Texture>
+			<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+				<Size>
+					<AbsDimension x="10" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+				</Anchors>
+				<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:SetMaxLetters(3);
+			this:SetNumeric(true);
+		</OnLoad>
+	</Scripts>
+</EditBox>
+
+<Frame name="G15BarIdFrame" 
+    toplevel="true" parent="UIParent" frameStrata="DIALOG" 
+    hidden="true" enableMouse="true">
+		<Size><AbsDimension x="345" y="220"/></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+		
+		<Scripts>
+			<OnShow>
+				if ( not G15BarVariablesLoaded ) then 
+						this:Hide();
+						return;
+				end
+				
+				for i=1,3 do
+					for j=1,18 do
+					local idbox = getglobal("M"..i.."IdBox"..j);
+					idbox:SetNumber(G15BarConfig[G15BarRealm][G15BarChar]["IDs"][i][j]);
+					end
+				end 
+			</OnShow>
+		</Scripts>
+		
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
+			edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="256" y="64"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="G15bar ID Config">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+			 
+	 	<Frames>
+	 		<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-12" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> G15BarIdFrame:Hide(); </OnClick>
+				</Scripts>
+			</Button>
+			
+	 		<Button name="$parentButtonApply" inherits="OptionsButtonTemplate" text="Apply">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+					<Offset><AbsDimension x="12" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						for i=1,3 do
+							for j=1,18 do
+								local idbox = getglobal("M"..i.."IdBox"..j);
+								G15BarConfig[G15BarRealm][G15BarChar]["IDs"][i][j] = idbox:GetNumber();
+							end
+						end	
+						G15Bar_SetIds();
+						M1Bar:Hide();
+						M2Bar:Hide();
+						M3Bar:Hide();
+						M1Bar:Show();
+						M2Bar:Show();
+						M3Bar:Show();
+						G15Bar_NumBars(G15BarConfig[G15BarRealm][G15BarChar].numbars);
+					</OnClick>
+				</Scripts>
+			</Button>
+	 		
+		  <EditBox name="M1IdBox1" Inherits="G15IdBox">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox2" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox1" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox3" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox2" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox4" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1IdBox1" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox5" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox4" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox6" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox5" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		
+		  <EditBox name="M1IdBox7" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1IdBox4" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-6"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox8" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox7" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox9" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox8" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox10" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1IdBox7" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox11" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox10" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox12" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox11" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		
+		  <EditBox name="M1IdBox13" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1IdBox10" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-6"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox14" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox13" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox15" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox14" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox16" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M1IdBox13" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox17" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox16" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M1IdBox18" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox17" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  
+		  <EditBox name="M2IdBox1" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M1IdBox3" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="10" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox2" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox1" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox3" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox2" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox4" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2IdBox1" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox5" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox4" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox6" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox5" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		
+		  <EditBox name="M2IdBox7" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2IdBox4" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-6"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox8" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox7" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox9" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox8" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox10" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2IdBox7" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox11" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox10" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox12" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox11" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		
+		  <EditBox name="M2IdBox13" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2IdBox10" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-6"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox14" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox13" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox15" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox14" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox16" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M2IdBox13" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox17" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox16" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M2IdBox18" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox17" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		 
+		  <EditBox name="M3IdBox1" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M2IdBox3" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="10" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox2" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox1" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox3" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox2" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox4" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3IdBox1" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox5" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox4" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox6" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox5" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		
+		  <EditBox name="M3IdBox7" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3IdBox4" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-6"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox8" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox7" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox9" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox8" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox10" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3IdBox7" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox11" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox10" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox12" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox11" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		
+		  <EditBox name="M3IdBox13" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3IdBox10" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="-6"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox14" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox13" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox15" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox14" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox16" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="TOP" relativeTo="M3IdBox13" relativePoint="BOTTOM">
+		        <Offset>
+		          <AbsDimension x="0" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox17" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox16" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		  <EditBox name="M3IdBox18" Inherits="G15IdBox">
+		    <Anchors>
+		      <Anchor point="LEFT" relativeTo="M3IdBox17" relativePoint="RIGHT">
+		        <Offset>
+		          <AbsDimension x="3" y="0"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+		  </EditBox>
+		</Frames>
+	</Frame>
+</Ui>

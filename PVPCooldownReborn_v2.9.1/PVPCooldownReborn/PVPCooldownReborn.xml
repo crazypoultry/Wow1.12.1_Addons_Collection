@@ -1,0 +1,59 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+        <Script file="PVPCooldownReborn.lua"/>
+ 
+        <Frame name="PVPCooldownFrame" toplevel="true" frameStrata="HIGH" enableMouse="true" movable="true" parent="UIParent" visible="true">
+                <Size><AbsDimension x="80" y="25"/></Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset><AbsDimension x="-3" y="-19"/></Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="PVPCooldownText" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" virtual="true" justifyH="CENTER">
+					<FontHeight><AbsValue val="9"/></FontHeight>
+                        		<Color r="1.0" g="0.82" b="0"/>
+                                        <Size><AbsDimension x="72" y="26"/></Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset><AbsDimension x="0" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize><AbsValue val="16"/></EdgeSize>
+			<TileSize><AbsValue val="16"/></TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Scripts>
+        	<OnLoad>PVPCooldown_OnLoad();</OnLoad>
+            <OnEvent>PVPCooldown_OnEvent(event);</OnEvent>
+			<OnUpdate>PVPCooldown_OnUpdate(arg1);</OnUpdate>
+			<OnMouseUp>
+ 				if (PVPCooldownFrame.isMoving) then
+  					PVPCooldownFrame:StopMovingOrSizing();
+  					PVPCooldownFrame.isMoving = false;
+ 				end
+			</OnMouseUp>
+			<OnMouseDown>
+ 				if (((not PVPCooldownFrame.isLocked) or (PVPCooldownFrame.isLocked == 0)) and (arg1 == "LeftButton") and (IsShiftKeyDown())) then
+  					PVPCooldownFrame:StartMoving();
+  					PVPCooldownFrame.isMoving = true;
+ 				end
+			</OnMouseDown>
+			<OnHide>
+				 if ( PVPCooldownFrame.isMoving ) then
+  					PVPCooldownFrame:StopMovingOrSizing();
+  					PVPCooldownFrame.isMoving = false;
+ 				end
+			</OnHide>                
+       		</Scripts>
+	</Frame>
+</Ui>

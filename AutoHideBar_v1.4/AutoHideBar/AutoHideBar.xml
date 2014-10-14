@@ -1,0 +1,245 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+ 
+<Script file="AutoHideBar.lua"/>
+<Script file="AutoHideBar_Update.lua"/>
+<Script file="AutoHideBar_Update_Window.lua"/>
+<Script file="AutoHideBar_CheckMouse.lua"/>
+<Script file="AutoHideBar_Button.lua"/>
+
+<Frame Name="AutoHideBar">
+	<Scripts>
+			<OnLoad>	AutoHideBar_OnLoad();</OnLoad>
+			<OnUpdate> 	AutoHideBar_OnUpdate();</OnUpdate>
+			<OnEvent>	AutoHideBar_Event(event); </OnEvent>
+	</Scripts>	
+</Frame>
+
+<Frame name="AutoHideBar_Settings_Template" frameStrata="HIGH" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" movable="true">
+	<Size><AbsDimension x="370" y="190"/></Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+
+	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture name="AutoHideBar_TextRuta" file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Size>
+					<AbsDimension x="300" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+				
+			<FontString name="AutoHideBar_Text" inherits="GameFontNormal" text="AutoHideBar_Name1">
+				<Anchors>
+					<Anchor point="TOP" >
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>	
+	</Layers>
+	
+	<Frames>
+		<Slider name="AutoHideBar_Scale_Bar" inherits="OptionsSliderTemplate" minValue="50" maxValue="200" valueStep="1" defaultValue="100">
+			<Size><AbsDimension x="210" y="16"/></Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="-40"/></Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="AutoHidebar_Scale_Text" inherits="GameFontNormalSmall" text="AutoHideBar_Scale">
+							<Color r="1" g="1" b="1" a="1" />
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset><AbsDimension x="0" y="-7" /></Offset> 
+									</Anchor>
+								</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Low"):SetText(AutoHideBar_Small);
+						getglobal(this:GetName().."High"):SetText(AutoHideBar_Big);
+					</OnLoad>
+					<OnValueChanged>
+						AutoHideBar_Scale_Update((AutoHideBar_Scale_Bar:GetValue() /100));
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			
+			<CheckButton name="AutoHideBarCheckButton" inherits="OptionsCheckButtonTemplate" checked="false" id="1">
+ 				<Anchors>
+  					<Anchor point="TOPLEFT" relativeTo="AutoHideBar_Settings_Template">
+   						<Offset>
+    						<AbsDimension x="31" y="-70"></AbsDimension>
+   						</Offset>
+  					</Anchor>
+ 				</Anchors>
+ 		
+				<Layers>
+					<Layer>
+						<FontString name="AutoHideBar_Text2" parent="AutoHideBarCheckButton" inherits="GameFontNormal" text="AutoHideBar_Lock">
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+    									<AbsDimension x="30" y="0"></AbsDimension>
+   									</Offset>
+   								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>	
+				</Layers> 
+		
+				<Scripts>
+					<OnClick>AutoHideBar_Button_Click();</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="CombatCheckButton" inherits="OptionsCheckButtonTemplate" checked="true" id="2">
+ 				<Anchors>
+  					<Anchor point="TOPRIGHT">
+   						<Offset>
+    						<AbsDimension x="-31" y="-70"></AbsDimension>
+   						</Offset>
+  					</Anchor>
+ 				</Anchors>
+			
+ 				<Layers>
+					<Layer>
+						<FontString name="AutoHideBar_Text3" parent="CombatCheckButton" inherits="GameFontNormal" text="AutoHideBar_CombatNot">
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+    									<AbsDimension x="-30" y="0"></AbsDimension>
+   									</Offset>
+	  							</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>	
+				</Layers> 	
+		
+				<Scripts>
+					<OnClick>AutoHideBar_Button_Click();</OnClick>
+				</Scripts>
+			</CheckButton>
+		
+	<Button name="Button_key" inherits="OptionsButtonTemplate" text="AutoHideBar_OwnKey" id="3">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset><AbsDimension x="31" y="52"/></Offset></Anchor>
+			</Anchors>
+		<Scripts>
+			<OnClick>AutoHideBar_Button_Click();</OnClick>
+		</Scripts>
+	</Button>	
+	
+	<Button name="Button_Mouse" inherits="OptionsButtonTemplate" text="AutoHideBar_Mouse" id="4">
+		<Anchors>
+		<Anchor point="BOTTOMLEFT">
+		<Offset><AbsDimension x="31" y="28"/></Offset></Anchor>
+		</Anchors>x="0" y="28"
+		<Scripts>
+			<OnClick>AutoHideBar_Button_Click();</OnClick>
+		</Scripts>
+	</Button>	
+
+	<Button name="Button_Shift" inherits="OptionsButtonTemplate" text="AutoHideBar_Shift" id="5">
+		<Anchors>
+		<Anchor point="BOTTOM">
+		<Offset><AbsDimension x="0" y="52"/></Offset></Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>AutoHideBar_Button_Click();</OnClick>
+		</Scripts>
+	</Button>	
+		
+	<Button name="Button_ReloadUI" inherits="OptionsButtonTemplate" text="AutoHideBar_ReloadUI" id="6">
+		<Anchors>
+		<Anchor point="BOTTOM">
+		<Offset><AbsDimension x="0" y="28"/></Offset></Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>AutoHideBar_Button_Click();</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="Button_Reset" inherits="OptionsButtonTemplate" text="AutoHideBar_Resets" id="7">
+		<Anchors>
+		<Anchor point="BOTTOMRIGHT">
+		<Offset><AbsDimension x="-31" y="52"/></Offset></Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>AutoHideBar_Button_Click();</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="Button_Exit" inherits="OptionsButtonTemplate" text="AutoHideBar_Exit" id="8">
+		<Anchors>
+		<Anchor point="BOTTOMRIGHT">
+		<Offset><AbsDimension x="-31" y="28"/></Offset></Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>AutoHideBar_Button_Click();</OnClick>
+		</Scripts>
+	</Button>	
+
+	<Button name="myTabbedWindowFrameTab1" inherits="CharacterFrameTabButtonTemplate" frameStrata="HIGH" id="1" text="AutoHideBar_Settings">
+	<Anchors>
+		<Anchor point="BOTTOMLEFT">
+		<Offset><AbsDimension x="10" y="-26"/></Offset></Anchor>
+		</Anchors>
+		<scripts>
+			<OnClick>
+				AutoHideBar_Tab_Level(1,0,0);	
+				AutoHideBar_Tab();
+			</OnClick>
+		</scripts>
+	</Button>
+
+	<Button name="myTabbedWindowFrameTab2" inherits="CharacterFrameTabButtonTemplate" frameStrata="HIGH" id="2" text="AutoHideBar_ButtonID">
+		<Anchors>
+			<Anchor point="BOTTOM">
+			<Offset><AbsDimension x="-60" y="-26"/></Offset></Anchor>
+		</Anchors>
+		<scripts>
+			<OnClick>
+				AutoHideBar_Tab_Level(0,1,0);	
+				AutoHideBar_Tab();
+			</OnClick>
+		</scripts>
+	</Button>
+	</Frames>
+
+	<Scripts>
+		<OnLoad> 	  this:RegisterForDrag("LeftButton");</OnLoad>
+		<OnDragStart> AutoHideBar_DragStart(this);</OnDragStart>
+		<OnDragStop>  AutoHideBar_DragStop(this);</OnDragStop>	
+	</Scripts>
+</Frame>
+</Ui>

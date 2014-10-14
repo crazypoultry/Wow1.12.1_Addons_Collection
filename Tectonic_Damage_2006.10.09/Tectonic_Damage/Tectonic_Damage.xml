@@ -1,0 +1,56 @@
+<Ui>
+<Frame name="DamageFrame" parent="UIParent" movable="true">
+		<Size x="170" y="30"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	<Backdrop name="TectonicDamageBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+	</Backdrop>
+
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="DamageText" font="GameFontNormalLarge" JustifyH="LEFT">
+				<Color r="1" g="0.1" b="0.1" a="1" />
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:RegisterEvent("UNIT_DAMAGE")
+			this:RegisterEvent("PLAYER_LOGIN")
+			SlashCmdList["MoveDamage"]=function() local f=DamageFrame f:EnableMouse(f.lock) f.lock = not f.lock end
+			SLASH_MoveDamage1 = "/movedamage"
+		</OnLoad>
+		<OnEvent>
+			local lowDmg,hiDmg=UnitDamage("player")
+			hiDmg = math.ceil(hiDmg);
+			lowDmg = math.ceil(lowDmg);
+			DamageText:SetText("Dmg: "..lowDmg.." - "..hiDmg)
+		</OnEvent>
+		<OnMouseDown>
+			if not this.lock then
+			this:StartMoving()
+			end
+		</OnMouseDown>
+		<OnMouseUp>
+			this:StopMovingOrSizing()
+		</OnMouseUp>
+	</Scripts>
+	</Frame>
+</Ui>

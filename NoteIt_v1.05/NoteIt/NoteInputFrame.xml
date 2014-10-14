@@ -1,0 +1,944 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="NoteInputFrame.lua"/>
+
+	<Button name="NoteInputFrameNameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="288" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="102" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="168" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				NoteInputFrame_OnSelectNote();
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="288" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="5" y="-2"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+
+	<Frame name="NoteInputFrame" toplevel="true" movable="true" parent="UIParent" hidden="true" enableMouse="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnShow>
+				NoteInputFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				NoteInputFrame_OnHide();
+			</OnHide>
+			<OnEvent>
+				if event == "VARIABLES_LOADED" then
+					NoteInputFrame_Init();
+				end
+			</OnEvent>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+ 			<Anchor point="TOPLEFT">
+ 				<Offset>
+ 					<AbsDimension x="0" y="-104"/>
+ 				</Offset>
+ 			</Anchor>
+ 		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="InvListFramePortrait" file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="9.4" y="-6.7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="NoteInputTitleText" inherits="GameFontHighlight" text="Enter Note">
+					<Size>
+						<AbsDimension x="300" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="NoteInputFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-16"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			<FontString name="NoteInputNameLabel" inherits="GameFontHighlight" text="Player, NPC or Item Name:" justifyH="left">
+				<Size>
+					<AbsDimension x="300" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="NoteInputFrame">
+						<Offset>
+							<AbsDimension x="24" y="-63"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="NoteInputNoteLabel" inherits="GameFontHighlight" text="Comment:" justifyH="left">
+				<Size>
+					<AbsDimension x="300" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="NoteInputFrame">
+						<Offset>
+							<AbsDimension x="24" y="-206"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+
+
+
+
+			<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="Character:">
+				<Size>
+					<AbsDimension x="54" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor  point="TOPLEFT" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-394"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="NoteInputPlayerLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+				<Size>
+					<AbsDimension x="92" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor  point="TOPLEFT" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="81" y="-394"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="Realm:">
+				<Size>
+					<AbsDimension x="40" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor  point="TOPLEFT" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="172" y="-394"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="NoteInputServerLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+				<Size>
+					<AbsDimension x="100" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor  point="TOPLEFT" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="212" y="-394"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+
+
+
+
+
+			</Layer>
+
+		</Layers>
+		<Frames>
+			<Button name="NoteInputFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="NoteInputFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+
+
+
+			<EditBox name="NoteInputNameEditBox" historyLines="0" letters="60">
+				<Size>
+					<AbsDimension x="290" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="NoteInputFrame">
+						<Offset>
+							<AbsDimension x="28" y="-84"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="NoteInputNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="LEFT" relativeTo="NoteInputNameEditBox">
+									<Offset>
+										<AbsDimension x="-8" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="NoteInputNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="290" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="NoteInputNameLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="NoteInputNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="28"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="NoteInputNameMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+	
+				</Layers>
+				<Scripts>
+					<OnLoad>
+					</OnLoad>
+					<OnShow>
+					</OnShow>
+					<OnTextChanged>
+						NoteInputFrame_TextChanged();
+					</OnTextChanged>
+					<OnTabPressed>
+						NoteInputNoteEditBox:SetFocus();
+					</OnTabPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+						NoteInputFrame:Hide();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			
+
+			<ScrollFrame name="NoteInputNameChooseFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="283" y="97"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-118"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						NoteInputFrame_OnScroll(arg1);
+					</OnVerticalScroll>
+					<OnMouseWheel>
+						NoteInputFrame_OnMouseWheel(arg1);
+					</OnMouseWheel>
+					</Scripts>
+			</ScrollFrame>
+			
+		
+			<Button name="NameChooseFrameButton1" inherits="NoteInputFrameNameTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NoteInputNameChooseFrame">
+						<Offset>
+							<AbsDimension x="-3" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="NameChooseFrameButton2" inherits="NoteInputFrameNameTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NameChooseFrameButton1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="NameChooseFrameButton3" inherits="NoteInputFrameNameTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NameChooseFrameButton2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="NameChooseFrameButton4" inherits="NoteInputFrameNameTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NameChooseFrameButton3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="NameChooseFrameButton5" inherits="NoteInputFrameNameTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NameChooseFrameButton4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="NameChooseFrameButton6" inherits="NoteInputFrameNameTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NameChooseFrameButton5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			
+			
+			
+			
+			<ScrollFrame name="NoteInputNoteFrame" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="280" y="155"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="28" y="-237"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<EditBox name="NoteInputNoteEditBox" multiLine="true" letters="1024" autoFocus="false">
+						<Size>
+							<AbsDimension x="280" y="155"/>
+						</Size>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnTextChanged>
+								local scrollBar = getglobal(this:GetParent():GetName().."ScrollBar")
+								this:GetParent():UpdateScrollChildRect();
+								local min;
+								local max;
+								min, max = scrollBar:GetMinMaxValues();
+								if ( max > 0 and (this.max ~= max) ) then
+									this.max = max;
+									scrollBar:SetValue(max);
+								end
+							</OnTextChanged>
+							<OnEscapePressed>
+								this:ClearFocus();
+								NoteInputFrame:Hide();
+							</OnEscapePressed>
+							<OnTabPressed>
+								NoteInputNameEditBox:SetFocus();
+							</OnTabPressed>
+							<OnEditFocusGained>
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+							</OnEditFocusLost>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>			
+			<Button name="NoteFrameTextButton">
+				<Size>
+					<AbsDimension x="288" y="175"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NoteInputNoteEditBox"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						NoteInputNoteEditBox:SetFocus();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Frame name="NoteInputNameChooseBackground">
+				<Size>
+					<AbsDimension x="314" y="106"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NoteInputNameChooseFrame">
+						<Offset>
+							<AbsDimension x="-4" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="NoteInputTextBackground">
+				<Size>
+					<AbsDimension x="314" y="164"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="NoteInputNoteFrame">
+						<Offset>
+							<AbsDimension x="-7" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+						this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Button name="NoteInputOptionsButton" inherits="UIPanelButtonTemplate" text="Options">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="114" y="-54"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlayerNotesOptionsFrame:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="NoteInputDeleteButton" inherits="UIPanelButtonTemplate" text="Delete">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="NoteInputFrame">
+						<Offset>
+							<AbsDimension x="17" y="79"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						NoteInputFrame_Delete();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="NoteInputFrameSaveButton" inherits="UIPanelButtonTemplate" text="Save">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="222" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						NoteInputFrame_Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="NoteInputFrameExitButton" inherits="UIPanelButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="NoteInputFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="303" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="PlayerNotesOptionsFrame" hidden="true" parent="NoteInputFrame" toplevel="true">
+		<Size>
+			<AbsDimension x="270" y="250"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="PlayerNotesOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="296" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="PlayerNotesOptionsColor">
+					<Size>
+						<AbsDimension x="40" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="110" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
+				</Texture>
+
+				<FontString inherits="GameFontNormal" text="Player Notes Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PlayerNotesOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlight" text="Note color:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlight" text="Note visibility:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlight" text="Other options:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-121"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="NoteInputOptionsFrameChangeColorButton" inherits="UIPanelButtonTemplate" text="Change">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="160" y="-36"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						ColorPickerFrame:SetColorRGB(noteItColour.r, noteItColour.g, noteItColour.b);
+						ColorPickerFrame.previousValues = {r = noteItColour.r, g = noteItColour.g, b = noteItColour.b};
+						ColorPickerFrame.func = NoteInputOptionsFrameChangeColorButton_OnColorPick;
+						ColorPickerFrame.cancelFunc = NoteInputOptionsFrameChangeColorButton_OnColorPickCancel;
+						ShowUIPanel(ColorPickerFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			
+			<CheckButton name="NoteInputOptionsFrameRadioButton1" inherits="SendMailRadioButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension  x="42" y="-74"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							getglobal(this:GetName().."Text"):SetText("on character");
+						</OnLoad>
+						<OnClick>
+							NoteInputOptionsFrameRadioButton_OnClick(this:GetID());
+						</OnClick>
+					</Scripts>
+			</CheckButton>
+			<CheckButton name="NoteInputOptionsFrameRadioButton2" inherits="SendMailRadioButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension  x="42" y="-87"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							getglobal(this:GetName().."Text"):SetText("on realm");
+						</OnLoad>
+						<OnClick>
+							NoteInputOptionsFrameRadioButton_OnClick(this:GetID());
+						</OnClick>
+					</Scripts>
+			</CheckButton>
+			<CheckButton name="NoteInputOptionsFrameRadioButton3" inherits="SendMailRadioButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension  x="42" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							getglobal(this:GetName().."Text"):SetText("everywhere");
+						</OnLoad>
+						<OnClick>
+							NoteInputOptionsFrameRadioButton_OnClick(this:GetID());
+						</OnClick>
+					</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="NoteInputOptionsFrameCheckButtonSplash" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="42" y="-137"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="NoteInputOptionsFrameCheckButtonSplash">
+							<Offset>
+								<AbsDimension x="25" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("display splash message");
+					</OnLoad>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							currentSplash = true;
+						else
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							currentSplash = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NoteInputOptionsFrameCheckButtonGuild" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="42" y="-153"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="NoteInputOptionsFrameCheckButtonGuild">
+							<Offset>
+								<AbsDimension x="25" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("add guild to player tooltip");
+					</OnLoad>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							currentAddGuild = true;
+						else
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							currentAddGuild = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="NoteInputOptionsFrameCheckButtonSound" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="42" y="-169"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="NoteInputOptionsFrameCheckButtonGuild">
+							<Offset>
+								<AbsDimension x="25" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("play sound");
+						this.tooltipText = "play a sound when mouseover a known player or npc";
+					</OnLoad>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOff");
+							currentPlaySound = true;
+						else
+							PlaySound("igMainMenuOptionCheckBoxOn");
+							currentPlaySound = false;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<Button name="NoteInputOptionsFrameExitButton" inherits="UIPanelButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="209" y="-221"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="NoteInputOptionsFrameSaveButton" inherits="UIPanelButtonTemplate" text="Save">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PlayerNotesOptionsFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="122" y="-221"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						noteItColour = currentColour;
+						noteItMode = currentMode;
+						noteItSplash = currentSplash;
+						noteItAddGuild = currentAddGuild;
+						noteItPlaySound = currentPlaySound;
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlayerNotesOptionsColor:SetTexture(noteItColour.r, noteItColour.g, noteItColour.b);
+				currentColour = {};
+				currentColour.r = noteItColour.r;
+				currentColour.g = noteItColour.g;
+				currentColour.b = noteItColour.b;
+				for ijk = 1, 3 do
+					if noteItMode == ijk then
+						getglobal("NoteInputOptionsFrameRadioButton"..ijk):SetChecked(1);
+					else
+						getglobal("NoteInputOptionsFrameRadioButton"..ijk):SetChecked(nil);
+					end
+				end
+				currentMode = noteItMode;
+				currentSplash = noteItSplash;
+				if currentSplash then
+					NoteInputOptionsFrameCheckButtonSplash:SetChecked(1);
+				else
+					NoteInputOptionsFrameCheckButtonSplash:SetChecked(nil);
+				end
+				currentAddGuild = noteItAddGuild;
+				if currentAddGuild then
+					NoteInputOptionsFrameCheckButtonGuild:SetChecked(1);
+				else
+					NoteInputOptionsFrameCheckButtonGuild:SetChecked(nil);
+				end
+				currentPlaySound = noteItPlaySound;
+				if currentPlaySound then
+					NoteInputOptionsFrameCheckButtonSound:SetChecked(1);
+				else
+					NoteInputOptionsFrameCheckButtonSound:SetChecked(nil);
+				end
+			</OnShow>
+			<OnHide>
+			</OnHide>
+		</Scripts>
+		</Frame>
+
+</Ui>

@@ -1,0 +1,774 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+<Frame name="ChatLogFrame" toplevel="true" parent="UIParent" movable="true" hidden="true">
+	<Size x="600" y="600"/>
+	<Anchors>
+		<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
+			<Offset x="0" y="-100"/>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Frame name="ChatLogFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="false">
+			<Size>
+				<AbsDimension x="10" y="10"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="10" y="-60"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					UIDropDownMenu_Initialize(this, ChatLogFrameDropDown_Initialize, "MENU");
+				</OnLoad>
+			</Scripts>
+		</Frame>
+		<Frame name="ChatLog" setAllPoints="true" hidden="false">
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background.blp" edgeFile="Interface\DialogFrame\UI-DialogBox-Border.blp" tile="true">
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="ChatLogTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Size>
+							<AbsDimension x="256" y="64"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="0" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Texture>
+					<FontString inherits="GameFontNormal" text="CHAT_LOG_MWINDOW_TITLE">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="ChatLogTitle">
+								<Offset>
+									<AbsDimension x="0" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame setAllPoints="true" movable="true" hidden="false">
+					<Size x="128" y="32"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ChatLogTitle" relativePoint="TOP">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnMouseDown>
+							if ( arg1 == "LeftButton" ) then
+								ChatLogFrame:StartMoving();
+							elseif ( arg1 == "RightButton" ) then
+								ChatLog_ResetPosition();
+							end
+						</OnMouseDown>
+						<OnMouseUp>
+							ChatLogFrame:StopMovingOrSizing();
+						</OnMouseUp>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_MWINDOW_HEADER_TOOLTIP);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+				</Frame>
+				<Frame setAllPoints="true" hidden="false">
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString name="ChatLogMaxLogInfoText" inherits="GameFontNormal" text="CHAT_LOG_MWINDOW_INFO">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ChatLogTitle">
+										<Offset>
+											<AbsDimension x="0" y="-44"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+						<Layer level="ARTWORK">
+							<FontString name="ChatLogWhichTabText" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ChatLogMaxLogInfoText">
+										<Offset>
+											<AbsDimension x="0" y="-20"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+						<Layer level="ARTWORK">
+							<FontString name="ChatLogCurrentLineText" inherits="GameFontNormal">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ChatLogFrame">
+										<Offset>
+											<AbsDimension x="0" y="-65"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Button name="ChatLogAllClear" inherits="OptionsButtonTemplate" text="CHAT_LOG_ALLCLEAR">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="23" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							StaticPopup_Show ("CHATLOG_CLEARALL");
+						</OnClick>
+					</Scripts>
+				</Button>
+				<Button name="ChatLogDropdownButton">
+					<Size>
+						<AbsDimension x="33" y="33"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-42"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ToggleDropDownMenu(1, nil, ChatLogFrameDropDown, "ChatLogDropdownButton", 0, 0);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_DISPLAY_DROPDOWN, CHAT_LOG_DISPLAY_DROPDOWN_LINE1, CHAT_LOG_DISPLAY_DROPDOWN_LINE2, CHAT_LOG_DISPLAY_DROPDOWN_LINE3);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+					<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogEnableAll">
+					<Size>
+						<AbsDimension x="22" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ChatLogDropdownButton" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLog_EnableAll();
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_ENABLE_ALL);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\Buttons\UI-PlusButton-Up"/>
+					<PushedTexture file="Interface\Buttons\UI-PlusButton-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-PlusButton-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogDisableAll" text="-">
+					<Size>
+						<AbsDimension x="22" y="22"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ChatLogEnableAll" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLog_DisableAll();
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_DISABLE_ALL);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\Buttons\UI-MinusButton-Up"/>
+					<PushedTexture file="Interface\Buttons\UI-MinusButton-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-MinusButton-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+				</Button>
+				<CheckButton name="ChatLogEnabledDefaultCheckBox" inherits="OptionsCheckButtonTemplate">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ChatLogAllClear" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ChatLogEnabledDefaultCheckBoxText:SetText(CHAT_LOG_ENABLED_DEFAULT_CHECKBOX_TITLE);
+						</OnLoad>
+						<OnClick>
+							ChatLog_EnabledDefault_Toggle();
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_ENABLED_DEFAULT_CHECKBOX_TOOLTIP_TITLE, CHAT_LOG_ENABLED_DEFAULT_CHECKBOX_TOOLTIP_LINE1, CHAT_LOG_ENABLED_DEFAULT_CHECKBOX_TOOLTIP_LINE2);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="ChatLogChatCheckBox" inherits="OptionsCheckButtonTemplate">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="105" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ChatLogChatCheckBoxText:SetText(CHAT_LOG_CHAT_CHECKBOX_TITLE);
+						</OnLoad>
+						<OnClick>
+							ChatLog_LogChatIntoFile_Toggle();
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_CHAT_CHECKBOX_TOOLTIP_TITLE, CHAT_LOG_CHAT_CHECKBOX_TOOLTIP_MSG1, CHAT_LOG_CHAT_CHECKBOX_TOOLTIP_MSG2);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+				</CheckButton>
+				<CheckButton name="ChatLogCombatChatCheckBox" inherits="OptionsCheckButtonTemplate">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="105" y="-42"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ChatLogCombatChatCheckBoxText:SetText(CHAT_LOG_COMBATCHAT_CHECKBOX_TITLE);
+						</OnLoad>
+						<OnClick>
+							ChatLog_LogCombatChatIntoFile_Toggle();
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_COMBATCHAT_CHECKBOX_TOOLTIP_TITLE, CHAT_LOG_COMBATCHAT_CHECKBOX_TOOLTIP_MSG1, CHAT_LOG_COMBATCHAT_CHECKBOX_TOOLTIP_MSG2);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+				</CheckButton>
+				<ScrollingMessageFrame name="ChatLogScrollMessageFrame">
+					<Size>
+						<AbsDimension x="535" y="450"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="30" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this:SetFading(false);
+							this:SetMaxLines(CHAT_LOG_SCROLLING_MESSAGE_FRAME_MAXLINES+1);
+						</OnLoad>
+						<OnHyperlinkClick>
+							SetItemRef(arg1, arg2, arg3);
+						</OnHyperlinkClick>
+						<OnMouseWheel>
+							ChatLog_OnMouseWheel(arg1);
+						</OnMouseWheel>
+					</Scripts>
+					<FontString inherits="ChatFontNormal" justifyH="LEFT" />
+				</ScrollingMessageFrame>
+				<Button name="ChatLogScrollBottomButton">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="ChatLogScrollMessageFrame" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture name="ChatLogScrollBottomButtonFlash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnClick>
+							PlaySound("igChatBottom");
+							ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"]);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_SCROLL_BOTTOM);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogScrollDownButton">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="ChatLogScrollBottomButton" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnUpdate>
+							if ( this:GetButtonState() == "PUSHED" ) then
+								ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], CHAT_LOG_CURRENT_MAXLINE+1);
+							end
+						</OnUpdate>
+						<OnClick>
+							PlaySound("igChatScrollDown");
+							ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], CHAT_LOG_CURRENT_MAXLINE+1);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_SCROLL_LINE_DOWN);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogScrollUpButton">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="ChatLogScrollDownButton" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnUpdate>
+							if ( this:GetButtonState() == "PUSHED" ) then
+								ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], CHAT_LOG_CURRENT_MAXLINE-1);
+							end
+						</OnUpdate>
+						<OnClick>
+							PlaySound("igChatScrollUp");
+							ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], CHAT_LOG_CURRENT_MAXLINE-1);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_SCROLL_LINE_UP);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogScrollScreenDownButton">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="ChatLogScrollUpButton" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							PlaySound("igChatScrollUp");
+							ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], CHAT_LOG_CURRENT_MAXLINE+CHAT_LOG_SCROLLING_MESSAGE_FRAME_MAXLINES);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_SCROLL_SCREEN_DOWN);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogScrollScreenUpButton">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="ChatLogScrollScreenDownButton" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							PlaySound("igChatScrollUp");
+							ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], CHAT_LOG_CURRENT_MAXLINE-CHAT_LOG_SCROLLING_MESSAGE_FRAME_MAXLINES);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_SCROLL_SCREEN_UP);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogScrollTopButton">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ChatLogScrollMessageFrame" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							PlaySound("igChatBottom");
+							ChatLog_ExtractAndDisplayInfo(ChatLog_Logs[CHAT_LOG_CURRENT_INDEX]["logs"], 1);
+						</OnClick>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_SCROLL_TOP);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+					<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+					<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+					<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+					<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				</Button>
+				<Button name="ChatLogDelete" inherits="OptionsButtonTemplate" text="CHAT_LOG_DELETE">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="20" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLog_DeleteThisLog();
+						</OnClick>
+					</Scripts>
+				</Button>
+				<Button name="ChatLogEnable" inherits="OptionsButtonTemplate" text="">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLog_ToggleEnableThisLog();
+						</OnClick>
+					</Scripts>
+				</Button>
+				<Button name="ChatLogClear" inherits="OptionsButtonTemplate" text="CHAT_LOG_CLEAR">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="ChatLogEnable" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							PlaySound("UChatScrollButton");
+							ChatLog_Clear(CHAT_LOG_CURRENT_INDEX);
+						</OnClick>
+					</Scripts>
+				</Button>
+				<Button name="ChatLogButtonCopy" inherits="OptionsButtonTemplate" text="CHAT_LOG_COPY">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ChatLogEnable" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLog_OnCopyButtonClick();
+						</OnClick>
+					</Scripts>
+				</Button>
+				<Button name="ChatLogHide" inherits="OptionsButtonTemplate" text="CHAT_LOG_HIDE">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-20" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLog_Toggle();
+						</OnClick>
+					</Scripts>
+				</Button>
+				<Slider name="ChatLogAlphaSlider" inherits="OptionsSliderTemplate">
+					<Size>
+						<AbsDimension x="90" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="ChatLogHide" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ChatLog_AlphaSlider_OnLoad();
+						</OnLoad>
+						<OnValueChanged>
+							ChatLog_OnSliderValueChange(ChatLogAlphaSlider:GetValue());
+						</OnValueChanged>
+					</Scripts>
+				</Slider>
+			</Frames>
+			<Scripts>
+				<OnLoad>
+					ChatLog_OnLoad();
+				</OnLoad>
+				<OnEvent>
+					ChatLog_OnEvent(event);
+				</OnEvent>
+				<OnHide>
+					PlaySound("gsTitleOptionExit");
+				</OnHide>
+			</Scripts>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnMouseDown>
+			if ( arg1 == "LeftButton" ) then
+				this:StartMoving();
+			end
+			if ( arg1 == "RightButton" ) then
+				ToggleDropDownMenu(1, nil, ChatLogFrameDropDown, "ChatLogDropdownButton", 0, 0);
+			end
+		</OnMouseDown>
+		<OnMouseUp>
+			this:StopMovingOrSizing();
+		</OnMouseUp>
+		<OnLoad>
+			ChatLogCurrentLineText:SetTextHeight(10);
+		</OnLoad>
+	</Scripts>
+</Frame>
+<Frame name="ChatLogCopyFrame" toplevel="true" parent="UIParent" movable="true" hidden="true">
+	<Size x="500" y="500"/>
+	<Anchors>
+		<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
+			<Offset x="0" y="-100"/>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Frame name="ChatLogCopy" setAllPoints="true" hidden="false">
+			<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background.blp" edgeFile="Interface\DialogFrame\UI-DialogBox-Border.blp" tile="true">
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="ChatLogCopyTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+						<Size>
+							<AbsDimension x="256" y="64"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="0" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Texture>
+					<FontString inherits="GameFontNormal" text="CHAT_LOG_COPYWINDOW_TITLE">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="ChatLogCopyTitle">
+								<Offset>
+									<AbsDimension x="0" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame setAllPoints="true" movable="true" hidden="false">
+					<Size x="128" y="32"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ChatLogCopyTitle" relativePoint="TOP">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnMouseDown>
+							if ( arg1 == "LeftButton" ) then
+								ChatLogCopyFrame:StartMoving();
+							elseif ( arg1 == "RightButton" ) then
+								ChatLog_ResetCopyPosition();
+							end
+						</OnMouseDown>
+						<OnMouseUp>
+							ChatLogCopyFrame:StopMovingOrSizing();
+						</OnMouseUp>
+						<OnEnter>
+							ChatLog_SetTooltipText(CHAT_LOG_MWINDOW_HEADER_TOOLTIP);
+						</OnEnter>
+						<OnLeave>
+							GameTooltip:Hide();
+						</OnLeave>
+					</Scripts>
+				</Frame>
+				<ScrollFrame name="ChatLogCopyScrollFrame" inherits="UIPanelScrollFrameTemplate">
+					<Size>
+						<AbsDimension x="425" y="425"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<ScrollChild name="ChatLogCopyScrollChild">
+						<EditBox name="ChatLogCopyEditBox" letters="50000" multiLine="true">
+							<Size>
+								<AbsDimension x="420" y="425"/>
+							</Size>
+							<FontString inherits="ChatFontNormal" />
+						</EditBox>
+					</ScrollChild>
+				</ScrollFrame>
+				<Button name="ChatLogCopyHide" inherits="OptionsButtonTemplate" text="CHAT_LOG_HIDE">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ChatLogCopyFrame:Hide();
+						</OnClick>
+					</Scripts>
+				</Button>
+			</Frames>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnUpdate>
+			ChatLogCopyScrollFrame:UpdateScrollChildRect();
+		</OnUpdate>
+	</Scripts>
+</Frame>
+<Button name="ChatLogFrameMenuButton" frameStrata="LOW" parent="UIParent" movable="true">
+	<Size>
+		<AbsDimension x="32" y="34"/>
+	</Size>
+	<Anchors>
+		<Anchor point="BOTTOM" relativeTo="ChatFrameMenuButton" relativePoint="TOP"/>
+	</Anchors>
+	<Scripts>
+		<OnClick>
+			if(not ChatLogFrame:IsVisible()) then
+				PlaySound("igChatEmoteButton");
+			end
+			ChatLog_Toggle();
+		</OnClick>
+		<OnEnter>
+			ChatLog_SetTooltipText(CHAT_LOG_TOGGLE_TOOLTIP_TITLE, CHAT_LOG_TOGGLE_TOOLTIP_LINE1,CHAT_LOG_TOGGLE_TOOLTIP_LINE2);
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide();
+		</OnLeave>
+		<OnMouseDown>
+			if ( arg1 == "RightButton" ) then
+				ChatLogFrameMenuButton:StartMoving();
+			end
+		</OnMouseDown>
+		<OnMouseUp>
+			ChatLogFrameMenuButton:StopMovingOrSizing();
+		</OnMouseUp>
+	</Scripts>
+	<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+	<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+	<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+	<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+</Button>
+</Ui>

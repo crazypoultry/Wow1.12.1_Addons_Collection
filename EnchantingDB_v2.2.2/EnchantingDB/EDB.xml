@@ -1,0 +1,113 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<Script file="EDB.lua"/>
+	<Script file="EDB_Data.lua"/>
+	<Script file="EDB_Inventory.lua"/>
+	<Script file="EDB_Util.lua"/>
+	
+	<FontString name="EDB_VerySmallFont" inherits="MasterFont" font="Fonts\ARIALN.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</FontString>
+
+	<Frame name="EDB_Money_Template" virtual="true">
+		<Size>
+			<AbsDimension x="60" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parent_Gold" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="24" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Silver" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="18" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Gold" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Copper" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="18" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Silver" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."_Gold"):SetTextColor(  EDB_Colors.Money.Gold[1],   EDB_Colors.Money.Gold[2],   EDB_Colors.Money.Gold[3]);
+				getglobal(this:GetName().."_Silver"):SetTextColor(EDB_Colors.Money.Silver[1], EDB_Colors.Money.Silver[2], EDB_Colors.Money.Silver[3]);
+				getglobal(this:GetName().."_Copper"):SetTextColor(EDB_Colors.Money.Copper[1], EDB_Colors.Money.Copper[2], EDB_Colors.Money.Copper[3]);
+				this.value = 0;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Button name="EDB_MinimapButton" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+		<NormalTexture file="Interface\AddOns\EnchantingDB\Icon"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\AddOns\EnchantingDB\Icon"/>
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="Minimap"><Offset><AbsDimension x="0" y="-80"/></Offset></Anchor>
+		</Anchors>
+
+		<Scripts>
+			<OnUpdate>
+				EDB_MinimapButton_OnUpdate();
+			</OnUpdate>
+			<OnClick>
+				EDB_Toggle();
+			</OnClick>
+			<OnMouseDown>
+				if IsShiftKeyDown() then
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if this.isMoving then
+					this.isMoving = nil;
+					if EDB_Config then
+						EDB_Config.minimapbuttonx = this.x;
+						EDB_Config.minimapbuttony = this.y;
+					end
+				end
+			</OnMouseUp>
+        </Scripts>
+    </Button>
+
+	<Frame name="EDB_Core" hidden="false">
+		<Scripts>
+			<OnLoad>
+				EDB_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				EDB_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				EDB_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<GameTooltip name="EDB_Tooltip" frameStrata="TOOLTIP" inherits="GameTooltipTemplate">
+	    <Scripts>
+	        <OnLoad>
+	            this:SetOwner(WorldFrame, "ANCHOR_NONE");
+	        </OnLoad>
+	    </Scripts>
+	</GameTooltip>
+
+</Ui>

@@ -1,0 +1,468 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Localization.lua"/>
+	<Script file="TitanPetXp.lua"/>
+	<!-- Titan Panel Button -->
+	<Frame parent="UIParent">
+		<Frames>
+			<Button name="TitanPanelPetXpButton" inherits="TitanPanelTextTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+						TitanPanelPetXpButton_OnLoad()
+						TitanPanelButton_OnLoad()
+					</OnLoad>
+					<OnEvent>
+						TitanPanelPetXpButton_OnEvent()
+					</OnEvent>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<!-- Check Button Template -->
+	<CheckButton name="TitanPanelPetXpOptions_CheckButtonTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="28" y="28"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	
+	<!-- Options Screen -->
+	<Frame name="TitanPanelPetXpOptions" toplevel="true" frameStrata="DIALOG" movable="false" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="400" y="350"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Title Background -->
+				<Texture name="TitanPanelPetXpOptions_Title" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Title Text -->
+				<FontString name="TitanPanelPetXpOptions_TitleText" inherits="GameFontNormal" text="Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Title">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Display Mode -->
+			<Frame name="TitanPanelPetXpOptions_ModeBg" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="380" y="62"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions">
+						<Offset>
+							<AbsDimension x="0" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<!-- Title Text -->
+						<FontString name="TitanPanelPetXpOptions_ModeText" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Check Button: Experience Percent -->
+					<CheckButton name="TitanPanelPetXpOptions_Percent" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TitanSetVar(TITAN_PETXP_ID, "Mode", 0)
+								TitanPanelPetXpOptions_Percent:SetChecked(1)
+								TitanPanelPetXpOptions_Raw:SetChecked(0)
+								TitanPanelPetXpOptions_Both:SetChecked(0)
+								TitanPanelButton_UpdateButton("PetXp")
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Experience Raw -->
+					<CheckButton name="TitanPanelPetXpOptions_Raw" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TitanSetVar(TITAN_PETXP_ID, "Mode", 1)
+								TitanPanelPetXpOptions_Percent:SetChecked(0)
+								TitanPanelPetXpOptions_Raw:SetChecked(1)
+								TitanPanelPetXpOptions_Both:SetChecked(0)
+								TitanPanelButton_UpdateButton("PetXp")
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Experience Both -->
+					<CheckButton name="TitanPanelPetXpOptions_Both" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Percent">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TitanSetVar(TITAN_PETXP_ID, "Mode", 2)
+								TitanPanelPetXpOptions_Percent:SetChecked(0)
+								TitanPanelPetXpOptions_Raw:SetChecked(0)
+								TitanPanelPetXpOptions_Both:SetChecked(1)
+								TitanPanelButton_UpdateButton("PetXp")
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<!-- Bar Options -->
+			<Frame name="TitanPanelPetXpOptions_BarBg" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="380" y="37"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_ModeBg">
+						<Offset>
+							<AbsDimension x="0" y="-83"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<!-- Title Text -->
+						<FontString name="TitanPanelPetXpOptions_BarText" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Check Button: Show Colors -->
+					<CheckButton name="TitanPanelPetXpOptions_Color" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Color", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Color", 0)
+								end
+								TitanPanelButton_UpdateButton("PetXp")
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Display Level -->
+					<CheckButton name="TitanPanelPetXpOptions_BarLevel" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "BarLevel", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "BarLevel", 0)
+								end
+								TitanPanelButton_UpdateButton("PetXp")
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		
+			<!-- Tooltip Options -->
+			<Frame name="TitanPanelPetXpOptions_TooltipBg" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="380" y="137"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_BarBg">
+						<Offset>
+							<AbsDimension x="0" y="-58"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<!-- Title Text -->
+						<FontString name="TitanPanelPetXpOptions_TooltipText" inherits="GameFontNormal" text="">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Check Button: Experience -->
+					<CheckButton name="TitanPanelPetXpOptions_Experience" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Experience", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Experience", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Level -->
+					<CheckButton name="TitanPanelPetXpOptions_Level" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Experience">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Level", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Level", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Food -->
+					<CheckButton name="TitanPanelPetXpOptions_Food" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Level">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Food", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Food", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Loyalty -->
+					<CheckButton name="TitanPanelPetXpOptions_Loyalty" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Food">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Loyalty", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Loyalty", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Training Points -->
+					<CheckButton name="TitanPanelPetXpOptions_TrainingPoints" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Loyalty">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "TrainingPoints", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "TrainingPoints", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Health -->
+					<CheckButton name="TitanPanelPetXpOptions_Health" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset>
+									<AbsDimension x="7" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Health", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Health", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Damage -->
+					<CheckButton name="TitanPanelPetXpOptions_Damage" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Health">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Damage", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Damage", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Armor -->
+					<CheckButton name="TitanPanelPetXpOptions_Armor" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Damage">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Armor", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Armor", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<!-- Check Button: Armor -->
+					<CheckButton name="TitanPanelPetXpOptions_Stats" inherits="TitanPanelPetXpOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="TitanPanelPetXpOptions_Armor">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetChecked() then
+									TitanSetVar(TITAN_PETXP_ID, "Stats", 1)
+								else
+									TitanSetVar(TITAN_PETXP_ID, "Stats", 0)
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<!-- Close Button -->
+			<Button name="TitanPanelPetXpOptions_Close" inherits="GameMenuButtonTemplate" text="TPPX_CLOSE">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts></Scripts>
+	</Frame>
+</Ui>

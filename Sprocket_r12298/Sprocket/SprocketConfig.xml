@@ -1,0 +1,1770 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Button name="SprocketItemConfigButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="33" y="33"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Rune_06">
+					<Size>
+						<AbsDimension x="25" y="25"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentOverlayTexture" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Border">
+					<Size>
+						<AbsDimension x="40" y="40"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+					<Size>
+						<AbsDimension x="26" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks( "LeftButtonDown", "RightButtonDown" );
+			</OnLoad>
+			<OnEnter>
+				SprocketMenuItem_SetTooltip();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnReceiveDrag>
+				SprocketItemConfigButton_ReceiveDrag( this:GetID() );
+			</OnReceiveDrag>
+			<OnClick>
+				SprocketItemConfigButton_OnClick( this:GetID() );
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="SprocketTriggerItemButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Rune_06">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentOverlayTexture" file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Border">
+					<Size>
+						<AbsDimension x="30" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks( "LeftButtonDown", "RightButtonDown" );
+			</OnLoad>
+			<OnEnter>
+				if ( not SprocketLowerScrollList.selectedIndex or not (SprocketLowerScrollList.selectedIndex == this:GetParent():GetID()) ) then
+					this:GetParent():LockHighlight()
+				end
+				if ( this:GetID() == 1 ) then
+					SprocketConfig:Set_Tooltip( PREACTION, PREACTION_BUTTON_TOOLTIP )
+				else
+					SprocketConfig:Set_Tooltip( POSTACTION, POSTACTION_BUTTON_TOOLTIP )
+				end
+			</OnEnter>
+			<OnLeave>
+				if ( not SprocketLowerScrollList.selectedIndex or not (SprocketLowerScrollList.selectedIndex == this:GetParent():GetID()) ) then
+					this:GetParent():UnlockHighlight()
+				end
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnReceiveDrag>
+				if ( not SprocketLowerScrollList.selectedIndex or not (SprocketLowerScrollList.selectedIndex == this:GetParent():GetID()) ) then
+					this:GetParent():GetParent().selectedIndex = this:GetParent().itemIndex;
+					this:GetParent():GetParent().selectedID = this:GetParent():GetID();
+					SprocketConfig:CloseDewDrop();
+					ScrollList_Update( this:GetParent():GetParent() );
+				end
+				SprocketTriggerItemConfigButton_ReceiveDrag( this:GetID() );
+			</OnReceiveDrag>
+			<OnClick>
+				if ( not SprocketLowerScrollList.selectedIndex or not (SprocketLowerScrollList.selectedIndex == this:GetParent():GetID()) ) then
+					this:GetParent():GetParent().selectedIndex = this:GetParent().itemIndex;
+					this:GetParent():GetParent().selectedID = this:GetParent():GetID();
+					SprocketConfig:CloseDewDrop();
+					ScrollList_Update( this:GetParent():GetParent() );
+				end
+				SprocketTriggerItemConfigButton_OnClick( this:GetID() );
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="ScrollListButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentButtonTextName" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				ScrollList_OnClick( arg1 );
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="SprocketTriggerButtonTemplate" inherits="ScrollListButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="30"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentButtonTextType" inherits="GameFontHighlightSmall" justifyH="LEFT" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentButtonTextName" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentButtonTextBind" inherits="GameFontHighlightSmall" justifyH="RIGHT" text="">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				ScrollList_OnClick( arg1 );
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Button name="SprocketLowerButtonTemplate" inherits="ScrollListButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="75"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentButtonTextType" inherits="GameFontHighlightSmall" justifyH="LEFT" text="FRAME">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentButtonTextName" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentButtonTextPre" inherits="GameFontHighlightSmall" justifyH="LEFT" text="PREACTION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentButtonTextType" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentButtonTextPost" inherits="GameFontHighlightSmall" justifyH="LEFT" text="POSTACTION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentButtonTextType" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="120" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMenuDropDown" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetID( this:GetParent():GetID() );
+						UIDropDownMenu_SetWidth(100);
+						getglobal(this:GetName().."Button"):SetScript( "OnClick", LowerMenuDropDown_OnClick );
+						getglobal(this:GetName().."Button"):SetID( this:GetParent():GetID() );
+						getglobal(this:GetName().."Button"):SetScript( "OnEnter", LowerMenuDropDown_OnEnter );
+						getglobal(this:GetName().."Button"):SetScript( "OnLeave", LowerMenuDropDown_OnLeave );
+					</OnLoad>
+					<OnEnter>
+						if ( not SprocketLowerScrollList.selectedIndex or not (SprocketLowerScrollList.selectedIndex == this:GetParent():GetID()) ) then
+							this:GetParent():LockHighlight()
+						end
+						SprocketConfig:Set_Tooltip( MENUNAME, MENU_DROPDOWN_TOOLTIP );
+					</OnEnter>
+					<OnLeave>
+						if ( not SprocketLowerScrollList.selectedIndex or not (SprocketLowerScrollList.selectedIndex == this:GetParent():GetID()) ) then
+							this:GetParent():UnlockHighlight()
+						end
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="$parentItemButton1" inherits="SprocketTriggerItemButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButtonTextPre" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentItemButton2" inherits="SprocketTriggerItemButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButtonTextPost" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				
+				getglobal(this:GetName().."Highlight"):SetVertexColor(0.25,0.25,0.25)
+			</OnLoad>
+			<OnClick>
+				ScrollList_OnClick( arg1 );
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+		</HighlightTexture>
+	</Button>
+	
+	<Button name="SprocketMenuButtonTemplate" inherits="ScrollListButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="15"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				ScrollList_OnClick( arg1 );
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="SprocketConfigFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(SprocketConfigFrame);
+				SprocketConfigFrame_OnShow();
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Button name="SprocketConfigFrameMenuButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="298" y="15"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentButtonText" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentName" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				SprocketMenuConfig_OnClick( arg1 );
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<Button name="SprocketConfigFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(SprocketConfigFrame);
+				SprocketConfigFrame_OnShow();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="SprocketConfigFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Icon">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+					<Size>
+						<AbsDimension x="200" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="20" y="73"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\QuestFrame\UI-Quest-BotRightPatch">
+					<Size>
+						<AbsDimension x="200" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-40" y="73"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopLeft" file="Interface\QuestFrame\UI-QuestLog-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRight" file="Interface\QuestFrame\UI-QuestLog-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomLeft" file="Interface\QuestFrame\UI-QuestLog-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="226"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomRight" file="Interface\QuestFrame\UI-QuestLog-BotRight">
+					<Size>
+						<AbsDimension x="128" y="226"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomLeftFull" file="Interface\TaxiFrame\UI-TaxiFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomRightFull" file="Interface\TaxiFrame\UI-TaxiFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentTopLeftOverlay" file="Interface\QuestFrame\UI-QuestLog-Empty-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="19" y="-73"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRightOverlay" file="Interface\QuestFrame\UI-QuestLog-Empty-TopRight">
+					<Size>
+						<AbsDimension x="64" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-45" y="-73"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomLeftOverlay" file="Interface\QuestFrame\UI-QuestLog-Empty-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="19" y="75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomRightOverlay" file="Interface\QuestFrame\UI-QuestLog-Empty-BotRight">
+					<Size>
+						<AbsDimension x="64" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-45" y="75"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentHelpButton" inherits="UIPanelButtonTemplate" text="Help">
+				<Size>
+					<AbsDimension x="50" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentCloseButton" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="3" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( SprocketHintFrame:IsShown() ) then
+							SprocketHintFrame:Hide()
+						else
+							if ( SprocketConfigPopupFrame:IsShown() ) then
+								SprocketConfigPopupFrame:Hide()
+							end
+							SprocketHintFrame:Show()
+						end
+					</OnClick>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Frame name="SprocketTriggerConfigFrame" hidden="false" setAllPoints="true">
+				<Frames>
+					<Button name="SprocketTriggerConfigFrameTab1" inherits="TabButtonTemplate" text="HOTKEYS" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="65" y="-39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PanelTemplates_TabResize(-15);
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+							</OnLoad>
+							<OnClick>
+								PanelTemplates_SetTab(SprocketTriggerConfigFrame, this:GetID());
+								SprocketTriggerConfigFrame_Update();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( HOTKEYS, HOTKEY_TAB_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SprocketTriggerConfigFrameTab2" inherits="TabButtonTemplate" text="MOUSE_BUTTONS" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SprocketTriggerConfigFrameTab1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+								PanelTemplates_TabResize(-15, nil, nil, 150);
+							</OnLoad>
+							<OnClick>
+								PanelTemplates_SetTab(SprocketTriggerConfigFrame, this:GetID());
+								SprocketTriggerConfigFrame_Update();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( MOUSE_BUTTONS, MOUSE_TAB_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SprocketTriggerConfigFrameAddButton" inherits="UIPanelButtonTemplate" text="ADD_FRAME">
+						<Size>
+							<AbsDimension x="80" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-40" y="77"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:Add_OnClick();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( ADD_FRAME, ADD_BUTTON_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SprocketTriggerConfigFrameRemoveButton" inherits="UIPanelButtonTemplate" text="REMOVE_FRAME">
+						<Size>
+							<AbsDimension x="80" y="19"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="SprocketTriggerConfigFrameAddButton" relativePoint="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:Remove_OnClick();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( REMOVE_FRAME, REMOVE_BUTTON_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Frame name="SprocketTriggerScrollList" setAllPoints="true">
+						<Scripts>
+							<OnLoad>
+								this.GetNumItems = SprocketTrigger_GetNumTriggers;
+								this.UpdateItem = SprocketTrigger_UpdateButton;
+								this.UpdateSelected = SprocketTrigger_UpdateSelected;
+								this.itemHeight = 30;
+								this.numDisplayItems = 3;
+							</OnLoad>
+						</Scripts>
+						<Frames>
+							<Button name="$parentButton1" inherits="SprocketTriggerButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="23" y="-76"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton2" inherits="SprocketTriggerButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton3" inherits="SprocketTriggerButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="296" y="92"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parent">
+										<Offset>
+											<AbsDimension x="-64" y="-75"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+									FauxScrollFrame_OnVerticalScroll( this:GetParent().itemHeight, ScrollList_Update )
+									</OnVerticalScroll>
+								</Scripts>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+
+					<Frame name="SprocketLowerScrollList" setAllPoints="true">
+						<Scripts>
+							<OnLoad>
+								this.GetNumItems = SprocketLower_GetNumItems;
+								this.UpdateItem = SprocketLower_UpdateButton;
+								this.UpdateSelected = SprocketLower_UpdateSelected;
+								this.itemHeight = 75;
+								this.numDisplayItems = 3;
+							</OnLoad>
+						</Scripts>
+						<Frames>
+							<Button name="$parentButton1" inherits="SprocketLowerButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="23" y="-175"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton2" inherits="SprocketLowerButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton3" inherits="SprocketLowerButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="296" y="240"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parent">
+										<Offset>
+											<AbsDimension x="-64" y="-175"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+									FauxScrollFrame_OnVerticalScroll( this:GetParent().itemHeight, ScrollList_Update )
+									</OnVerticalScroll>
+								</Scripts>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						SprocketTriggerConfigFrame_OnLoad()
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="SprocketMenuConfigFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="SprocketConfigHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size>
+								<AbsDimension x="256" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-162"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size>
+								<AbsDimension x="75" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SprocketConfigHorizontalBarLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parentMenuLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" text="MenuName" >
+							<Size>
+								<AbsDimension x="280" y="32" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-175" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="16" />
+							</FontHeight>
+							<Color r="1" g="1" b="1" />
+							<Shadow>
+								<Color r="0" g="0" b="0" />
+								<Offset>
+									<AbsDimension x="1" y="-1" />
+								</Offset>
+							</Shadow>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						local x, y;
+						
+						x = 230
+						y = -330;
+						local buttonAngle = 0;
+						local itemOffset = 60;
+						for index = 1, 8, 1 do
+							curButton = getglobal( "SprocketItemConfigButton"..index );
+							curButton:SetPoint( "CENTER", "SprocketMenuConfigFrame", "TOPLEFT", x + (itemOffset * cos(0-buttonAngle)), y + (itemOffset * sin(0-buttonAngle)) );
+							buttonAngle = buttonAngle - 45;
+						end						
+						SprocketMenuConfigFrame_OnLoad()
+					</OnLoad>
+				</Scripts>
+				<Frames>
+					<Button name="SprocketMenuConfigFrameTab1" inherits="TabButtonTemplate" text="Char" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="65" y="-39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PanelTemplates_TabResize(-15);
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+							</OnLoad>
+							<OnClick>
+								PanelTemplates_SetTab(SprocketMenuConfigFrame, this:GetID());
+								SprocketMenuConfigFrame_Update();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( HOTKEYS, HOTKEY_TAB_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SprocketMenuConfigFrameTab2" inherits="TabButtonTemplate" text="Global" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SprocketMenuConfigFrameTab1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+								PanelTemplates_TabResize(-15, nil, nil, 150);
+							</OnLoad>
+							<OnClick>
+								PanelTemplates_SetTab(SprocketMenuConfigFrame, this:GetID());
+								SprocketMenuConfigFrame_Update();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( MOUSE_BUTTONS, MOUSE_TAB_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SprocketConfigCenterButton">
+						<Size>
+							<AbsDimension x="64" y="64"/>
+						</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="230" y="-330"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Rune_06">
+									<Size>
+										<AbsDimension x="34" y="34"/>
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+										</Anchor>
+									</Anchors>
+								</Texture>
+							</Layer>			
+							<Layer level="OVERLAY">
+								<Texture file="Interface\AddOns\Sprocket\UI\UI-Sprocket-Border">
+								</Texture>
+							</Layer>			
+						</Layers>
+/						<Scripts>
+							<OnLoad>
+								this:RegisterForClicks( "LeftButtonUp" )
+							</OnLoad>
+							<OnClick>
+								if ( SprocketConfigPopupFrame:IsShown() ) then
+									SprocketConfigPopupFrame:Hide();
+								else
+									if ( SprocketHintFrame:IsShown() ) then
+										SprocketHintFrame:Hide()
+									end
+									SprocketConfigPopupFrame.mode = "centerbutton"
+									SprocketConfigPopupFrame:Show()
+								end
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( CENTERICON, CENTERICON_BUTTON_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Slider name="SprocketMenuConfigOffset" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="25" y="-225"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText( BUTTON_OFFSET );
+								getglobal(this:GetName().."High"):SetText( 100 );
+								getglobal(this:GetName().."Low"):SetText( 45 );
+								this:SetMinMaxValues(45, 100);
+								this:SetValueStep(5);
+							</OnLoad>
+							<OnValueChanged>
+								SprocketConfig_MenuItemOffset_OnValueChanged()
+							</OnValueChanged>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( BUTTON_OFFSET, OFFSET_SLIDER_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Slider>
+					<Slider name="SprocketMenuConfigDeadzone" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SprocketMenuConfigOffset" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText( DEADZONE_SIZE );
+								getglobal(this:GetName().."High"):SetText( 100 );
+								getglobal(this:GetName().."Low"):SetText( 30 );
+								this:SetMinMaxValues(30, 100);
+								this:SetValueStep(5);
+							</OnLoad>
+							<OnValueChanged>
+								SprocketConfig_MenuDeadzone_OnValueChanged()
+							</OnValueChanged>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( DEADZONE_SIZE, DEADZONE_SLIDER_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Slider>
+					<Slider name="SprocketMenuConfigSelRadius" inherits="OptionsSliderTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SprocketMenuConfigDeadzone" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText( SELECTION_SIZE );
+								getglobal(this:GetName().."High"):SetText( 1000 );
+								getglobal(this:GetName().."Low"):SetText( 120 );
+								this:SetMinMaxValues(120, 1000);
+								this:SetValueStep(5);
+							</OnLoad>
+							<OnValueChanged>
+								SprocketConfig_MenuSelectionRadius_OnValueChanged()
+							</OnValueChanged>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( SELECTION_SIZE, SELECTION_SLIDER_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Slider>
+					<CheckButton name="SprocketMenuConfigShowNames" inherits="UICheckButtonTemplate">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SprocketMenuConfigSelRadius" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText( "Always Show Names" );
+							</OnLoad>
+							<OnClick>
+								if ( this:GetChecked() ) then
+									PlaySound("igMainMenuOptionCheckBoxOn");
+								else
+									PlaySound("igMainMenuOptionCheckBoxOff");
+								end
+								
+								SprocketConfig_MenuShowNames_OnClick();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( SHOWNAMES, SHOWNAMES_CHECKBOX_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+					<Button name="SprocketItemConfigButton1" inherits="SprocketItemConfigButtonTemplate" id="1"/>
+					<Button name="SprocketItemConfigButton2" inherits="SprocketItemConfigButtonTemplate" id="2"/>
+					<Button name="SprocketItemConfigButton3" inherits="SprocketItemConfigButtonTemplate" id="3"/>
+					<Button name="SprocketItemConfigButton4" inherits="SprocketItemConfigButtonTemplate" id="4"/>
+					<Button name="SprocketItemConfigButton5" inherits="SprocketItemConfigButtonTemplate" id="5"/>
+					<Button name="SprocketItemConfigButton6" inherits="SprocketItemConfigButtonTemplate" id="6"/>
+					<Button name="SprocketItemConfigButton7" inherits="SprocketItemConfigButtonTemplate" id="7"/>
+					<Button name="SprocketItemConfigButton8" inherits="SprocketItemConfigButtonTemplate" id="8"/>
+					<Button name="SprocketMenuConfigFrameCreateButton" inherits="UIPanelButtonTemplate" text="CREATEMENU">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-50" y="-47"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:Create_OnClick();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( CREATEMENU, CREATE_BUTTON_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name="SprocketMenuConfigFrameDeleteButton" inherits="UIPanelButtonTemplate" text="DELETEMENU">
+						<Size>
+							<AbsDimension x="80" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="SprocketMenuConfigFrameCreateButton" relativePoint="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:Delete_OnClick();
+							</OnClick>
+							<OnEnter>
+								SprocketConfig:Set_Tooltip( DELETEMENU, DELETE_BUTTON_TOOLTIP );
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					
+					<Frame name="SprocketMenuScrollList" setAllPoints="true">
+						<Scripts>
+							<OnLoad>
+								this.GetNumItems = SprocketMenu_GetNumMenus;
+								this.UpdateItem = SprocketMenu_UpdateButton;
+								this.UpdateSelected = SprocketMenu_UpdateSelected;
+								this.itemHeight = 16;
+								this.numDisplayItems = 6;
+							</OnLoad>
+						</Scripts>
+						<Frames>
+							<Button name="$parentButton1" inherits="SprocketMenuButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="23" y="-76"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton2" inherits="SprocketMenuButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton3" inherits="SprocketMenuButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton4" inherits="SprocketMenuButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton5" inherits="SprocketMenuButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentButton6" inherits="SprocketMenuButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM"/>
+								</Anchors>
+							</Button>
+							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+								<Size>
+									<AbsDimension x="296" y="92"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parent">
+										<Offset>
+											<AbsDimension x="-64" y="-75"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+									FauxScrollFrame_OnVerticalScroll( this:GetParent().itemHeight, ScrollList_Update )
+									</OnVerticalScroll>
+								</Scripts>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="SprocketGlobalConfigFrame" hidden="false" setAllPoints="true">
+				<Frames>
+					<Button name="SprocketGlobalConfigGeneralOptions" inherits="UIPanelButtonTemplate" text="GENERAL_OPTIONS">
+						<Size x="140" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="30" y="-90"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:GeneralOptions()
+							</OnClick>
+						</Scripts>
+					</Button>		
+					<Button name="SprocketGlobalConfigMenuOptions" inherits="UIPanelButtonTemplate" text="MENU_OPTIONS">
+						<Size x="140" y="20"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="SprocketGlobalConfigGeneralOptions">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:MenuOptions()
+							</OnClick>
+						</Scripts>
+					</Button>		
+					<Button name="SprocketGlobalConfigMiniOptions" inherits="UIPanelButtonTemplate" text="MINIBUTTON_OPTIONS">
+						<Size x="140" y="20"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="SprocketGlobalConfigMenuOptions">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:MiniOptions()
+							</OnClick>
+						</Scripts>
+					</Button>		
+					<Button name="SprocketGlobalConfigBigOptions" inherits="UIPanelButtonTemplate" text="BIGBUTTON_OPTIONS">
+						<Size x="140" y="20"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="SprocketGlobalConfigMiniOptions">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								SprocketConfig:BigOptions()
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button name="SprocketConfigFrameTab1" inherits="SprocketConfigFrameTabTemplate" id="1" text="TRIGGERS">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="11" y="45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						SprocketConfig:Set_Tooltip( TRIGGERS, TRIGGER_TAB_TOOLTIP );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="SprocketConfigFrameTab2" inherits="SprocketConfigFrameTabTemplate" id="2" text="MENUS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						SprocketConfig:Set_Tooltip( MENUS, MENU_TAB_TOOLTIP );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="SprocketConfigFrameTab3" inherits="SprocketConfigFrameTabTemplate" id="3" text="Globals">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigFrameTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						--SprocketConfig:Set_Tooltip( MENUS, MENU_TAB_TOOLTIP );
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				SprocketConfigFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				SprocketConfigFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				SprocketConfigFrame_OnHide();
+			</OnHide>
+			<OnUpdate>
+				SprocketConfig:OnUpdate();
+			</OnUpdate>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SprocketHintFrame" parent="SprocketConfigFrame" hidden="true">
+		<Size>
+			<AbsDimension x="250" y="425"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-30" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" justifyV="TOP" text="SPROCKETHELP">
+					<Size x="230" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</FontString>					
+				<FontString name="SprocketHintText" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" text="...">
+					<Size x="180" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-30"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="5	"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</FontString>					
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<CheckButton name="SprocketConfigPopupButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
+					<Size>
+						<AbsDimension x="36" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				SprocketConfig:PopupButton_OnClick();	
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentIcon">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+	
+	<Frame name="SprocketConfigPopupFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="297" y="298"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="SprocketConfigFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-40" y="-40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+					<Size>
+						<AbsDimension x="64" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="256" y="-256"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentMenuLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" text="MenuName" >
+					<Size>
+						<AbsDimension x="200" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="29" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="16" />
+					</FontHeight>
+					<Color r="1" g="1" b="1" />
+					<Shadow>
+						<Color r="0" g="0" b="0" />
+						<Offset>
+							<AbsDimension x="1" y="-1" />
+						</Offset>
+					</Shadow>
+				</FontString>
+				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="-69"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="SprocketConfigPopupScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="195"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SprocketConfigPopupFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-39" y="-67"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(MENU_ICON_ROW_HEIGHT, SprocketConfigPopupFrame_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<CheckButton name="SprocketConfigPopupButton1" inherits="SprocketConfigPopupButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton2" inherits="SprocketConfigPopupButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton3" inherits="SprocketConfigPopupButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton4" inherits="SprocketConfigPopupButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton5" inherits="SprocketConfigPopupButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton6" inherits="SprocketConfigPopupButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SprocketConfigPopupButton1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton7" inherits="SprocketConfigPopupButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton8" inherits="SprocketConfigPopupButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton9" inherits="SprocketConfigPopupButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton10" inherits="SprocketConfigPopupButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton11" inherits="SprocketConfigPopupButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SprocketConfigPopupButton6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton12" inherits="SprocketConfigPopupButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton13" inherits="SprocketConfigPopupButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton12" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton14" inherits="SprocketConfigPopupButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton15" inherits="SprocketConfigPopupButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton16" inherits="SprocketConfigPopupButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SprocketConfigPopupButton11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton17" inherits="SprocketConfigPopupButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton16" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton18" inherits="SprocketConfigPopupButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton17" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton19" inherits="SprocketConfigPopupButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton18" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="SprocketConfigPopupButton20" inherits="SprocketConfigPopupButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="SprocketConfigPopupButton19" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Button name="SprocketConfigPopupCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="78" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="SprocketConfigPopupFrame">
+						<Offset>
+							<AbsDimension x="-11" y="13"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+						--MacroFrame_Update();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="SprocketConfigPopupOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="78" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="SprocketConfigPopupCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SprocketConfig:PopupOkayButton_OnClick();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				SprocketConfig:PopupFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				SprocketConfig:PopupFrame_OnHide();
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

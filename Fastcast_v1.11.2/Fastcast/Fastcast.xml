@@ -1,0 +1,510 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+	<Script file="localization.lua"/> 
+	<Script file="Fastcast.lua"/> 
+	<Frame name="Fastcast"> 
+		<Scripts> 
+			<OnLoad> 
+				Fastcast_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				Fastcast_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<!-- Basic button template (replaces UIPanelButtonTemplate to allow access
+	     to the highlight and disabled texts for dynamic text assignment) -->
+	<Button name="FastcastButtonTemplate" virtual="true">
+		<ButtonText name="$parentText"/>
+		<NormalFont inherits="GameFontNormal"/>
+		<HighlightFont inherits="GameFontHighlight"/>
+		<DisabledFont inherits="GameFontDisable"/>
+		<NormalTexture inherits="UIPanelButtonUpTexture"/>
+		<PushedTexture inherits="UIPanelButtonDownTexture"/>
+		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		<Scripts>
+			<OnEnter>
+				if (this.tooltipText) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<!-- Basic check-button template (based on UICheckButtonTemplate but
+	     provides both "on" and "off" tooltips and an OnClick function passed
+	     in an onClick property, and doesn't define a font string) -->
+	<CheckButton name="FastcastCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnEnter>
+				if (this:GetChecked()) then
+					if (this.tooltipOnText) then
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this.tooltipOnText, nil, nil, nil, nil, 1);
+					end
+				else
+					if (this.tooltipOffText) then
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText(this.tooltipOffText, nil, nil, nil, nil, 1);
+					end
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if (this:GetChecked()) then
+					PlaySound("igMainMenuOptionCheckBoxOn");
+					if (GameTooltip:IsOwned(this) and this.tooltipOnText) then
+						GameTooltip:SetText(this.tooltipOnText, nil, nil, nil, nil, 1);
+					end
+				else
+					PlaySound("igMainMenuOptionCheckBoxOff");
+					if (GameTooltip:IsOwned(this) and this.tooltipOffText) then
+						GameTooltip:SetText(this.tooltipOffText, nil, nil, nil, nil, 1);
+					end
+				end
+				if (this.onClick) then
+					this.onClick();
+				end
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<!-- Horizontal slider template -->
+	<Slider name="FastCastSliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="128" y="17"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-5" bottom="-5"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLow" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHigh" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				this.thumb = getglobal(this:GetName().."Thumb");
+				if (this.formatString) then
+					this.tooltipText = string.format(this.formatString, this:GetValue());
+				else
+					this.tooltipText = tostring(this:GetValue());
+				end
+				if (this.thumb and this.tooltipText) then
+					GameTooltip:SetOwner(this.thumb, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				this.thumb = nil;
+			</OnLeave>
+			<OnValueChanged>
+				if (this.onChanged) then
+					this.onChanged();
+				end
+				if (this.thumb and GameTooltip:IsOwned(this.thumb)) then
+					if (this.formatString) then
+						this.tooltipText = string.format(this.formatString, this:GetValue());
+					else
+						this.tooltipText = tostring(this:GetValue());
+					end
+					GameTooltip:SetText(this.tooltipText);
+				end
+			</OnValueChanged>
+		</Scripts>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+
+	<!-- Help mouseover template -->
+	<Frame name="FastcastHelpTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="10"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if (this.tooltipTitle and this.tooltipText) then
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(this.tooltipTitle, nil, nil, nil, nil, 1);
+					GameTooltip:AddLine(this.tooltipText, 1, 1, 1, nil, 1);
+					GameTooltipTextLeft2:SetWidth(280);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<!-- Fastcast's main frame -->
+	<Frame name="FastcastFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="286" y="232"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="FastcastFrameTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentTitle">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FastcastFrameFastEnableText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FastcastFrameFastCastBarText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="FastcastFrameFastEnableText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FastcastFrameFastSoundText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="FastcastFrameFastCastBarText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FastcastFrameChannelProtectText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="-138"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="FastcastFrameVersionText" inherits="GameFontDarkGraySmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-20" y="15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Sub-frame for dragging parent (we only allow dragging from title bar) -->
+			<Frame name="$parentDragFrame">
+				<Size>
+					<AbsDimension x="132" y="28" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						local parent = this:GetParent();
+						if (arg1 == "LeftButton") then
+							parent.isMoving = true;
+							parent:StartMoving();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						local parent = this:GetParent();
+						if (parent.isMoving) then
+							parent:StopMovingOrSizing();
+							parent.isMoving = nil;
+						end
+					</OnMouseUp>
+					<OnHide>
+						local parent = this:GetParent();
+						if (parent.isMoving) then
+							parent:StopMovingOrSizing();
+							parent.isMoving = nil;
+						end
+					</OnHide>
+					<OnEnter>
+						if (this.tooltipTitle and this.tooltipText) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText(this.tooltipTitle, nil, nil, nil, nil, 1);
+							GameTooltip:AddLine(this.tooltipText, 1, 1, 1, nil, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+			<!-- Fastcast master enable/disable button -->
+			<CheckButton name="FastcastFrameFastEnable" hidden="false" inherits="FastcastCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="FastcastFrameFastEnableText">
+						<Offset>
+							<AbsDimension x="-20" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.onClick = FastcastFrame_FastEnableOnClick;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<!-- Help mouseover point for fast casting -->
+			<Frame name="FastcastFrameFastcastHelp" inherits="FastcastHelpTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="FastcastFrameFastEnableText" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT" relativeTo="FastcastFrame" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Fastcast adjust casting bar enable/disable button -->
+			<CheckButton name="FastcastFrameFastCastBar" hidden="false" inherits="FastcastCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="FastcastFrameFastCastBarText">
+						<Offset>
+							<AbsDimension x="-20" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.onClick = FastcastFrame_FastCastBarOnClick;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<!-- Fastcast sound effect enable/disable button -->
+			<CheckButton name="FastcastFrameFastSound" hidden="false" inherits="FastcastCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="FastcastFrameFastSoundText">
+						<Offset>
+							<AbsDimension x="-20" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.onClick = FastcastFrame_FastSoundOnClick;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<!-- Fastcast padding slider -->
+			<Slider name="FastcastFrameFastPaddingSlider" inherits="FastCastSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="FastcastFrameFastEnableText">
+						<Offset>
+							<AbsDimension x="3" y="-44" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.onChanged = FastcastFrame_FastPaddingSliderUpdate;
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<!-- Fastcast channeling protection enable/disable button -->
+			<CheckButton name="FastcastFrameChannelProtect" hidden="false" inherits="FastcastCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="FastcastFrameChannelProtectText">
+						<Offset>
+							<AbsDimension x="-20" y="3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.onClick = FastcastFrame_ChannelProtectOnClick;
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<!-- Help mouseover point for channel protection -->
+			<Frame name="FastcastFrameChannelProtectHelp" inherits="FastcastHelpTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="FastcastFrameChannelProtectText" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="RIGHT" relativeTo="FastcastFrame" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<!-- Fastcast padding slider -->
+			<Slider name="FastcastFrameChannelProtectSlider" inherits="FastCastSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="FastcastFrameChannelProtectText">
+						<Offset>
+							<AbsDimension x="3" y="-4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this.onChanged = FastcastFrame_ChannelMaximumSliderUpdate;
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<!-- Close button -->
+			<Button name="$parentCloseButton" inherits="FastcastButtonTemplate" text="CLOSE">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="14"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(FastcastFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor(0, 0, 0);
+				FastcastFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				FastcastFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				FastcastFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+	<GameTooltip name="FastcastTooltip" hidden="true" inherits="GameTooltipTemplate"/>
+</Ui>

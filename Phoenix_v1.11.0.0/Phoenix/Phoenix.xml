@@ -1,0 +1,556 @@
+<!-- Phoenix.xml; see Phoenix.lua for more info -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Script file="Phoenix.lua" />
+	<!-- This template is used for every script name in the left-hand title scroll view -->
+	<Button name="PhoenixEntryButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="132" y="20" />
+		</Size>
+		<Scripts>
+			<OnClick>Phoenix_OnEntryClick(this:GetID());</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\AuctionFrame\UI-AuctionFrame-FilterBg">
+			<TexCoords left="0" right="0.53125" top="0" bottom="0.625" />
+		</NormalTexture>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" />
+		<NormalText name="$parentNormalText" inherits="GameFontNormalSmall" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="4" y="0" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="4" y="0" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+	</Button>
+	<Frame name="PhoenixFrame" parent="UIParent" frameStrata="DIALOG" movable="true" resizable="true"
+		enableKeyboard="true" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnLoad>Phoenix_OnLoad();</OnLoad>
+			<OnEvent>Phoenix_OnEvent(event);</OnEvent>
+			<OnUpdate>Phoenix_UpdateEntryList();</OnUpdate>
+			<OnDragStart>Phoenix_OnDragStart();</OnDragStart>
+			<OnDragStop>Phoenix_OnDragStop();</OnDragStop>
+			<OnEscapePressed>HideUIPanel(PhoenixFrame);</OnEscapePressed>
+		</Scripts>
+		<Size>
+			<AbsDimension x="550" y="300" />
+		</Size>
+		<ResizeBounds>
+			<minResize>
+				<AbsDimension x="550" y="200" />
+			</minResize>
+			<maxResize>
+				<AbsDimension x="750" y="579" />
+			</maxResize>
+		</ResizeBounds>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-50" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- The "Name:" text on the right-hand side -->
+				<FontString inherits="GameFontNormalSmall" text="PHOENIX_NAME">
+					<Size>
+						<AbsDimension x="40" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixFrame">
+							<Offset>
+								<AbsDimension x="231" y="-17" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormalSmall" text="PHOENIX_EVENT">
+					<Size>
+						<AbsDimension x="30" y="20" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixFrame">
+							<Offset>
+								<AbsDimension x="191" y="-17" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Button name="PhoenixCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="PhoenixFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="-26" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Phoenix_OnCloseButtonClick(arg1);</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PhoenixResizeButton">
+				<Size>
+					<AbsDimension x="6" y="6" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="-4" y="4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture>
+							<Color r="0.1" g="0.1" b="0.1" a="0.75" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>Phoenix_OnResizeButtonMouseDown("BOTTOMRIGHT");</OnMouseDown>
+					<OnMouseUp>Phoenix_OnResizeButtonMouseUp();</OnMouseUp>
+				</Scripts>
+			</Button>
+			<!-- Buttons above left hand scroll frame for new/delete -->
+			<Button name="PhoenixNewScriptButton" inherits="UIPanelButtonTemplate" text="PHOENIX_NEW_SCRIPT">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="16" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Phoenix_OnNewButtonClick();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PhoenixDeleteScriptButton" inherits="UIPanelButtonTemplate" text="PHOENIX_DELETE_SCRIPT">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixNewScriptButton">
+						<Offset>
+							<AbsDimension x="0" y="-4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Phoenix_OnDeleteButtonClick();</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="PhoenixRunScriptButton" inherits="UIPanelButtonTemplate" text="PHOENIX_RUN_SCRIPT">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixDeleteScriptButton">
+						<Offset>
+							<AbsDimension x="0" y="-4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Phoenix_OnRunButtonClick();</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Left hand faux scroll frame of phoenix titles -->
+			<ScrollFrame name="PhoenixEntriesScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixFrame">
+						<Offset>
+							<AbsDimension x="15" y="-91" />
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixFrame">
+						<Offset>
+							<AbsDimension x="145" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnScrollRangeChanged>Phoenix_UpdateEntryList();</OnScrollRangeChanged>
+					<OnSizeChanged>Phoenix_UpdateEntryList();</OnSizeChanged>
+					<OnVerticalScroll>FauxScrollFrame_OnVerticalScroll(32, Phoenix_UpdateEntriesScrollFrame);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<!-- These are the entry buttons -->
+			<Button name="PhoenixHelperButton" inherits="PhoenixEntryButtonTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixEntriesScrollFrame">
+						<Offset>
+							<AbsDimension x="0" y="4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry1" inherits="PhoenixEntryButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixEntriesScrollFrame">
+						<Offset>
+							<AbsDimension x="0" y="4" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry2" inherits="PhoenixEntryButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry1">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry3" inherits="PhoenixEntryButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry2">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry4" inherits="PhoenixEntryButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry3">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry5" inherits="PhoenixEntryButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry4">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry6" inherits="PhoenixEntryButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry5">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry7" inherits="PhoenixEntryButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry6">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry8" inherits="PhoenixEntryButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry7">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry9" inherits="PhoenixEntryButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry8">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry10" inherits="PhoenixEntryButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry9">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry11" inherits="PhoenixEntryButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry10">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry12" inherits="PhoenixEntryButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry11">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry13" inherits="PhoenixEntryButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry12">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry14" inherits="PhoenixEntryButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry13">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry15" inherits="PhoenixEntryButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry14">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry16" inherits="PhoenixEntryButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry15">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry17" inherits="PhoenixEntryButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry16">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry18" inherits="PhoenixEntryButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry17">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry19" inherits="PhoenixEntryButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry18">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry20" inherits="PhoenixEntryButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry19">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry21" inherits="PhoenixEntryButtonTemplate" id="21">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry20">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry22" inherits="PhoenixEntryButtonTemplate" id="22">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry21">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry23" inherits="PhoenixEntryButtonTemplate" id="23">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry22">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry24" inherits="PhoenixEntryButtonTemplate" id="24">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry23">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="PhoenixEntry25" inherits="PhoenixEntryButtonTemplate" id="25">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="PhoenixEntry24">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<!-- this is the chunk to the right -->
+			<!-- The entry title box -->
+			<CheckButton name="PhoenixEventCheckButton" inherits="UICheckButtonTemplate" id="1">
+				<Size>
+					<AbsDimension x="24" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PhoenixFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="171" y="-17" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Phoenix_OnEventButtonClick();</OnClick>
+				</Scripts>
+			</CheckButton>
+			<EditBox name="PhoenixEntryTitleEditBox" letters="100" historyLines="0" autoFocus="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixFrame">
+						<Offset>
+							<AbsDimension x="271" y="-15" />
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="PhoenixFrame">
+						<Offset>
+							<AbsDimension x="-35" y="-38" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="PhoenixBackground">
+							<Color r="0" g="0" b="0" a="0.75" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="GameFontNormal">
+					<Color r="1" g="1" b="1" a="1" />
+				</FontString>
+				<Scripts>
+					<OnTabPressed>PhoenixEntryEditBox:SetFocus();</OnTabPressed>
+					<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+					<OnClick>this:SetFocus();</OnClick>
+					<OnEditFocusLost>Phoenix_OnEntryTitleEditFocusLost();</OnEditFocusLost>
+				</Scripts>
+			</EditBox>
+			<!-- The entry body scroll frame -->
+			<ScrollFrame name="PhoenixEntryScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixFrame">
+						<Offset>
+							<AbsDimension x="171" y="-40" />
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="PhoenixFrame">
+						<Offset>
+							<AbsDimension x="-35" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="PhoenixBodyBackground">
+							<Color r="0" g="0" b="0" a="0.75" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<ScrollChild>
+					<EditBox name="PhoenixEntryEditBox" letters="4096" multiLine="true" enableMouse="true" autoFocus="false">
+						<Size>
+							<AbsDimension x="2000" y="2000" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PhoenixEntryScrollFrame">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>PhoenixEntryTitleEditBox:SetFocus();</OnTabPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+							<OnClick>this:SetFocus();</OnClick>
+							<OnTextChanged>ScrollingEdit_OnTextChanged();</OnTextChanged>
+							<OnEditFocusLost>Phoenix_OnEntryBodyEditFocusLost();</OnEditFocusLost>
+							<OnCursorChanged>
+								ScrollingEdit_OnCursorChanged(arg1, arg2, arg3, arg4);
+							</OnCursorChanged>									
+							<OnUpdate>
+								Phoenix_OnEntryBodyTextUpdate();
+							</OnUpdate>
+						</Scripts>
+						<FontString inherits="ChatFontNormal" />
+					</EditBox>
+				</ScrollChild>
+			<Scripts>
+				<OnMouseUp>
+					PhoenixEntryEditBox:SetFocus();
+				</OnMouseUp> 
+			</Scripts>
+			</ScrollFrame>
+		</Frames>
+	</Frame>
+	<EditBox name="PhoenixHelperEditBox" inherits="ChatFrameEditBoxTemplate" parent="UIParent" hidden="true" >
+		<Scripts>
+			<OnLoad />
+		</Scripts>
+	</EditBox>
+
+</Ui>

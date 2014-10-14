@@ -1,0 +1,529 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\FrameXML\UI.xsd">
+
+	<Script file="SmartML_UI.lua"/>
+	
+	<!--
+	<Texture name="GreenUIPanelButtonUpTexture" file="Interface\AddOns\SmartML\GreenButtonNormal" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="GreenUIPanelButtonDownTexture" file="Interface\AddOns\SmartML\GreenButtonDown" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Button name="GreenOptionsButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<NormalTexture name="GNormal" inherits="GreenUIPanelButtonUpTexture"/>
+		<PushedTexture inherits="GreenUIPanelButtonDownTexture"/>
+		<Size>
+			<AbsDimension x="90" y="21"/>
+		</Size>
+	</Button>
+	-->
+		
+	<!-- template -->
+	<Frame name="SL_ListFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="14"/> <!-- todo, see that the elements sum up -->
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentPlayer" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
+					<Size>
+						<AbsDimension x="90" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentAmount" inherits="CombatLogFont" justifyH="RIGHT" nonspacewrap="true">
+					<Color r="0" g="0.8" b="1.0"/>
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentPlayer" relativePoint="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonDown", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				SL_ListItem_OnClick(arg1);
+			</OnClick>
+			<OnEnter>
+				SL_ListItem_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				SL_ListItem_OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	
+    <Frame name="SL_UI" toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="212" y="348"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<!-- thanks advanced bags (plus) for texture! modified it a bit tough -->
+		<Backdrop bgFile="Interface\AddOns\SmartML\FrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <BackgroundInsets>
+            	<AbsInset left="7" right="6" top="7" bottom="6"/>
+            </BackgroundInsets>
+        </Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_FrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="200" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Smart ML">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SL_UI">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_PageInfo" inherits="GameFontNormal" text="Item (0/0)">
+					<Color r="1" g="1" b="1"/>
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_ItemInfo" inherits="CombatLogFont" justifyH="LEFT" nonspacewrap="true">
+					<Color r="0" g="0.8" b="1"/>
+					<Size>
+						<AbsDimension x="165" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-55"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="$parent_TimeInfo" inherits="CombatLogFont" justifyH="LEFT" nonspacewrap="false">
+					<Color r="0.7" g="0.7" b="0.7"/>
+					<Size>
+						<AbsDimension x="165" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="22" y="-70"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+			</Layer>
+		</Layers>
+        <Frames>
+			<Button name="$parent_DragButton" hidden="false">
+				<Size>
+					<AbsDimension x="200" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent_FrameHeader">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StartMoving();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StopMovingOrSizing();
+						end
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			
+			<Button name="SL_PrevItem">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_UpdateItem(-1);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="SL_NextItem">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_UpdateItem(1);
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			
+			<Button name="SL_ListHeader" inherits="SL_ListFrameTemplate" hidden="false" id="0">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="22" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Player"):SetText("Player");
+						getglobal(this:GetName().."Amount"):SetText("n/a");
+						getglobal(this:GetName().."Player"):SetTextColor(1,1,1);
+						getglobal(this:GetName().."Amount"):SetTextColor(1,1,1);
+					</OnLoad>
+				</Scripts>
+			</Button>
+
+			<Frame name="SL_ListHilight" hidden="true">
+				<Size>
+					<AbsDimension x="140" y="12"/>
+				</Size>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parent_Texture" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="140" y="14"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+									
+			<Button name="SL_ListItem1" inherits="SL_ListFrameTemplate" hidden="true" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListHeader" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>		
+			</Button>
+			<Button name="SL_ListItem2" inherits="SL_ListFrameTemplate" hidden="true" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem3" inherits="SL_ListFrameTemplate" hidden="true" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem4" inherits="SL_ListFrameTemplate" hidden="true" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem5" inherits="SL_ListFrameTemplate" hidden="true" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem6" inherits="SL_ListFrameTemplate" hidden="true" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem7" inherits="SL_ListFrameTemplate" hidden="true" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem8" inherits="SL_ListFrameTemplate" hidden="true" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem9" inherits="SL_ListFrameTemplate" hidden="true" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="SL_ListItem10" inherits="SL_ListFrameTemplate" hidden="true" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SL_ListItem9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<ScrollFrame name="SL_ListScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="12" y="126"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SL_ListItem1">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<!--
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="301"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+									<Offset>
+										<AbsDimension x="-1" y="7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size>
+								<AbsDimension x="31" y="118"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+									<Offset>
+										<AbsDimension x="-1" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				-->
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(SL_ITEM_HEIGHT, SL_UpdateList);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+
+			<!-- dropdown menu -->
+			<Frame name="$parent_ListDropDown" inherits="UIDropDownMenuTemplate" id="33" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SL_UI_ListDropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Button name="$parent_Close" inherits="OptionsButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_Close(SL_GetCurrentItem());
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parent_Cancel" inherits="OptionsButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="22" y="80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_CancelBidding(SL_GetCurrentItem());
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parent_CloseAll" inherits="OptionsButtonTemplate" text="Close all">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_CloseAll();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parent_CancelAll" inherits="OptionsButtonTemplate" text="Cancel all">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="22" y="50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_CancelAllBidding();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parent_Options" inherits="OptionsButtonTemplate" text="Options">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="22" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SL_ConfigFrame:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+						            
+			<Button name="$parent_Hide" inherits="OptionsButtonTemplate" text="Hide UI">
+				<Size>
+					<AbsDimension x="80" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-22" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(SL_UI);
+					</OnClick>
+				</Scripts>
+			</Button>
+            
+        </Frames>
+        <Scripts>
+			<OnShow>
+				SL_UpdateUI();
+			</OnShow>
+			<OnUpdate>
+				SL_UI_OnUpdate(arg1);
+			</OnUpdate>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts>
+    </Frame>
+    	
+</Ui>

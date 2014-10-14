@@ -1,0 +1,250 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="RecipeBook.lua"/>
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+
+	<Button name = "RecipeBook_SkillFrameEntryTemplate" virtual = "true">
+		<Size>
+			<AbsDimension x = "340" y = "20"/>
+		</Size>
+		<Layers>
+			<Layer level = "BORDER">
+				<FontString name = "$parent_Text" inherits = "GameFontHighlight" wraponspaces = "false" justifyH = "LEFT" text = "RecipeBook_SkillFrameEntry"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>        
+			<OnClick>
+				RecipeBook_SkillButton_OnClick(arg1);
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+		</Scripts>
+	</Button>
+	<GameTooltip name="RecipeBookTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+	    <Scripts>
+		<OnLoad>
+			this:SetOwner(WorldFrame, "ANCHOR_NONE");
+		</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	<Frame name = "RecipeBookFrame" hidden = "true">
+		<Scripts>
+			<OnLoad>RecipeBook_OnLoad();</OnLoad>
+			<OnEvent>RecipeBook_OnEvent(event);</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name = "RB_SkillFrame" toplevel = "true" movable = "true" enableMouse = "true" hidden = "true" parent = "UIParent">
+		<Size>
+			<AbsDimension x = "350" y = "450"/>
+		</Size>
+		<Anchors>
+			<Anchor point = "CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level = "BACKGROUND">
+				<Texture file = "Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x = "60" y = "60"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "TOPLEFT">
+							<Offset>
+								<AbsDimension x = "7" y = "-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level = "ARTWORK">
+				<Texture name = "RB_SkillFrameTopLeft" file = "Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x = "256" y = "256"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "TOPLEFT">
+							<Offset>
+								<AbsDimension x = "0" y = "0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name = "RB_SkillFrameTopRight" file = "Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x = "128" y = "256"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "TOPRIGHT">
+							<Offset>
+								<AbsDimension x = "0" y = "0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name = "RB_SkillFrameBottomLeft" file = "Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x = "256" y = "256"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x = "0" y = "0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name = "RB_SkillFrameBottomRight" file = "Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x = "128" y = "256"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x = "0" y = "0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level = "OVERLAY">
+				<FontString name = "RB_SkillFrameTitleText" inherits = "GameFontNormal">
+					<Anchors>
+						<Anchor point = "TOP">
+							<Offset>
+								<AbsDimension x = "0" y = "-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name = "RB_SkillFrameTradeskillText" inherits = "GameFontNormal">
+					<Anchors>
+						<Anchor point = "TOP" relativeTo = "RB_SkillFrameTitleText">
+							<Offset>
+								<AbsDimension x = "0" y = "-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name = "RB_SkillFrameSpecialsText" inherits = "GameFontNormal">
+					<Anchors>
+						<Anchor point = "TOP" relativeTo = "RB_SkillFrameTradeskillText">
+							<Offset>
+								<AbsDimension x = "0" y = "-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name = "RB_SkillFrameCloseButton" inherits = "UIPanelCloseButton">
+				<Anchors>
+					<Anchor point = "TOPRIGHT">
+						<Offset>
+							<AbsDimension x = "-30" y = "-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name = "RB_SkillListFrame" hidden = "true" setAllPoints = "true">
+				<Frames>
+					<ScrollFrame name = "RecipeBook_Skill_ScrollFrame" inherits = "FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x = "296" y = "291"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOPRIGHT" relativeTo = "RB_SkillListFrame">
+								<Offset>
+									<AbsDimension x = "-67" y = "-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>FauxScrollFrame_OnVerticalScroll(16, RecipeBook_SkillScrollBar_Update)</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Button name = "RecipeBook_SkillFrameEntry1" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOPLEFT" relativeTo = "RB_SkillListFrame">
+								<Offset>
+									<AbsDimension x = "23" y = "-76"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry2" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry1" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry3" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry2" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry4" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry3" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry5" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry4" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry6" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry5" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry7" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry6" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry8" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry7" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry9" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry8" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry10" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry9" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry11" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry10" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry12" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry11" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry13" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry12" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SkillFrameEntry14" inherits = "RecipeBook_SkillFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SkillFrameEntry13" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow>RB_SkillListFrame:Show();</OnShow>
+			<OnHide>RB_SkillListFrame:Hide();</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

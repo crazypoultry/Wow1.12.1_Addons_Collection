@@ -1,0 +1,118 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<Script file="cMinimapButtonBag.lua"/>
+
+	<Frame name="cMinimapButtonBag_Frame_Button" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors> 
+		<Frames>
+			<Button name="ccMinimapButtonBag_Button_Minimap">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\Addons\cMinimapButtonBag\Button-Up.tga"/>
+				<PushedTexture file="Interface\Addons\cMinimapButtonBag\Button-Down.tga"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						cMinimapButtonBag_OnLoad();
+					</OnLoad>
+					<OnEvent>
+						cMinimapButtonBag_Function_OnEvent( event );
+					</OnEvent>
+					<OnEnter>
+						GameTooltip:SetOwner( this, "ANCHOR_BOTTOMLEFT" );
+						GameTooltip:SetText( "Bags (" .. (cMinimapButtonBag_Function_GetNumberOfStuffInBag(0)-1+cMinimapButtonBag_Function_GetNumberOfStuffInBag(1)+cMinimapButtonBag_Function_GetNumberOfStuffInBag(2)+cMinimapButtonBag_Function_GetNumberOfStuffInBag(3)+cMinimapButtonBag_Function_GetNumberOfStuffInBag(4)) .. "/" .. (GetContainerNumSlots(0)+GetContainerNumSlots(1)+GetContainerNumSlots(2)+GetContainerNumSlots(3)+GetContainerNumSlots(4)) .. ")\n\nRight-click to move this button." );
+					</OnEnter>							
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						GameTooltip:Hide();
+						PlaySound( "igMainMenuOption" );
+						cMinimapButtonBag_Function_RenameBags();
+						ShowUIPanel( cMinimapButtonBag_Frame_Menu );
+					</OnClick>
+					<OnDragStart>
+						cMinimapButtonBag_Function_OnDragStart();
+					</OnDragStart>
+					<OnDragStop>
+						cMinimapButtonBag_Function_OnDragStop();
+					</OnDragStop>
+					<OnMouseUp>
+						cMinimapButtonBag_Function_OnDragStop();
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="cMinimapButtonBag_Frame_Menu" inherits="UIMenuTemplate" parent="UIParent">
+		<Size>
+			<AbsDimension x="110" y="140"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="cMinimapButtonBag_Frame_Button" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-20" y="-20"/>
+				</Offset>
+			</Anchor>
+		</Anchors> 
+		<Scripts>
+			<OnLoad>
+
+				cMinimapButtonBag_Frame_MenuButton1:SetText( "Bag1" );
+				cMinimapButtonBag_Frame_MenuButton1.func = function() ToggleBackpack(); end;
+				cMinimapButtonBag_Frame_MenuButton2:SetText( "Bag2" );
+				cMinimapButtonBag_Frame_MenuButton2.func = function() ToggleBag(1) end;
+				cMinimapButtonBag_Frame_MenuButton3:SetText( "Bag3" );
+				cMinimapButtonBag_Frame_MenuButton3.func = function() ToggleBag(2) end;
+				cMinimapButtonBag_Frame_MenuButton4:SetText( "Bag4" );
+				cMinimapButtonBag_Frame_MenuButton4.func = function() ToggleBag(3) end;
+				cMinimapButtonBag_Frame_MenuButton5:SetText( "Bag5" );
+				cMinimapButtonBag_Frame_MenuButton5.func = function() ToggleBag(4) end;
+				cMinimapButtonBag_Frame_MenuButton6:SetText( "Open all bags" );
+				cMinimapButtonBag_Frame_MenuButton6.func = function() OpenAllBags(); end;
+				cMinimapButtonBag_Frame_MenuButton7:SetText( "Toggle keyring" );
+				cMinimapButtonBag_Frame_MenuButton7.func = ToggleKeyRing;
+				cMinimapButtonBag_Frame_MenuButton8:SetText( "Show bagslots" );
+				cMinimapButtonBag_Frame_MenuButton8.func = cMinimapButtonBag_Function_ToggleBags;
+
+				cMinimapButtonBag_Frame_MenuButton1:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton1:SetPoint( "TOPLEFT", "cMinimapButtonBag_Frame_Menu", "TOPLEFT", 6, -6 );
+				cMinimapButtonBag_Frame_MenuButton2:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton2:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton1", "BOTTOM", 0, 0 );
+				cMinimapButtonBag_Frame_MenuButton3:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton3:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton2", "BOTTOM", 0, 0 );
+				cMinimapButtonBag_Frame_MenuButton4:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton4:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton3", "BOTTOM", 0, 0 );
+				cMinimapButtonBag_Frame_MenuButton5:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton5:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton4", "BOTTOM", 0, 0 );
+				cMinimapButtonBag_Frame_MenuButton6:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton6:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton5", "BOTTOM", 0, 0 );
+				cMinimapButtonBag_Frame_MenuButton7:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton7:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton6", "BOTTOM", 0, 0 );
+				cMinimapButtonBag_Frame_MenuButton8:ClearAllPoints();
+				cMinimapButtonBag_Frame_MenuButton8:SetPoint( "TOP", "cMinimapButtonBag_Frame_MenuButton7", "BOTTOM", 0, 0 );
+
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+
+</Ui>

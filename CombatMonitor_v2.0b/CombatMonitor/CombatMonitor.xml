@@ -1,0 +1,2120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML\UI.xsd">
+	<Script file="CombatMonitor.lua"/>
+	<Script file="CombatMonitorEvent.lua"/>
+	<Script file="localisation.lua"/>
+	<Script file="localisation.de.lua"/>
+	<Script file="localisation.fr.lua"/>
+
+	<Button name="CombatMonitorSummaryFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" movable="true" enableMouse="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+		</Backdrop>
+		<Size>
+				<AbsDimension x="150" y="12"/>
+		</Size>
+		<Anchors>
+				<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
+					<Offset>
+						<AbsDimension x="200" y="0"/>
+					</Offset>
+				</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="CombatMonitorSummaryText" inherits="GameFontNormalSmall" justifyh="CENTER">
+					<Size>
+						<AbsDimension x="150" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSummaryFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="CombatMonitorAddTarget" inherits="GameMenuButtonTemplate" hidden="true" text="+">
+				<Size>
+					<AbsDimension x="14" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CombatMonitorSummaryText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_AddName(UnitName("target"));
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				CombatMonitor_OnEvent(event);
+			</OnEvent>
+			<OnClick>
+				CombatMonitor_OnClick(arg1);
+			</OnClick>
+			<OnLoad>
+				CombatMonitor_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				CombatMonitor_OnUpdate(arg1);
+			</OnUpdate>
+			<OnDragStart>
+				if IsAltKeyDown() then
+					this:StartMoving();
+				end
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+	</Button>
+
+	<Button name="CombatMonitorDPSFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" movable="true" enableMouse="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+		</Backdrop>
+		<Size>
+				<AbsDimension x="102" y="45"/>
+		</Size>
+		<Anchors>
+				<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+					<Offset>
+						<AbsDimension x="2" y="0"/>
+					</Offset>
+				</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="CombatMonitorDPSBanner" inherits="GameFontNormalSmall" justifyh="CENTER">
+					<Size>
+						<AbsDimension x="90" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorDPSFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorPDPSLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="30" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CombatMonitorDPSFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorPDPSValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorPDPSLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorIDPSLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="30" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorPDPSLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorIDPSValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="60" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorIDPSLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorADPSLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="30" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorIDPSLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorADPSValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorADPSLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnClick>
+				CombatMonitor_OnClickDPS(arg1);
+			</OnClick>
+			<OnDragStart>
+				if IsAltKeyDown() then
+					this:StartMoving();
+				end
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+	</Button>
+
+
+	<Button name="CombatMonitorDetailsFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+		</Backdrop>
+		<Size>
+				<AbsDimension x="500" y="350"/>
+		</Size>
+		<Anchors>
+				<Anchor point="TOP" relativeTo="CombatMonitorSummaryFrame" relativePoint="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="CombatMonitorDumpButton" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="6" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_Dump();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CombatMonitorSummaryButton" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="60" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CombatMonitorDumpButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_CopyFrame();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CombatMonitorOptionsButton" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="90" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_Options();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CombatMonitorSelectOpponentButton" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="150" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CombatMonitorDetailsFrame" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_SelectOpponent();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+
+				<!-- Melee stats -->
+
+				<FontString name="CombatMonitorMeleeKey" inherits="GameFontNormalSmall" justifyh="CENTER">
+					<Size>
+						<AbsDimension x="55" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CombatMonitorDetailsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorDamageTakenKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorDamageHitsKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorDamageTakenKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorDamageAverageKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorDamageHitsKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorDamageResistedKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorDamageAverageKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee1Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeKey" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee1Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee1Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee1Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee1Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee1Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee1Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee2Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMelee1Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee2Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee2Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee2Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee2Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee2Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee2Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee2Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee2Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee3Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMelee2Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee3Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee3Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee3Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee3Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee3Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee3Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee3Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee3Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee4Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMelee3Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee4Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee4Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee4Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee4Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee4Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee4Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee4Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee4Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee5Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMelee4Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee5Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee5Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee5Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee5Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee5Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee5Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee5Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee5Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee6Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMelee5Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee6Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee6Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee6Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee6Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee6Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee6Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee6Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee6Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMelee7Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMelee6Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee7Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee7Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee7Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee7Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee7Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee7Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMelee7Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMelee7Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeTotalAttacksLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="CombatMonitorDetailsFrame" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-125" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeTotalAttacksValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeTotalAttacksLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeTotalMissesLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeTotalAttacksLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeTotalMissesValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeTotalMissesLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeTotalDodgesLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeTotalMissesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeTotalDodgesValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeTotalDodgesLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeTotalParriesLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeTotalDodgesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeTotalParriesValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeTotalParriesLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeFullBlocksLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeTotalParriesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeFullBlocksValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeFullBlocksLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleePartialBlocksLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeFullBlocksLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleePartialBlocksValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleePartialBlocksLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeTotalCritsLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleePartialBlocksLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeTotalCritsValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeTotalCritsLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorMeleeTotalCrushLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorMeleeTotalCritsLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorMeleeTotalCrushValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorMeleeTotalCrushLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<!-- Spell damage -->
+
+				<FontString name="CombatMonitorSpellKey" inherits="GameFontNormalSmall" justifyh="CENTER">
+					<Size>
+						<AbsDimension x="55" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CombatMonitorDetailsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-160"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTakenKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellHitsKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTakenKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellAverageKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellHitsKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellResistedKey" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellAverageKey" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell1Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellKey" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell1Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell1Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell1Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell1Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell1Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell1Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell1Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell1Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell2Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpell1Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell2Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell2Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell2Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell2Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell2Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell2Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell2Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell2Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell3Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpell2Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell3Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell3Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell3Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell3Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell3Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell3Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell3Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell3Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell4Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpell3Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell4Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell4Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell4Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell4Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell4Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell4Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell4Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell4Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell5Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpell4Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell5Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell5Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell5Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell5Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell5Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell5Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell5Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell5Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell6Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpell5Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell6Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell6Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell6Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell6Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell6Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell6Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell6Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell6Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpell7Label" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpell6Label" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell7Taken" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell7Label" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell7Hits" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="40" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell7Taken" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell7Average" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="50" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell7Hits" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpell7Resisted" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="70" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpell7Average" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellTotalAttacksLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="CombatMonitorDetailsFrame" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-125" y="-160"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTotalAttacksValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTotalAttacksLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellTotalMissesLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellTotalAttacksLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTotalMissesValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTotalMissesLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellTotalDodgesLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellTotalMissesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTotalDodgesValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTotalDodgesLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellTotalParriesLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellTotalDodgesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTotalParriesValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTotalParriesLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellFullBlocksLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellTotalParriesLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellFullBlocksValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellFullBlocksLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellPartialBlocksLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellFullBlocksLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellPartialBlocksValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellPartialBlocksLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellTotalCritsLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellPartialBlocksLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTotalCritsValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTotalCritsLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorSpellTotalCrushLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellTotalCritsLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorSpellTotalCrushValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorSpellTotalCrushLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorResistsLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorSpellTotalCrushLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorResistsValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorResistsLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="CombatMonitorDamageBlockedLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="CombatMonitorDetailsFrame" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-125" y="80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorDamageBlockedValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorDamageBlockedLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorBlockMitigationLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorDamageBlockedLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorBlockMitigationValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorBlockMitigationLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorDoubleCritsLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CombatMonitorDetailsFrame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorDoubleCritsValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorDoubleCritsLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorTripleCritsLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorDoubleCritsLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorTripleCritsValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorTripleCritsLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="CombatMonitorTotalDamageLabel" inherits="GameFontNormalSmall" justifyh="RIGHT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CombatMonitorTripleCritsLabel" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="CombatMonitorTotalDamageValue" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="140" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="CombatMonitorTotalDamageLabel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				CombatMonitor_OnClick(arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Frame name="CombatMonitorOptionsFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+		</Backdrop>
+		<Size>
+				<AbsDimension x="375" y="200"/>
+		</Size>
+		<Anchors>
+				<Anchor point="TOP" relativeTo="CombatMonitorDetailsFrame" relativePoint="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="CombatMonitorDumpChannelLabel" inherits="GameFontNormalSmall" justifyh="LEFT">
+					<Size>
+						<AbsDimension x="90" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CombatMonitorOptionsFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="3" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="CombatMonitorOptionsCloseButton" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="48" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_CloseOptions();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CombatMonitorDumpChannelButton" inherits="GameMenuButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CombatMonitorDumpChannelLabel" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ToggleDropDownMenu(1, nil, CombatMonitorDumpChannelDropDown, "CombatMonitorDumpChannelButton", "MENU");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="CombatMonitorDumpChannelDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-10" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<CheckButton name="CombatMonitorTrackEnvironmentalCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CombatMonitorDumpChannelLabel" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="3" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_TrackEnvironmentalClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CombatMonitorEnableCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CombatMonitorTrackEnvironmentalCheckButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_EnableClick();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CombatMonitorDPSCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CombatMonitorEnableCheckButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_ShowDPS();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CombatMonitorPercentCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CombatMonitorDPSCheckButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_ShowPercent();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CombatMonitorNewOpponentsCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CombatMonitorTrackEnvironmentalCheckButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="150" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_TrackNew();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<EditBox name="CombatMonitorOpponentEdit" autoFocus="no">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CombatMonitorNewOpponentsCheckButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-8" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="150" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<Button name="CombatMonitorAddOpponent" inherits="GameMenuButtonTemplate" text="Add">
+				<Size>
+					<AbsDimension x="40" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="CombatMonitorOpponentEdit" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitor_AddName(CombatMonitorOpponentEdit:GetText());
+						CombatMonitorOpponentEdit:SetText("")
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="CombatMonitorVersionString" inherits="GameFontNormal" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CombatMonitorCopyFrame" frameStrata="MEDIUM" toplevel="true" parent="CombatMonitorDetailsFrame" hidden="true">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+		</Backdrop>
+		<Size>
+			<AbsDimension x="230" y="400"/>
+		</Size>
+		<Anchors>
+				<Anchor point="RIGHT" relativeTo="CombatMonitorDetailsFrame" relativePoint="LEFT">
+					<Offset>
+						<AbsDimension x="-3" y="0"/>
+					</Offset>
+				</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="CombatMonitorCopyCloseButton" inherits="GameMenuButtonTemplate">
+				<Size>
+					<AbsDimension x="48" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CombatMonitorCopyFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="CombatMonitorCopyText" letters="1000" multiLine="true" enableMouse="true" autoFocus="false">
+				<Size>
+					<AbsDimension x="220" y="350"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="GameFontNormalSmall"/>
+			</EditBox>
+		</Frames>
+	</Frame>
+</Ui>

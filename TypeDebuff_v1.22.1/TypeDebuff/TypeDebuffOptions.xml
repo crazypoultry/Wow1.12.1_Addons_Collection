@@ -1,0 +1,744 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="TypeDebuffOptions.lua" />
+	
+	<Slider name="TypeDebuffSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTextValue" inherits="GameFontNormalSmall" text="XXX">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+					GameTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, alpha);
+					GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, alpha);
+					GameTooltip:SetText(this.tooltipText, 1.0, 1.0, 1.0);
+				end
+			</OnEnter>
+			<OnValueChanged>
+				PlaySound("igMainMenuOptionCheckBoxOn");	
+				TypeDebuffOptions_SliderOnValueChanged();
+			</OnValueChanged>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Slider>
+	
+	<CheckButton name="TypeDebuffCheckTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-50" top="0" bottom="0" />
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				end
+				TypeDebuffOptions_CheckButtonOnClick();
+			</OnClick>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+					GameTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, alpha);
+					GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, alpha);
+					GameTooltip:SetText(this.tooltipText, 1.0, 1.0, 1.0);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	
+	<EditBox name="TypeDebuffEditBoxTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="170" y="22"/>
+		</Size>
+		<Scripts>
+			<OnEnterPressed>
+				TypeDebuffOptions_SetText();
+				this:ClearFocus();
+			</OnEnterPressed>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	
+	<Frame name="TypeDebuffSwatchTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="40" />
+		</Size>
+		<Frames>
+			<Button name="$parent_ColorSwatch">
+				<Size>
+					<AbsDimension x="16" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="10" y="10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_SwatchBg">
+							<Size>
+								<AbsDimension x="14" y="14" />
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						TypeDebuffOptions_OpenColorPicker(this:GetParent());
+					</OnClick>
+					<OnEnter>
+						getglobal(this:GetName().."_SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave>
+						getglobal(this:GetName().."_SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLeave>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch" />
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+					GameTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, alpha);
+					GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, alpha);
+					GameTooltip:SetText(this.tooltipText, 1.0, 1.0, 1.0);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>	
+	
+	<Frame name="TypeDebuffOptionsFrame" toplevel="true" frameStrata="MEDIUM" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="628" y="410" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+			tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="TypeDebuffTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="290" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="TYPEDEBUFFOPTIONS_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="TypeDebuffOptionsFrame">
+							<Offset>
+								<AbsDimension x="0" y="-2" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<Frame name="TypeDebuffOptionsFrame_General" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="600" y="40"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="TypeDebuffOptionsFrame_CheckButton2" inherits="TypeDebuffCheckTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_General">
+								<Offset>
+									<AbsDimension x="10" y="-5" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="TypeDebuffOptionsFrame_CheckButton3" inherits="TypeDebuffCheckTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="LEFT" relativeTo="TypeDebuffOptionsFrame_CheckButton2">
+								<Offset>
+									<AbsDimension x="80" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(TYPEDEBUFFOPTIONS_GENERAL);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+						
+			<Frame name="TypeDebuffOptionsFrame_Poison" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="300" y="130"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="TypeDebuffOptionsFrame_General">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="TypeDebuffSwatchFrame1" inherits="TypeDebuffSwatchTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Poison">
+								<Offset>
+									<AbsDimension x="10" y="-15" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<CheckButton name="TypeDebuffOptionsFrame_CheckButton4" inherits="TypeDebuffCheckTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="TypeDebuffSwatchFrame1">
+								<Offset>
+									<AbsDimension x="-10" y="10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox name="TypeDebuffOptionsFrame_EditBox1" inherits="TypeDebuffEditBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT"  relativePoint="RIGHT" relativeTo="TypeDebuffOptionsFrame_CheckButton4">
+								<Offset>
+									<AbsDimension x="50" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<Slider name="TypeDebuffOptionsFrame_Slider9" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffSwatchFrame1">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Frame name="TypeDebuffOptionsFrame_DropDown1" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider9">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								TypeDebuffOptions_DropDown_OnLoad1();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Slider name="TypeDebuffOptionsFrame_Slider1" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Slider9">
+								<Offset>
+									<AbsDimension x="0" y="-40" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="TypeDebuffOptionsFrame_Slider2" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider1">
+								<Offset>
+									<AbsDimension x="15" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>		
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(TYPEDEBUFFOPTIONS_TEXTPOISON);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="TypeDebuffOptionsFrame_Disease" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="300" y="130"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Poison">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="TypeDebuffSwatchFrame2" inherits="TypeDebuffSwatchTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Disease">
+								<Offset>
+									<AbsDimension x="10" y="-15" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<CheckButton name="TypeDebuffOptionsFrame_CheckButton5" inherits="TypeDebuffCheckTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="TypeDebuffSwatchFrame2">
+								<Offset>
+									<AbsDimension x="-10" y="10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox name="TypeDebuffOptionsFrame_EditBox2" inherits="TypeDebuffEditBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT"  relativePoint="RIGHT" relativeTo="TypeDebuffOptionsFrame_CheckButton5">
+								<Offset>
+									<AbsDimension x="50" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<Slider name="TypeDebuffOptionsFrame_Slider10" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffSwatchFrame2">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Frame name="TypeDebuffOptionsFrame_DropDown2" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider10">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								TypeDebuffOptions_DropDown_OnLoad2();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Slider name="TypeDebuffOptionsFrame_Slider3" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Slider10">
+								<Offset>
+									<AbsDimension x="0" y="-40" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="TypeDebuffOptionsFrame_Slider4" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider3">
+								<Offset>
+									<AbsDimension x="15" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>		
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(TYPEDEBUFFOPTIONS_TEXTDISEASE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="TypeDebuffOptionsFrame_Curse" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="300" y="130"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="TypeDebuffOptionsFrame_Poison">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="TypeDebuffSwatchFrame3" inherits="TypeDebuffSwatchTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Curse">
+								<Offset>
+									<AbsDimension x="10" y="-15" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<CheckButton name="TypeDebuffOptionsFrame_CheckButton6" inherits="TypeDebuffCheckTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="TypeDebuffSwatchFrame3">
+								<Offset>
+									<AbsDimension x="-10" y="10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox name="TypeDebuffOptionsFrame_EditBox3" inherits="TypeDebuffEditBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT"  relativePoint="RIGHT" relativeTo="TypeDebuffOptionsFrame_CheckButton6">
+								<Offset>
+									<AbsDimension x="50" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<Slider name="TypeDebuffOptionsFrame_Slider11" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffSwatchFrame3">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Frame name="TypeDebuffOptionsFrame_DropDown3" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider11">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								TypeDebuffOptions_DropDown_OnLoad3();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Slider name="TypeDebuffOptionsFrame_Slider5" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Slider11">
+								<Offset>
+									<AbsDimension x="0" y="-40" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="TypeDebuffOptionsFrame_Slider6" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider5">
+								<Offset>
+									<AbsDimension x="15" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>		
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(TYPEDEBUFFOPTIONS_TEXTCURSE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<Frame name="TypeDebuffOptionsFrame_Magic" inherits="OptionFrameBoxTemplate">
+				<Size>
+					<AbsDimension x="300" y="130"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Curse">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="TypeDebuffSwatchFrame4" inherits="TypeDebuffSwatchTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Magic">
+								<Offset>
+									<AbsDimension x="10" y="-15" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<CheckButton name="TypeDebuffOptionsFrame_CheckButton7" inherits="TypeDebuffCheckTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="TypeDebuffSwatchFrame4">
+								<Offset>
+									<AbsDimension x="-10" y="10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<EditBox name="TypeDebuffOptionsFrame_EditBox4" inherits="TypeDebuffEditBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT"  relativePoint="RIGHT" relativeTo="TypeDebuffOptionsFrame_CheckButton7">
+								<Offset>
+									<AbsDimension x="50" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<Slider name="TypeDebuffOptionsFrame_Slider12" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffSwatchFrame4">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Frame name="TypeDebuffOptionsFrame_DropDown4" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider12">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								TypeDebuffOptions_DropDown_OnLoad4();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					<Slider name="TypeDebuffOptionsFrame_Slider7" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TypeDebuffOptionsFrame_Slider12">
+								<Offset>
+									<AbsDimension x="0" y="-40" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="TypeDebuffOptionsFrame_Slider8" inherits="TypeDebuffSliderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame_Slider7">
+								<Offset>
+									<AbsDimension x="15" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>		
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+						getglobal(this:GetName().."Title"):SetText(TYPEDEBUFFOPTIONS_TEXTMAGIC);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			
+			<CheckButton name="TypeDebuffOptionsFrame_CheckButton1" inherits="TypeDebuffCheckTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="TypeDebuffOptionsFrame">
+						<Offset>
+							<AbsDimension x="-50" y="-12" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+				
+			<Button name="TypeDebuffOptionsSave" inherits="GameMenuButtonTemplate" text="TYPEDEBUFFOPTIONS_CLOSE">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="TypeDebuffOptionsFrame">
+						<Offset>
+							<AbsDimension x="-15" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						if ( ColorPickerFrame:IsVisible() ) then
+							ColorPickerFrame:Hide();
+						end
+						TypeDebuffOptions_SaveText();
+						TypeDebuff_HideOptions();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="TypeDebuffOptionsReset" inherits="OptionsButtonTemplate" text="TYPEDEBUFFOPTIONS_DEFAULT">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="TypeDebuffOptionsFrame">
+						<Offset>
+							<AbsDimension x="15" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						TypeDebuff_ResetOptions();
+						TypeDebuff_HideOptions();
+						TypeDebuff_ShowOptions();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b, alpha);
+						GameTooltip:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, alpha);
+						GameTooltip:SetText(TYPEDEBUFFOPTIONS_RESETTOOLTIPTEXT, 1.0, 0.0, 0.0);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			
+		</Frames>
+		
+		<Scripts>
+			<OnLoad>
+				TypeDebuffOptions_OnLoad();
+			</OnLoad>
+			<OnShow>
+				TypeDebuffOptions_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	
+</Ui>

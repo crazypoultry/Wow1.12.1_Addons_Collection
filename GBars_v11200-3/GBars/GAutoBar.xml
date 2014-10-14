@@ -1,0 +1,103 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/UI.xsd">
+	<Script file="GAutoBar.lua" />
+
+	<CheckButton name="GAutoBarButtonTemplate" inherits="ActionButtonTemplate" virtual="true" hidden="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("UPDATE_BINDINGS")
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+				this.bag = nil
+				this.slot = nil
+				this.showgrid = 0
+			</OnLoad>
+			<OnShow />
+			<OnUpdate />
+			<OnEvent>
+				if (event == "UPDATE_BINDINGS") then
+					GActionButton_UpdateBindings()
+				end
+			</OnEvent>
+			<OnClick>
+				GAutoBar_UseItem(this)
+				this:SetChecked(0)
+			</OnClick>
+			<OnEnter>
+				GAutoBar_ShowTooltip(this)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="GAutoBar" inherits="GMovable" parent="GBars">
+		<Scripts>
+			<OnLoad>
+				this.basename = "GAutoBarButton"
+				this.first, this.last = 1, 5
+				this.Dock = function(this)
+					this:ClearAllPoints()
+					this:SetPoint("BOTTOMLEFT", "$parent", "BOTTOMLEFT", 826, 43)
+					GBars_LayoutHorizontal(this)
+				end
+				GAutoBar_OnLoad()
+			</OnLoad>
+			<OnUpdate>
+				GAutoBar_OnUpdate(arg1)
+			</OnUpdate>
+			<OnEvent>
+				GAutoBar_OnEvent()
+			</OnEvent>
+		</Scripts>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoints="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="826" y="43" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<CheckButton name="GAutoBarButton1" inherits="GAutoBarButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GAutoBarButton2" inherits="GAutoBarButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GAutoBarButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GAutoBarButton3" inherits="GAutoBarButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GAutoBarButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GAutoBarButton4" inherits="GAutoBarButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GAutoBarButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="GAutoBarButton5" inherits="GAutoBarButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="GAutoBarButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>

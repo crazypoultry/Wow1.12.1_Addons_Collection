@@ -1,0 +1,384 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+    
+    <Script file="MI2_Config.lua" />
+
+    <!-- ============================================================ -->
+    <!-- Template for frame around option groups + title above frame  -->
+    <Frame name="MI2_OptionsFrameTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+        <Scripts>
+            <OnShow>
+                this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+                this:SetBackdropColor(0.15, 0.15, 0.15);
+                getglobal(this:GetName().."Title"):SetText(MI2_FRAME_TEXTS[this:GetName()]);
+            </OnShow>
+        </Scripts>
+    </Frame>
+
+    <!-- ============================================================ -->
+    <!-- Template for all checkboxes used in options dialog           -->
+    <!-- defines size, text and all otherevent related actions        -->
+    <CheckButton name="MI2_CheckboxTemplate" inherits="UICheckButtonTemplate" virtual="true">
+        <Size> <AbsDimension x="24" y="24" /> </Size>
+        <HitRectInsets> <AbsInset left="0" right="-100" top="0" bottom="0"/> </HitRectInsets>
+        <Scripts>
+            <OnShow>  getglobal(this:GetName().."Text"):SetText(MI2_OPTIONS[this:GetName()].text); </OnShow>
+            <OnClick> MI2_OptionParse( MI2_OPTIONS[this:GetName()].cmnd, "", false); </OnClick>
+            <OnEnter> MI2_ShowOptionHelpTooltip(); </OnEnter>
+            <OnLeave> GameTooltip:Hide(); </OnLeave>
+        </Scripts>
+    </CheckButton>
+
+    <!-- ============================================================ -->
+    <!-- Template for all push buttons options dialog                 -->
+    <!-- defines text and all other event related actions             -->
+    <Button name="MI2_PushButtonTemplate" inherits="OptionsButtonTemplate" virtual="true">
+        <Scripts>
+            <OnShow>  getglobal(this:GetName()):SetText(MI2_OPTIONS[this:GetName()].text); </OnShow>
+            <OnClick> MI2_OptionParse(MI2_OPTIONS[this:GetName()].cmnd, "", false); </OnClick>
+            <OnEnter> MI2_ShowOptionHelpTooltip(); </OnEnter>
+            <OnLeave> GameTooltip:Hide(); </OnLeave>
+        </Scripts>
+    </Button>
+
+    <!-- ============================================================ -->
+    <!-- Template for all sliders in options dialog                   -->
+    <!-- defines text and all other event related actions             -->
+	<Slider name="MI2_SliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Scripts>
+            <OnShow>  getglobal(this:GetName().."Text"):SetText(MI2_OPTIONS[this:GetName()].text); </OnShow>
+            <OnEnter> MI2_ShowOptionHelpTooltip(); </OnEnter>
+            <OnLeave> GameTooltip:Hide(); </OnLeave>
+            <OnValueChanged> 
+                MI2_OptionParse(MI2_OPTIONS[this:GetName()].cmnd, math.floor(this:GetValue()), false); 
+            </OnValueChanged>
+		</Scripts>
+	</Slider>
+
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!--                   MobInfo-2 Options Dialog Box               -->
+    <!-- ============================================================ -->
+    <Frame name="frmMIConfig" parent="UIParent" enableMouse="true" movable="true" frameStrata="DIALOG"
+        hidden="true" toplevel="true">
+        
+        <!-- dialog size & position -->
+        <Size>    <AbsDimension x="480" y="520" /> </Size>
+        <Anchors> <Anchor point="CENTER" />        </Anchors>
+        
+        <!-- dialog box background -->
+        <Backdrop name="bdMI" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+            tile="true">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11" />
+                <Size> <AbsDimension x="128" y="17" /> </Size>
+            </BackgroundInsets>
+            <TileSize> <AbsValue val="32" /> </TileSize>
+            <EdgeSize> <AbsValue val="32" /> </EdgeSize>
+        </Backdrop>
+        
+        <!-- ======================================================== -->
+        <!-- dialog box title                                         -->
+        <Layers>
+            <Layer level="ARTWORK">
+                <Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+                    <Size> <AbsDimension x="320" y="64" /> </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset> <AbsDimension x="0" y="12" /> </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <FontString name="txtMIConfigTitle" inherits="GameFontNormal">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="frmMIConfig">
+                            <Offset> <AbsDimension x="0" y="-2" /> </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+        <!-- ======================================================== -->
+        <!-- dialog box frame and buttons                             -->
+        <Frames>
+        
+            <!-- ==================================================== -->
+            <!-- inner frame with tooltip display options             -->
+            <Frame name="MI2_FrmTooltipOptions" inherits="MI2_OptionsFrameTemplate">
+                <Size> <AbsDimension x="210" y="320" /> </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset> <AbsDimension x="20" y="-40" /> </Offset>
+                    </Anchor>
+                </Anchors>
+
+                <!-- ================================================ -->
+                <!-- controls within tooltip options frame            -->
+                <Frames>
+                    <CheckButton name="MI2_OptShowClass" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-10" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowHealth" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-30" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowDamage" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-50" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowCombined" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-70" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowKills" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-100" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowLoots" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-120" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowEmpty" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-140" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowXp" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-160" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowNo2lev" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-180" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowQuality" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-210" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowCloth" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-230" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowCoin" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-250" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowIV" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-270" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowTotal" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-290" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                </Frames>
+            </Frame>
+            
+            <!-- ==================================================== -->
+            <!-- inner frame with general MobInfo options             -->
+            <Frame name="MI2_FrmGeneralOptions" inherits="MI2_OptionsFrameTemplate">
+                <Size> <AbsDimension x="220" y="125" /> </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativeTo="MI2_FrmTooltipOptions"  relativePoint="BOTTOMRIGHT">
+                        <Offset> <AbsDimension x="10" y="0" /> </Offset>
+                    </Anchor>
+                </Anchors>
+                
+                <!-- ================================================ -->
+                <!-- controls within general options subframe         -->
+                <Frames>
+                    <CheckButton name="MI2_OptCombinedMode" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-10" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptKeypressMode" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-30" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowBlankLines" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-50" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptSaveAllValues" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-70" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptClearOnExit" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-90" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                </Frames>
+            </Frame>
+
+            <!-- ==================================================== -->
+            <!-- inner frame with Mob health options                  -->
+            <Frame name="MI2_FrmHealthOptions" inherits="MI2_OptionsFrameTemplate">
+                <Size> <AbsDimension x="440" y="80" /> </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="MI2_FrmTooltipOptions"  relativePoint="BOTTOMLEFT">
+                        <Offset> <AbsDimension x="0" y="-20" /> </Offset>
+                    </Anchor>
+                </Anchors>
+                
+                <!-- ================================================ -->
+                <!-- controls within MobHealth options subframe       -->
+                <Frames>
+                    <CheckButton name="MI2_OptDisableHealth" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-10" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptStableMax" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-30" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+                    <CheckButton name="MI2_OptShowPercent" inherits="MI2_CheckboxTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset> <AbsDimension x="10" y="-50" /> </Offset>
+                            </Anchor>
+                        </Anchors>
+                    </CheckButton>
+					<Slider name="MI2_OptHealthPosY" inherits="MI2_SliderTemplate">
+                        <Size> <AbsDimension x="220" y="20" /> </Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="210" y="-20" /></Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MI2_OptManaDistance" inherits="MI2_SliderTemplate">
+                        <Size> <AbsDimension x="100" y="20" /> </Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MI2_OptHealthPosY">
+								<Offset><AbsDimension x="0" y="-30" /></Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<Slider name="MI2_OptHealthPosX" inherits="MI2_SliderTemplate">
+                        <Size> <AbsDimension x="110" y="20" /> </Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MI2_OptHealthPosY">
+								<Offset><AbsDimension x="110" y="-30" /></Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+                </Frames>
+            </Frame>
+
+            <!-- ==================================================== -->
+            <!-- main "Done" button for dialog                        -->
+            <Button name="MI2_OptBtnDone" inherits="MI2_PushButtonTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset> <AbsDimension x="0" y="20" /> </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick> miConfig_btnMIDone_OnClick() </OnClick>
+                </Scripts>
+            </Button>
+
+            <!-- ==================================================== -->
+            <!-- buttons controlling the tooltip show options         -->
+            <Button name="MI2_OptDefault" inherits="MI2_PushButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset> <AbsDimension x="240" y="-40" /> </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="MI2_OptAllOn" inherits="MI2_PushButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset> <AbsDimension x="240" y="-70" /> </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="MI2_OptAllOff" inherits="MI2_PushButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset> <AbsDimension x="240" y="-100" /> </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="MI2_OptMinimal" inherits="MI2_PushButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset> <AbsDimension x="240" y="-130" /> </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+        </Frames>
+        
+        <Scripts>
+            <OnLoad> MI2_OptionsFrameOnLoad(); </OnLoad>
+            <OnShow> MI2_OptionsFrameOnShow(); </OnShow>
+            <OnMouseDown> miConfig_OnMouseDown(arg1); </OnMouseDown>
+            <OnMouseUp> miConfig_OnMouseUp(arg1); </OnMouseUp>
+        </Scripts>
+    </Frame>
+</Ui>

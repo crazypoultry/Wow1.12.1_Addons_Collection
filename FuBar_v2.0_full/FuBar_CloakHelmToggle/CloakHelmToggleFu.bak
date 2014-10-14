@@ -1,0 +1,141 @@
+local compost = CompostLib:GetInstance('compost-1')
+local dewdrop = DewdropLib:GetInstance('1.0')
+local tablet = TabletLib:GetInstance('1.0')
+local metro = Metrognome:GetInstance('1')
+
+CloakHelmToggle = FuBarPlugin:new({
+	name          = "FuBar - CloakHelmToggle",
+	description   = "Toggles player's Cloak and Helm display.",
+	version       = "0.2.0",
+	releaseDate   = "04-13-2006",
+	aceCompatible = 103,
+	fuCompatible  = 102,
+	author        = "brotherhobbes",
+	email         = "brotherhobbes@gmail.com",
+	website       = "http://www.wowinterface.com/",
+	category      = "inventory",
+	hasIcon       = false,
+	defaultPosition = "CENTER",
+})
+
+-- Methods
+function CloakHelmToggle:ToggleCloak()
+	ShowCloak(not ShowingCloak());
+	self:Update()
+end
+
+function CloakHelmToggle:ToggleHelm()
+	ShowHelm(not ShowingHelm());
+	self:Update()
+end
+
+function CloakHelmToggle:Initialize()
+	self.textCloak = "Cloak"
+	self.textHelm = "Helm"
+end
+
+function CloakHelmToggle:MenuSettings(level, value)
+	if level == 1 then
+		dewdrop:AddLine(
+			'text', "Cloak",
+			'func', function()
+				self:ToggleCloak()
+			end,
+			'checked', ShowingCloak()
+		)
+		dewdrop:AddLine(
+			'text', "Helm",
+			'func', function()
+				self:ToggleHelm()
+			end,
+			'checked', ShowingHelm()
+		)
+	end
+end	
+
+function CloakHelmToggle:UpdateText()
+	local HColor = ShowingHelm() and FuBarUtils.COLOR_HEX_GREEN or FuBarUtils.COLOR_HEX_RED
+	local CColor = ShowingCloak() and FuBarUtils.COLOR_HEX_GREEN or FuBarUtils.COLOR_HEX_RED
+	self:SetText(FuBarUtils.Colorize(HColor, self.textCloak)..FuBarUtils.Colorize(CColor, self.textHelm))
+end
+
+function CloakHelmToggle:UpdateTooltip()
+	local IsCloak = ShowingCloak()
+	local IsHelm = ShowingHelm()
+--	self.tooltip:AddDoubleLine(nil, "Cloak", IsCloak and "On" or "Off", 1, 1, 0, IsCloak and 0 or 1, IsCloak and 1 or 0, 0)
+--	self.tooltip:AddDoubleLine(nil, "Helm", IsHelm and "On" or "Off", 1, 1, 0, IsHelm and 0 or 1, IsHelm and 1 or 0, 0)
+
+	local cat = tablet:AddCategory(
+		'columns', 2,
+		'child_textR', 1,
+		'child_textG', 1,
+		'child_textB', 0,
+		'child_text2R', 1,
+		'child_text2G', 1,
+		'child_text2B', 0
+	)
+	cat:AddLine(
+		'text', "Cloak",
+		'text2', IsCloak and "On" or "Off",
+		'text2R', IsCloak and 0 or 1,
+		'text2G', IsCloak and 1 or 0,
+		'text2B', 0
+	)
+
+	cat:AddLine(
+		'text', "Helm",
+		'text2', IsHelm and "On" or "Off",
+		'text2R', IsHelm and 0 or 1,
+		'text2G', IsHelm and 1 or 0,
+		'text2B', 0
+	)
+
+	tablet:SetHint("Click to toggle.")
+end
+	
+function CloakHelmToggle:OnClick()
+--[[	local ctest,htest
+	if ShowingCloak() then ctest = 1 else ctest = 0 end
+	if ShowingHelm() then htest = 1 else htest = 0 end
+
+	local i = (2 * (ctest or 0) + htest or 0 + 1)
+	if i > 3 then i = i - 4 end
+	if i >= 2 then ShowCloak(1); i = i - 2; else ShowCloak(0); end
+	ShowCloak(i)
+]]--
+	local H,C = ShowingHelm(),ShowingCloak()
+	local found = false
+	--Look for a combination we're familiar with; if matched, go to the next one.
+
+	-- 1,1
+	if (H == 1 and C == 1 and not found) then
+		H,C = 1,0
+		found = true
+	end
+
+	-- 1,0
+	if (H == 1 and C == nil and not found) then
+		H,C = 0,1
+		found = true
+	end
+
+	-- 0,1
+	if (H == nil and C == 1 and not found) then
+		H,C = 0,0
+		found = true
+	end
+
+	--If no match, set all on.
+	if (not found) then
+		H,C = 1,1
+		found = true
+	end
+
+	--Set the new values
+	ShowHelm(H)
+	ShowCloak(C)
+
+	self:Update()
+end
+
+CloakHelmToggle:RegisterForLoad()

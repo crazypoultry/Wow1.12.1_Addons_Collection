@@ -1,0 +1,136 @@
+<!--
+
+
+	AnkhCooldowTimer by Starforce (starforce@playmate.se)
+	
+	Gives shamans a timer for their reincarnation ability
+	
+	    Currently playing on Shattered Hands (EU)
+	Greets fly out to: Kroon, Imothep, Enochia, Evilution
+			   and everyone in the Aesir guild
+	
+
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="AnkhCooldownTimer.lua"/>
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Frame name="AnkhCT_Frame" movable="true" hidden="false" parent="UIParent">
+		<Size>
+			<AbsDimension x="130" y="40"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="Minimap" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="-14" y="67"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AnkhCT_Ankhs" hidden="false" inherits="GameFontNormal" text="AnkhCT">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="AnkhCT_Cooldown" hidden="false" inherits="GameFontNormal" text="cooldown">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+
+			<OnLoad>							
+				AnkhCT_OnLoad()
+			</OnLoad>
+			<OnEvent>
+				AnkhCT_OnEvent(event)
+			</OnEvent>
+			<OnUpdate>
+				AnkhCT_OnUpdate(arg1)
+			</OnUpdate>			
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" ) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnEnter>
+				GameTooltip:SetOwner(this);
+				GameTooltip:SetText(TitanPanelAnkhCTButton_GetTooltipText(), ANCHOR_BOTTOM);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnMouseUp>
+				if ( arg1 == "LeftButton" ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnHide>
+				if( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	
+	<Frame parent="UIParent">
+			<Frames>
+				<Button name="TitanPanelAnkhCTButton" inherits="TitanPanelTextTemplate" frameStrata="FULLSCREEN" toplevel="true">
+					<Scripts>
+						<OnLoad>
+							if ( TitanPanelButton_OnLoad ) then
+								TitanPanelAnkhCTButton_OnLoad();
+								TitanPanelButton_OnLoad();
+							end
+						</OnLoad>
+						<OnClick>
+							TitanPanelButton_OnClick(arg1);
+						</OnClick>
+					</Scripts>
+					
+					<NormalTexture file="Interface\AddOns\AnkhCooldownTimer\Artwork\ankh">
+						<Size>
+							<AbsDimension x="20" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</NormalTexture>					
+					
+					
+				</Button>
+
+			</Frames>
+	</Frame>
+</Ui>
+
+
+

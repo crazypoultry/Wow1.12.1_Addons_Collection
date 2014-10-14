@@ -1,0 +1,479 @@
+<!-- Options Pane Definition -->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+	<Frame name="SpellAlertSCTDropdownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				UIDropDownMenu_Initialize(this, function() SpellAlertSCTDropDown_Initialize() end);
+			</OnLoad>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<!-- SLIDER EDIT TEMPLATE -->
+	<Frame name="SpellAlertSCTSliderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="18"/>
+		</Size>
+		<Frames>
+			<Slider name="$parentSlider" inherits="OptionsSliderTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						SpellAlertSCTSliderValueChanged();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<EditBox name="$parentEditBox" letters="3" autoFocus="false" numeric="true" inherits="InputBoxTemplate">
+				<Size>
+					<AbsDimension x="25" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentSlider" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="7" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnEnterPressed>
+						SpellAlertSCTEditBoxValueChanged()
+						this:ClearFocus()
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus()
+					</OnEscapePressed>
+				</Scripts>
+			</EditBox>
+		</Frames>
+	</Frame>
+
+	<!-- Target Indicator TEMPLATE -->
+	<Frame name="SpellAlertSCTTargetIndicatorTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="23" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parentEdit" letters="6" autoFocus="false" inherits="InputBoxTemplate">
+				<Size>
+					<AbsDimension x="40" y="16"/>
+				</Size>
+				<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+				</Anchors>
+				<FontString inherits="GameFontHighlightSmall"></FontString>
+				<Scripts>
+					<OnEnterPressed>
+						SpellAlertSCTTargetIndicatorChanged()
+						this:ClearFocus()
+					</OnEnterPressed>
+					<OnEscapePressed>
+						SpellAlertSCTTargetIndicatorSetOld()
+						this:ClearFocus()
+					</OnEscapePressed>
+					<OnEditFocusGained>
+						SpellAlertSCTEnterWarn()
+					</OnEditFocusGained>
+				</Scripts>
+			</EditBox>
+		</Frames>
+	</Frame>
+	
+	
+	<!-- LOAD OPTION FRAME (HIDDEN) -->
+	<Frame name="SpellAlertSCTOptions" inherits="OptionFrameBoxTemplate" hidden="true" frameStrata="MEDIUM" movable="false" enableMouse="true" parent="UIParent">
+		<TitleRegion>
+		  <Size>
+				<AbsDimension x="150" y="40" />
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="20" />
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</TitleRegion>
+		<Size>
+			<AbsDimension x="440" y="440"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		
+        <Layers>
+            <Layer level="BACKGROUND">
+                <FontString name="SpellAlertSCTOptionsText" inherits="GameFontNormal" justifyH="CENTER" text="SpellAlertSCT Options">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="SpellAlertSCTOptions" relativePoint="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>                           
+            </Layer>
+		</Layers>
+		
+		<Frames>
+			<!-- General Toggle Checkboxes -->
+			<CheckButton name="SASCTToggle" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-25"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>	
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SASCTCrit" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-65"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>	
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsCritToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SASCTTargetOnly" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTCrit" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsTargetOnlyToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="SASCTReTarget" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTTargetOnly" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsReTargetToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>		
+			<CheckButton name="SASCTCompact" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTReTarget" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsCompactToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SASCTColorize" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTCompact" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsColorizeToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SASCTEmotes" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTColorize" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsEmotesToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>			
+			<CheckButton name="SASCTBossWarns" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTEmotes" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptionsBossWarnsToggle()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- General Toggle Labels -->
+			<FontString name="SASCTToggleText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTToggle" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="SASCTCritText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTCrit" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="SASCTTargetOnlyText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTTargetOnly" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="SASCTReTargetText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTReTarget" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="SASCTCompactText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTCompact" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="SASCTColorizeText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTColorize" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>			
+			<FontString name="SASCTEmotesText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTEmotes" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="SASCTBossWarnsText" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SASCTBossWarns" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>			
+			
+			<!-- Style Dropdown and Label -->
+			<Frame name="SASCTStyle" inherits="SpellAlertSCTDropdownTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SpellAlertSCTOptions" relativePoint="TOPRIGHT" >
+						<Offset>
+							<AbsDimension x="-35" y="-45"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<FontString name="SASCTStyleLabel" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<Size>
+					<AbsDimension x="30" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SASCTStyle" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>			
+			
+			<!-- Frame Selector -->
+			<Frame name="SASCTFrameSlider" inherits="SpellAlertSCTSliderTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SASCTStyle" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="20" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			
+			<!-- Target Indicator -->
+			<Frame name="SASCTTI" inherits="SpellAlertSCTTargetIndicatorTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SASCTFrameSlider" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>		
+
+			<!-- test Button -->
+			<Button name="SASCTTest" inherits="OptionsButtonTemplate" text="Test">
+				<Size>
+					<AbsDimension x="75" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="SpellAlertSCTOptions">
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCT_test();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<!-- CLOSE Button -->
+			<Button name="SpellAlertSCTOptionsCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SpellAlertSCTOptions" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SpellAlertSCTOptions:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+		</Frames>
+		<Scripts>
+			<OnShow>
+				SpellAlertSCTOptionsFrame_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

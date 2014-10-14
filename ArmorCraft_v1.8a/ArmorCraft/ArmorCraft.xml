@@ -1,0 +1,367 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+   
+    <GameTooltip name="ArmorCraft_TT" frameStrata="TOOLTIP" inherits="GameTooltipTemplate" parent="UIParent" hidden="true"/>
+    <GameTooltip name="ArmorCraft_TT1" frameStrata="TOOLTIP" inherits="GameTooltipTemplate"/>
+    <GameTooltip name="ArmorCraft_TT2" frameStrata="TOOLTIP" inherits="GameTooltipTemplate"/>
+
+<!-- Frame to handle all core events -->
+    <Frame name="AC_Frame" parent="UIParent" hidden="true">
+      <Scripts> 
+        <OnLoad> 
+            this:RegisterEvent("VARIABLES_LOADED");
+            this:RegisterEvent("SKILL_LINES_CHANGED");
+            this:RegisterEvent("TRADE_SKILL_CLOSE");
+        </OnLoad> 
+        <OnEvent> 
+            if(event=="VARIABLES_LOADED") then ArmorCraft_Init();
+            elseif(event=="TRADE_SKILL_CLOSE") then AC_Craft:Hide();
+            elseif(event=="SKILL_LINES_CHANGED") then
+			  local tsname = GetTradeSkillLine();
+              if(AC_tsname~=tsname) then 
+                AC_Craft:Hide();
+				if(ArmorCraft_TS[tsname]) then
+				  AC_ToggleButton:Enable();
+				  AC_UseButton:Enable();
+				else
+				  AC_ToggleButton:Disable();
+				  AC_UseButton:Disable();
+				end
+              end
+            end 
+        </OnEvent>
+      </Scripts> 
+    </Frame> 
+
+<!-- Templates -->
+	<LootButton name="AC_ButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size> <AbsDimension x="130" y="62"/> </Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset> <AbsDimension x="30" y="0"/> </Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size> <AbsDimension x="93" y="38"/> </Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset> <AbsDimension x="8" y="1"/> </Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad> this:RegisterForClicks("LeftButtonUp","RightButtonUp") </OnLoad>
+			<OnEnter> AC_Button_OnEnter() </OnEnter>
+			<OnLeave> ArmorCraft_TT1:Hide();  ArmorCraft_TT2:Hide() </OnLeave>
+			<OnClick> AC_Button_OnClick(arg1) </OnClick>
+		</Scripts>
+	</LootButton>
+	<CheckButton name="AC_RadioButtonTemplate" virtual="true">
+		<Size> <AbsDimension x="16" y="16"/> </Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset> <AbsDimension x="0" y="1"/> </Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad> getglobal(this:GetName().."Text"):SetText('#'..this:GetID()); </OnLoad>
+			<OnClick> AC_RadioButton_OnClick(this:GetID()); </OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-RadioButton">
+			<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
+			<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Buttons\UI-RadioButton">
+			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+		</CheckedTexture>
+	</CheckButton>
+	<Frame name="AC_FrameTemplate" toplevel="true" movable="true" hidden="true" virtual="true">
+		<Size> <AbsDimension x="256" y="248"/> </Size>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentPortrait">
+					<Size> <AbsDimension x="58" y="58"/> </Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset> <AbsDimension x="10" y="-8"/> </Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTex1" file="Interface\LootFrame\UI-LootPanel">
+					<Size> <AbsDimension x="256" y="240"/> </Size>
+				    <TexCoords left="0" right="1" top="0" bottom="0.9375"/>
+				</Texture>
+				<Texture name="$parentTex2" file="Interface\LootFrame\UI-LootPanel">
+					<Size> <AbsDimension x="256" y="160"/> </Size>
+					<Anchors> <Anchor point="TOP" relativeTo="$parentTex1" relativePoint="BOTTOM"/> </Anchors>
+				    <TexCoords left="0" right="1" top="0.3125" bottom="0.9375"/>
+				</Texture>
+				<Texture name="$parentTex3" file="Interface\LootFrame\UI-LootPanel">
+					<Size> <AbsDimension x="256" y="135"/> </Size>
+					<Anchors> <Anchor point="TOP" relativeTo="$parentTex2" relativePoint="BOTTOM"/> </Anchors>
+				    <TexCoords left="0" right="1" top="0.472656" bottom="1"/>
+				</Texture>
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="ArmorCraft">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="-12" y="98"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset> <AbsDimension x="-81" y="-26"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<LootButton name="$parentButton1" inherits="AC_ButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset> <AbsDimension x="26" y="-80"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton2" inherits="AC_ButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton3" inherits="AC_ButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton4" inherits="AC_ButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton5" inherits="AC_ButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton6" inherits="AC_ButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton7" inherits="AC_ButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton8" inherits="AC_ButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton9" inherits="AC_ButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton10" inherits="AC_ButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+			<LootButton name="$parentButton11" inherits="AC_ButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM">
+						<Offset> <AbsDimension x="0" y="-4"/> </Offset>
+					</Anchor>
+				</Anchors>
+			</LootButton>
+		</Frames>
+	</Frame>
+
+<!-- Normal Frames -->
+	<Frame name="AC_Craft" inherits="AC_FrameTemplate" enableMouse="true" parent="AC_Frame">
+		<Frames>
+			<EditBox name="AC_MaxLevel" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+				<Size> <AbsDimension x="30" y="14"/> </Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset> <AbsDimension x="-80" y="-47"/> </Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" text="AC_LEVEL">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT">
+									<Offset> <AbsDimension x="-6" y="0"/> </Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed> AC_EnterLevel(); </OnEnterPressed>
+				</Scripts>
+			</EditBox>
+			<Frame name="AC_DropDown" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset> <AbsDimension x="-130" y="-69"/> </Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" text="AC_CLASS">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset> <AbsDimension x="20" y="2"/> </Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="AC_Target" inherits="AC_FrameTemplate" parent="AC_Craft">
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="RIGHT">
+				<Offset> <AbsDimension x="-73" y="0"/> </Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="AC_CP_DropDown" inherits="UIDropDownMenuTemplate" hidden="true" id="2">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset> <AbsDimension x="-130" y="-69"/> </Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" text="CharacterProfiler">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset> <AbsDimension x="20" y="2"/> </Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="AC_Use" inherits="AC_FrameTemplate" enableMouse="true" parent="UIParent" hidden="true">
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset> <AbsDimension x="40" y="90"/> </Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+		  <CheckButton name="AC_UsePartyButton" inherits="OptionsCheckButtonTemplate" checked="true">
+			<Anchors>
+			  <Anchor point="TOP">
+				<Offset> <AbsDimension x="-40" y="-42"/> </Offset>
+			  </Anchor>
+			</Anchors>
+			<Layers>
+			  <Layer level="ARTWORK">
+				<FontString inherits="GameFontWhite" text="Party">
+				  <Anchors>
+					<Anchor point="RIGHT">
+					  <Offset> <AbsDimension x="30" y="1"/> </Offset>
+					</Anchor>
+				  </Anchors>
+				</FontString>
+			  </Layer>
+			</Layers>
+			<Scripts>
+			  <OnEnter>
+				GameTooltip:SetOwner(this,"ANCHOR_LEFT"); 
+				GameTooltip:SetText(ARMORCRAFT_PARTYTIP);
+			  </OnEnter> 
+			  <OnLeave> GameTooltip:Hide(); </OnLeave>
+			  <OnClick> AC_PartyOnClick(); </OnClick>
+			</Scripts>
+		  </CheckButton>
+		  <CheckButton name="AC_UseSlot1Button" inherits="AC_RadioButtonTemplate" hidden="true" id="1">
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset> <AbsDimension x="-94" y="-43"/> </Offset>
+				</Anchor>
+			</Anchors>
+		  </CheckButton>
+		  <CheckButton name="AC_UseSlot2Button" inherits="AC_RadioButtonTemplate" parent="AC_UseSlot1Button" id="2">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+					<Offset> <AbsDimension x="0" y="2"/> </Offset>
+				</Anchor>
+			</Anchors>
+		  </CheckButton>
+		</Frames>
+        <Scripts>
+			<OnMouseDown> this:StartMoving(); </OnMouseDown>
+			<OnMouseUp> this:StopMovingOrSizing(); </OnMouseUp>
+        </Scripts>
+	</Frame>
+	<Button name="AC_ToggleButton" inherits="UIPanelButtonTemplate" parent="AC_Frame" text="AC">
+		<Size> <AbsDimension x="24" y="20"/> </Size>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:SetText(ARMORCRAFT_ACTIP);
+            </OnEnter>
+			<OnLeave> GameTooltip:Hide(); </OnLeave>
+			<OnClick> ArmorCraft_command(''); </OnClick>
+		</Scripts>
+	</Button>
+	<Button name="AC_UseButton" inherits="UIPanelButtonTemplate" parent="AC_ToggleButton" text="I">
+		<Size> <AbsDimension x="14" y="20"/> </Size>
+		<Scripts>
+			<OnShow> ArmorCraft_OnShow() </OnShow>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+				GameTooltip:SetText(ARMORCRAFT_USETIP);
+            </OnEnter>
+			<OnLeave> GameTooltip:Hide(); </OnLeave>
+			<OnClick> ArmorCraft_CraftUse(); </OnClick>
+		</Scripts>
+	</Button>
+</Ui>

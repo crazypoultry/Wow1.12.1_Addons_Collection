@@ -1,0 +1,48 @@
+--[[SnaFu version 1.83 $Revision: 12281 $]]--
+local L = AceLibrary("AceLocale-2.0"):new("SnaFu")
+
+L:RegisterTranslations("enUS", function()
+    return {
+        ["Demon Pet Tricks"] = true,
+        ["Got Stones?"] = true,
+        ["Stoned?"] = true,
+        ["ETE"] = true,
+        ["Click to toggle display"] = true,
+        ["Yes"] = true,
+        ["no"] = true,
+        [" is SnaFu'd!"] = true,
+        [" has no soul!"] = true,
+        ["Toggle FH spell"] = true,
+        ["Toggle Audio"] = true,
+        ["Switch from Devour Magic to Spell Lock"] = true,
+        ["Turn off Audio"] = true,
+        ["Click to toggle audio notifications"] = true,
+        ["Cooldown"] = true,
+        ["Ready"] = true,
+        ["BadDataSent"] = true,
+        ["Received odd information from "] = true,
+        ["Please make sure you are both running the latest version of SnaFu."] = true,
+        ["Humanoid"] = true,
+        ["Succubus"] = true,
+        ["Seduction"] = true,
+        ["Felhunter"] = true,
+        ["Devour Magic"] = true,
+        ["Spell Lock"] = true,
+        ["Voidwalker"] = true,
+        ["Sacrifice"] = true,
+        ["Imp"] = true,
+        ["Chat!"] = true,
+        ["Send a chat message through SnaFu"] = true,
+        ["<msg>"] = true,
+        ["Toggle Chat"] = true,
+        ["Turn the chat channel on or off"] = true,
+        [" says, `"] = true,
+        ["'"] = true,
+        ["Toggle whether the keybinding sets the imp to attack your current target"] = true,
+        ["Toggle Imp"] = true,
+        ["Attack"] = true,
+        ["Don't Attack"] = true,
+        [""] = true,
+    }
+    end
+)

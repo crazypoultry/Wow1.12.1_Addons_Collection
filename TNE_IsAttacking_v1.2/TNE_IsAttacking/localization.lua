@@ -1,0 +1,3 @@
+BINDING_HEADER_ISATTACKING = "향상된 자동 공격";
+BINDING_NAME_ATTACKONKEY = "향상된 자동 공격 단축키";
+BINDING_NAME_AUTOSHOTONKEY = "향상된 자동 사격 단축키";

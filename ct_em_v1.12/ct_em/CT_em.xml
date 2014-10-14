@@ -1,0 +1,283 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="CT_em.lua"/>
+
+   	<Frame name="CT_EM">
+		<Scripts>
+			<OnLoad>
+        			CT_em_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				ctem_Event();
+			</OnEvent>
+		</Scripts>
+	</Frame> 
+	<Frame name="CT_RA_Emergency2Template" virtual="true" hidden="true">
+
+		<Size>
+			<AbsDimension x="150" y="20"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentName" justifyH="RIGHT" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-5" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDeficit" justifyH="LEFT" inherits="ChatFontNormal">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentHPBG" file="Interface\TargetingFrame\UI-StatusBar">
+					<Size>
+						<AbsDimension x="150" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHPBar" inherits="TextStatusBar">
+				<Size>
+					<AbsDimension x="150" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetMinMaxValues(0, 100);
+					</OnLoad>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0" g="1" b="0"/>
+			</StatusBar>
+			<Frame name="$parentClick" setAllPoints="true">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Frames>
+					<Button name="$parentFrame">
+						<Size>
+							<AbsDimension x="200" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.update = 0.1;
+								this:RegisterForClicks("LeftButtonDown", "RightButtonDown", "MiddleButtonDown", "Button4Down", "Button5Down");
+							</OnLoad>
+							<OnEnter>
+								CT_RA_Emergency2_OnEnter();
+							</OnEnter>
+							<OnLeave>
+								if ( SpellIsTargeting() ) then
+									SetCursor("CAST_ERROR_CURSOR");
+								end
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnUpdate>
+								CT_RA_Emergency2_OnUpdate(arg1);
+							</OnUpdate>
+							<OnClick>
+								local stopDefaultBehaviour;
+								if ( type(CT_RA_CustomOnClickFunction) == "function" ) then
+									stopDefaultBehaviour = CT_RA_CustomOnClickFunction(arg1, this.unitid);
+								end
+								if ( not stopDefaultBehaviour ) then
+									if ( SpellIsTargeting() ) then
+										SpellTargetUnit(this.unitid);
+									else
+										TargetUnit(this.unitid);
+									end
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.HPBar = CT_RA_Cache[this].HPBar;
+				this.HPBG = CT_RA_Cache[this].HPBG;
+				this.Name = CT_RA_Cache[this].Name;
+				this.Deficit = CT_RA_Cache[this].Deficit;
+				this.Click = CT_RA_Cache[this].Click;
+				this.ClickFrame = CT_RA_Cache[this.Click].Frame;
+				this.HPBG:SetVertexColor(0, 1, 0, 0.2);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CT_RA_Emergency2Frame" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="300" y="170"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontNormalSmall" hidden="true" text="Emer2">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="true">
+				<Size>
+					<AbsDimension x="125" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="70" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CT_RA_Emergency2_DropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentFrame1" inherits="CT_RA_Emergency2Template" id="1">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentFrame2" inherits="CT_RA_Emergency2Template" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentFrame1">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentFrame3" inherits="CT_RA_Emergency2Template" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentFrame2">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentFrame4" inherits="CT_RA_Emergency2Template" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentFrame3">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentFrame5" inherits="CT_RA_Emergency2Template" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentFrame4">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.frame1 = CT_RA_Cache[this].Frame1;
+				this.frame2 = CT_RA_Cache[this].Frame2;
+				this.frame3 = CT_RA_Cache[this].Frame3;
+				this.frame4 = CT_RA_Cache[this].Frame4;
+				this.frame5 = CT_RA_Cache[this].Frame5;
+				this:SetBackdropColor(0, 0, 1, 0);
+				this:SetBackdropBorderColor(1, 1, 1, 0);
+				if ( CT_RAMenu_Options["temp"]["EMScaling"] ) then
+					local newScaling = CT_RAMenu_Options["temp"]["EMScaling"];
+					CT_RA_Emergency2Frame:SetScale(newScaling);
+				end
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="CT_RA_Emergency2FrameDrag" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="125" y="15"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" and not CT_RAMenu_Options["temp"]["LockMonitor"] ) then
+					this:StartMoving();
+				elseif ( arg1 == "RightButton" and CT_RA_Emergency2FrameTitle:IsVisible() ) then
+					CT_RA_Emergency2_ToggleDropDown();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+				CT_RAMenu_SaveWindowPositions();
+				windowpos2()
+			</OnMouseUp>
+			<OnEnter>
+				CT_RA_Emergency2FrameTitle:SetText("Emergency Monitor2");
+				CT_RAMenuHelp_SetTooltip();
+				if(ctem_enable==1) then
+					if ( not CT_RAMenu_Options["temp"]["LockGroups"] ) then
+						GameTooltip:SetText("Left-click to drag\nRight-click to open menu");
+					else
+						GameTooltip:SetText("Right-click to open menu");
+					end
+				end
+			</OnEnter>
+			<OnLeave>
+				CT_RA_Emergency2FrameTitle:SetText(Emer2);
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnLoad>
+				CT_RA_LinkDrag(CT_RA_Emergency2Frame, this, "TOP", "TOP", 0, 2);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

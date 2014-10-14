@@ -1,0 +1,920 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!--
+    $Id: ChatAssistOptions.xml 108 2006-09-19 05:17:01Z ayu $
+    $URL: svn://freesia.commun.jp/chatassist/trunk/ChatAssistOptions/ChatAssistOptions.xml $
+  -->
+  <Script file="ChatAssistOptions.lua" />
+  <Script file="localization.lua" />
+
+  <Button name="ChatAssistOptions_TabButtonTemplate" inherits="TabButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        PanelTemplates_TabResize(0);
+      </OnLoad>
+      <OnClick>
+        PanelTemplates_Tab_OnClick(ChatAssistOptions_TabContainerFrame);
+        ChatAssistOptions_TabContainerTab_OnClick();
+      </OnClick>
+    </Scripts>
+  </Button>
+  <Frame name="ChatAssistOptions_TabPanelTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        this:SetBackdropColor(0.15, 0.15, 0.15);
+        this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+  <Frame name="ChatAssistOptions_GroupBoxTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        this:SetBackdropColor(0.15, 0.15, 0.15);
+        this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+        getglobal(this:GetName() .. "Title"):SetText(CA_OPTIONS_GROUPBOX[this:GetName()]);
+        getglobal(this:GetName() .. "Title"):SetTextColor(1.0, 0.82, 0);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+  <Frame name="ChatAssistOptions_DropDownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="80" y="16" />
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentTitle" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="15" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        getglobal(this:GetName() .. "Title"):SetText(CA_OPTIONS_SELECTBOX[this:GetName()]);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+  <Button name="ChatAssistOptions_ButtonTemplate" inherits="OptionsButtonTemplate" virtual="true">
+    <Scripts>
+      <OnLoad>
+        getglobal(this:GetName()):SetText(CA_OPTIONS_BUTTON[this:GetName()]);
+      </OnLoad>
+    </Scripts>
+  </Button>
+  <CheckButton name="ChatAssistOptions_CheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="24" y="24" />
+    </Size>
+    <Scripts>
+      <OnLoad>
+        getglobal(this:GetName() .. "Text"):SetTextColor(1.0, 1.0, 1.0);
+        getglobal(this:GetName() .. "Text"):SetText(CA_OPTIONS_CHECKBUTTON[this:GetName()]);
+      </OnLoad>
+    </Scripts>
+  </CheckButton>
+  <EditBox name="ChatAssistOptions_EditBoxTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="120" y="24" />
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="-10" y="7" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        getglobal(this:GetName() .. "Text"):SetText(CA_OPTIONS_EDITBOX[this:GetName()]);
+      </OnLoad>
+      <OnEnterPressed>
+        this:ClearFocus();
+      </OnEnterPressed>
+      <OnEscapePressed>
+        this:ClearFocus();
+      </OnEscapePressed>
+    </Scripts>
+  </EditBox>
+  <Button name="ChatAssistOptions_KeywordItemTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="200" y="20" />
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentText" inherits="ChatFontNormal">
+	  <Anchors>
+	    <Anchor point="TOPLEFT">
+              <Offset>
+	        <AbsDimension x="10" y="-3"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" />
+    <Scripts>
+      <OnLoad>
+        this.KeywordId = nil;
+      </OnLoad>
+      <OnClick>
+        ChatAssistOptions_KeywordItem_OnClick();
+      </OnClick>
+    </Scripts>
+  </Button>
+  <Frame name="ChatAssistOptions_EventTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="150" y="16" />
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentTitle" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="5" y="-2" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <CheckButton name="$parentCheckOnScreen" inherits="UICheckButtonTemplate">
+        <Size>
+          <AbsDimension x="24" y="24" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="-20" y="3" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </CheckButton>
+      <Button name="$parentSwatch">
+        <Size>
+          <AbsDimension x="16" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="0" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentBackground">
+              <Size>
+                <AbsDimension x="14" y="14" />
+              </Size>
+              <Color r="1.0" g="1.0" b="1.0" />
+              <Anchors>
+                <Anchor point="CENTER" />
+              </Anchors>
+            </Texture>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnClick>
+            ChatAssistOptions_Event_Swatch_OnClick();
+          </OnClick>
+        </Scripts>
+        <NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch" />
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        this.type = string.sub(this:GetName(), 24);
+        getglobal(this:GetName() .. "Title"):SetText(CA_OPTIONS_EVENTS[this.type].Title);
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+  <Frame name="ChatAssistOptionsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" enableKeyboard="true" hidden="true">
+    <Size>
+      <AbsDimension x="400" y="430" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32" />
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer>
+        <Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="160" y="32" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="5" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+        </Texture>
+        <FontString name="$parentTitleString" font="Fonts\FRIZQT__.TTF" text="ChatAssist">
+          <Size>
+            <AbsDimension x="140" y="0" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-4" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="ChatAssistOptions_TabContainerFrame">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="ChatAssistOptionsFrame" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="10" y="-30" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Size>
+          <AbsDimension x="370" y="330" />
+        </Size>
+        <Frames>
+          <Button name="$parentTab1" inherits="ChatAssistOptions_TabButtonTemplate" text="CA_OPTIONS_GENERAL" id="1">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentTab2" inherits="ChatAssistOptions_TabButtonTemplate" text="CA_OPTIONS_KEYWORD" id="2">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentTab1" relativePoint="TOPRIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentTab3" inherits="ChatAssistOptions_TabButtonTemplate" text="CA_OPTIONS_EVENT" id="3">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentTab2" relativePoint="TOPRIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentTab4" inherits="ChatAssistOptions_TabButtonTemplate" text="CA_OPTIONS_UB" id="4">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentTab3" relativePoint="TOPRIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Frame name="ChatAssistOptions_GeneralFrame" inherits="ChatAssistOptions_TabPanelTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="5" y="-30" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Size>
+              <AbsDimension x="370" y="330" />
+            </Size>
+            <Frames>
+              <Frame name="ChatAssistOptions_GroupTimestamp" inherits="ChatAssistOptions_GroupBoxTemplate">
+                <Size>
+                  <AbsDimension x="350" y="45" />
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="10" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Frames>
+                  <CheckButton name="ChatAssistOptions_CheckTimestamp" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="10" y="-10" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <EditBox name="ChatAssistOptions_EditTimestampFormat" inherits="ChatAssistOptions_EditBoxTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckTimestamp" relativePoint="TOPRIGHT">
+                        <Offset>
+                          <AbsDimension x="130" y="0" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </EditBox>
+                </Frames>
+              </Frame>
+              <Frame name="ChatAssistOptions_GroupColorName" inherits="ChatAssistOptions_GroupBoxTemplate">
+                <Size>
+                  <AbsDimension x="350" y="45" />
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_GroupTimestamp" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Frames>
+                  <CheckButton name="ChatAssistOptions_CheckColorName" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="10" y="-10" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <Button name="ChatAssistOptions_ButtonColorNameRebuild" inherits="ChatAssistOptions_ButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckColorName" relativePoint="TOPRIGHT">
+                        <Offset>
+                          <AbsDimension x="90" y="0" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                    <Size>
+                      <AbsDimension x="120" y="20" />
+                    </Size>
+                    <Scripts>
+                      <OnClick>
+                        ChatAssistOptions_ButtonColorNameRebuild_OnClick();
+                      </OnClick>
+                    </Scripts>
+                  </Button>
+                </Frames>
+              </Frame>
+              <Frame name="ChatAssistOptions_GroupTag" inherits="ChatAssistOptions_GroupBoxTemplate">
+                <Size>
+                  <AbsDimension x="350" y="45" />
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_GroupColorName" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Frames>
+                  <CheckButton name="ChatAssistOptions_CheckShortTag" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="10" y="-10" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                    <Scripts>
+                      <OnClick>
+                        ChatAssistOptions_CheckShortTag_OnClick();
+                      </OnClick>
+                    </Scripts>
+                  </CheckButton>
+                  <CheckButton name="ChatAssistOptions_CheckHideTag" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckShortTag" relativePoint="TOPRIGHT">
+                        <Offset>
+                          <AbsDimension x="90" y="0" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                    <Scripts>
+                      <OnClick>
+                        ChatAssistOptions_CheckHideTag_OnClick();
+                      </OnClick>
+                    </Scripts>
+                  </CheckButton>
+                  <CheckButton name="ChatAssistOptions_CheckHideChannel" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckHideTag" relativePoint="TOPRIGHT">
+                        <Offset>
+                          <AbsDimension x="90" y="0" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                </Frames>
+              </Frame>
+              <Frame name="ChatAssistOptions_GroupOther" inherits="ChatAssistOptions_GroupBoxTemplate">
+                <Size>
+                  <AbsDimension x="350" y="100" />
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_GroupTag" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Frames>
+                  <CheckButton name="ChatAssistOptions_CheckChannelSticky" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="10" y="-10" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <CheckButton name="ChatAssistOptions_CheckOfficerSticky" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckChannelSticky" relativePoint="TOPRIGHT">
+                        <Offset>
+                          <AbsDimension x="90" y="0" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <CheckButton name="ChatAssistOptions_CheckWhisperSticky" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckOfficerSticky" relativePoint="TOPRIGHT">
+                        <Offset>
+                          <AbsDimension x="90" y="0" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <CheckButton name="ChatAssistOptions_CheckLogging" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckChannelSticky" relativePoint="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="0" y="-27" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <Frame name="ChatAssistOptions_DropDownDefaultChat" inherits="ChatAssistOptions_DropDownTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckLogging" relativePoint="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="65" y="-27" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                    <Scripts>
+                      <OnLoad>
+                        getglobal(this:GetName() .. "Title"):SetText(CA_OPTIONS_SELECTBOX[this:GetName()]);
+                        ChatAssistOptions_DropDownDefaultChat_OnLoad();
+                      </OnLoad>
+                    </Scripts>
+                  </Frame>
+                </Frames>
+              </Frame>
+            </Frames>
+          </Frame>
+          <Frame name="ChatAssistOptions_KeywordFrame" inherits="ChatAssistOptions_TabPanelTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="5" y="-30" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Size>
+              <AbsDimension x="370" y="330" />
+            </Size>
+            <Frames>
+              <ScrollFrame name="ChatAssistOptions_ScrollKeyword" inherits="FauxScrollFrameTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="10" y="-10" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Size>
+                  <AbsDimension x="200" y="200" />
+                </Size>
+                <Scripts>
+                  <OnShow>
+                    ChatAssistOptionsFrame.selectedKeyword = nil;
+                    ChatAssistOptions_ScrollKeyword_Update();
+                  </OnShow>
+                  <OnVerticalScroll>
+                    FauxScrollFrame_OnVerticalScroll(10, ChatAssistOptions_ScrollKeyword_Update)
+                  </OnVerticalScroll>
+                </Scripts>
+              </ScrollFrame>
+              <Button name="ChatAssistOptions_KeywordItem1" inherits="ChatAssistOptions_KeywordItemTemplate" id="1">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_ScrollKeyword">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem2" inherits="ChatAssistOptions_KeywordItemTemplate" id="2">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem1" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem3" inherits="ChatAssistOptions_KeywordItemTemplate" id="3">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem2" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem4" inherits="ChatAssistOptions_KeywordItemTemplate" id="4">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem3" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem5" inherits="ChatAssistOptions_KeywordItemTemplate" id="5">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem4" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem6" inherits="ChatAssistOptions_KeywordItemTemplate" id="6">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem5" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem7" inherits="ChatAssistOptions_KeywordItemTemplate" id="7">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem6" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem8" inherits="ChatAssistOptions_KeywordItemTemplate" id="8">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem7" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem9" inherits="ChatAssistOptions_KeywordItemTemplate" id="9">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem8" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <Button name="ChatAssistOptions_KeywordItem10" inherits="ChatAssistOptions_KeywordItemTemplate" id="10">
+                <Anchors>
+                  <Anchor point="TOP" relativeTo="ChatAssistOptions_KeywordItem9" relativePoint="BOTTOM">
+                    <Offset>
+                      <AbsDimension x="0" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Button>
+              <EditBox name="ChatAssistOptions_EditKeyword" inherits="ChatAssistOptions_EditBoxTemplate">
+                   <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_ScrollKeyword" relativePoint="TOPRIGHT">
+                    <Offset>
+                      <AbsDimension x="30" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </EditBox>
+              <Button name="ChatAssistOptions_ButtonAddKeyword" inherits="ChatAssistOptions_ButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EditKeyword" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-30" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Scripts>
+                  <OnClick>
+                    ChatAssistOptions_ButtonAddKeyword_OnClick();
+                  </OnClick>
+                </Scripts>
+              </Button>
+              <Button name="ChatAssistOptions_ButtonDeleteKeyword" inherits="ChatAssistOptions_ButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_ButtonAddKeyword" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-30" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Scripts>
+                  <OnClick>
+                    ChatAssistOptions_ButtonDeleteKeyword_OnClick();
+                  </OnClick>
+                </Scripts>
+              </Button>
+<!--
+              <Frame name="ChatAssistOptions_GroupSCT" inherits="ChatAssistOptions_GroupBoxTemplate">
+                <Size>
+                  <AbsDimension x="350" y="75" />
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_ScrollKeyword" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Frames>
+                  <CheckButton name="ChatAssistOptions_CheckSCTKeyword" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="10" y="-10" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                  <CheckButton name="ChatAssistOptions_CheckSCTAuction" inherits="ChatAssistOptions_CheckButtonTemplate">
+                    <Anchors>
+                      <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckSCTKeyword" relativePoint="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="0" y="-30" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                  </CheckButton>
+                </Frames>
+              </Frame>
+//-->
+            </Frames>
+          </Frame>
+          <Frame name="ChatAssistOptions_EventFrame" inherits="ChatAssistOptions_TabPanelTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="5" y="-30" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Size>
+              <AbsDimension x="370" y="330" />
+            </Size>
+            <Frames>
+              <Frame name="ChatAssistOptions_EventKEYWORD" inherits="ChatAssistOptions_EventTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="10" y="-10" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ChatAssistOptions_EventAUCTION" inherits="ChatAssistOptions_EventTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EventKEYWORD" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ChatAssistOptions_EventRAIDLEADER" inherits="ChatAssistOptions_EventTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EventAUCTION" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ChatAssistOptions_EventBGLEADER" inherits="ChatAssistOptions_EventTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EventRAIDLEADER" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ChatAssistOptions_EventOFFICER" inherits="ChatAssistOptions_EventTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EventBGLEADER" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ChatAssistOptions_EventWHISPER" inherits="ChatAssistOptions_EventTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EventOFFICER" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-20" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </Frame>
+              <Frame name="ChatAssistOptions_GroupOnScreen" inherits="ChatAssistOptions_GroupBoxTemplate">
+                <Size>
+                  <AbsDimension x="170" y="50" />
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_EventKEYWORD" relativePoint="TOPRIGHT">
+                    <Offset>
+                      <AbsDimension x="20" y="-10" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <Frames>
+                  <Slider name="ChatAssistOptions_SliderOnScreenFontSize" inherits="OptionsSliderTemplate" minValue="12" maxValue="32" defaultValue="24" valueStep="2">
+                    <Size>
+                      <AbsDimension x="138" y="17" />
+                    </Size>
+                    <Anchors>
+                      <Anchor point="TOPLEFT">
+                        <Offset>
+                          <AbsDimension x="10" y="-15" />
+                        </Offset>
+                      </Anchor>
+                    </Anchors>
+                    <Scripts>
+                      <OnLoad>
+                        getglobal(this:GetName() .. "Low"):SetText(CA_OPTIONS_SMALL);
+                        getglobal(this:GetName() .. "High"):SetText(CA_OPTIONS_LARGE);
+                      </OnLoad>
+                      <OnValueChanged>
+                        getglobal(this:GetName() .. "Text"):SetText(string.format(CA_OPTIONS_FONTSIZE, this:GetValue()));
+                      </OnValueChanged>
+                    </Scripts>
+                  </Slider>
+                </Frames>
+              </Frame>
+            </Frames>
+          </Frame>
+          <Frame name="ChatAssistOptions_UBFrame" inherits="ChatAssistOptions_TabPanelTemplate" hidden="true">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="5" y="-30" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Size>
+              <AbsDimension x="370" y="330" />
+            </Size>
+            <Frames>
+              <CheckButton name="ChatAssistOptions_CheckUBEnable" inherits="ChatAssistOptions_CheckButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="10" y="-10" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </CheckButton>
+              <CheckButton name="ChatAssistOptions_CheckUBParty" inherits="ChatAssistOptions_CheckButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckUBEnable" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-30" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </CheckButton>
+              <CheckButton name="ChatAssistOptions_CheckUBRaid" inherits="ChatAssistOptions_CheckButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckUBParty" relativePoint="TOPRIGHT">
+                    <Offset>
+                      <AbsDimension x="60" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </CheckButton>
+              <CheckButton name="ChatAssistOptions_CheckUBRaidWarning" inherits="ChatAssistOptions_CheckButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckUBRaid" relativePoint="TOPRIGHT">
+                    <Offset>
+                      <AbsDimension x="60" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </CheckButton>
+              <CheckButton name="ChatAssistOptions_CheckUBGuild" inherits="ChatAssistOptions_CheckButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckUBParty" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="-30" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </CheckButton>
+              <CheckButton name="ChatAssistOptions_CheckUBOfficer" inherits="ChatAssistOptions_CheckButtonTemplate">
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="ChatAssistOptions_CheckUBGuild" relativePoint="TOPRIGHT">
+                    <Offset>
+                      <AbsDimension x="60" y="0" />
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+              </CheckButton>
+            </Frames>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Button name="ChatAssistOptions_ButtonOK" text="CA_OPTIONS_OK" inherits="OptionsButtonTemplate">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativeTo="ChatAssistOptionsFrame" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-15" y="15" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            ChatAssistOptions_ButtonOK_OnClick();
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        ChatAssistOptions_OnShow();
+      </OnShow>
+      <OnMouseDown>
+        this:StartMoving();
+      </OnMouseDown>
+      <OnMouseUp>
+        this:StopMovingOrSizing();
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+  <Frame name="ChatAssistOptions">
+    <Scripts>
+      <OnLoad>
+        ChatAssistOptions_OnLoad();
+      </OnLoad>
+    </Scripts>
+  </Frame>
+</Ui>

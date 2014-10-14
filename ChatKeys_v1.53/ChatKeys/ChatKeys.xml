@@ -1,0 +1,254 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="ChatKeys.lua"/>
+	
+	<!-- =========================== TEMPLATES ============================== -->
+	
+	<!-- ========================== EVENT CATCHER =========================== -->
+	<Frame name="ChatKeysFrame">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("CHAT_MSG_WHISPER");
+				this:RegisterEvent("CHAT_MSG_WHISPER_INFORM");
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					chargementChatKeys();
+				elseif (event == "CHAT_MSG_WHISPER") then
+					majMurmureRecuChatKeys(arg1,arg2);
+				elseif (event == "CHAT_MSG_WHISPER_INFORM") then
+					majMurmureEnvoiChatKeys(arg1,arg2,arg3);
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+	<!-- ========================== FRAME D'OPTIONS ========================= -->
+	<Frame name="ChatKeysOptionsFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="390" y="235"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="60"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<TitleRegion setAllPoints="true"/><!-- ??? -->
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<!-- ================ CARTOUCHE TITRE =============== -->
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="220" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="1" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="ChatKeysOptionTitleText" inherits="GameFontNormal" nonspacewrap="true" text="CHATKEYSNAME">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- ==================== SOUS-FRAME ================ -->
+			<Frame name="ChatKeysOptSousFrame">
+				<Size>
+					<AbsDimension x="360" y="100"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<!-- ============ VERSION =========== -->
+						<FontString name="ChatKeysOptVers" inherits="GameFontNormalSmall" nonspacewrap="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-30" y="14"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0.4" g="0.4" b="0.4" a="1"/>
+						</FontString>
+						<!-- =========== FRIEND DEF ========= -->
+						<FontString name="ChatKeysOptTitle" inherits="GameFontNormalSmall" justifyH="LEFT" nonspacewrap="true" text="UI_TITLEFRIEND">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0.8" g="0.8" b="0.8" a="1"/>
+						</FontString>
+						<!-- ======= NOMS CHAMP FRIEND ====== -->
+						<FontString name="ChatKeysOptNameComm" inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="LEFT" maxLines="0" text="UI_BUDDYNAME">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ChatKeysOptTitle" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-30"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<!-- ========== CHANNEL DEF ========= -->
+						<FontString name="ChatKeysOptChan" inherits="GameFontNormalSmall" justifyH="LEFT" nonspacewrap="true" text="UI_TITLECHAN">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ChatKeysOptTitle" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-60"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0.8" g="0.8" b="0.8" a="1"/>
+						</FontString>
+						<!-- ======= NOMS CHAMP CANAL ====== -->
+						<FontString name="ChatKeysOptChanComm" inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="LEFT" maxLines="0" text="UI_CHANNAME">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ChatKeysOptChan" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-30"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						ChatKeysOptVers:SetText("v "..CHATKEYSVERS);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<!-- =================== EDIT BOXES ================= -->
+			<!-- ========== FRIEND NAME ======== -->
+			<EditBox name="ChatKeysOptName" inherits="InputBoxTemplate" historyLines="0" autoFocus="false" letters="25">
+				<Size>
+					<AbsDimension x="175" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ChatKeysOptTitle">
+						<Offset>
+							<AbsDimension x="175" y="-19"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						this:SetText(videSiNul(ChatKeysDatas["buddyName"]));
+					</OnShow>
+				</Scripts>
+			</EditBox>
+			<!-- ========= CHANNEL NAME ======== -->
+			<EditBox name="ChatKeysOptChanName" inherits="InputBoxTemplate" historyLines="0" autoFocus="false" letters="25">
+				<Size>
+					<AbsDimension x="175" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ChatKeysOptChan">
+						<Offset>
+							<AbsDimension x="175" y="-19"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						this:SetText(videSiNul(ChatKeysDatas["channelName"]));
+					</OnShow>
+				</Scripts>
+			</EditBox>
+			<!-- =========== COCHE SON ========= -->
+			<CheckButton name="ChatKeysOptCheckSound" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="65"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(UI_CHECKSOUND);
+					</OnLoad>
+					<OnShow>
+						this:SetChecked(ChatKeysDatas["sndNotification"]);
+						this:Disable();
+					</OnShow>
+				</Scripts>
+			</CheckButton>
+			<!-- =============================== -->
+			<!-- ==================== BTNS BAS ================== -->
+			<Button name="ChatKeysOptApplyButton" text="UI_BTNSAVE" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="95" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ChatKeysOptionsDlogApply();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ChatKeysOptCloseBtn" text="UI_BTNCANCEL" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="95" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad>
+				tinsert(UISpecialFrames,"ChatKeysOptionsFrame");
+			</OnLoad>
+		</Scripts>
+	
+	</Frame>
+</Ui>

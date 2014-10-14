@@ -1,0 +1,830 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="WaterboyLoc.lua"/> 
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<CheckButton name="WaterboyCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text=" ">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+		<Scripts>
+			<OnEnter>
+				Waterboy_Tooltip(WaterboyOptInfo[this:GetName()].text,WaterboyOptInfo[this:GetName()].tooltip)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<Slider name="WaterboySliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-2" bottom="-2"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontHighlightSmall" text=" ">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="18" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+		<Scripts>
+			<OnEnter>
+				Waterboy_Tooltip(WaterboyOptInfo[this:GetName()].text,WaterboyOptInfo[this:GetName()].tooltip)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</Slider>
+
+	<Button name="WaterboyButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\AddOns\WaterboyLoc\Artwork\EmptySlot">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+	</Button>
+
+	<Button name="WaterboyTradeSlotsTemplate" inherits="WaterboyButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="28" y="28"/>
+		</Size>
+		<Scripts>
+			<OnEnter>
+				Waterboy_TradeSlots_OnEnter()
+			</OnEnter>
+			<OnLeave>
+				Waterboy_TradeSlots_OnLeave()
+			</OnLeave>
+			<OnClick>
+				Waterboy_TradeSlots_OnClick()
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<Button name="WaterboyOnTapTemplate" inherits="WaterboyButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="28" y="28"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnEnter>
+				Waterboy_OnTap_OnEnter()
+			</OnEnter>
+			<OnClick>
+				Waterboy_OnTap_OnClick(arg1)
+			</OnClick>
+			<OnDragStart>
+				Waterboy_OnTap_OnDragStart(arg1)
+			</OnDragStart>
+			<OnDragStop>
+				Waterboy_OnTap_OnDragStop(arg1)
+			</OnDragStop>
+		</Scripts>
+	</Button>
+	
+	<Button name="WaterboyGemTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="28" y="28"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCD" inherits="GameFontNormalLarge" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\AddOns\WaterboyLoc\Artwork\EmptySlot">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnEnter>
+				Waterboy_Gem_OnEnter()
+			</OnEnter>
+			<OnClick>
+				Waterboy_Gems_OnClick(arg1)
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Button name="WaterboyIcon" frameStrata="LOW" parent="Minimap" enableMouse="true" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<NormalTexture name="$parentNTexture" file="Interface\AddOns\WaterboyLoc\Artwork\WaterboyIcon-Up"/>
+		<PushedTexture name="$parentPTexture" file="Interface\AddOns\WaterboyLoc\Artwork\WaterboyIcon-Down"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+			<OnEnter>
+				Waterboy_Tooltip(WB_TOOLTIP_MINIMAP)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnClick>
+				if arg1=="RightButton" and WaterboyOptions.Drink.value then
+					Waterboy_EatnDrink()
+				elseif arg1=="RightButton" and WaterboyOptions.ManaGem.value then
+					Waterboy_UseGem()
+				elseif arg1=="RightButton" then
+					WaterboyOptFrame:ClearAllPoints()
+					WaterboyOptFrame:SetPoint("TOPLEFT","Minimap","BOTTOMLEFT",-32,-32)
+					Waterboy_Toggle(arg1)				
+				else
+					Waterboy_Toggle(arg1)				
+				end
+
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="WaterboyOptFrame" enableMouse="true" parent="UIParent" frameStrata="HIGH" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="180" y="282"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="-32" y="-32"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="WaterboyOptFrameBack" file="Interface\ItemTextFrame\ItemText-Marble-TopLeft">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-4"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left=".1" right="1" top=".2" bottom="1"/>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="WB_WB_OPTIONS">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider name="WaterboyIconPos" inherits="WaterboySliderTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-42"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						Waterboy_MoveIcon(this:GetValue())
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="WaterboyAlpha" inherits="WaterboySliderTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-72"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if Waterboy.Loaded and not WaterboyFrame:IsVisible() then
+							WaterboyFrame:Show()
+						end
+						WaterboyOptions.Alpha.value = this:GetValue()
+						WaterboyFrame:SetAlpha(WaterboyOptions.Alpha.value/100)
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="WaterboyScale" inherits="WaterboySliderTemplate">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-102"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnValueChanged>
+						if Waterboy.Loaded and not WaterboyFrame:IsVisible() then
+							WaterboyFrame:Show()
+						end
+						WaterboyOptions.Scale.value = this:GetValue();
+						WaterboyFrame:SetScale(WaterboyOptions.Scale.value /100);
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Button name="WaterboyOptFrameCloseButton" inherits="GameMenuButtonTemplate" text="Ok">
+				<Size>
+					<AbsDimension x="54" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="8" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnClick>
+						WaterboyOptFrame:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="WaterboyOptFrameDefaultsButton" inherits="UIPanelButtonGrayTemplate" text="WB_BUTTON_DEFAULT">
+				<Size>
+					<AbsDimension x="54" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="8" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnClick>
+						Waterboy_LoadDefaults()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<CheckButton name="WaterboyReset" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.Reset.value = this:GetChecked()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyAuto" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-138"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.Auto.value = this:GetChecked()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyAnchor" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-172"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.Anchor.value = this:GetChecked()
+						Waterboy_MoveAnchor()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyOnScreen" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-156"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.OnScreen.value = this:GetChecked()
+						Waterboy_ESCable(1)
+						if WaterboyOptions.OnScreen.value then
+							WaterboyAnchor:Enable()
+							WaterboyAnchorText:SetTextColor(1,1,1)
+							if not WaterboyFrame:IsVisible() then
+								WaterboyFrame:Show()
+							end
+						else
+							Waterboy_Maximize()
+							WaterboyAnchor:Disable()
+							WaterboyAnchorText:SetTextColor(.5,.5,.5)
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyShowIcon" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.ShowIcon.value = this:GetChecked()
+						if WaterboyOptions.ShowIcon.value then
+							WaterboyIcon:Show()
+						else
+							WaterboyIcon:Hide()
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyLock" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-190"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.Lock.value = this:GetChecked()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyDrink" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-208"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.Drink.value = this:GetChecked()
+						Waterboy_SetIconTexture()
+						if this:GetChecked() then 
+							WaterboyGem:SetChecked(false) 
+							WaterboyOptions.ManaGem.value = false
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="WaterboyGem" inherits="WaterboyCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="14" y="-226"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WaterboyOptions.ManaGem.value = this:GetChecked()
+						Waterboy_SetIconTexture()
+						if this:GetChecked() then 
+							WaterboyDrink:SetChecked(false)
+							WaterboyOptions.Drink.value = false
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				WaterboyOptFrameBack:SetVertexColor(.15,.3,.5)
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WaterboyFrame" parent="UIParent" enableMouse="true" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="170" y="252"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="300" y="500"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="WaterboyBack" file="Interface\ItemTextFrame\ItemText-Marble-TopLeft">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-4"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left=".1" right="1" top=".2" bottom="1"/>
+				</Texture>
+				<FontString name="WaterboyTitle" inherits="GameFontNormalSmall" text="Waterboy" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="24" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="WaterboyArrow" file="Interface\TalentFrame\UI-TalentArrows">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="66" y="-24"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left=".5" right="1" top="0" bottom=".5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="WaterboyQtyButton">
+				<Size>
+					<AbsDimension x="32" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="WaterboyQty" inherits="NumberFontNormal" text="120" justifyH="CENTER"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="WaterboyGauge" file="Interface\TargetingFrame\UI-StatusBar">
+							<Size>
+								<AbsDimension x="28" y="12"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="WaterboyQtyButton" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="2" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						WaterboyGauge:SetVertexColor(.5,.5,.5)
+					</OnLoad>
+					<OnMouseDown>
+						Waterboy_OnMouseDown(arg1)
+					</OnMouseDown>
+					<OnMouseUp>
+						Waterboy_OnMouseUp(arg1)
+					</OnMouseUp>
+					<OnEnter>
+						Waterboy_Qty_OnEnter()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="WaterboyCloseButton">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-4" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\WaterboyLoc\Artwork\WaterboyIcon-Up"/>
+				<PushedTexture file="Interface\AddOns\WaterboyLoc\Artwork\WaterboyIcon-Down"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+					</OnLoad>
+					<OnEnter>
+						Waterboy_Tooltip("Waterboy "..Waterboy.Version,WB_ANCHOR_MOUSEOVER)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+					<OnClick>
+						if arg1=="RightButton" then
+							WaterboyOptFrame:ClearAllPoints()
+							WaterboyOptFrame:SetPoint("CENTER","UIParent","CENTER")
+						end
+						Waterboy_Toggle(arg1)
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="WaterboySlot1" inherits="WaterboyTradeSlotsTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="124" y="-12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WaterboySlot2" inherits="WaterboyTradeSlotsTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboySlot1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WaterboySlot3" inherits="WaterboyTradeSlotsTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboySlot2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WaterboySlot4" inherits="WaterboyTradeSlotsTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboySlot3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WaterboySlot5" inherits="WaterboyTradeSlotsTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboySlot4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WaterboySlot6" inherits="WaterboyTradeSlotsTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboySlot5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WaterboyTradeButton" inherits="UIPanelButtonTemplate" text="WB_BUTTON_TRADE">
+				<Size>
+					<AbsDimension x="40" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboySlot6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-6" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnClick>
+						Waterboy_Trade()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="WaterboyMakeButton" inherits="UIPanelButtonGrayTemplate" text="WB_BUTTON_MAKE">
+				<Size>
+					<AbsDimension x="40" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="WaterboyTradeButton" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnClick>
+						Waterboy_Summon()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="WaterboyResetButton" inherits="UIPanelButtonGrayTemplate" text="WB_BUTTON_RESET">
+				<Size>
+					<AbsDimension x="40" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WaterboyTradeButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText inherits="GameFontHighlightSmall"/>
+				<DisabledText inherits="GameFontDisableSmall"/>
+				<HighlightText inherits="GameFontHighlightSmall"/>
+				<Scripts>
+					<OnClick>
+						Waterboy_ResetButton_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="WaterboyMenu1" inherits="WaterboyOnTapTemplate" id="1"/>
+			<Button name="WaterboyMenu2" inherits="WaterboyOnTapTemplate" id="2"/>
+			<Button name="WaterboyMenu3" inherits="WaterboyOnTapTemplate" id="3"/>
+			<Button name="WaterboyMenu4" inherits="WaterboyOnTapTemplate" id="4"/>
+			<Button name="WaterboyMenu5" inherits="WaterboyOnTapTemplate" id="5"/>
+			<Button name="WaterboyMenu6" inherits="WaterboyOnTapTemplate" id="6"/>
+			<Button name="WaterboyMenu7" inherits="WaterboyOnTapTemplate" id="7"/>
+			<Button name="WaterboyMenu8" inherits="WaterboyOnTapTemplate" id="8"/>
+			<Button name="WaterboyMenu9" inherits="WaterboyOnTapTemplate" id="9"/>
+			<Button name="WaterboyMenu10" inherits="WaterboyOnTapTemplate" id="10"/>
+			<Button name="WaterboyMenu11" inherits="WaterboyOnTapTemplate" id="11"/>
+			<Button name="WaterboyMenu12" inherits="WaterboyOnTapTemplate" id="12"/>
+			<Button name="WaterboyMenu13" inherits="WaterboyOnTapTemplate" id="13"/>
+			<Button name="WaterboyMenu14" inherits="WaterboyOnTapTemplate" id="14"/>
+		
+			<Button name="WaterboyGem1" inherits="WaterboyGemTemplate" id="1"/>
+			<Button name="WaterboyGem2" inherits="WaterboyGemTemplate" id="2"/>
+			<Button name="WaterboyGem3" inherits="WaterboyGemTemplate" id="3"/>
+			<Button name="WaterboyGem4" inherits="WaterboyGemTemplate" id="4"/>
+			
+		</Frames>
+		<Scripts> 
+			<OnLoad>
+				Waterboy_OnLoad()
+			</OnLoad>
+			<OnEvent>
+				Waterboy_OnEvent(event)
+			</OnEvent>
+			<OnUpdate>
+				Waterboy_OnUpdate(arg1)
+			</OnUpdate>
+			<OnMouseDown>
+				Waterboy_OnMouseDown(arg1)
+			</OnMouseDown>
+			<OnMouseUp>
+				Waterboy_OnMouseUp(arg1)
+			</OnMouseUp>
+			<OnHide>
+				WaterboyOptFrame:Hide()
+				if WaterboyOptions.OnScreen.value then
+					WaterboyOptions.Minimized.value = true
+					WaterboyFrame:Show()
+				end
+			</OnHide>
+			<OnShow>
+				if not WaterboyOptions.Minimized.value or not WaterboyOptions.OnScreen.value then
+					Waterboy_Maximize()
+				else
+					Waterboy_Minimize()
+				end
+			</OnShow>
+		</Scripts> 
+	</Frame> 
+</Ui>

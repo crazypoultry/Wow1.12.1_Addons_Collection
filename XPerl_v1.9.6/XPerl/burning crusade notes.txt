@@ -1,0 +1,206 @@
+The Burning Crusade
+
+Some X-Perl relavant information and my TBC TO-DO list.
+
+Reference:
+http://forums.worldofwarcraft.com/thread.html?topicId=15401595&pageNo=7
+
+LUA 5.1 tranlations:
+      * Remove getn() usage, replace with # symbol
+      * Make sure we're not using setn() still as this was removed, although I
+        think I got them all already.
+      * Change string.find/strfind to string.match/strmatch (remove first two
+        return values)
+
+All frame's CastClickOverlays probably have to use SecureUnitButtonTemplate
+
+        QUOTE:
+        * There are several new secure templates that can be used by addons to
+          create new functional buttons:
+        * SecureActionButtonTemplate
+        * SecureUnitButtonTemplate
+        * SecureStateHeaderTemplate
+        * SecureAnchorButtonTemplate
+        * SecureStanceStateDriverTemplate
+        * SecureRaidGroupHeaderTemplate
+
+All frame handler scripts in XML, change for the new local parameters instead
+of global event, arg1, arg2 etc.
+
+        QUOTE:
+        * Frame handlers now get local variables in addition to global
+          variables. Accessing local variables is faster than accessing global
+          variables, and is recommended.
+        * Script handlers defined in XML are implicitly wrapped with a function
+          signature depending on the actual handler:
+        * default: function(self)
+        * OnAttributeChanged: function(self,name,value)
+        * OnChar: function(self,text)
+        * OnCharComposition: function(self,text)
+        * OnClick: function(self,button)
+        * OnColorSelect: function(self,r,g,b)
+        * OnCursorChanged: function(self,x,y,w,h)
+        * OnDoubleClick: function(self,button)
+        * OnDragStart: function(self,button)
+        * OnEvent: function(self,event,...)
+        * OnHorizontalScroll: function(self,offset)
+        * OnHyperlinkClick: function(self,link,text,button)
+        * OnHyperlinkEnter: function(self,link,text)
+        * OnHyperlinkLeave: function(self,link,text)
+        * OnInputLanguageChanged: function(self,language)
+        * OnKeyDown: function(self,key)
+        * OnKeyUp: function(self,key)
+        * OnMouseDown: function(self,button)
+        * OnMouseUp: function(self,button)
+        * OnMouseWheel: function(self,delta)
+        * OnMovieShowSubtitle: function(self,text)
+        * OnScrollRangeChanged: function(self,xrange,yrange)
+        * OnSizeChanged: function(self,w,h)
+        * OnTooltipAddMoney: function(self,cost)
+        * OnUpdate: function(self,elapsed)
+        * OnValueChanged: function(self,value)
+        * OnVerticalScroll: function(self,offset)
+        * PostClick: function(self,button)
+        * PreClick: function(self,button)
+
+Function hooks
+* Change to use 'hooksecurefunc' to avoid tainting.
+
+        Existing X-Perl hooks (only problematic ones listed):
+                XPerl_Check.lua - PickupContainerItem
+                XPerl_Init.lua - GameTooltip:SetPlayerBuff
+
+        QUOTES:
+        * NEW hooksecurefunc([table,] "functionName", hookfunc) -- Creates a
+          secure 'post hook' for the named function. Once installed hookfunc
+          is invoked after the original function, and receives the same
+          parameters as the original. Any return values from hookfunc are
+          discarded. This is the only safe way to hook functions that execute
+          protected functionality.
+
+        * The new hooksecurefunc API function allows AddOn code to 'post hook'
+          a secure global function, that is run another function after the
+          original one has been run. So for example you could track calls to
+          CastSpellByName using hooksecurefunc("CastSpellByName",
+          mySpellCastTracker). The API replaces the original global function
+          with its own secure hook function that calls the original function,
+          saves its return values away, and then calls your hook function with
+          the same arguments as the original function (any return values from
+          your hook function are thrown away) and then it returns the return
+          values from the original.
+
+For debugging, remember:
+secure() function to check things aren't going fubar.
+
+        QUOTE:
+        * NEW isSecure = secure() -- Determine if the current environment is
+          secure code
+
+
+General Frames (probably party, target and focus)
+* Show casting bar for other players
+
+        QUOTE:
+        * UNIT_SPELLCAST_START, unit
+        * UNIT_SPELLCAST_STOP, unit
+        * NEW spell, rank, displayName, icon, startTime, endTime =
+                                                        UnitCastingInfo("unit")
+        * NEW spell, rank, displayName, icon, startTime, endTime =
+                                                        UnitChannelInfo("unit")
+
+Focus Frame
+* Add "focus" frame, similar to "target" frame.
+* Different colour tint maybe, or some other way to clearly distinguish it.
+
+Party
+* UNIT_TARGET : Update party targets, remove from OnUpdate
+
+Target's Target
+* Will no longer need to constantly monitor target's target for changes. Can
+  just update on target change and when UNIT_TARGET event received for target.
+* For that matter, can just make target's target and target's target's target
+  use the exact same code as the target frame.
+* This will also mean we'll be able to display target's target portrait.
+
+Raid + Party
+* Monitoring UNIT_TARGET events, indicate when raid and party members are
+  targetting a raid icon designated target by echoing that icon on their frame.
+  (This is not something I'll do until TBC as it would involve a heavy work-
+  load in some OnUpdate handler)
+
+Raid
+* Change the indicated 'TBC' parts of code to allow support for extra class per
+  faction.
+
+Assists frame
+* Will have to do much less work per update now as we can monitor UNIT_TARGET
+  for raid member targets. When a raid member target changes, we'll make a
+  list of known enemy units at this time, and monitor their targets only. Much
+  less work per cycle. Add "focus" unit to list of units to check.
+* Integrate the Assists scan and MT List scan into one entity.
+* When a UNIT_TARGET event is received, check their target only and if it's a
+  mob add their raid ID to list of mob target owners, checking that the mob
+  does not exist in list already.
+* OnUpdate will only have to check this small list of mobs for targetted
+  players, rather than every raid member and their pets.
+
+MT List
+* Unlikely this will work quite the same way as it does now. More than likely
+  the tanks themselves will be fine, but their targets and such would most
+  likely be demoted to be a non-interactive visual aid only. Also monitor
+  UNIT_TARGET for changes to their targets.
+
+Smart Assist and Other Targets
+* Problably won't work at all. So much for tanks being able to dynamically
+  select un-tanked targets. That's going to suck.
+
+Emergency Monitor
+* Plans for this on hold until TBC released, because it's unlikely it'll be
+  possible.
+
+Click Heal mod support.
+* Don't expect any of these will work beyond defining 1 spell to cast. No
+  intelligence at all. Shouldn't have any effect on X-Perl though, if they
+  still function at all I can leave things as they are.
+
+Buff Helper
+* Check out whether these will work better.
+
+        QUOTE:
+        * NEW count = UnitHasBuff("unit", "name"[, "rank"])
+        * NEW count = UnitHasDebuff("unit", "name"[, "rank"])
+
+Item Checker
+* Code can be optimized some. Won't need to trim out link codes etc.
+
+        QUOTE:
+        * You no longer need to strip special codes from item links before
+          passing them to item information functions.
+        * Item information functions accept an item ID, an item link, or the
+          name of an item in your inventory.
+        * Inventory functions will accept a slot name in addition to a slot
+          number.
+
+GetItemInfo() returns changed, not compatible
+
+        QUOTE:
+        * UPDATED itemName, itemLink, itemRarity, itemLevel, itemMinLevel,
+          itemType, itemSubType, itemStackCount, itemEquipLoc, invTexture =
+          GetItemInfo(itemID|"itemLink") -- Now returns item level WARNING -
+          This change is not backward compatible
+
+Range Checker
+* May be improved upon, depending on limitations of IsSpellInRange()
+
+        QUOTE:
+        * NEW result = IsSpellInRange(spell, [unit]) - result is nil for no
+          valid target, 0 for out of range, 1 for in range
+
+TeamSpeak Monitor
+* Add support for ALT, SHIFT, CTRL keys to activate.
+
+        QUOTE:
+        * Added MODIFIER_STATE_CHANGED event.
+          event = MODIFIER_STATE_CHANGED
+          arg1 = SHIFT or CTRL or ALT
+          arg2 = 1 for down, 0 for up

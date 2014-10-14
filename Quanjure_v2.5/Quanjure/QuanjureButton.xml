@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	 <Frame name="QuanjureButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="LOW">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="QuanjureButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\Quanjure\Images\button"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForDrag("RightButton");
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+						this.dragme = false;
+					</OnLoad>
+					<OnDragStart> 
+						this.dragme = true;
+					</OnDragStart> 
+					<OnDragStop>
+						this.dragme = false;
+					</OnDragStop>
+					<OnUpdate>
+						if(this.dragme == true) then
+							QuanjureButton_BeingDragged();
+						end
+					</OnUpdate>
+					<OnClick>
+						QuanjureButton_OnClick(arg1);
+					</OnClick>
+					<OnEnter>
+						QuanjureButton_OnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Frame name="QuanjureDropdown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="QuanjureButton">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						QuanjureDropdown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent>
+				QuanjureButton_Init();
+				QuanjureButton_UpdatePosition();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+</Ui>

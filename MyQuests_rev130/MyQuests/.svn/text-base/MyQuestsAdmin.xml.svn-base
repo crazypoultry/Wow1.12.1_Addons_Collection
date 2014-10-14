@@ -1,0 +1,517 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+ <Script file="MyQuestsAdmin.lua" />
+
+ <Frame name="MyQuestsAdminFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+  <Size>
+   <AbsDimension x="512" y="512" />
+  </Size>
+  <Anchors>
+   <Anchor point="CENTER" />
+  </Anchors>
+
+  <Layers>
+   <Layer leve="BACKGROUND">
+    <Texture file="Interface\AddOns\MyQuests\Icons\MQ-AdminIcon.tga">
+     <Size>
+      <AbsDimension x="64" y="64" />
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT">
+       <Offset>
+        <AbsDimension x="5" y="-5" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\AddOns\MyQuests\Icons\MQ-AdminFrame-TopLeft.tga">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPLEFT"/>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\AddOns\MyQuests\Icons\MQ-AdminFrame-TopRight.tga">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="TOPRIGHT"/>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\AddOns\MyQuests\Icons\MQ-AdminFrame-BottomLeft.tga">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="BOTTOMLEFT"/>
+     </Anchors>
+    </Texture>
+    <Texture file="Interface\AddOns\MyQuests\Icons\MQ-AdminFrame-BottomRight.tga">
+     <Size>
+      <AbsDimension x="256" y="256"/>
+     </Size>
+     <Anchors>
+      <Anchor point="BOTTOMRIGHT"/>
+     </Anchors>
+    </Texture>
+   </Layer>
+  </Layers>
+  
+  <Frames>
+   <Button name="MQAdmin_CloseButton" inherits="UIPanelCloseButton">
+    <Anchors>
+     <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+      <Offset>
+       <AbsDimension x="3" y="-8"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Scripts>
+     <OnClick>
+      MyQuestsAdmin_OnCancel();
+     </OnClick>
+    </Scripts>
+   </Button>
+
+  <Button name="MQAdin_CreateButton" inherits="UIPanelButtonTemplate" text="Create New Quest">
+   <Anchors>
+    <Anchor point="BOTTOMLEFT">
+     <Offset>
+      <AbsDimension x="20" y="50"/>
+     </Offset>
+    </Anchor>
+   </Anchors>
+   <Size>
+    <AbsDimension x="200" y="21" />
+   </Size>
+   <Scripts>
+    <OnClick>
+     <!--
+     PlaySound("gsTitleOptionExit");
+     HideUIPanel(MyQuestsOptionsFrame);
+     -->
+    </OnClick>
+   </Scripts>
+  </Button>
+
+
+   <CheckButton name="MQAdmin_Check1" inherits="OptionsCheckButtonTemplate">
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="$parent">
+      <Offset>
+       <AbsDimension x="215" y="-70" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontHighlight" text="Enable MyQuests Interaction" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+    <Scripts>
+     <OnClick>
+      if (this:GetChecked()) then
+       OptionsFrame_EnableCheckBox(MQAdmin_Check2, 1);
+       OptionsFrame_EnableCheckBox(MQAdmin_Check3, 1);
+      else
+       OptionsFrame_DisableCheckBox(MQAdmin_Check2);
+       OptionsFrame_DisableCheckBox(MQAdmin_Check3);
+      end
+     </OnClick>
+    </Scripts>
+   </CheckButton>
+
+   <CheckButton name="MQAdmin_Check2" inherits="OptionsCheckButtonTemplate">
+    <Size>
+     <AbsDimension x="24" y="24" />
+    </Size>
+    <Anchors>
+     <Anchor point="TOP" relativeTo="MQAdmin_Check1" relativePoint="BOTTOM">
+      <Offset>
+       <AbsDimension x="6" y="2" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="Allow New Quest Accepts" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+
+   <CheckButton name="MQAdmin_Check3" inherits="OptionsCheckButtonTemplate">
+    <Size>
+     <AbsDimension x="24" y="24" />
+    </Size>
+    <Anchors>
+     <Anchor point="TOP" relativeTo="MQAdmin_Check2" relativePoint="BOTTOM">
+      <Offset>
+       <AbsDimension x="0" y="2" />
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Layers>
+     <Layer level="ARTWORK">
+      <FontString name="$parentText" inherits="GameFontNormalSmall" text="Allow Quest Turn-ins" justifyH="LEFT">
+       <Size>
+        <AbsDimension x="285" y="0" />
+       </Size>
+       <Anchors>
+        <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+         <Offset>
+          <AbsDimension x="0" y="0" />
+         </Offset>
+        </Anchor>
+       </Anchors>
+      </FontString>
+     </Layer>
+    </Layers>
+   </CheckButton>
+
+
+  
+  </Frames>
+ </Frame>
+
+ <Frame name="MyQuestsOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+  <Size>
+   <AbsDimension x="500" y="500" />
+  </Size>
+  <Anchors>
+   <Anchor point="CENTER" />
+  </Anchors>
+  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+   <BackgroundInsets>
+    <AbsInset left="11" right="12" top="12" bottom="11" />
+   </BackgroundInsets>
+   <TileSize>
+    <AbsValue val="32" />
+   </TileSize>
+   <EdgeSize>
+    <AbsValue val="32" />
+   </EdgeSize>
+  </Backdrop>
+  <Layers>
+   <Layer level="ARTWORK">
+    <Texture name="MyQuestsOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+     <Size>
+      <AbsDimension x="256" y="64" />
+     </Size>
+     <Anchors>
+      <Anchor point="TOP">
+       <Offset>
+        <AbsDimension x="0" y="12" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </Texture>
+    <FontString inherits="GameFontNormal" text="MQ_ADMIN_TITLE">
+     <Anchors>
+      <Anchor point="TOP" relativeTo="MyQuestsOptionsFrameHeader">
+       <Offset>
+        <AbsDimension x="0" y="-14" />
+       </Offset>
+      </Anchor>
+     </Anchors>
+    </FontString>
+   </Layer>
+  </Layers>
+  <Frames>
+   <Frame name="MyQuestsOptionsFrameDisplay" inherits="OptionFrameBoxTemplate">
+    <Size>
+     <AbsDimension x="475" y="100"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT">
+      <Offset>
+       <AbsDimension x="12" y="-35"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <!--
+     <Slider name="MyQuestsOptionsFrameSlider1" inherits="OptionsSliderTemplate">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="10" y="-20"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Size>
+       <AbsDimension x="290" y="17" />
+      </Size>
+      <Scripts>
+       <OnLoad>
+        getglobal(this:GetName().."Text"):SetText(MQ_ADMIN_TARGETBUTTON);
+        getglobal(this:GetName().."High"):SetText();
+        getglobal(this:GetName().."Low"):SetText();
+        this:SetMinMaxValues(0, 360);
+        this:SetValueStep(1);
+        this.tooltipText = MQ_ADMIN_TARGETBUTTON_TIP;
+       </OnLoad>
+       <OnShow>
+        if (myquests.TargetBadgeLoc) then
+          this:SetValue(myquests.TargetBadgeLoc);
+        end
+       </OnShow>
+       <OnValueChanged>
+        myquests.TargetBadgeLoc = this:GetValue();
+        getglobal(this:GetName().."Text"):SetText(MQ_ADMIN_TARGETBUTTON .. " - "..this:GetValue().."\194\176");
+        MyQuests_TargetBadge:SetPoint("TOP", "TargetFrame", "TOP", 41-(40*cos(myquests.TargetBadgeLoc)), (40*sin(myquests.TargetBadgeLoc))-28);
+        MQTargetBadge2:SetPoint("TOP", "TargetFrame", "TOP", 41-(40*cos(myquests.TargetBadgeLoc)), (40*sin(myquests.TargetBadgeLoc))-28);
+       </OnValueChanged>
+      </Scripts>
+     </Slider>
+     -->
+    </Frames>
+    <Scripts>
+     <OnLoad>
+      this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+      this:SetBackdropColor(0.15, 0.15, 0.15);
+      getglobal(this:GetName().."Title"):SetText(DISPLAY);
+     </OnLoad>
+    </Scripts>
+   </Frame>
+
+   <Frame name="MyQuestsOptionsFrameInteraction" inherits="OptionFrameBoxTemplate">
+    <Size>
+     <AbsDimension x="475" y="100"/>
+    </Size>
+    <Anchors>
+     <Anchor point="TOPLEFT" relativeTo="MyQuestsOptionsFrameDisplay" relativePoint="BOTTOMLEFT">
+      <Offset>
+       <AbsDimension x="0" y="-15"/>
+      </Offset>
+     </Anchor>
+    </Anchors>
+    <Frames>
+     <!-- controls go here -->
+     <CheckButton name="MQAdmin_CheckButton1" inherits="OptionsCheckButtonTemplate">
+      <Anchors>
+       <Anchor point="TOPLEFT">
+        <Offset>
+         <AbsDimension x="10" y="-5"/>
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Layers>
+       <Layer level="ARTWORK">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MQ_ADMIN_MOD_ENABLE">
+         <Anchors>
+          <Anchor point="LEFT" relativePoint="RIGHT">
+           <Offset>
+            <AbsDimension x="0" y="0"/>
+           </Offset>
+          </Anchor>
+         </Anchors>
+        </FontString>
+       </Layer>
+      </Layers>
+      <Scripts>
+       <OnClick>
+        myquests.IsEnabled = this:GetChecked();
+        --if (myquests.IsEnabled) then
+        --  MQAdmin_CheckButton2:Enable();
+        --  MQAdmin_CheckButton3:Enable();
+        --else
+        --  MQAdmin_CheckButton2:Disable();
+        --  MQAdmin_CheckButton3:Disable();
+        --end
+       </OnClick>
+       <OnShow>
+        this:SetChecked(myquests.IsEnabled);
+        --if (myquests.IsEnabled) then
+        --  MQAdmin_CheckButton2:Enable();
+        --  MQAdmin_CheckButton3:Enable();
+        --else
+        --  MQAdmin_CheckButton2:Disable();
+        --  MQAdmin_CheckButton3:Disable();
+        --end
+       </OnShow>
+      </Scripts>
+     </CheckButton>
+
+
+      <ScrollFrame name="MQAdmin_QuestWelcomeFrame" inherits="EpBookScrollFrameTemplate">
+       <Size>
+        <AbsDimension x="255" y="50"/>
+       </Size>
+       <Anchors>
+        <Anchor point="TOPLEFT" relativeTo="MQAdmin_CheckButton1" relativePoint="BOTTOMLEFT">
+         <Offset>
+          <AbsDimension x="0" y="-5"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <ScrollChild>
+        <EditBox name="MQAdmin_QuestWelcomeEntry" inherits="EpBookEditBoxTemplate">
+         <Size>
+          <AbsDimension x="255" y="50"/>
+         </Size>
+         <Layers>
+          <Layer level="BACKGROUND">
+           <Texture name="$parentBackground">
+            <Size>
+             <AbsDimension x="255" y="50"/>
+            </Size>
+            <Anchors>
+             <Anchor point="TOPLEFT"/>
+            </Anchors>
+            <Color r="1.0" g="1.0" b="1.0" a="0.15" />
+           </Texture>
+          </Layer>
+         </Layers>
+         <FontString inherits="QuestFont" />
+        </EditBox>
+       </ScrollChild>
+      </ScrollFrame>
+
+     <CheckButton name="MQAdmin_CheckButton2" inherits="OptionsCheckButtonTemplate">
+      <Size>
+       <AbsDimension x="26" y="26"/>
+      </Size>
+      <Anchors>
+       <Anchor point="TOP" relativeTo="MQAdmin_CheckButton1" relativePoint="BOTTOM">
+        <Offset>
+         <AbsDimension x="10" y="4" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Layers>
+       <Layer level="ARTWORK">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MQ_ADMIN_ACCEPT_ENABLE">
+         <Anchors>
+          <Anchor point="LEFT" relativePoint="RIGHT">
+           <Offset>
+            <AbsDimension x="0" y="0"/>
+           </Offset>
+          </Anchor>
+         </Anchors>
+        </FontString>
+       </Layer>
+      </Layers>
+      <Scripts>
+       <OnClick>
+        myquests.AcceptEnabled = this:GetChecked();
+       </OnClick>
+       <OnShow>
+        this:SetChecked(myquests.AcceptEnabled);
+       </OnShow>
+      </Scripts>
+     </CheckButton>
+     <!--
+     <CheckButton name="MQAdmin_CheckButton3" inherits="OptionsCheckButtonTemplate">
+      <Size>
+       <AbsDimension x="26" y="26"/>
+      </Size>
+      <Anchors>
+       <Anchor point="TOP" relativeTo="MQAdmin_CheckButton2" relativePoint="BOTTOM">
+        <Offset>
+         <AbsDimension x="0" y="4" />
+        </Offset>
+       </Anchor>
+      </Anchors>
+      <Layers>
+       <Layer level="ARTWORK">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="MQ_ADMIN_TURNIN_ENABLE">
+         <Anchors>
+          <Anchor point="LEFT" relativePoint="RIGHT">
+           <Offset>
+            <AbsDimension x="0" y="0"/>
+           </Offset>
+          </Anchor>
+         </Anchors>
+        </FontString>
+       </Layer>
+      </Layers>
+      <Scripts>
+       <OnClick>
+        myquests.TurninEnabled = this:GetChecked();
+       </OnClick>
+       <OnShow>
+        this:SetChecked(myquests.TurninEnabled);
+       </OnShow>
+      </Scripts>
+     </CheckButton>
+     -->
+    </Frames>
+    <Scripts>
+     <OnLoad>
+      this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+      this:SetBackdropColor(0.15, 0.15, 0.15);
+      getglobal(this:GetName().."Title"):SetText(MQ_ADMIN_INTERACTION);
+     </OnLoad>
+    </Scripts>
+   </Frame>
+
+<!--      
+      <Button name="MyQuestsOptionsFrameCancel" inherits="OptionsButtonTemplate" text="CANCEL">
+       <Anchors>
+        <Anchor point="BOTTOMRIGHT">
+         <Offset>
+          <AbsDimension x="-12" y="16"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <Scripts>
+        <OnClick>
+         PlaySound("gsTitleOptionExit");
+         HideUIPanel(MyQuestsOptionsFrame);
+        </OnClick>
+       </Scripts>
+      </Button>
+-->      
+      <Button name="MyQuestsOptionsFrameOkay" inherits="OptionsButtonTemplate" text="OKAY">
+<!--      
+       <Anchors>
+        <Anchor point="RIGHT" relativeTo="MyQuestsOptionsFrameCancel" relativePoint="LEFT">
+         <Offset>
+          <AbsDimension x="0" y="0"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+-->
+       <Anchors>
+        <Anchor point="BOTTOMRIGHT">
+         <Offset>
+          <AbsDimension x="-12" y="16"/>
+         </Offset>
+        </Anchor>
+       </Anchors>
+       <Scripts>
+        <OnClick>
+         PlaySound("gsTitleOptionOK");
+         mq.Admin_OnSave();
+         HideUIPanel(MyQuestsOptionsFrame);
+        </OnClick>
+       </Scripts>
+      </Button>
+
+  </Frames>
+ </Frame>
+
+</Ui>

@@ -1,0 +1,421 @@
+SmartRestore v3.7
+Created by ScepraX.
+
+Changelog:
+3.7
+	- Added floor to bandage time left, so only full numbers are shown.
+	- Added grim guzzler boar to pet meat.
+	- Fixed petfeedmode not being shown in status list.
+	- Changed slash command 'petfeedmode' to 'bestfood'.
+	- Finally fixed non-cooked not being used.
+	- Added a check for happiness.
+	- Fixed some errors with the level of petfood.
+	- Added optional dependency: Fizzwidget Feed-O-Matic
+	- Added another optional dependency:  Petfeeder. (When both loaded, fom has priority.)
+	- Changed the feed function to only trigger other mods when food is needed. This to support autofeeding.
+	- Gave dynamic buffing food, (only Bobbling Apple so far) priority over normal buffing food when using the Buff function.
+3.6
+	- Added Bobbing Apple to database.
+	- Added petfood categories.
+	- Fixed weird mistype that had no consequences but just didn't look right.
+	- Added Candy Corn.
+	- Added several new categories for dynamic food.
+	- Removed the pet_food_bonus category as it isn't neccesary.
+	- Short workplan:
+		- A hunter should not use food that pet can use. He should look for other food first.
+			- To do this i need to know the class of the pet.
+			- Then i need to lookup the foodclasses that belong to the petclass.
+		- There are several way to feed a pet:
+			- Best food first. This means less feeding, but also that you'll get stuck with bad food.
+			- Worst food first. Means lots of feeding, but you got rid of the lesser food and kept the best for yourself.
+				- Not using buffing food. Just a check if the food also occurs in the FOOD_BUFF category.
+				- Not using cookable food. This means the food has to occur in the FOOD category, or FOOD_BUFF category if buffing is allowed.
+				- When using both no checks need to be applied.
+				- Dynamic food and combo food cannot be feed to the pet.
+				- Quest food will never be used for  pets.
+			- We use the level of the food to determine its quality. The max is off course the level nearest to the pet's level but not over. The minimum seems to be food that's over the pet's level minus 40. Anything lower isn't feedable.
+	- Changed the dynamic food priority to less then normal food. I find it slow and I don't have much patience, so I don't prefer it.
+	- Added dynamic food support for combo food. These are for now just the Halloween foods.
+	- Added new variable: SR_PetHappiness. This is a number ranging from 0 to 3. 0 is disabled (standard with non hunters.) 1 means petfeeding is disabled as well. 2 is neutral, 3 happy. This is the goal value.
+	- Figured out how the blizzard function GetPetFoodTypes() works. It returns strings. Maybe I should add a description on wikipedia for it.
+	- Added binding for pet feeding. Slashcommands are in place too.
+	- Added a function to feed pet with.
+	- Also added to the smartrestore and smarteat functions to automatically trigger when used.
+	- Added some new commands to adjust petfeed settings.
+	- Implemented some hunter specific features.
+		- Nothing settable; food that the pet can use as well will be saved as much as possible, using equal food the pet can't use if possible.
+	- Added Raw Whitescale Salmon.
+	- Added some minor optimalizations.
+	- Added some extra code to always prefer conjured food.
+	- Fixed possible bug with drinking check.
+	- Disabled emotes by default.
+	- Updated readme to reflect the extra features.
+	- Changed ItemList to SR_ItemList to avoid possible bugs caused when used with other mods.
+	- Added new variable: SR_AutoFeed. 
+		- Added option to turn autofeeding off/on.
+3.5
+	- Added new variable to save the class of the player.
+	- Fixed a possible bug concerning sting comparison.
+	- Added a check for Mage class when looking for conjured mana stones.
+	- Cleaned code a bit.
+	- Added new variable: SR_Emotes.
+	- Added SR_SlowFoodMultiplier to the status list.
+	- Made the help menu somewhat dynamic, so it displays current values for every variable.
+	- Changed antipoisonbeforebandage to antivenombeforebandage.
+	- Added slashcommand for to enable/disable emotes.
+	- Fixed bug with buff food.
+	- Fixed possible bug in power calculations.
+	- Removed (now) unncessary quick fix for battleground bandages.
+3.4
+	- Fixed the battleground food bug.
+3.3
+	- Added new variable SR_AntiPoisonBeforeBandage. (Default is false).
+	- Added slashcommand and the rest.
+	- Changed the default values of some variables, according to class of the player:
+		- For healing classes:
+		 	- The minimum value of health is set to 10%. That means that when health above 10% and mana below the amount of health in %, a manapotion is preferred over a healthpotion.
+			- The value of mana is set to 90. This means that the player is capable of restoring mana through this mod when the mana is below 90%. Standard is 75%, to save drinks.
+			- This classes use mode 1, category based. Reason for this is that they have more use for nice selected food with buffs etc. then the best heal, because they can heal themselves.
+		- Mages:
+			- Using conjured food last when in mode 1. Because a mage prefers to keep his inventory clean and therefor wishes to get rid of the normal food before the conjured food.
+			- Standard mode set to 2, stack-based. A mage doesn't need small stacks of food.
+		- Melee classes (Rogues and warriors)
+			- Standard able to use potions outside combat.
+			- They can't restore mana.
+			- Always use health potions.
+		- Hunters:
+			- The health value is set to 75. Hunters need to save food for their pets.
+			- Capable of using potions outside combat by default.
+		- Warlocks
+			- Capable of using potions and healthstones outside combat.
+			- Using mode 1 by default.
+	- Tried to fix the battleground issues. Started with redoing the battlefield check a bit.
+	- Added Harvest Boar to the itemlist.
+	- Added Harvest Fish.
+	- Added Harvest Fruit.
+	- Added 2 new categories for the harvest food and drink.
+	- Added the new categories before the normal category.
+	- Added dynamic heal detection for the new harvest foods.
+	- Changed debug mode to support several levels of debugging.
+		- In mode 1 only general messages will be displayed.
+		- In mode 2 found debuffs and found foodstacks will be displayed.
+		- In mode 3 every scanned food will be displayed.
+	- Removed the overheal messages as they were not correct and not vital.
+	- Changed printing of names in messages to links.
+	- Removed the stack function, because i didn't like the implementation and there're modes for that.
+	- Added new variable SR_QuestFood.
+	- Added support to enable food used for/in quests. Default is disabled.
+3.2
+	- Fixed a bug with the smartbuff function.
+	- Removed all buff checks except the standard buff check, because some textures are also used for other buffs. 
+		- I need to find another way to check buffs.
+	- Changed some default variables. Most noticeable, made a integer from SR_Smart.
+	- Removed the command alwaysbest.
+	- Added new slashcommand "mode".
+	- After this command an integer has to be given.
+		- When 0, the standard functionality is used selecting best item from all categories. This is default value.
+		- When 1, the first item found will be used, based on categories.
+		- When 2, the item from the smallest stack will be used.
+	- Added a new function that will choose the the item from the smallest stack. Simular further to the smart function.
+		- Not really happy about the implementation, but it will do the job. Maybe I'll redo it without use of global variables in a future version.
+	- Added new function to keybindings.
+	- Updated readme.
+	- Changed the use of SR_SlowFoodMultiplier slightly.
+	- Fixed possible bug in power calculations.
+	- Changed text of the new modes.
+	- Fixed a bug with names.
+3.1
+	- Changed the bandage code to also apply anti-venom when full health but poisoned.
+	- Fixed a bug with raw (greater) sagefish.
+	- Fixed a serious bug with combo food.
+	- Removed buff food & drink combo as last resort, because it proved too expensive. Instead normal food will be used.
+	- Totally redid the bandage function to support non-smart use of bandages.
+		- Fixed a very annoying bug that caused the bandage function to not work for the player.
+		- More bugfixing in the bandage section.
+3.0
+	- Started rebuilding code.
+	- Updated the debug messages.
+	- Updated the can't use bandage message with remaining cooldown count of recently bandaged.
+	- Totally redid code, increasing its efficiency.
+	- Removed scanning messages from debugmode.
+	- Fixed bug not showing cooldown times.
+	- Fixed lots of bugs that were created during the code change.
+		- Lots of stack recalls. :(
+		- Usually forgot ".." or to remove a ")". I hate debugging.
+		- Seems to work but not sure enough to release it. I'll play a full day with this version to ensure stability before releasing.
+	- Redid the slow food and drink power calculations.
+	- Fixed some iMana bugs.
+	- Added a new variable SR_SlowFoodMultiplier.
+	- Added commands for above.
+	- Redid cooldown messages.
+	- Added Winter Veil Roast and Darkshore Grouper to list.
+	- Added Frog Leg Stew to the list.
+	- Added Festival Dumplings to the list.
+	- Added Harvest Bread to the list.
+	- Added the following foods as well:
+		- Healing Herb
+		- Ripe Watermelon
+		- Sauteed Sunfish 
+		- Small Pumpkin
+		- Candy Bar
+		- Lollipop
+		- Bellara's Nutterbar
+		- Styleen's Sour Suckerpop
+		- Moonbrook Riot Taffy
+		- Darkmoon Dog
+		- Spiced Beef Jerky
+		- Red Hot Wings
+		- Crunchy Frog
+		- Deep Fried Candybar
+		- Striped Yellowtail
+		- Spicy Beefstick
+		- Darnassus Kimchi Pie
+		- Highlander's Field Ration
+		- Radish Kimchi
+		- Cabbage Kimchi
+		- Winter Kimchi
+		- Defiler's Field Ration
+		- Grim Guzzler Boar
+		- Clara's Fresh Apple
+		- Holiday Cheesewheel
+		- Graccu's Homemade Meat Pie
+		- Candy Cane
+	- Fixed the ID of Charred Wolf Meat.
+	- Totally reordened the itemlist database by ID.... Don't know why, won't speed up things in general. Kinda useless.
+	- Added Highlander's Iron Ration and Defiler's Iron Ration.
+2.9
+	- Added Deeprun Rat Kabob to the database as food.
+	- Added Winter Veil Cookie to the database as buff food.
+	- Added Pickled Kodo Foot to the database as food.
+	- Tried to exntend the debug messages to display more information about items.
+		- However, this has lead to so much changing that I decided to do what I was planning for version 3: Redoing the entire code to share more code. I aim at bringing the code to about 40% of current.
+	- This version will not be released.
+2.8
+	- Did some SR_ additions to functions to ensure consisty with other mods.
+	- Removed crystal restore.
+	- Some more optimalizations to bandage function.
+	- Fixed bug with wool bandages.
+	- Changed default max mana to 70%.
+2.7
+	- Added function to use bandages on pets (if available) if the player does not need health. Should be noticed that a range check is not applied.
+	- Readded a health check for friendly targets. This isn't visible, unless the debug function is used.
+	- Fixed a bug in the no health display messages.
+	- Redid the readme.
+	- Fixed Crab Cake being in the wrong list.
+2.6
+	- Changed the description text (ingame) a bit.
+	- Added a error messages when trying to bandage while the skill level is not registered.
+2.5
+	- Fixed Whipper Root Tuber being in the wrong list.
+	- Added floor to the bufftime debug message.
+	- Set minimum mana to 10%, as the check for warriors and rogues prevents them from using water anyways.
+	- Changed default value of the minhealth to 50%, as I believe this to be a better value. (Won't be adjusted with an upgrade.)
+2.4
+	- Tried to optimize the buff and debuff checks a bit. 
+	- Added the ID of items to the debugoutput.
+2.3
+	- Fixed a bug in the smartpotion function that caused it to use healthpotions most of the time.
+	- Changed the default values of some variables. Permanent now I hope.
+	- Moved spiced wolf meat from normal food to buffing food.
+2.2
+	- Removed the [SmartRestore] text, as I found it to be annoying. :$
+	- Added a new feature, allowing the player to choose whether to use items based upon the need, or just always use the best item. By default it's based on the need.
+	- Changed the overheal text to be more accurate.
+	- Fixed a serious bug in the power calculations.
+2.1
+	- Fixed a bug with the double use of the name SR_Smart.
+2.0
+	- Fixed a bug in the smartpotion function.
+	- Simplified power calculations.
+	- Added a floor() to the average calculation function. Should speed things up a bit.
+	- Added [SmartRestore] to all messages.
+	- Added variable SR_MinHealthPCT.
+	- Changed the smartpotion function to always use healthpotions when the health of the player is below the minhealth threshhold.
+	- Changed the default values of healtext and smart to true by default.
+	- Changed the bandage function always apply the best bandage to a friendly targetted player.
+	- Changed some error messages to functions.
+	- Updated readme.
+	- Prefixed all functions with SR_ to avoid conflicts with other mods.
+	- Fixed error messages of the buff function.
+	- Changed error message of antivenom function.
+1.9
+	- Replaced some unit calls to the wow engine with player specific calls.
+	- Placed conjured food and drinks after buff food and drinks. For people that always use conjured food, just disable the use of buff food.
+	- Added a variable to allow players to choose how to use conjured food. This only has affect on non-smart use.
+	- Added stackcount functionality to smart use of food.
+	- Added stack count to debug messages.
+	- Updated ToC to the new 1.12 patch.
+	- Updated readme file.
+1.8
+	- Added a new power calculation function for hot (health over time) and mot (mana over time) items. 
+		- With these items, items that heal less then the maximum amount will be even more preffered. In other words: Overhealing with these items is less probable, because they tend to heal more.
+		- Bandages are not considered hot.
+	- Added "leg meat" to database.
+1.7
+	- Fixed a bug with the checkbuff function. WoWWiki was wrong... the buff index starts at 0.
+	- Fixed all buffchecks, including currently eating and drinking and poisoned.
+1.6
+	- Changed the checkbuff function.
+		- Added a debug message with the time left on the foodbuff.
+	- Added a cooldown check for all potions, healthstones and mana gems.
+		- Items with a cooldown will now never be used.
+		- An error will be displayed when in debugmode if an item can't be used.
+	- Changed the overheal message to display the amount of % overheal or underheal.
+1.5
+	- Fixed a bug with the overloading of functions... I sincerely doubt if lua even supports this correctly.
+	- Added display of version number when asking for status.
+1.4
+	- Removed the rejuvenation potions not found... got annoying as I never have them.
+	- Changed the buff check to return time left of buff.
+	- Added a variable: SR_BuffTime.
+	- The player can now set the time under which the foodbuff may be recast. In other words: When the time left of the foodbuff is * seconds or lower, buffing food may be used when you use food.
+		- Default is 30 seconds. This means that when the foodbuff will only last less then 30 seconds and you want to eat, buffing food will be used.
+	- Changed default value of buffing food to yes.
+	- Put smart mode to default.
+	- Changed default max values to 90.
+	- Resorted variable save order.
+	- Changed default overheal text to false.
+	- Added debug message for first aid skill updates.
+	- The smartpotion function now will choose to use healing or mana potions depending on the need.
+		- This is calculated using the amount needed / the max amount. So for instance. With 2000 max health and 1000 max mana, and both need an amount of 500, the manapotion will be used because 0.5 is more then 0.25.
+	- Added some shadow functions using overloading of function to speed up the mod in most situations > Performance increase, but probably not noticeable.
+	- Fixed a bug in the eat function.
+	- Some small performance increases.
+	- Removed redundant debug messages.
+1.3
+	- Fixed bug in power calculations.
+	- Changed the default '/sr' slashcommand to display the help file instead of causing smartrestore. I just mistype to much. :P
+	- Removed the class check for mana.
+	- Instead added a check that checks if a target uses a mana bar. 
+	- Fixed a bug when the antivenom function would be used through the smartbandage function.
+		- The check has been placed before even checking if the target needs health.
+		- You need to use the macro twice now when poisoned. One time to cure, one time to heal. If cure fails, you can't heal.
+	- Added the option to disable potions out of combat. (Enabled by default.) Added a variable for this.
+1.2
+	- Added some comments with code.
+	- Added a new variable allowing the player to show the overheal (or not)
+	- Redid all messages, mostly using global methods.
+	- Changed the overheal messages to display the max and then underheal/overheal.
+	- Seperated the text messages from the find functions.
+	- Fixed a bug not looking for quest food.
+	- Changed the values of the buffing food, as they differ somewhat on higher levels from normal food.
+	- Changed the check on the saved variables. Now the variables will be resetted with every update. (Thanks to lassevk for the bug report.)
+	- Removed the use of the global variable 'Name'.
+	- Changed the default state of the 'buffing' variable to false. Therefor, buffing food will not be used by default.
+	- Changed the debugmode to show every possible item instead of only items better then the previous.
+	- Added a message to reset command.
+1.1
+	- Redid poison check.
+	- Added a new slashcommand: antivenom
+	- Added a new function: antivenom
+		- Function will try to find the best item and try that.
+	- Added anti-venom items to database.
+	- Made the power calculations even more complicated. If only 50% or less of a item's value would be used, it's power gets doubled.
+	- Changed the buff function to also work when a buff is already active. This to allow players to overbuff theirselves. This was previously not needed because the best was always used.
+	- Fixed a bug in the keybindings.
+	- Added the anti-venom function keybinding.
+	- Added the buff keybinding. (Damn have to remember the keybindings.)
+	- Added a default function/slachcommand. Simply resets all saved variables.
+	- Changed the minimum values for maxmana to 0 to disable that part of the mod.
+	- Added a class check for the mananeed. Warriors and Rogues can't drink using this mod anymore.
+	- Made the bandage function automatically use the antivenom function first if target is poisoned. In other words: the bandage function heals poisons too now.
+	- Added the overheal and underheal values to the using message.
+1.0
+	- Fixed the still green text of bandages. Now yellow like the rest.
+	- Made sure that you remain without target after bandaging if you had no target at the start.
+	- Added Tigule and Foror's Strawberry Ice Cream to the item database.
+	- Added some checks for food buffs.
+	- Added a poison check function to be later used for the anti-venom function.
+	- Changed the "need" methods to return the amount needed.
+	- Moved the battleground food to the smartrestore function because they restore both mana and health.
+	- Changed rejuvination to smartpotion. Mind the slashcommand change!
+	- Changed the level based to heal amount based. This means that the mod will look at the amount of health you need and choose the best fitting food, potion, bandage,
+		- Same goes for mana.
+	- Changed the levelbased command (as this mod doesn't use food levelbased anymore) to alwaysbest.
+	- The mod will now always pick the smallest stack between equal items.
+		- This means that with 5 redgrill and 2 yellowtail (both same level and healamount) the mod will choose to use the yellowtail.
+	- Fixed some minor bugs.
+	- Redid the readme file a bit.
+0.9
+	- Fixed a bug concerning a forgotten ".
+0.8
+	- Changed debug output to better ones.
+	- Fixed a bug causing the last food category to be always choosen.
+	- Fixed a possible bug in names.
+	- Added a check that should prevent using buffing food when still buffed from last buffing food.
+		- In this case, when you're not buffed by food, bufffood will have the priority over normal food. 
+		- However, when you're buffed, buff food will have the least priority.
+	- Again changed the colors.
+		- Drinking is now yellow, so it can be easily distinguised from the guildchat.
+		- Debugging is lightblue for better visibility.
+	- Did some minor updates in the code.
+	- Changed default maxvalues to 95.
+0.7	
+	- Added a drinking and eating check.
+	- Removed unnecesary output. (Some will still be shown in debug mode.)
+	- Changed text colors to better visible ones.
+		- Green when consuming something.
+		- Red when out of drinks or unavailable.
+		- Blue for debug messages.
+		- Orange for everything else.
+	- No text will be shown when certain conditions are not met. 
+		- When out of combat, no potions can be used.
+		- When in combat no food and drinks can be used.
+		- If your health or mana is above the maxhealth or maxmana level nothing will happen.
+		- If you're already eating or drinking it simply won't be tried again.
+	- Changed default maxheal and maxmana values back to 100%. 
+	- Added a check to the maxmana and maxhealth slashcommands. 100% is maximum value and 10% minimum.
+	- Prioritized buff food above normal food. In other words, if buff food is allowed it will be used before normal food.
+	- Added another way to eat food. There are now 2 ways:
+		- Category based: For instance: If any conjured food is left, it will be used before using normal food, even if the normal food has a higher level. If one category is empty and only then, the next one will be checked. This was the old way.
+		- Level based: This will try all categories and pick the food with the best level, not caring what category it is. However, conjured food with the same level a normal food will still be preffered. This is now default.
+			- Priority of Food (From high to low): Battleground (If in battleground), Conjured, Buff, Normal, Cooking
+			- Priority of Water (From high to low): Conjured, Buff, Normal
+			- Priority of Mana (From high to low): Mana Gem (Mage only), PVP Mana Potions (If in battleground) , Mana Potions
+			- Priority of Health (From high to low): Healthstone (Warlock conjured),  PVP Health Potions (If in battleground) , Health Potions
+0.6
+	- Fixed a small bug in the maxhealth and maxmana commands.
+	- Added some missing food and the possiblity to eat raw (greater) sagefish.
+	- Changed default maxheal and maxmana values to 90%.
+	- Added the option to (not) use buffing food.
+	- Added a function to buff oneself with food.
+	- Redid the eating parts structure.
+		- It will first check on battleground food.
+		- It will then check on conjured food.
+		- It will then check on normal food if none were found.
+		- If that is not found, buffing food will be used. (If enabled)
+		- If that's not there, cooking food will be used. (If enabled.)
+0.5
+	- Redid the event handler.
+	- Cleaned up initialization.
+	- Added a seperate item database.
+	- Added a battleground check.
+	- Totally redid bandage function, including battleground checks.
+	- Updated mana potion section to work with the new database.
+	- Added a check for PvP mana potions.
+	- Did the same for the healing and rejuvination potions.
+	- Added option to use food that still could be cooked.
+	- Added support for battleground food.
+	- Added debug mode.
+	- Added some consistency checks.
+	- Changed colors of chatframe output.
+	- Added status command to see values of variables.
+0.4
+	- Fixed a small bug in drinks list.
+0.3
+	- Fixed a bug in rejuvination function.
+	- Added possibility to turn messages on and off.
+0.2
+	- Added checks so no food is wasted when full. 
+	- Added the possibility to change when you can be healed and when not.
+	- Added priority to conjured items.
+	- Added keybinding support.
+	- Added support for draughts.
+	- Fixed bandages
+	- Added bandage support for friendly targetted players and npcs.
+	- Added combat checks.
+		- If not in combat, potions can't be used.
+	- Added new function, that always restores, depending on combat state.
+	- Added a raid and pvp check for BG bandages. This should in normal combat disable them.
+0.1
+	- Started making this mod.

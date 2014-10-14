@@ -1,0 +1,1006 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ 
+..\..\FrameXML\UI.xsd"> 
+<Frame name="VM_RootFrame">
+	<Scripts>
+		<OnLoad>
+			VM_onLoad();
+		</OnLoad>
+		<OnEvent>
+			if (event == "SPELLCAST_START") then
+				VM_spellStart(arg1);
+			elseif (event == "BAG_UPDATE") then
+				VM_trackWater();
+			elseif (event == "SPELLCAST_INTERRUPTED") then
+				VM_spellInt();
+			elseif (event == "TRADE_SHOW") then
+				VM_tradeShow();
+			elseif (event == "TRADE_CLOSED") then
+				VM_tradeClose();
+			elseif (event == "SPELLS_CHANGED") then
+				VM_init(0);
+			elseif (event == "PLAYER_LEVEL_UP") then
+				VM_init(1);
+			elseif (event == "CHAT_MSG_WHISPER") then
+				VM_tell();
+			else
+				VM_otherEvent(event);
+			end
+		</OnEvent>
+	</Scripts>
+<Frames>
+	<Frame name="VM_TradeAssistFrame" hidden="true">
+		<Size><AbsDimension x="144" y="160"/> </Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="TradeFrame">
+				<Offset><AbsDimension x="318" y="-10"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<!-- Layers for lables -->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Checkbox Lable -->
+				<FontString text="Auto Trade" inherits="GameFontNormal">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+							<Offset>			
+							<AbsDimension x="30" y="-12"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+		
+				<!-- Water Count -->
+				<FontString text="Water" inherits="GameFontNormal" name="VM_WaterLable">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>			
+							<AbsDimension x="30" y="-50"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+		
+				<!-- Food Count -->
+				<FontString text="Food" inherits="GameFontNormal" name="VM_FoodLable">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>			
+							<AbsDimension x="30" y="-90"></AbsDimension>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Checkbox -->
+			<CheckButton name="VMAutoTrade" inherits="OptionsCheckButtonTemplate" checked="true">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>			
+						<AbsDimension x="10" y="-10"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> </OnClick>
+				</Scripts>
+			</CheckButton>
+		
+			<!-- Minimum Price -->
+<!--  			<Frame name="VM_minMoney" inherits="MoneyInputFrameTemplate">
+  				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>			
+							<AbsDimension x="10" y="-25"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>		
+				<Scripts>
+					<OnLoad>
+						getglobal("VM_minMoneyCopper"):SetPoint("LEFT", "VM_minMoneySilver", "RIGHT", 11, 0);
+						getglobal("VM_minMoneySilver"):SetPoint("LEFT", "VM_minMoneyGold", "RIGHT", 22, 0);
+						getglobal("VM_minMoneyGold"):SetWidth(30);
+			  		</OnLoad> 
+  				</Scripts>
+			</Frame> -->
+
+			<!-- Water: 1 stack -->
+			<Button name="$parentWater1" inherits="OptionsButtonTemplate" text="1">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" realativeto="TOP">
+						<Offset>			
+							<AbsDimension x="26" y="-65"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> VM_tradeWater(1); </OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Water: 2 stack -->
+			<Button name="$parentWater2" inherits="OptionsButtonTemplate" text="2">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" realativeto="TOP">
+						<Offset>			
+							<AbsDimension x="62" y="-65"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> VM_tradeWater(2); </OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Water: 3 stack -->
+			<Button name="$parentWater3" inherits="OptionsButtonTemplate" text="3">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" realativeto="TOP">
+						<Offset>			
+							<AbsDimension x="98" y="-65"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> VM_tradeWater(3); </OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Food: 1 stack -->
+			<Button name="$parentFood	1" inherits="OptionsButtonTemplate" text="1">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" realativeto="TOP">
+						<Offset>			
+							<AbsDimension x="26" y="-105"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> VM_tradeFood(1); </OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Food: 2 stack -->
+			<Button name="$parentFood2" inherits="OptionsButtonTemplate" text="2">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" realativeto="TOP">
+						<Offset>			
+							<AbsDimension x="62" y="-105"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> VM_tradeFood(2); </OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Food: 3 stack -->
+			<Button name="$parentFood3" inherits="OptionsButtonTemplate" text="3">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" realativeto="TOP">
+						<Offset>			
+							<AbsDimension x="98" y="-105"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> VM_tradeFood(3); </OnClick>
+				</Scripts>
+			</Button>
+
+			<!-- Trade and Clear Buttons -->
+			<Button name="$parentTrade" inherits="OptionsButtonTemplate" text="Trade">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-30" y="-130"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="60" y="20"></AbsDimension>
+				</Size>
+				<Scripts>
+					<OnClick> AcceptTrade(); </OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentClear" inherits="OptionsButtonTemplate" text="Clear">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="30" y="-130"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="60" y="20"></AbsDimension>
+				</Size>
+				<Scripts>
+					<OnClick> VM_clearTrade(); </OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+	</Frame>
+	<Frame name="VM_StatsFrame" movable="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="610" y="285"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeaderTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="Food and Water Stats">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Water for this session" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="20" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="150" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Food for this session" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="20" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="150" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Water for lifetime" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="20" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="175" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Food for lifetime" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="20" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="175" y="20"/>
+					</Size>
+				</FontString>
+
+				<!-- Rank Titles -->
+				<FontString inherits="GameFontNormal" text="Rank 1" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="170" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Rank 2" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="230" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Rank 3" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="290" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Rank 4" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="350" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Rank 5" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="410" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Rank 6" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="470" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString inherits="GameFontNormal" text="Rank 7" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="530" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+
+				<!-- Cells -->
+				<!-- Session Water -->
+				<FontString name="VM_SW1" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="170" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SW2" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="230" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SW3" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="290" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SW4" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="350" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SW5" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="410" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SW6" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="470" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SW7" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="530" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+
+				<!-- Session food -->
+				<FontString name="VM_SF1" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="170" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SF2" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="230" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SF3" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="290" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SF4" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="350" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SF5" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="410" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SF6" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="470" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_SF7" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="530" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+
+				<!-- Lifetime Water -->
+				<FontString name="VM_LW1" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="170" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LW2" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="230" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LW3" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="290" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LW4" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="350" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LW5" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="410" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LW6" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="470" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LW7" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="530" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+
+				<!-- Lifetime Food -->
+				<FontString name="VM_LF1" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="170" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LF2" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="230" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LF3" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="290" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LF4" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="350" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LF5" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="410" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LF6" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="470" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				<FontString name="VM_LF7" inherits="GameFontNormal" text="0" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="TOPLEFT"> 
+							<Offset>
+								<AbsDimension x="530" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Size>
+						<AbsDimension x="60" y="20"/>
+					</Size>
+				</FontString>
+				
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentReport">
+				<Size>
+					<AbsDimension x="550" y="75"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-150"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentName" inherits="GameFontNormal" text="Reporting...">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ChatFontNormal" text="Report Water: ">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ChatFontNormal" text="to">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="210" y="-13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ChatFontNormal" text="Report Food">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="35" y="-43"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ChatFontNormal" text="to">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="210" y="-43"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ChatFontNormal" text="Medium:">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="345" y="-13"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString inherits="ChatFontNormal" text="Other">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="345" y="-43"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames><!--
+					<CheckButton name="VM_ReportWaterCheck" hidden="false" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-11"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Scripts>
+							<OnClick> VM_checkWaterToggle() </OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="VM_ReportFoodCheck" hidden="false" inherits="OptionsCheckButtonTemplate" checked="true">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-41"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Scripts>
+							<OnClick> VM_checkFoodToggle();</OnClick>
+						</Scripts>
+					</CheckButton> -->
+					<Button name="VM_MinWaterDD" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="100" y="-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								UIDropDownMenu_Initialize(this,VM_waterRangePopulate)
+								UIDropDownMenu_SetWidth(65);
+								--UIDropDownMenu_SetSelectedID(this, 1)
+							</OnShow>
+						</Scripts>
+					</Button>
+					<Button name="VM_MaxWaterDD" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="215" y="-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(this,VM_waterRangePopulate)
+								UIDropDownMenu_SetWidth(65);
+								--UIDropDownMenu_SetSelectedID(this, 7)
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="VM_MinFoodDD" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="100" y="-37"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(this,VM_waterRangePopulate)
+								UIDropDownMenu_SetWidth(65);
+								--UIDropDownMenu_SetSelectedID(this, 1)
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="VM_MediumDD" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="385" y="-7"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(this,VM_mediumPopulate)
+DEFAULT_CHAT_FRAME:AddMessage("med: " .. VM_REPORT_OPTIONS.medium);
+								UIDropDownMenu_SetSelectedID(this, VM_REPORT_OPTIONS.medium)
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="VM_MaxFoodDD" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="215" y="-37"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(this,VM_waterRangePopulate)
+								UIDropDownMenu_SetWidth(65);
+								--UIDropDownMenu_SetSelectedID(this, 7)
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+				<Button name="$parentClose" inherits="OptionsButtonTemplate" text="Close">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="-50" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick> VM_StatsFrame:Hide(); </OnClick>
+					</Scripts>
+				</Button>
+				<Button name="$parentReport" inherits="OptionsButtonTemplate" text="Report">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="50" y="20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick> VM_report(); </OnClick>
+					</Scripts>
+				</Button>
+			</Frames>
+	</Frame>
+</Frames>
+</Frame>
+</Ui> 
+<!-- http://www.blizzpub.net/forums/thread.php?tid=46232 -->

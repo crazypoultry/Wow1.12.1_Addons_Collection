@@ -1,0 +1,2435 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd"> 
+    <Script file="localization.lua"/>
+    <Script file="localization.de.lua"/>
+    <Script file="localization.fr.lua"/>
+    <Script file="Friendlist.lua"/>
+    <Script file="FLSorting.lua"/>
+
+ <Button name="flagRSPButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="144" y="21"/>
+    </Size>
+    <NormalText inherits="GameFontHighlight"/>
+    <DisabledText inherits="GameFontDisable"/>
+    <HighlightText inherits="GameFontHighlight"/>
+  </Button>
+
+  <CheckButton name="Friendlist_TabTemplate" virtual="true" hidden="true">
+    <Size>
+      <AbsDimension x="32" y="32"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+	<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+	  <Size>
+	    <AbsDimension x="64" y="64"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT">
+	      <Offset>
+		<AbsDimension x="-3" y="11"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+	--CT_CPTab_OnClick();
+	Friendlist_TabHandler(this:GetID());
+	--PlaySound("igSpellBookOpen");
+	PlaySound("SPELLBOOKCHANGEPAGE");
+      </OnClick>
+      <OnEnter>
+	--GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+	--GameTooltip:SetText(this.tooltiptext);
+      </OnEnter>
+      <OnLeave>
+	--GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture/>
+    <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+    <CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+  </CheckButton>
+
+  <Button name="Friendlist_TabButtonTemplate" virtual="true" hidden="true">
+    <Size>
+      <AbsDimension x="128" y="64"/>
+    </Size>
+    <HitRectInsets>
+      <AbsInset left="15" right="14" top="13" bottom="15"/>
+    </HitRectInsets>
+    <Scripts>
+      <OnClick>
+      </OnClick>
+      <OnEnter>
+	--GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+	--GameTooltip:SetText(this.tooltiptext, 1.0,1.0,1.0 );
+      </OnEnter>
+      <OnLeave>
+	--GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalText inherits="GameFontNormalSmall">
+      <Anchors>
+	<Anchor point="CENTER">
+	  <Offset>
+	    <AbsDimension x="0" y="3"/>
+	  </Offset>
+	</Anchor>
+      </Anchors>
+    </NormalText>
+    <HighlightText inherits="GameFontHighlightSmall">
+      <Anchors>
+	<Anchor point="CENTER">
+	  <Offset>
+	    <AbsDimension x="0" y="3"/>
+	  </Offset>
+	</Anchor>
+      </Anchors>
+    </HighlightText>
+    <DisabledText inherits="GameFontHighlightSmall">
+      <Anchors>
+	<Anchor point="CENTER">
+	  <Offset>
+	    <AbsDimension x="0" y="6"/>
+	  </Offset>
+	</Anchor>
+      </Anchors>
+    </DisabledText>
+    <NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
+    <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight"/>
+  </Button>
+
+  <EditBox name="CharPageEditBox" letters="100" multiLine="false" enableMouse="true" autoFocus="false" virtual="true">
+    <!-- <Backdrop name="$parentBackdrop" bgFile="Interface\AddOns\flagRSP\BackDrop" tile="true"/> -->
+    <Scripts>
+      <OnShow>
+	this:SetTextColor(0,0,0);
+	dummyFrame = getglobal(this:GetName() .. "DummyFrame");
+
+	if dummyFrame ~= nil then
+	  dummyFrame:SetAlpha(0.05);
+	end
+      </OnShow>
+      <OnEnter>
+	dummyFrame = getglobal(this:GetName() .. "DummyFrame");
+
+	if dummyFrame ~= nil then
+	  dummyFrame:SetAlpha(0.2);
+	end
+      </OnEnter>
+      <OnLeave>
+	dummyFrame = getglobal(this:GetName() .. "DummyFrame");
+
+	if dummyFrame ~= nil then
+	  dummyFrame:SetAlpha(0.05);
+	end
+      </OnLeave>
+      <OnTextChanged>
+	--ScrollingEdit_OnTextChanged(SendMailScrollFrame);
+      </OnTextChanged>
+      <OnCursorChanged>
+	--ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+      </OnCursorChanged>
+      <OnUpdate>
+	--ScrollingEdit_OnUpdate(SendMailScrollFrame);
+      </OnUpdate>
+      <OnTabPressed>
+	--if ( IsShiftKeyDown() ) then
+	--SendMailSubjectEditBox:SetFocus();
+	--else
+	--SendMailMoneyGold:SetFocus();
+	--end
+	Friendlist.editBoxTabHandler(this:GetName(), IsShiftKeyDown());
+      </OnTabPressed>
+      <OnEnterPressed>
+	Friendlist.editBoxTabHandler(this:GetName(), false);
+      </OnEnterPressed>
+      <OnEscapePressed>
+	this:ClearFocus();
+      </OnEscapePressed>
+    </Scripts>
+    <FontString name="$parentText" inherits="ItemTextFontNormal"/>
+  </EditBox>
+
+  <EditBox name="FlagRSPFancyEditBox" virtual="true" inherits="CharPageEditBox">
+    <FontString name="$parentText" inherits="ChatFontNormal"/>
+  </EditBox>    
+
+  <Slider name="FriendlistScrollBarTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="16" y="0"/>
+    </Size>
+    <Frames>
+      <Button name="$parentScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+	<Anchors>
+	  <Anchor point="BOTTOM" relativePoint="TOP"/>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    local parent = this:GetParent();
+	    parent:SetValue(parent:GetValue() - (parent:GetHeight() / 2));
+	    PlaySound("UChatScrollButton");
+	  </OnClick>
+	</Scripts>
+      </Button>
+      <Button name="$parentScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+	<Anchors>
+	  <Anchor point="TOP" relativePoint="BOTTOM"/>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    local parent = this:GetParent();
+	    parent:SetValue(parent:GetValue() + (parent:GetHeight() / 2));
+	    PlaySound("UChatScrollButton");
+	  </OnClick>
+	</Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnValueChanged>
+	this:GetParent():SetVerticalScroll(arg1);
+      </OnValueChanged>
+    </Scripts>
+    <ThumbTexture name="$parentThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+      <Size>
+	<AbsDimension x="16" y="16"/>
+      </Size>
+    </ThumbTexture>
+  </Slider>
+
+  <Button name="TabFrameCloseButton" inherits="UIPanelCloseButton" virtual="true">
+    <Anchors>
+      <Anchor point="TOPRIGHT">
+	<Offset>
+	  <AbsDimension x="-30" y="-8"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnClick>
+	FRIENDLIST_ToggleGUI();
+      </OnClick>
+    </Scripts>
+  </Button>
+  
+  <Button name="FriendlistNextPageButton" virtual="true">
+    <Size>
+      <AbsDimension x="32" y="32"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+	<FontString name="$parentText" inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+	  <Anchors>
+	    <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT"/>
+	  </Anchors>
+	</FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnClick>
+	Friendlist_PageHandler(this:GetName());
+	PlaySound("SPELLBOOKCHANGEPAGE");
+	--NextPageButton_OnClick();
+      </OnClick>
+    </Scripts>
+    <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+    <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+    <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+    <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+  </Button>
+
+  <FontString name="FlagRSPFontAlt" inherits="MasterFont" font="Interface\AddOns\flagRSP\framd.ttf" virtual="true">
+    <FontHeight>
+      <AbsValue val="12"/>
+    </FontHeight>
+    <Color r="1.0" g="1.0" b="1.0"/>
+  </FontString>
+
+  <FontString name="FlagRSPFont" inherits="GameFontNormal" virtual="true">
+    <FontHeight>
+      <AbsValue val="12"/>
+    </FontHeight>
+    <Color r="1.0" g="1.0" b="1.0"/>
+  </FontString>
+  
+
+  <!-- parent="UIParent" -->
+  <Frame name="FlagRSPInfoBoxTemplate" virtual="true">
+    <Backdrop name="$parentBackdrop" bgFile="Interface\AddOns\flagRSP\BackDrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <EdgeSize>
+	<AbsValue val="16"/>
+      </EdgeSize>
+      <TileSize>
+	<AbsValue val="16"/>
+      </TileSize>
+      <BackgroundInsets>
+	<AbsInset left="5" right="5" top="5" bottom="5"/>
+      </BackgroundInsets>
+    </Backdrop>	
+    <Size><AbsDimension x="200" y="0"/></Size>
+    <Layers>
+      <Layer level="ARTWORK">
+	<FontString name="$parentText1" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent">
+	      <Offset>
+		<AbsDimension x="10" y="-10"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText2" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText3" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText4" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText3" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText5" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText4" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText6" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText5" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText7" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText6" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText8" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText7" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText9" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText8" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText10" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText9" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText11" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText10" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentText12" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentText11" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+	<Anchors>
+	  <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+	    <Offset>
+	      <AbsDimension x="0" y="0"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    local test = getglobal(this:GetName() .. "_OnClick");
+	    
+	    if test ~= nil then
+	        FlagRSP.printDebug("Calling " .. this:GetName() .. "_OnClick");
+     	        test();
+	    else
+	        FlagRSP.printDebug("Calling " .. this:GetParent():GetName() .. ":Hide");
+	        --test = getglobal(this:GetParent():GetName() .. ":Hide");
+	        --test();
+                this:GetParent():Hide();
+	    end
+	    
+	  </OnClick>
+	</Scripts>
+      </Button>
+    </Frames>
+  </Frame>
+  
+
+  <!-- ======================================================================================= -->
+  <!-- Add Button to MiniMap panel that toggles GUI on/off -->
+  <Button name="FRIENDLISTMinimapButton" parent="Minimap" toplevel="true" frameStata="LOW">
+    <Size>
+      <AbsDimension x="24" y="24"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+	<Offset>
+	  <AbsDimension x="-37" y="-74"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnClick>
+	FRIENDLIST_ToggleGUI();
+	--PlaySound("igMainMenuOptionCheckBoxOn");
+      </OnClick>
+      <OnEnter>
+	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+	GameTooltip:SetText(FRIENDLIST_LOCALE_MMBUTTON_TOOLTIP);
+      </OnEnter>
+      <OnLeave>
+	GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+    <NormalTexture file="Interface\AddOns\flagRSP\Art\FriendlistButton_Up"/>
+    <PushedTexture file="Interface\AddOns\flagRSP\Art\FriendlistButton_Down"/>
+    <HighlightTexture file="Interface\AddOns\flagRSP\Art\FriendlistButton_Glow" alphaMode="ADD"/>
+  </Button>
+	
+<!-- ======================================================================================= -->
+	<!-- Create Button Template that will be used to Display a Player's name in the GUI -->
+  <Button name="FRIENDLISTButtonTemplate" hidden="true" virtual="true">
+    <Size>
+      <AbsDimension x="422" y="37"/>
+    </Size>
+    <Frames>
+      <Frame name="$parentButtonText" setAllPoints="true">
+	<Layers>
+	  <Layer level="BORDER">
+	    <FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="3" y="-3"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	    <FontString name="$parentClass" inherits="GameFontHighlightSmall" justifyH="LEFT">
+	      <Anchors>
+		<Anchor point="TOPLEFT" relativeTo="$parentName" relativePoint="BOTTOMLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	    <FontString name="$parentNotes" inherits="GameFontHighlightSmall" justifyH="LEFT">
+	      <Anchors>
+		<Anchor point="TOPLEFT" relativeTo="$parentClass" relativePoint="BOTTOMLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	  </Layer>
+	</Layers>
+      </Frame>
+    </Frames>
+    <Scripts>
+      <OnClick>
+	FRIENDLISTButton_OnClick(arg1);
+	PlaySound("igMainMenuOptionCheckBoxOn");
+      </OnClick>
+      <OnMouseDown>
+	FRIENDLISTButton_OnMouseDown(arg1);
+      </OnMouseDown>
+      <OnMouseUp>
+	FRIENDLISTButton_OnMouseUp(arg1);
+      </OnMouseUp>
+    </Scripts>
+    <HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+    <NormalTexture name="$parentNormalTexture" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+  </Button>
+  
+  <EditBox name="flagRSPCharPageMultilineEditBox" letters="1600" id="3" multiLine="true" enableMouse="true" autoFocus="false" virtual="true">
+    <Size>
+      <AbsDimension x="260" y="135"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT">
+	<Offset>
+	  <AbsDimension x="0" y="0"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnTextChanged>
+	scrollFrame = getglobal(string.sub(this:GetName(),1,string.len(this:GetName())-17));
+
+	ScrollingEdit_OnTextChanged(scrollFrame);
+	
+	update = getglobal(this:GetName() .. "_UpdateDescBox");
+	if update ~= nil then
+	--FriendlistCharFrame_UpdateDescBox();
+	  update();
+	else
+	  flagRSPCharPageMultilineEditBox_Update();
+	end
+      </OnTextChanged>
+      <OnCursorChanged>
+	ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4);
+	
+	update = getglobal(this:GetName() .. "_UpdateDescBox");
+	if update ~= nil then
+	--FriendlistCharFrame_UpdateDescBox();
+	  update();
+	else
+	  flagRSPCharPageMultilineEditBox_Update();
+	end
+      </OnCursorChanged>
+      <OnUpdate>
+	scrollFrame = getglobal(string.sub(this:GetName(),1,string.len(this:GetName())-17));
+	ScrollingEdit_OnUpdate(scrollFrame);
+	
+	update = getglobal(this:GetName() .. "_UpdateDescBox");
+	if update ~= nil then
+	  update();
+	else
+	  flagRSPCharPageMultilineEditBox_Update();
+	end
+      </OnUpdate>
+      <OnTabPressed>
+	Friendlist.editBoxTabHandler(this:GetName(), IsShiftKeyDown());
+      </OnTabPressed>
+      <OnEscapePressed>
+	this:ClearFocus();
+      </OnEscapePressed>
+      <OnShow>
+	text = getglobal(this:GetName() .. "Text");
+	this:SetTextColor(0,0,0);
+	
+	dummyFrame = getglobal(string.sub(this:GetName(),1,string.len(this:GetName())-17) .. "DummyFrame");
+	
+	if dummyFrame ~= nil then
+	  dummyFrame:SetAlpha(0.05);
+	end
+      </OnShow>
+      <OnEnter>
+	dummyFrame = getglobal(string.sub(this:GetName(),1,string.len(this:GetName())-17) .. "DummyFrame");
+
+	if dummyFrame ~= nil then
+	  dummyFrame:SetAlpha(0.2);
+	end
+      </OnEnter>
+      <OnLeave>
+	dummyFrame = getglobal(string.sub(this:GetName(),1,string.len(this:GetName())-17) .. "DummyFrame");
+
+	if dummyFrame ~= nil then
+	  dummyFrame:SetAlpha(0.05);
+	end
+      </OnLeave>
+      <OnEditFocusGained>
+	update = getglobal(this:GetName() .. "_OnDescBoxFocus");
+	if update ~= nil then
+	  update();
+	else
+	  flagRSPCharPageMultilineEditBox_Update();
+	end
+	--FriendlistCharFrame_OnDescBoxFocus();
+      </OnEditFocusGained>
+    </Scripts>
+    <FontString name="$parentText" inherits="ItemTextFontNormal"/>
+  </EditBox>
+
+  <EditBox name="flagRSPFancyMultilineEditBox" virtual="true" inherits="flagRSPCharPageMultilineEditBox">
+  <FontString name="$parentText" inherits="ChatFontNormal"/>
+  </EditBox>
+
+  <ScrollFrame name="flagRSPEditBoxScrollFrameHist" inherits="UIPanelScrollFrameTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="261" y="135"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+	<Texture name="$parentStationeryBackgroundLeft">
+	  <Size>
+	    <AbsDimension x="256" y="256"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT"/>
+	  </Anchors>
+	</Texture>
+	<Texture name="$parentStationeryBackgroundRight">
+	  <Size>
+	    <AbsDimension x="64" y="256"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentStationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
+	  </Anchors>
+	</Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+	<Texture name="$parentDummyFrame" file="Interface\AddOns\flagRSP\BackDrop">
+	  <Size>
+	    <AbsDimension x="260" y="135"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+      </Layer>
+    </Layers>
+    <ScrollChild>
+      <Frame name="$parentChildFrame" enableMouse="true">
+	<Size>
+	  <AbsDimension x="260" y="135"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="0"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Frames>
+	  <EditBox name="$parentEditBox" inherits="flagRSPCharPageMultilineEditBox">
+	  </EditBox>
+	</Frames>
+	<Scripts>
+	  <OnMouseUp>
+	    --editBox = getglobal(this:GetName().."EditBox");
+	    --FlagRSP.print(editBox);
+	    --FriendlistCharFramePg1ScrollFrameChildFrameEditBox:SetFocus();
+	  </OnMouseUp> 
+	</Scripts>
+      </Frame>
+    </ScrollChild>
+  </ScrollFrame>
+
+  <ScrollFrame name="flagRSPEditBoxScrollFrame" inherits="UIPanelScrollFrameTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="261" y="135"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+	<Texture name="$parentStationeryBackgroundLeft">
+	  <Size>
+	    <AbsDimension x="256" y="256"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT"/>
+	  </Anchors>
+	</Texture>
+	<Texture name="$parentStationeryBackgroundRight">
+	  <Size>
+	    <AbsDimension x="64" y="256"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentStationeryBackgroundLeft" relativePoint="TOPRIGHT"/>
+	  </Anchors>
+	</Texture>
+      </Layer>
+      <Layer level="ARTWORK">
+	<Texture name="$parentDummyFrame" file="Interface\AddOns\flagRSP\BackDrop">
+	  <Size>
+	    <AbsDimension x="260" y="135"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+      </Layer>
+    </Layers>
+    <ScrollChild>
+      <Frame name="$parentChildFrame" enableMouse="true">
+	<Size>
+	  <AbsDimension x="260" y="135"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="0"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Frames>
+	  <EditBox name="$parentEditBox" inherits="flagRSPFancyMultilineEditBox">
+	  </EditBox>
+	</Frames>
+	<Scripts>
+	  <OnMouseUp>
+	    editBox = getglobal(this:GetName().."EditBox");
+	    FlagRSP.print(editBox);
+
+	    
+	    --FriendlistCharFramePg1ScrollFrameChildFrameEditBox:SetFocus();
+	  </OnMouseUp> 
+	</Scripts>
+      </Frame>
+    </ScrollChild>
+  </ScrollFrame>
+
+  <Frame name="FriendlistAddEditDialog" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" parent="UIParent" movable="true" virtual="true">
+    <Size>
+      <AbsDimension x="400" y="400"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="FRIENDLISTFrame" relativePoint="TOPRIGHT">
+	<Offset>
+	  <AbsDimension x="20" y="-20"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop name="$parentBackdrop" bgFile="Interface\AddOns\flagRSP\BackDrop" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <EdgeSize>
+	<AbsValue val="16"/>
+      </EdgeSize>
+      <TileSize>
+	<AbsValue val="16"/>
+      </TileSize>
+      <BackgroundInsets>
+	<AbsInset left="5" right="5" top="5" bottom="5"/>
+      </BackgroundInsets>
+    </Backdrop>	
+    <Layers>
+      <Layer level="ARTWORK">
+	<FontString name="$parentNameDummy" inherits="FlagRSPFont" justifyH="LEFT" hidden="true" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent">
+	      <Offset>
+		<AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	
+	<FontString name="$parentTitle" inherits="FlagRSPFont" justifyH="LEFT" hidden="false" virtual="true">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent">
+	      <Offset>
+		<AbsDimension x="10" y="-10"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	
+	<FontString name="$parentNameText" inherits="FlagRSPFont" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_NAME_FIELD">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="10" y="-20"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentSurnameText" inherits="FlagRSPFont" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_SURNAME_FIELD">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentNameText" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="-18"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentTitleText" inherits="FlagRSPFont" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_TITLE_FIELD">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentSurnameText" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="-18"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString name="$parentFriendstateText" inherits="FlagRSPFont" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_FRIENDSTATE_FIELD">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentTitleText" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="-18"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString  name="$parentNotesText" inherits="FlagRSPFont" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_NOTES_FIELD">
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parentFriendstateText" relativePoint="BOTTOMLEFT">
+	      <Offset>
+		<AbsDimension x="0" y="-18"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>					
+	<Texture name="$parentEditBox1DummyFrame" file="Interface\AddOns\flagRSP\BackDropWhite">
+	  <Size>
+	    <AbsDimension x="130" y="18"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+	      <Offset>
+		<AbsDimension x="0" y="-35"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+	<Texture name="$parentEditBox2DummyFrame" file="Interface\AddOns\flagRSP\BackDropWhite">
+	  <Size>
+	    <AbsDimension x="130" y="18"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+	      <Offset>
+		<AbsDimension x="0" y="-50"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+	<Texture name="$parentEditBox3DummyFrame" file="Interface\AddOns\flagRSP\BackDropWhite">
+	  <Size>
+	    <AbsDimension x="130" y="18"/>
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+	      <Offset>
+		<AbsDimension x="0" y="-70"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+      </Layer>
+    </Layers>
+    
+    <Frames>
+      <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+	<Anchors>
+	  <Anchor point="TOPRIGHT">
+	    <Offset>
+	      <AbsDimension x="0" y="0"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </Button>
+      <Button name="$parentAccept" inherits="flagRSPButtonTemplate" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_ADD_BUTTON">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="110" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    PlaySound("gsTitleOptionOK");
+	    FriendlistAddEditDialog_OnButtonClick(1);
+	    --FRIENDLISTStaticPopUpAdd_EditBoxOnEnterPressed();
+	  </OnClick>
+	</Scripts>
+      </Button>
+      <Button name="$parentCancel" inherits="flagRSPButtonTemplate" text="FRIENDLIST_LOCALE_ADD_FRIEND_FRAME_ABORT_BUTTON">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+	    <Offset>
+	      <AbsDimension x="280" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    PlaySound("igMainMenuOptionCheckBoxOn");
+	    FriendlistAddEditDialog_OnButtonClick(0);
+	    --FRIENDLISTStaticPopUpAdd_EditBoxOnEscapePressed();
+	  </OnClick>
+	</Scripts>
+      </Button>
+      <EditBox name="$parentEditBox1" inherits="FlagRSPFancyEditBox" historyLines="1">
+	<Size>
+	  <AbsDimension x="130" y="18"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+	    <Offset>
+	      <AbsDimension x="0" y="-35"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </EditBox>
+      <EditBox name="$parentEditBox2" inherits="FlagRSPFancyEditBox" historyLines="1">
+	<Size>
+	  <AbsDimension x="130" y="18"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+	    <Offset>
+	      <AbsDimension x="0" y="-50"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </EditBox>
+      <EditBox name="$parentEditBox3" inherits="FlagRSPFancyEditBox" historyLines="1">
+	<Size>
+	  <AbsDimension x="130" y="18"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOP">
+	    <Offset>
+	      <AbsDimension x="0" y="-70"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </EditBox>		
+      <ScrollFrame name="$parentScrollFrame" inherits="flagRSPEditBoxScrollFrame">
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="-15"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </ScrollFrame>
+      <Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="60" y="-240"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnLoad>
+	    --ClassTrainerFrameFilterDropDown_OnLoad();
+	    --FriendlistCharFrameRPDropDown_OnLoad();
+	    Friendlist_DropDownHandler(this:GetName());
+	  </OnLoad>
+	  <OnShow>
+	    --ClassTrainerFrameFilterDropDown_OnLoad();
+	    --FriendlistCharFrameRPDropDown_OnLoad();
+	    Friendlist_DropDownHandler(this:GetName());
+	  </OnShow>
+	</Scripts>
+      </Frame>
+
+    </Frames>
+    <Scripts>
+      <OnShow>
+	FRIENDLISTStaticPopUpAdd_OnShow();
+      </OnShow>
+      <OnHide>
+	FRIENDLISTStaticPopUpAdd_OnHide();
+      </OnHide>
+      <OnMouseDown>
+	FriendlistAddEditDialog_OnMouseDown();
+	--FlagRSP.printM("down");
+      </OnMouseDown>
+      <OnMouseUp>
+	FriendlistAddEditDialog_OnMouseUp();
+	--FlagRSP.printM("up");
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+
+  <!-- ======================================================================================= -->
+  <!-- Create the Main FRIEND List GUI Frame -->
+  <Frame name="FriendlistMetaFrame" toplevel="true" hidden="true" enableMouse="true" movable="true" parent="UIParent">
+    <Anchors>
+      <Anchor point="TOPLEFT">
+	<Offset>
+	  <AbsDimension x="0" y="-104"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+      <Frame name="FRIENDLISTFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+	<Size>
+	  <AbsDimension x="512" y="512"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="-104"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="30" top="0" bottom="45"/>
+	</HitRectInsets>
+	<TitleRegion setAllPoints="true"/>
+	<Layers>
+	  <Layer level="BACKGROUND">
+	    <Texture file="Interface\AddOns\flagRSP\Art\FRIENDLIST">
+	      <Size>
+		<AbsDimension x="60" y="60"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="7" y="-6"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>		
+	  </Layer>
+	  <Layer level="ARTWORK">
+	    <!-- <Texture name="FRIENDLISTFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft"> -->
+	    <Texture name="FRIENDLISTFrameTopLeft" file="Interface\AddOns\flagRSP\Art\Friendlist-topleft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight"> -->
+	    <Texture name="FRIENDLISTFrameTopRight" file="Interface\AddOns\flagRSP\Art\Friendlist-topright">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomLeft" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotLeft"> -->
+	    <Texture name="FRIENDLISTFrameBottomLeft" file="Interface\AddOns\flagRSP\Art\Friendlist-botleft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomRight" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotRight"> -->
+	    <Texture name="FRIENDLISTFrameBottomRight" file="Interface\AddOns\flagRSP\Art\Friendlist-botright">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	  </Layer>
+	  <Layer level="OVERLAY">
+	    <FontString name="FRIENDLISTFrameTitleText" inherits="GameFontNormal">
+	      <Anchors>
+		<Anchor point="TOP">
+		  <Offset>
+		    <AbsDimension x="0" y="-18"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	  </Layer>
+	</Layers>
+	
+	<Frames>
+	  <Frame name="Friendlist_SortDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+	    <Anchors>
+	      <Anchor point="TOPLEFT">
+		<Offset>
+		  <AbsDimension x="60" y="-40"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnLoad>
+		--ClassTrainerFrameFilterDropDown_OnLoad();
+		--FriendlistCharFrameRPDropDown_OnLoad();
+		Friendlist_DropDownHandler(this:GetName());
+	      </OnLoad>
+	      <OnShow>
+		--ClassTrainerFrameFilterDropDown_OnLoad();
+		--FriendlistCharFrameRPDropDown_OnLoad();
+		Friendlist_DropDownHandler(this:GetName());
+	      </OnShow>
+	    </Scripts>
+	  </Frame>
+	  <Button name="Friendlist_FilterButton" inherits="UIPanelButtonTemplate" text="FRIENDLIST_LOCALE_FilterButton">
+	    <Size>
+	      <AbsDimension x="98" y="21"/>
+	    </Size>
+	    <Anchors>
+	      <Anchor relativePoint="RIGHT" relativeTo="Friendlist_SortDropDown" point="LEFT">
+		<Offset>
+		  <AbsDimension x="7" y="2"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnClick>
+		--FRIENDLISTStaticPopUpAddNN:Show();
+		--FRIENDLISTFrame:Hide();	
+	      </OnClick>
+	    </Scripts>
+	  </Button>
+      
+	  <Button name="$parentCloseButton" inherits="TabFrameCloseButton"/>
+
+	   <Frame name="$parentInfoBox" inherits="FlagRSPInfoBoxTemplate" hidden="true" frameStrata="BACKGROUND" movable="true">
+	    <!-- <Anchors>
+	    <Anchor point="LEFT"><AbsDimension x="0" y="0"/></Anchor>
+	  </Anchors> -->
+	    <Scripts>
+	      <OnMouseDown>
+		FlagRSPInfo.FrameOnMouseDown(arg1, this);
+	      </OnMouseDown>
+	      <OnMouseUp>
+		FlagRSPInfo.FrameOnMouseUp(arg1, this);
+	      </OnMouseUp>
+	    </Scripts>
+	  </Frame>
+	  
+	  <!-- Create the Button Frame -->
+      <Frame name="FRIENDLISTBF" hidden="false" setAllPoints="true">
+	<Frames>
+	  <Button name="FRIENDLISTBFAddButton" inherits="UIPanelButtonTemplate" text="FRIENDLIST_LOCALE_ADDFRIENDBUTTON">
+	    <Size>
+	      <AbsDimension x="131" y="21"/>
+	    </Size>
+	    <Anchors>
+	      <Anchor point="BOTTOMLEFT" relativeTo="FRIENDLISTFrame">
+		<Offset>
+		  <AbsDimension x="17" y="107"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnClick>
+		FRIENDLISTStaticPopUpAdd:Show();
+	      </OnClick>
+	    </Scripts>
+	  </Button>
+	  <Button name="FRIENDLISTBFAddGuildButton" inherits="UIPanelButtonTemplate" text="FRIENDLIST_LOCALE_ADDGUILDBUTTON">
+	    <Size>
+	      <AbsDimension x="131" y="21"/>
+	    </Size>
+	    <Anchors>
+	      <Anchor point="BOTTOMLEFT" relativeTo="FRIENDLISTFrame">
+		<Offset>
+		  <AbsDimension x="17" y="81"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnClick>
+		FRIENDLISTStaticPopUpAddGuild:Show();
+	      </OnClick>
+	    </Scripts>
+	  </Button>
+	      <Button name="FRIENDLISTBFEditButton" inherits="UIPanelButtonTemplate" text="FRIENDLIST_LOCALE_EDITENTRYBUTTON">
+		<Size>
+		  <AbsDimension x="131" y="21"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+		    <Offset>
+		      <AbsDimension x="-40" y="107"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnClick>
+		    if (FRIENDLISTFrame.selectedMember > 0) then
+		    if FRIENDLISTStaticPopUpEdit:IsVisible() then
+		    FRIENDLISTStaticPopUpEdit:Hide();
+		    end
+		    FRIENDLISTStaticPopUpEdit:Show();
+		    else
+		    --Print_Chat("Keine Person/Gilde zum editieren ausgew&#228;hlt");
+		    end
+		  </OnClick>
+		</Scripts>
+	      </Button>
+	      <Button name="FRIENDLISTBFRemoveButton" inherits="UIPanelButtonTemplate" text="FRIENDLIST_LOCALE_REMOVEFRIENDBUTTON">
+		<Size>
+		  <AbsDimension x="131" y="21"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+		    <Offset>
+		      <AbsDimension x="-40" y="81"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnClick>
+		    FRIENDLISTRemoveButton_OnClick();
+		  </OnClick>
+		</Scripts>
+	      </Button>
+	      <!-- Create the Buttons that will store the Name/Class Info -->
+	      <Button name="FRIENDLISTBFButton1" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOPLEFT" relativeTo="FRIENDLISTFrame">
+		    <Offset>
+		      <AbsDimension x="23" y="-80"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton2" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton1" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton3" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton2" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton4" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton3" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton5" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton4" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton6" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton5" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton7" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton6" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <Button name="FRIENDLISTBFButton8" inherits="FRIENDLISTButtonTemplate">
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="FRIENDLISTBFButton7" relativePoint="BOTTOM">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </Button>
+	      <!-- Create the Scrolling Frame -->
+	      <ScrollFrame name="FRIENDLISTBFScrollFrame" inherits="FauxScrollFrameTemplate">
+		<Size>
+		  <AbsDimension x="296" y="304"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="TOPRIGHT" relativeTo="FRIENDLISTFrame">
+		    <Offset>
+		      <AbsDimension x="-67" y="-75"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Layers>
+		  <Layer level="ARTWORK">
+		    <Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+		  <Size>
+		    <AbsDimension x="31" y="256"/>
+		  </Size>
+		  <Anchors>
+		    <Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+		      <Offset>
+			<AbsDimension x="0" y="5"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		  <TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+		</Texture>
+		<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+		  <Size>
+		    <AbsDimension x="31" y="106"/>
+		  </Size>
+		  <Anchors>
+		    <Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+		      <Offset>
+			<AbsDimension x="0" y="-2"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		  <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+		</Texture>
+	      </Layer>
+	    </Layers>
+	    <Scripts>
+	      <OnVerticalScroll>
+		FauxScrollFrame_OnVerticalScroll(FRIENDLIST_FRAME_HEIGHT, FRIENDLIST_Update)
+	      </OnVerticalScroll>
+	    </Scripts>
+		</ScrollFrame>
+		<Button name="Friendlist_Tab1" inherits="Friendlist_TabButtonTemplate" id="1" text="FRIENDLIST_LOCALE_NormalView">
+	    <Anchors>
+	      <Anchor point="BOTTOMLEFT">
+		<Offset>
+		  <AbsDimension x="11" y="30"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnEnter>
+		--GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
+	      </OnEnter>
+	      <OnLeave>
+		--GameTooltip:Hide();
+	      </OnLeave>
+	    </Scripts>
+	  </Button>
+	  <Button name="Friendlist_Tab2" inherits="Friendlist_TabButtonTemplate" id="2" text="FRIENDLIST_LOCALE_GroupView">
+	    <Anchors>
+	      <Anchor point="LEFT" relativeTo="Friendlist_Tab1" relativePoint="RIGHT">
+		<Offset>
+		  <AbsDimension x="-24" y="0"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnEnter>
+		--GameTooltip_AddNewbieTip(nil, nil, nil, nil, NEWBIE_TOOLTIP_FRIENDSTAB, 1);
+	      </OnEnter>
+	      <OnLeave>
+		--GameTooltip:Hide();
+	      </OnLeave>
+	    </Scripts>
+	      </Button>
+
+	      
+
+	  
+	    </Frames>  
+	  </Frame>
+	</Frames>
+	<Scripts>
+	  <OnLoad>
+	    
+	    FRIENDLIST_OnLoad();
+	    --
+	  </OnLoad>
+	  
+	  <OnShow>
+	    FRIENDLIST_OnShow();
+	  </OnShow>
+	  <OnHide>
+	    FRIENDLIST_OnHide();
+	  </OnHide>
+	  <OnEvent>
+	    FRIENDLIST_OnEvent(event);
+	  </OnEvent>
+	  <OnMouseWheel>
+	    return;
+	  </OnMouseWheel>
+	  <OnUpdate>
+	    FriendlistMain_Update();
+	  </OnUpdate>
+	</Scripts>
+      </Frame>
+      <Frame name="FriendlistConfigFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+	<Size>
+	  <AbsDimension x="384" y="512"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="104"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="30" top="0" bottom="45"/>
+	</HitRectInsets>
+	<TitleRegion setAllPoints="true"/>
+	<Layers>
+	  <Layer level="BACKGROUND">
+	    <Texture file="Interface\AddOns\flagRSP\Art\FRIENDLIST">
+	      <Size>
+		<AbsDimension x="60" y="60"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="7" y="-6"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>		
+	  </Layer>
+	  <Layer level="ARTWORK">
+	    <!-- <Texture name="FRIENDLISTFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft"> -->
+	    <Texture name="$parentTopLeft" file="Interface\Spellbook\UI-SpellbookPanel-TopLeft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight"> -->
+	    <Texture name="$parentTopRight" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+	      <Size>
+		<AbsDimension x="128" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomLeft" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotLeft"> -->
+	    <Texture name="$parentBottomLeft" file="Interface\Spellbook\UI-SpellbookPanel-BotLeft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomRight" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotRight"> -->
+	    <Texture name="$parentBottomRight" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+	      <Size>
+		<AbsDimension x="128" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	  </Layer>
+	  <Layer level="OVERLAY">
+	    <FontString name="$parentTitleText" inherits="GameFontNormal">
+	      <Anchors>
+		<Anchor point="TOP">
+		  <Offset>
+		    <AbsDimension x="0" y="-18"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	  </Layer>
+	</Layers>
+	<Scripts>
+	</Scripts>
+
+
+      </Frame>
+      <Frame name="FriendlistAdminFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+	<Size>
+	  <AbsDimension x="384" y="512"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="104"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="30" top="0" bottom="45"/>
+	</HitRectInsets>
+	<TitleRegion setAllPoints="true"/>
+	<Layers>
+	  <Layer level="BACKGROUND">
+	    <Texture file="Interface\AddOns\flagRSP\Art\FRIENDLIST">
+	      <Size>
+		<AbsDimension x="60" y="60"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="7" y="-6"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>		
+	  </Layer>
+	  <Layer level="ARTWORK">
+	    <!-- <Texture name="FRIENDLISTFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft"> -->
+	    <Texture name="$parentTopLeft" file="Interface\Spellbook\UI-SpellbookPanel-TopLeft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight"> -->
+	    <Texture name="$parentTopRight" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+	      <Size>
+		<AbsDimension x="128" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomLeft" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotLeft"> -->
+	    <Texture name="$parentBottomLeft" file="Interface\Spellbook\UI-SpellbookPanel-BotLeft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomRight" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotRight"> -->
+	    <Texture name="$parentBottomRight" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+	      <Size>
+		<AbsDimension x="128" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	  </Layer>
+	  <Layer level="OVERLAY">
+	    <FontString name="$parentTitleText" inherits="GameFontNormal">
+	      <Anchors>
+		<Anchor point="TOP">
+		  <Offset>
+		    <AbsDimension x="0" y="-18"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	  </Layer>
+	</Layers>
+	<Scripts>
+	</Scripts>
+
+      </Frame>
+
+
+
+      <Frame name="FriendlistCharFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+	<Size>
+	  <AbsDimension x="384" y="512"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOPLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="104"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<HitRectInsets>
+	  <AbsInset left="0" right="30" top="0" bottom="45"/>
+	</HitRectInsets>
+	<TitleRegion setAllPoints="true"/>
+	<Layers>
+	  <Layer level="BACKGROUND">
+	    <Texture name="$parentPortrait" file="Interface\AddOns\flagRSP\Art\FRIENDLIST">
+	      <Size>
+		<AbsDimension x="60" y="60"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="7" y="-6"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>		
+	  </Layer>
+	  <Layer level="ARTWORK">
+	    <!-- <Texture name="FRIENDLISTFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft"> -->
+	    <Texture name="$parentTopLeft" file="Interface\Spellbook\UI-SpellbookPanel-TopLeft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight"> -->
+	    <Texture name="$parentTopRight" file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+	      <Size>
+		<AbsDimension x="128" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="TOPRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomLeft" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotLeft"> -->
+	    <Texture name="$parentBottomLeft" file="Interface\Spellbook\UI-SpellbookPanel-BotLeft">
+	      <Size>
+		<AbsDimension x="256" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMLEFT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	    <!-- <Texture name="FRIENDLISTFrameBottomRight" file="Interface\FRIENDsFrame\UI-FRIENDsFrame-BotRight"> -->
+	    <Texture name="$parentBottomRight" file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+	      <Size>
+		<AbsDimension x="128" y="256"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="BOTTOMRIGHT">
+		  <Offset>
+		    <AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </Texture>
+	  </Layer>
+	  <Layer level="OVERLAY">
+	    <FontString name="$parentTitleText" inherits="GameFontNormal" text="FRIENDLIST_LOCALE_CharFrameTitle" justifyH="CENTER">
+	      <Anchors>
+		<Anchor point="TOP">
+		  <Offset>
+		    <AbsDimension x="0" y="-18"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	    </FontString>
+	    
+	    <!-- ItemTextFontNormal -->
+	    
+
+	  </Layer>
+	</Layers>
+	<Frames>
+	  <!-- FriendlistCharFramePg1 -->
+	  <Frame name="$parentPg1" hidden="false">
+	    <Size>
+	      <AbsDimension x="384" y="512"/>
+	    </Size>
+	    <Anchors>
+	      <Anchor point="TOPLEFT">
+		<Offset>
+		  <AbsDimension x="0" y="0"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+ 	    <Layers>
+	      <Layer level="OVERLAY">
+		<FontString name="$parentCertTitle" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CertTitle">
+		  <FontHeight>
+		    <AbsValue val="20"/>
+		  </FontHeight>
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT">
+		      <Offset>
+			<AbsDimension x="40" y="-90"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentCertText1" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CertText1">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentCertTitle" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-10"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentCertText2" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CertText2">
+		  <Backdrop name="$parentBackdrop" bgFile="Interface\AddOns\flagRSP\BackDrop" tile="true"/>	
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentCertText1" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-10"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentCertText3" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CertText3">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentCertText2" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-10"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentCertText4" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CertText4">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentCertText3" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-33"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		
+		<FontString name="$parentCertText5" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CertText5">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="40" y="110"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		
+	      </Layer>
+	      <Layer level="ARTWORK">
+		<Texture name="$parentSurnameBoxDummyFrame" file="Interface\AddOns\flagRSP\BackDrop">
+		  <Size>
+		    <AbsDimension x="250" y="18"/>
+		  </Size>
+		  <Anchors>
+		    <Anchor point="TOPLEFT">
+		      <Offset>
+			<AbsDimension x="60" y="-120"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</Texture>
+		<Texture name="$parentTitleBoxDummyFrame" file="Interface\AddOns\flagRSP\BackDrop">
+		  <Size>
+		    <AbsDimension x="283" y="18"/>
+		  </Size>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentCertText3" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-8"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</Texture>
+	      </Layer>
+	    </Layers>
+	    <Frames>
+	      <EditBox name="$parentSurnameBox" id="1" letters="50" inherits="CharPageEditBox" hidden="false">
+		<Size>
+		  <AbsDimension x="250" y="18"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="TOPLEFT">
+		    <Offset>
+		      <AbsDimension x="60" y="-120"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnEscapePressed>
+		    this:ClearFocus();
+		  </OnEscapePressed>
+		  
+		</Scripts>
+	      </EditBox>
+	      <EditBox name="$parentTitleBox" id="2" letters="50" inherits="CharPageEditBox" hidden="false">
+		<Size>
+		  <AbsDimension x="283" y="18"/>
+		</Size>
+		<Anchors>
+		  <Anchor point="TOPLEFT" relativeTo="$parentCertText3" relativePoint="BOTTOMLEFT">
+		    <Offset>
+		      <AbsDimension x="0" y="-8"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnEscapePressed>
+		    this:ClearFocus();
+		  </OnEscapePressed>
+		  
+		</Scripts>
+	      </EditBox>
+	      
+	      <ScrollFrame name="$parentScrollFrame" inherits="flagRSPEditBoxScrollFrameHist">
+		<Anchors>
+		  <Anchor point="TOPLEFT" relativeTo="$parentCertText4" relativePoint="BOTTOMLEFT">
+		    <Offset>
+		      <AbsDimension x="0" y="-8"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+	      </ScrollFrame>
+
+	    </Frames>
+	  </Frame>
+	  <!-- FriendlistCharFramePg1: end -->
+	  
+	  <!-- FriendlistCharFramePg2 -->
+	  <Frame name="$parentPg2" hidden="false">
+	    <Size>
+	      <AbsDimension x="384" y="512"/>
+	    </Size>
+	    <Anchors>
+	      <Anchor point="TOPLEFT">
+		<Offset>
+		  <AbsDimension x="0" y="0"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+ 	    <Layers>
+	      <Layer level="ARTWORK">
+		<Texture name="$parentDummyFrame1" file="Interface\AddOns\flagRSP\BackDrop">
+		  <Size>
+		    <AbsDimension x="283" y="0"/>
+		  </Size>
+		  <Anchors>
+		    <Anchor point="TOPLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="0"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</Texture>
+		<Texture name="$parentDummyFrame2" file="Interface\AddOns\flagRSP\BackDrop">
+		  <Size>
+		    <AbsDimension x="283" y="0"/>
+		  </Size>
+		  <Anchors>
+		    <Anchor point="TOPLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="0"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</Texture>
+	      </Layer>
+
+	      <Layer level="OVERLAY">
+		<FontString name="$parentText1" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_RpTypeText">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+		      <Offset>
+			<AbsDimension x="40" y="-85"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentText2" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_RpExplanation">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-41"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentText3" inherits="GameFontBlack" justifyH="LEFT" text="...">
+		  <FontHeight>
+		    <AbsValue val="10"/>
+		  </FontHeight>
+		  <!-- <Color r="0" g="0" b="0"/> -->
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentText2" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-7"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentText4" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_CSText">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentText3" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-9"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentText5" inherits="ItemTextFontNormal" text="FRIENDLIST_LOCALE_RpExplanation">
+		  <Color r="0" g="0" b="0"/>
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentText4" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-41"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+		<FontString name="$parentText6" inherits="GameFontBlack" justifyH="LEFT" text="...">
+		  <FontHeight>
+		    <AbsValue val="10"/>
+		  </FontHeight>
+		  <!-- <Color r="0" g="0" b="0"/> -->
+		  <Anchors>
+		    <Anchor point="TOPLEFT" relativeTo="$parentText5" relativePoint="BOTTOMLEFT">
+		      <Offset>
+			<AbsDimension x="0" y="-7"/>
+		      </Offset>
+		    </Anchor>
+		  </Anchors>
+		</FontString>
+	      </Layer>
+	    </Layers>
+	    <Frames>
+	      <Frame name="$parentRPDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+		<Anchors>
+		  <Anchor point="TOPRIGHT" relativeTo="$parentText1" relativePoint="BOTTOMLEFT">
+		    <Offset>
+		      <AbsDimension x="170" y="-6"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnLoad>
+		    --ClassTrainerFrameFilterDropDown_OnLoad();
+		    --FriendlistCharFrameRPDropDown_OnLoad();
+		    Friendlist_DropDownHandler(this:GetName());
+		  </OnLoad>
+		  <OnShow>
+		    --ClassTrainerFrameFilterDropDown_OnLoad();
+		    --FriendlistCharFrameRPDropDown_OnLoad();
+		    Friendlist_DropDownHandler(this:GetName());
+		  </OnShow>
+		</Scripts>
+	      </Frame>
+	      <Frame name="$parentCSDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+		<Anchors>
+		  <Anchor point="TOPRIGHT" relativeTo="$parentText4" relativePoint="BOTTOMLEFT">
+		    <Offset>
+		      <AbsDimension x="170" y="-6"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnLoad>
+		    Friendlist_DropDownHandler(this:GetName());
+		    --ClassTrainerFrameFilterDropDown_OnLoad();
+		  </OnLoad>
+		  <OnShow>
+		    Friendlist_DropDownHandler(this:GetName());
+		    --ClassTrainerFrameFilterDropDown_OnLoad();
+		  </OnShow>
+		</Scripts>
+	      </Frame>
+	    </Frames>
+	  </Frame>
+	  <!-- FriendlistCharFramePg2: end -->
+
+	  <Button name="$parentCloseButton" inherits="TabFrameCloseButton">
+	    <Anchors>
+	      <Anchor point="TOPRIGHT">
+		<Offset>
+		  <AbsDimension x="-28" y="-10"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	  </Button>
+	  
+	  <Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="FRIENDLIST_LOCALE_CharResetButton">
+	    <Size>
+	      <AbsDimension x="98" y="21"/>
+	    </Size>
+	    <Anchors>
+	      <Anchor relativePoint="TOPLEFT" relativeTo="$parent" point="TOPLEFT">
+		<Offset>
+		  <AbsDimension x="80" y="-45"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	    <Scripts>
+	      <OnClick>
+		FriendlistCharFrame_Load();
+	      </OnClick>
+	    </Scripts>
+	  </Button>
+	  <!-- FriendlistCharFrameNextPageButton  -->
+	  <Button name="$parentNextPageButton" inherits="FriendlistNextPageButton" hidden="false" id="CharFrameButton">
+	    <Anchors>
+	      <Anchor relativePoint="LEFT" relativeTo="$parentResetButton" point="LEFT">
+		<Offset>
+		  <AbsDimension x="230" y="0"/>
+		</Offset>
+	      </Anchor>
+	    </Anchors>
+	  </Button>
+	  
+
+
+	</Frames>
+	<Scripts>
+	  <OnLoad>
+	    --FRIENDLIST_OnLoad();
+	  </OnLoad>
+	  
+	  <OnShow>
+	    --FRIENDLIST_OnShow();
+	    FriendlistCharFrame_OnShow();
+	  </OnShow>
+	  <OnHide>
+	    --FRIENDLIST_OnHide();
+	  </OnHide>
+	  <OnEvent>
+	    --FRIENDLIST_OnEvent();
+	  </OnEvent>
+	  <OnMouseWheel>
+	    --return;
+	  </OnMouseWheel>
+	  <OnUpdate>
+	    FriendlistCharFrame_OnUpdate();
+	  </OnUpdate>
+	  
+	</Scripts>
+      </Frame>
+      <CheckButton name="Friendlist_PageTab1" inherits="Friendlist_TabTemplate" id="1">
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+	    <Offset>
+	      <AbsDimension x="-33" y="-65"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </CheckButton>
+      <CheckButton name="Friendlist_PageTab2" inherits="Friendlist_TabTemplate" id="2">
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="Friendlist_PageTab1" relativePoint="BOTTOMLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="-17"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </CheckButton>
+      <CheckButton name="Friendlist_PageTab3" inherits="Friendlist_TabTemplate" id="3">
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="Friendlist_PageTab2" relativePoint="BOTTOMLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="-17"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </CheckButton>
+      <CheckButton name="Friendlist_PageTab4" inherits="Friendlist_TabTemplate" id="4">
+	<Anchors>
+	  <Anchor point="TOPLEFT" relativeTo="Friendlist_PageTab3" relativePoint="BOTTOMLEFT">
+	    <Offset>
+	      <AbsDimension x="0" y="-17"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </CheckButton>
+    </Frames>
+    <Scripts>
+      <OnUpdate>
+	FriendlistMetaFrame_OnUpdate()
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+	
+<!-- ===================================================================================================== -->
+  <!-- Create the Static PopUp window for the GUI -->
+
+  <Frame name="FRIENDLISTStaticPopUpAdd" inherits="FriendlistAddEditDialog">
+  </Frame>
+
+  <!-- Create Edit PopUp Window -->
+  <Frame name="FRIENDLISTStaticPopUpEdit" inherits="FriendlistAddEditDialog">
+  </Frame>	
+
+  
+  <!-- ===================================================================================================== -->
+  <!-- Create Add Guild PopUp Window -->
+  <Frame name="FRIENDLISTStaticPopUpAddGuild" inherits="FriendlistAddEditDialog">
+  </Frame>
+  
+<!-- ===================================================================================================== -->
+  <!-- Create add lastname and title PopUp window -->
+  <Frame name="FRIENDLISTStaticPopUpAddNN" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+    <Size>
+      <AbsDimension x="400" y="150"/>
+    </Size>
+    <Anchors>
+      <Anchor point="LEFT" relativeTo="FRIENDLISTFrame" relativePoint="RIGHT">
+	<Offset>
+	  <AbsDimension x="20" y="130"/>
+	</Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+	<AbsInset left="11" right="12" top="12" bottom="11"/>
+	<Size>
+	  <AbsDimension x="128" y="17" />
+	</Size>
+      </BackgroundInsets>
+      <TileSize>
+	<AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+	<AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    
+    <Layers>
+      <Layer level="ARTWORK">
+	<Texture name="$parentTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+	  <Size>
+	    <AbsDimension x="276" y="64" />
+	  </Size>
+	  <Anchors>
+	    <Anchor point="TOP">
+	      <Offset>
+		<AbsDimension x="0" y="12" />
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</Texture>
+	<FontString inherits="GameFontNormal" text="FRIENDLIST_LOCALE_TITLE_FRAME_TITLE">
+	  <Anchors>
+	    <Anchor point="TOP" relativeTo="FRIENDLISTStaticPopUpAddNN">
+	      <Offset>
+		<AbsDimension x="0" y="-3" />
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString inherits="GameFontNormal" text="FRIENDLIST_LOCALE_TITLE_FRAME_SURNAME_FIELD">
+	  <Anchors>
+	    <Anchor point="TOP" relativeTo="FRIENDLISTStaticPopUpAddNN" relativePoint="TOP">
+	      <Offset>
+		<AbsDimension x="-120" y="-48"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>
+	<FontString inherits="GameFontNormal" text="FRIENDLIST_LOCALE_TITLE_FRAME_TITLE_FIELD">
+	  <Anchors>
+	    <Anchor point="TOP" relativeTo="FRIENDLISTStaticPopUpAddNN" relativePoint="TOP">
+	      <Offset>
+		<AbsDimension x="-100" y="-82"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	</FontString>							
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+	<Anchors>
+	  <Anchor point="TOPRIGHT">
+	    <Offset>
+	      <AbsDimension x="-3" y="-3"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+      </Button>
+      <Button name="$parentAccept" inherits="flagRSPButtonTemplate" text="FRIENDLIST_LOCALE_TITLE_FRAME_OK_BUTTON">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOMLEFT" relativeTo="FRIENDLISTStaticPopUpAddNN">
+	    <Offset>
+	      <AbsDimension x="110" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    PlaySound("gsTitleOptionOK");
+	    FRIENDLISTStaticPopUpAddNN_EditBoxOnEnterPressed();
+	  </OnClick>
+	</Scripts>
+      </Button>
+      <Button name="$parentCancel" inherits="flagRSPButtonTemplate" text="FRIENDLIST_LOCALE_TITLE_FRAME_ABORT_BUTTON">
+	<Anchors>
+	  <Anchor point="CENTER" relativePoint="BOTTOMLEFT" relativeTo="FRIENDLISTStaticPopUpAddNN">
+	    <Offset>
+	      <AbsDimension x="280" y="30" />
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Scripts>
+	  <OnClick>
+	    PlaySound("igMainMenuOptionCheckBoxOn");
+	    FRIENDLISTStaticPopUpAddNN_EditBoxOnEscapePressed();
+	  </OnClick>
+	</Scripts>
+      </Button>
+      <EditBox name="$parentEditBox1" historyLines="1">
+	<Size>
+	  <AbsDimension x="130" y="32"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOP" relativeTo="FRIENDLISTStaticPopUpAddNN" relativePoint="TOP">
+	    <Offset>
+	      <AbsDimension x="0" y="-35"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Layers>
+	  <Layer level="BACKGROUND">
+	    <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+	      <Size>
+		<AbsDimension x="75" y="32"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="LEFT">
+		  <Offset>
+		    <AbsDimension x="-10" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	      <TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+	    </Texture>
+	    <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+	      <Size>
+		<AbsDimension x="75" y="32"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="RIGHT">
+		  <Offset>
+		    <AbsDimension x="10" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	      <TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+	    </Texture>
+	  </Layer>
+	</Layers>
+	<Scripts>
+	  <OnEnterPressed>
+	    FRIENDLISTStaticPopUpAddNN_EditBoxOnEnterPressed();
+	  </OnEnterPressed>
+	  <OnEscapePressed>
+	    FRIENDLISTStaticPopUpAddNN_EditBoxOnEscapePressed();
+	  </OnEscapePressed>
+	  <OnTabPressed>
+	    FRIENDLISTStaticPopUpAddNNEditBox2:SetFocus();
+	  </OnTabPressed>
+	</Scripts>
+	<FontString inherits="ChatFontNormal"/>
+      </EditBox>
+      <EditBox name="$parentEditBox2" historyLines="1">
+	<Size>
+	  <AbsDimension x="130" y="32"/>
+	</Size>
+	<Anchors>
+	  <Anchor point="TOP" relativeTo="$parentEditBox1" relativePoint="BOTTOM">
+	    <Offset>
+	      <AbsDimension x="0" y="-5"/>
+	    </Offset>
+	  </Anchor>
+	</Anchors>
+	<Layers>
+	  <Layer level="BACKGROUND">
+	    <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+	      <Size>
+		<AbsDimension x="75" y="32"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="LEFT">
+		  <Offset>
+		    <AbsDimension x="-10" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	      <TexCoords left="0" right="0.29296875" top="0" bottom="1.0"/>
+	    </Texture>
+	    <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+	      <Size>
+		<AbsDimension x="75" y="32"/>
+	      </Size>
+	      <Anchors>
+		<Anchor point="RIGHT">
+		  <Offset>
+		    <AbsDimension x="10" y="0"/>
+		  </Offset>
+		</Anchor>
+	      </Anchors>
+	      <TexCoords left="0.70703125" right="1.0" top="0" bottom="1.0"/>
+	    </Texture>									
+	  </Layer>
+	</Layers>
+	<Scripts>
+	  <OnEnterPressed>
+	    FRIENDLISTStaticPopUpAddNN_EditBoxOnEnterPressed();
+	  </OnEnterPressed>
+	  <OnEscapePressed>
+	    FRIENDLISTStaticPopUpAddNN_EditBoxOnEscapePressed();
+	  </OnEscapePressed>
+	  <OnTabPressed>
+	    FRIENDLISTStaticPopUpAddNNEditBox1:SetFocus();
+	  </OnTabPressed>
+	</Scripts>
+	<FontString inherits="ChatFontNormal"/>
+      </EditBox>		
+    </Frames>
+    <Scripts>
+      <OnShow>
+	FRIENDLISTStaticPopUpAddNN_OnShow();
+      </OnShow>
+      <OnHide>
+	FRIENDLISTStaticPopUpAddNN_OnHide();
+      </OnHide>
+    </Scripts>
+  </Frame>
+  
+  <Button name="GameMenuButtonFriendlist" parent="GameMenuFrame" inherits="flagRSPButtonTemplate" text="Friendlist / flagRSP">
+    <Scripts>
+      <OnLoad>
+	Friendlist_GameMenuAddButton( this );
+      </OnLoad>
+      <OnClick>
+	PlaySound("igMainMenuContinue");
+	HideUIPanel(GameMenuFrame);
+	FRIENDLIST_ToggleGUI();
+      </OnClick>
+    </Scripts>
+  </Button>
+
+
+  <Frame name="FriendlistPseudoFrame">
+    <Scripts>
+      <OnUpdate>
+	Friendlist_OnUpdate();
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+  
+	
+<!-- ===================================================================================================== -->
+ 
+	 
+  
+
+</Ui>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: xml
+sgml-omittag:nil
+sgml-shorttag:nil
+sgml-namecase-general:nil
+sgml-general-insert-case:lower
+sgml-minimize-attributes:nil
+sgml-always-quote-attributes:t
+sgml-indent-step:2
+sgml-indent-data:t
+sgml-parent-document:nil
+sgml-exposed-tags:nil
+sgml-local-catalogs:("/etc/sgml/catalog" "/usr/share/xemacs21/xemacs-packages/etc/psgml-dtds/CATALOG")
+sgml-local-ecat-files:("ECAT" "~/sgml/ECAT" "/usr/share/sgml/ECAT" "/usr/local/share/sgml/ECAT" "/usr/local/lib/sgml/ECAT")
+End:
+-->

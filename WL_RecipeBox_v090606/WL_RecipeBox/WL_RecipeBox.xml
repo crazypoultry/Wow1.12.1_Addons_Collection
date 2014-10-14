@@ -1,0 +1,604 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="RecipeList.lua"/>
+	<Script file="ReagentList.lua"/>
+	<Script file="TextureList.lua"/>
+	<Script file="RecipeList.de.lua"/>
+	<Script file="ReagentList.de.lua"/>
+	<Script file="TextureList.de.lua"/>
+	<Script file="SentRBInfo.lua"/>
+	<Script file="WL_RecipeBox.lua"/>
+	<GameTooltip name="WL_RB_ToolTip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				GameTooltip_OnLoad();
+				this:SetOwner(UIParent, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	
+	<Button name="RBListButtonTemplate" inherits="ClassTrainerSkillButtonTemplate" hidden="false" virtual="true">
+		<Scripts>
+			<OnClick>
+				RBListButton_OnClick(arg1);
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."SubText"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."SubText"):SetTextColor(this.r, this.g, this.b);
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="RBItemTemplate" inherits="QuestItemTemplate" virtual="true" >
+		<Scripts>
+			<OnEnter>
+				if(this.hyperlink and this.hyperlink ~= nil) then
+					WL_RB_ToolTip:SetOwner(this, "ANCHOR_TOPRIGHT");
+					WL_RB_ToolTip:SetHyperlink(this.hyperlink);
+					WL_RB_ToolTip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				WL_RB_ToolTip:Hide();
+			</OnLeave>
+			<OnClick>
+				if (IsShiftKeyDown() and this.link) then
+					if (ChatFrameEditBox:IsVisible()) then
+						ChatFrameEditBox:Insert(this.link);
+					end
+				end
+			</OnClick>
+		</Scripts> 
+	</Button>
+
+	<Button name="RBAddRecipe_Button" inherits="UIPanelButtonTemplate" parent="UIParent" hidden="true" text="Add To RecipeBox">
+		<Size>
+			<AbsDimension x="135" y="22"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				RB_AddPlayerRecipes(1);
+			</OnClick>
+			<OnUpdate>
+				RB_EmptyFunction();
+			</OnUpdate>
+		</Scripts>	
+	</Button>	
+	
+	<Button name="RBAddRecipe_Button2" inherits="UIPanelButtonTemplate" parent="UIParent" hidden="true" text="Add To RecipeBox">
+		<Size>
+			<AbsDimension x="135" y="22"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				RB_AddPlayerRecipes(2);
+			</OnClick>
+			<OnUpdate>
+				RB_EmptyFunction();
+			</OnUpdate>
+		</Scripts>
+	</Button>	
+	
+	<Frame name="RBFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<TitleRegion setAllPoints="true"/>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+      	<Texture name="RBFramePortrait" file="Interface\MailFrame\Mail-Icon">
+        	<Size>
+        		<AbsDimension x="58" y="58"/>
+        	</Size>
+        	<Anchors>
+        		<Anchor point="TOPLEFT">
+        		<Offset>
+        			<AbsDimension x="7" y="-6"/>
+        		</Offset>
+        		</Anchor>
+        	</Anchors>
+       	</Texture>
+      </Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="RBFrameTitleText" inherits="GameFontNormal" text="Recipe Box">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RBFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="RBHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="256" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-221"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>	
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="75" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="RBHorizontalBarLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>	
+				<FontString name="RBSkillRank" inherits="GameFontNormal" text="Skill level here">
+					<Size>
+						<AbsDimension x="150" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RBFrameTitleText" relativePoint="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="RBExpandButtonFrame">
+				<Size>
+					<AbsDimension x="54" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-71"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			
+				<Frames>
+			</Frames>
+		</Frame>
+		
+		<Frame name="RB_CharDropDown" inherits="UIDropDownMenuTemplate" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="50" y="-66"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					RB_CharDropDown_OnLoad();
+				</OnLoad>
+				<OnEvent>
+					RB_CharDropDown_OnLoad();
+				</OnEvent>
+			</Scripts>
+		</Frame>
+		
+		<Frame name="RB_SkillDropDown" inherits="UIDropDownMenuTemplate" id="2">
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="RB_CharDropDown" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="100" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					RB_SkillDropDown_OnLoad();
+				</OnLoad>
+			</Scripts>		
+		</Frame>
+			
+		<!--<Frame name="RBHighlightFrame" hidden="true">
+			<Size>
+				<AbsDimension x="293" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="RBHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+				</Layer>
+			</Layers>
+		</Frame>-->
+		<Button name="RBList1" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBFrame">
+					<Offset>
+						<AbsDimension x="22" y="-96"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList2" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList1" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList3" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList2" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList4" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList3" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList5" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList4" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList6" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList5" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList7" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList6" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="RBList8" inherits="RBListButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="RBList7" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<ScrollFrame name="RBListScrollFrame" inherits="FauxScrollFrameTemplate" hidden="false" toplevel="true">
+			<Size>
+				<AbsDimension x="296" y="130"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativeTo="RBFrame" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-67" y="-96"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnVerticalScroll>
+					FauxScrollFrame_OnVerticalScroll(RB_RECIPE_HEIGHT, RB_Frame_Update);
+				</OnVerticalScroll>
+			</Scripts>		
+		</ScrollFrame>
+		
+		<!-- Probably bottom half that shows details -->
+		
+		<ScrollFrame name="RBDetailScrollFrame" inherits="FauxScrollFrameTemplate" hidden="false" toplevel="true">
+			<Size>
+				<AbsDimension x="297" y="196"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="20" y="-234"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<ScrollChild>
+				<Frame name="RBDetailScrollChildFrame"> 
+					<Size>
+						<AbsDimension x="297" y="150"/>
+					</Size>
+					<Layers>
+						<Layer level="BACKGROUND">
+							<FontString name="RBRecipeLabel" inherits="GameFontNormal" text="Skill Name" justifyH="LEFT">
+								<Size>
+									<AbsDimension x="244" y="0"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="50" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+							<FontString name="RBToolsLabel" inherits="GameFontHighlightSmall" text="REQUIRES_LABEL">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="RBRecipeLabel" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+							<FontString name="RBRequirementText" inherits="GameFontHighlightSmall">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="RBRequirementLabel" relativePoint="RIGHT" >
+										<Offset>
+											<AbsDimension x="4" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+							<FontString name="RBListCooldown" inherits="GameFontRedSmall">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="RBRequirementLabel" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+							<Texture name="RBDetailHeaderLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderLeft">
+								<Size>
+									<AbsDimension x="256" y="64"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+							<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-DetailHeaderRight">
+								<Size>
+									<AbsDimension x="64" y="64"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="RBDetailHeaderLeft" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+							<FontString name="RBRecipeDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+								<Size>
+									<AbsDimension x="290" y="0"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="-50"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+							<FontString name="RBReagentLabel" inherits="GameFontNormalSmall" text="SPELL_REAGENTS">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="8" y="-47"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					
+					<Frames>
+						<Button name="RBListIcon">
+							<Size>
+								<AbsDimension x="37" y="37"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="8" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString name="RBListIconCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
+										<Anchors>
+											<Anchor point="BOTTOMRIGHT">
+												<Offset>
+													<AbsDimension x="-5" y="2"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Scripts>
+								<OnLoad>
+									this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+								</OnLoad>
+								<OnClick>
+									RB_ListIcon_OnClick(arg1);
+								</OnClick>
+								<OnEnter>
+									if(this.hyperlink and this.hyperlink ~= nil) then
+										WL_RB_ToolTip:SetOwner(this, "ANCHOR_RIGHT");
+										WL_RB_ToolTip:SetHyperlink(this.hyperlink);
+										WL_RB_ToolTip:Show();
+									end
+								</OnEnter>
+								<OnLeave>
+									WL_RB_ToolTip:Hide();
+								</OnLeave>  
+							</Scripts>		
+						</Button>
+						<Button name="RBReagent1" inherits="RBItemTemplate" id="1">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="RBReagentLabel" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="-5" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent2" inherits="RBItemTemplate" id="2">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="RBReagent1" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent3" inherits="RBItemTemplate" id="3">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="RBReagent1" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent4" inherits="RBItemTemplate" id="4">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="RBReagent3" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent5" inherits="RBItemTemplate" id="5">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="RBReagent3" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent6" inherits="RBItemTemplate" id="6">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="RBReagent5" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent7" inherits="RBItemTemplate" id="7">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="RBReagent6" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+						<Button name="RBReagent8" inherits="RBItemTemplate" id="8">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="RBReagent7" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Button>
+					</Frames>
+				</Frame>
+			</ScrollChild>
+		</ScrollFrame>
+		<Button name="RBFrameCloseButton" inherits="UIPanelCloseButton">
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativeTo="RBFrame" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-29" y="-8"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button> 
+	</Frames> 
+		<Scripts> 
+      <OnLoad> 
+        WL_RecipeBox_OnLoad();
+      </OnLoad> 
+      <OnEvent> 
+			  WL_RecipeBox_OnEvent(event, arg1);
+      </OnEvent> 
+      <OnShow>
+				PlaySound("igMainMenuOpen");
+			</OnShow>
+			<OnHide>
+				PlaySound("igMainMenuClose");
+			</OnHide>
+		</Scripts> 
+	</Frame>
+</Ui>

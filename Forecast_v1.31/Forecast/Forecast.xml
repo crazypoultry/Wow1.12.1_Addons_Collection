@@ -1,0 +1,992 @@
+<!--
+	forecast by Lactose
+-->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.lua" />
+	<Script file="localization.de.lua" />
+	<Script file="localization.fr.lua" />
+	<Script file="Forecast.lua" />
+
+	<!-- Template courtesy Carnival_EnemyCastBar -->
+	<Button name="fc_CastBarTemplate" virtual="true" hidden="true" movable="false" enableMouse="false">
+		<Size>
+			<AbsDimension x="206" y="26"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Text" inherits="GameFontHighlight">
+					<Size>
+						<AbsDimension x="185" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+				<!-- Steal the casting bar's border -->
+				<Texture name="$parent_texture" file="Interface\Tooltips\UI-StatusBar-Border">
+					<Size>
+						<AbsDimension x="205" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Status bar to update duration visually -->
+			<StatusBar name="$parent_StatusBar" movable="false">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- The "spark" adds pizzaz to the head of the status bar -->
+						<Texture name="$parent_Spark" alphaMode="ADD" file="Interface\CastingBar\UI-CastingBar-Spark">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+	</Button>
+	
+	<Button name="fc_optionsMenuButtonTemplate" movable="false" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="16" />
+		</Size>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(this.tipText);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Frame name="forecast" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true"
+		hidden="false" parent="UIParent" text="hi hi hi">
+		<Scripts>
+			<OnEvent> 
+				fc_DetectSpells_OnEvent( arg1 );
+				if (event == "VARIABLES_LOADED") then 
+					forecast_init(); 
+				end 
+	            if (event == "CHAT_MSG_WHISPER") then 
+            		forecast_whisper(arg1, arg2); 
+            	end
+				if (event == "RAID_ROSTER_UPDATE") then 
+					fc_RaidChange(); 
+				end 
+				if (event == "SPELLCAST_START") then 
+					fc_spellCast(arg1, arg2);
+				end 
+				if (event == "SPELLCAST_CHANNEL_START") then 
+					--displayArgs();
+					fc_spellCast(arg2, arg1);
+				end 
+				if (event == "SPELLCAST_CHANNEL_STOP") then 
+					fc_stopChannel();
+				end 
+				if (event == "SPELLCAST_STOP") then 
+					fc_stopCast();
+				end 
+				if (event == "SPELLCAST_INTERRUPTED") then 
+--					displayText("interuppted");
+					fc_interruptCast();
+					
+				end 
+				if (event == "CHAT_MSG_ADDON" and arg1=="FORECAST") then
+					fc_chatEvent(arg2, arg4); 
+				end
+			</OnEvent>
+			<OnLoad>
+				this:RegisterEvent("RAID_ROSTER_UPDATE"); 
+				this:RegisterEvent("VARIABLES_LOADED"); 
+				this:RegisterEvent("CHAT_MSG_WHISPER");
+				this:RegisterEvent("CHAT_MSG_ADDON");
+				this:RegisterEvent("SPELLCAST_START");
+				this:RegisterEvent("SPELLCAST_STOP");
+				this:RegisterEvent("SPELLCAST_CHANNEL_START");
+				this:RegisterEvent("SPELLCAST_CHANNEL_STOP");
+				this:RegisterEvent("SPELLCAST_FAILED");
+				this:RegisterEvent("SPELLCAST_INTERRUPTED");
+	         </OnLoad>
+			<OnUpdate>
+				forecast_window_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="forecast_targetBars" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true"
+		hidden="false" parent="UIParent" text="hi hi hi">
+		<Size>
+			<AbsDimension x="140" y="16" />
+		</Size>
+		<Anchors>
+          <Anchor point="TOP">
+            <Offset>
+              <AbsDimension x="0" y="-60"/>
+            </Offset>
+          </Anchor>
+		</Anchors>
+		<!--
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+		</Backdrop>
+		-->
+		<Frames>
+			<Button name="$parent_base" movable="true" hidden="false">
+				<Size>
+					<AbsDimension x="140" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" text="Incoming Target Casts"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 2);
+						this:RegisterForClicks("RightButtonUp");
+						this:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						forecast_parent_OnDragStart();
+					</OnDragStart>
+					<OnDragStop>
+						forecast_parent_OnDragStop();
+					</OnDragStop>
+					<OnMouseUp>
+						forecast_parent_OnDragStop();
+					</OnMouseUp>
+				</Scripts>
+				<Frames>
+					<Button name="$parent_bars" movable="false" hidden="false">
+						<Frames>
+							<Button name="$parent_castBar1" inherits="fc_CastBarTemplate" id="1"/>
+							<Button name="$parent_castBar2" inherits="fc_CastBarTemplate" id="2"/>
+							<Button name="$parent_castBar3" inherits="fc_CastBarTemplate" id="3"/>
+							<Button name="$parent_castBar4" inherits="fc_CastBarTemplate" id="4"/>
+							<Button name="$parent_castBar5" inherits="fc_CastBarTemplate" id="5"/>
+							<Button name="$parent_castBar6" inherits="fc_CastBarTemplate" id="6"/>
+							<Button name="$parent_castBar7" inherits="fc_CastBarTemplate" id="7"/>
+							<Button name="$parent_castBar8" inherits="fc_CastBarTemplate" id="8"/>
+							<Button name="$parent_castBar9" inherits="fc_CastBarTemplate" id="9"/>
+							<Button name="$parent_castBar10" inherits="fc_CastBarTemplate" id="10"/>
+							<Button name="$parent_castBar11" inherits="fc_CastBarTemplate" id="11"/>
+							<Button name="$parent_castBar12" inherits="fc_CastBarTemplate" id="12"/>
+							<Button name="$parent_castBar13" inherits="fc_CastBarTemplate" id="13"/>
+							<Button name="$parent_castBar14" inherits="fc_CastBarTemplate" id="14"/>
+							<Button name="$parent_castBar15" inherits="fc_CastBarTemplate" id="15"/>
+							<Button name="$parent_castBar16" inherits="fc_CastBarTemplate" id="16"/>
+							<Button name="$parent_castBar17" inherits="fc_CastBarTemplate" id="17"/>
+							<Button name="$parent_castBar18" inherits="fc_CastBarTemplate" id="18"/>
+							<Button name="$parent_castBar19" inherits="fc_CastBarTemplate" id="19"/>
+							<Button name="$parent_castBar20" inherits="fc_CastBarTemplate" id="20"/>
+						</Frames>
+					</Button>
+				</Frames>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="forecast_selfBars" frameStrata="LOW" toplevel="true" enableMouse="true" movable="true"
+		hidden="false" parent="UIParent" text="hi hi hi">
+		<Size>
+			<AbsDimension x="125" y="16" />
+		</Size>
+		<Anchors>
+          <Anchor point="CENTER">
+            <Offset>
+              <AbsDimension x="-200" y="0"/>
+            </Offset>
+          </Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="$parent_base" movable="true" hidden="false">
+				<Size>
+					<AbsDimension x="125" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" text="Incoming Casts On Me"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 2);
+						this:RegisterForClicks("RightButtonUp");
+						this:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						forecast_parent_OnDragStart();
+					</OnDragStart>
+					<OnDragStop>
+						forecast_parent_OnDragStop();
+					</OnDragStop>
+					<OnMouseUp>
+						forecast_parent_OnDragStop();
+					</OnMouseUp>
+				</Scripts>
+				<Frames>
+					<Button name="$parent_bars" movable="false" hidden="false">
+						<Frames>
+							<Button name="$parent_castBar1" inherits="fc_CastBarTemplate" id="1"/>
+							<Button name="$parent_castBar2" inherits="fc_CastBarTemplate" id="2"/>
+							<Button name="$parent_castBar3" inherits="fc_CastBarTemplate" id="3"/>
+							<Button name="$parent_castBar4" inherits="fc_CastBarTemplate" id="4"/>
+							<Button name="$parent_castBar5" inherits="fc_CastBarTemplate" id="5"/>
+							<Button name="$parent_castBar6" inherits="fc_CastBarTemplate" id="6"/>
+							<Button name="$parent_castBar7" inherits="fc_CastBarTemplate" id="7"/>
+							<Button name="$parent_castBar8" inherits="fc_CastBarTemplate" id="8"/>
+							<Button name="$parent_castBar9" inherits="fc_CastBarTemplate" id="9"/>
+							<Button name="$parent_castBar10" inherits="fc_CastBarTemplate" id="10"/>
+							<Button name="$parent_castBar11" inherits="fc_CastBarTemplate" id="11"/>
+							<Button name="$parent_castBar12" inherits="fc_CastBarTemplate" id="12"/>
+							<Button name="$parent_castBar13" inherits="fc_CastBarTemplate" id="13"/>
+							<Button name="$parent_castBar14" inherits="fc_CastBarTemplate" id="14"/>
+							<Button name="$parent_castBar15" inherits="fc_CastBarTemplate" id="15"/>
+							<Button name="$parent_castBar16" inherits="fc_CastBarTemplate" id="16"/>
+							<Button name="$parent_castBar17" inherits="fc_CastBarTemplate" id="17"/>
+							<Button name="$parent_castBar18" inherits="fc_CastBarTemplate" id="18"/>
+							<Button name="$parent_castBar19" inherits="fc_CastBarTemplate" id="19"/>
+							<Button name="$parent_castBar20" inherits="fc_CastBarTemplate" id="20"/>
+						</Frames>
+					</Button>
+				</Frames>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Button name="fc_versionTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="260" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentInfo" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-20" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentMO" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				getglobal(this:GetName() .. "MO"):Show();
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName() .. "MO"):Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Frame name="fc_versionFrame" movable="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="500"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeaderTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="300" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="Version Check">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTitle" inherits="GameFontHighlightSmall" text="Don't forget to sync the CTRA channel">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="-26"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentDrag">
+				<Size>
+					<AbsDimension x="150" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-12" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						if ( arg1 == "LeftButton" ) then
+							this:GetParent():StartMoving();
+						elseif ( arg1 == "RightButton" ) then
+							this:GetParent():ClearAllPoints();
+							this:GetParent():SetPoint("CENTER", "UIParent", "CENTER");
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						this:GetParent():StopMovingOrSizing();
+					</OnMouseUp>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("Left-click to drag\nRight-click to reset");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Button name="$parentNameTab">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-38"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="135" y="24"/>
+				</Size>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalText inherits="GameFontHighlightSmall" text="Player Name">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Background"):SetVertexColor(0, 0, 0, 0.5);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentValueTab">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentNameTab"/>
+				</Anchors>
+				<Size>
+					<AbsDimension x="141" y="24"/>
+				</Size>
+				<Scripts>
+					<OnClick>
+--						CT_RADurability_Sort(4);
+--						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalText inherits="GameFontHighlightSmall" text="Version">
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "Background"):SetVertexColor(0, 0, 0, 0.5);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentPlayer1" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-64"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer2" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer3" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer4" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer5" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer6" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer7" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer8" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer9" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer10" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer11" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer12" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer11" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer13" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer12" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer14" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer13" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer15" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer14" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer16" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer15" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer17" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer16" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer18" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer17" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentPlayer19" inherits="fc_versionTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPlayer18" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="245" y="400"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="19" y="-46"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(19, fc_version_scroll);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="$parentCloseButton" hidden="false" inherits="GameMenuButtonTemplate" text="Close">
+				<Size>
+					<AbsDimension x="100" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="10" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						fc_viewingVersions = nil;
+						HideUIPanel(this:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentRefreshButton" hidden="false" inherits="GameMenuButtonTemplate" text="Refresh">
+				<Size>
+					<AbsDimension x="100" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="-10" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						forecast_version();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="fc_castMenu" frameStrata="LOW" toplevel="false" enableMouse="true" movable="true"
+		hidden="true" parent="UIParent" text="hi hi hi">
+		<Size>
+			<AbsDimension x="165" y="280" />
+		</Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parent_lock" inherits="fc_optionsMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-8" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Lock Target"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.tipText = "Locks Incoming Casts to watch this target.";
+					</OnLoad>
+					<OnClick>
+						forecast_lock();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_unlock" inherits="fc_optionsMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_lock" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Unlock Target"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.tipText = "Unlocks Incoming Casts.";
+					</OnLoad>
+					<OnClick>
+						forecast_unlock();					
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_hide" inherits="fc_optionsMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_unlock" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Hide"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.tipText = "Hide these bars";
+					</OnLoad>
+					<OnClick>
+						forecast_close();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_above" inherits="fc_optionsMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_hide" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Casts appear below"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						forecast_aboveBelowToggle();
+					</OnClick>
+					<OnLoad>
+						this.tipText = "This toggles where the spell casts appear\n(either above or below the title)";
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parent_version" inherits="fc_optionsMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_above" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Check Version"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.tipText = "Checks the Forecast version of everybody in the raid";
+					</OnLoad>
+					<OnClick>
+						forecast_version();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_hideTet" inherits="fc_optionsMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_version" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT" text="Hide Title Text"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this.tipText = "Hides the Incoming Cast text";
+					</OnLoad>
+					<OnClick>
+						forecast_hideText();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Slider name="$parent_scaleSlider" inherits="OptionsSliderTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Size>
+					<AbsDimension x="120" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-138"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Cast Bar Scale");
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+					</OnShow>
+					<OnValueChanged>
+						fc_scaleSlider();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parent_redSlider" inherits="OptionsSliderTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Size>
+					<AbsDimension x="120" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent_scaleSlider" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("The color of your casts");
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+					</OnShow>
+					<OnValueChanged>
+						fc_colorSlider("red");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parent_greenSlider" inherits="OptionsSliderTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Size>
+					<AbsDimension x="120" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent_redSlider" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText();
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+					</OnShow>
+					<OnValueChanged>
+						fc_colorSlider("green");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parent_blueSlider" inherits="OptionsSliderTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Size>
+					<AbsDimension x="120" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent_greenSlider" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText();
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+					</OnShow>
+					<OnValueChanged>
+						fc_colorSlider("blue");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parent_opacitySlider" inherits="OptionsSliderTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Size>
+					<AbsDimension x="120" y="17"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent_blueSlider" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Opacity of after-casts");
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						this:SetMinMaxValues(0, 100);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+					</OnShow>
+					<OnValueChanged>
+						fc_opacitySlider();
+					</OnValueChanged>
+
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						GameTooltip:SetText("The opacity of spells that will finish\ncasting later than your current cast.");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Slider>
+		</Frames>
+		<Scripts>
+		</Scripts>
+	</Frame>
+
+	
+	<Frame name="fc_castTarget" frameStrata="LOW" toplevel="false" enableMouse="true" movable="true"
+		hidden="true" parent="UIParent" text="hi hi hi">
+		<Size>
+			<AbsDimension x="165" y="260" />
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="UIParent" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" text="Target"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<GameTooltip name="FC_DST" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

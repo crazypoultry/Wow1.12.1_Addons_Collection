@@ -1,0 +1,152 @@
+<!-- INCLUDE ../../../../templates/default/page_header.html -->
+<!-- IF S_STEP1 -->
+<form method="post" enctype='multipart/form-data' action="{F_FORM_ACTION}" name="post">
+	<table width="100%" border="0" cellspacing="1" cellpadding="2">
+		<tr>
+			<th align="center" width="100%">{L_FORM_HEADING}</th>
+		</tr>
+		<tr>
+			<td width="100%" align="center" class="row2">
+				<input name='titandkp' type='file'><br />
+			</td>
+		</tr>
+		<tr>
+			<th align="center">
+				<input type="submit" name="start" value="{L_FORM_SUBMIT}" class="mainoption" />
+			</th>
+		</tr>
+	</table>
+</form>
+<!-- ENDIF -->
+<!-- IF S_STEP2 -->
+<script type="text/JavaScript" language="JavaScript">
+	function instanceSelect() {
+		// initial values
+		var i = 0;
+		var myDates = new Array();
+		<!-- BEGIN date_row -->
+		myDates[i] = new Array();
+		myDates[i]["instance"] = "{date_row.EINSTANCE}";
+		myDates[i]["date"] = "{date_row.DATE}";
+		i++;
+		<!-- END date_row -->
+		var myInstance = "";
+		myOutput = document.getElementById("datelist");
+		myInput = document.getElementById("instancelist");
+		
+		// get instance
+		if (myInput.selectedIndex >= 0) {
+			myInstance = myInput.options[myInput.selectedIndex].value;
+		}
+		else {
+			return 0;
+		}
+	
+		// reset the form
+		for (var a = 0; a < myDates.length; a++) {
+			for (var i = 0; i < myDates.length; i++) {
+				myOutput.options[i] = null;
+			}
+		}
+		
+		// add options for all dates
+		var j = 0;
+		for (var i = 0; i < myDates.length; i++) {
+			if (myDates[i]["instance"] == myInstance) {
+				myOutput.options[j] = new Option(myDates[i]["date"], myDates[i]["date"]);
+				j++;
+			}
+		}
+	}
+</script>
+<form method="post" action="{F_FORM_ACTION}" name="post">
+	<table width="100%" border="0" cellspacing="1" cellpadding="2">
+		<tr>
+			<th align="center" colspan="2" width="100%">{L_FORM_HEADING}</th>
+		</tr>
+		<tr>
+			<td width="50%" align="center" class="row2">
+				<select name="instancelist" id="instancelist" onchange="instanceSelect()">
+				<!-- BEGIN instance_row -->
+					<option value="{instance_row.EINSTANCE}">{instance_row.INSTANCE}</option>
+				<!-- END instance_row -->
+				</select>
+			</td>
+			<td width="50%" align="center" class="row2">
+				<select name="datelist" id="datelist">
+				</select>
+				<script type="text/JavaScript" language="JavaScript">
+					instanceSelect();
+				</script>
+			</td>
+		</tr>
+		<tr>
+			<th align="center" colspan="2">
+				<input type="hidden" name="data" value="{DATA}" />
+				<input type="submit" name="chooseraid" value="{L_FORM_SUBMIT}" class="mainoption" />
+			</th>
+		</tr>
+	</table>
+</form>
+<!-- ENDIF -->
+<!-- IF S_STEP3 -->
+<script type="text/JavaScript" language="JavaScript">
+	function updateTotal(elementName, checkName, number) {
+		total = document.getElementById(elementName);
+		checkBox = document.getElementById(checkName);
+		oldTotal = parseFloat(total.innerHTML);
+		
+		if (checkBox.checked) {
+			total.innerHTML = oldTotal + number;
+		}
+		else {
+			total.innerHTML = oldTotal - number;
+		}
+	}
+</script>
+<form method="post" action="{F_FORM_ACTION}" name="post">
+	<table width="100%" border="0" cellspacing="1" cellpadding="2">
+		<tr>
+			<th align="center" width="100%" colspan="3">{L_FORM_HEADING}</th>
+		</tr>
+		<tr>
+			<th width="33%" align="left" class="row2">
+				{L_NAME_HEADING}
+			</th>
+			<th width="33%" align="left" class="row2">
+				{L_ITEM_HEADING}
+			</th>
+			<th width="33%" align="left" class="row2">
+				{L_POINT_HEADING}
+			</th>
+		</tr>
+		<!-- BEGIN character_row -->
+		<tr>
+			<td width="33%" align="left" class="row2">
+				<input type="checkbox" name="{character_row.CHARACTER}" value="true" checked /> {character_row.CHARACTER} {character_row.EXISTS}
+			</td>
+			<td width="33%" align="left" class="row2">
+				<!-- BEGIN item_row -->
+				<input type='checkbox' name='{character_row.item_row.ITEM}_{character_row.CHARACTER}' id='{character_row.item_row.ITEM}_{character_row.CHARACTER}' value='true' onchange='updateTotal("total_{character_row.CHARACTER}", "{character_row.item_row.ITEM}_{character_row.CHARACTER}", {character_row.item_row.DKP});' checked />{character_row.item_row.ITEM}: {character_row.item_row.DKP} {character_row.item_row.COUNT}<br />
+				<!-- END item_row -->
+			</td>
+			<td width="33%" align="left" class="row2">
+				<div id="total_{character_row.CHARACTER}">{character_row.DKP}</div>
+			</td>
+		</tr>
+		<!-- END character_row -->
+		<tr>
+			<th align="center" colspan="3">
+				<input type="hidden" name="data" value="{DATA}" />
+				<input type="hidden" name="date" value="{DATE}" />
+				<input type="hidden" name="instance" value="{INSTANCE}" />
+				<input type="submit" name="finish" value="{L_FORM_SUBMIT}" class="mainoption" />
+			</th>
+		</tr>
+	</table>
+</form>
+<!-- ENDIF -->
+<!-- IF S_STEP4 -->
+{L_FORM_HEADING}
+<!-- ENDIF -->
+<!-- INCLUDE ../../../../templates/default/page_tail.html -->

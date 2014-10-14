@@ -1,0 +1,584 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Frame name="LVBM_StatusBarTimerDefaultTemplate" enableMouse="true" virtual="true" frameStrata="MEDIUM" hidden="true">
+		<Size>
+			<AbsDimension x="195" y="20"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" setAllPoints="true" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="1" right="1" top="6" bottom="6"/>
+			</BackgroundInsets>
+			<Color r="0" g="0" b="0" a="0"/>
+			<BorderColor r="0.5" g="0.5" b="0.5" a="0.8"/>
+		</Backdrop>
+		<Frames>
+			<StatusBar name="$parentBar" enableMouse="true">
+				<Size>
+					<AbsDimension x="195" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="StatusBarTimer">
+						<Size>
+							<AbsDimension x="136" y="11"/>
+						</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimer" inherits="GameFontNormalSmall" text="0.00" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="80" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension y="1" x="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0" g="0" b="0" a="0.3" /> 
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 2);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.isUsed = false;
+				this.usedBy = "";
+				this.syncedBy = LVBM_UNKNOWN;
+				this.startedBy = LVBM_UNKNOWN;
+				this.specialColor = false;
+			</OnLoad>
+			<OnEnter>
+				LVBMStatusBars_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				if GameTooltip:IsShown() and GameTooltipTextLeft1:GetText() == getglobal(this:GetName().."BarText"):GetText() then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+			<OnMouseUp>
+				if arg1 == "RightButton" then
+					LVBM.EndStatusBarTimer(this.usedBy, true, nil, true);
+				elseif arg1 == "LeftButton" and this.isUsed and this.usedBy and LVBM.StatusBarData[this.usedBy] and IsShiftKeyDown() then
+					local msg;
+					msg = getglobal(this:GetName().."BarText"):GetText().." - "..date("%M:%S", LVBM.StatusBarData[this.usedBy].timer - LVBM.StatusBarData[this.usedBy].elapsed);
+					if ChatFrameEditBox:IsShown() then
+						ChatFrameEditBox:Insert(msg);
+					else
+						if this.startedBy == "Battlegrounds" then
+							SendChatMessage(msg, "BATTLEGROUND");
+						else
+							SendChatMessage(msg, "RAID");
+						end
+					end
+				end
+			</OnMouseUp>
+			<OnUpdate>
+				LVBMStatusBars_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LVBM_StatusBarTimerExtraTemplate1" enableMouse="true" virtual="true" frameStrata="MEDIUM" hidden="true">
+		<Size>
+			<AbsDimension x="195" y="24"/>
+		</Size>
+		<Frames>
+			<StatusBar name="$parentBar" enableMouse="true">
+				<Size>
+					<AbsDimension x="195" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="StatusBarTimer">
+						<Size>
+							<AbsDimension x="136" y="11"/>
+						</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimer" inherits="GameFontNormalSmall" text="0.00" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="80" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension y="0" x="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSpark" file="Interface\AddOns\LVBM_API\Textures\Spark.blp" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="83"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0.0" g="0.0" b="0.0" a="0.2"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" file="Interface\AddOns\LVBM_API\Textures\ExtraStatusBarDesign1.tga"/>
+				<BarColor r="0" g="0.5" b="1" a="0.8"/>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 2);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.isUsed = false;
+				this.usedBy = "";
+				this.syncedBy = LVBM_UNKNOWN;
+				this.startedBy = LVBM_UNKNOWN;
+			</OnLoad>
+			<OnEnter>
+				LVBMStatusBars_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				if GameTooltip:IsShown() and GameTooltipTextLeft1:GetText() == getglobal(this:GetName().."BarText"):GetText() then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+			<OnMouseUp>
+				if arg1 == "RightButton" then
+					LVBM.EndStatusBarTimer(this.usedBy, true, nil, true);
+				elseif arg1 == "LeftButton" and this.isUsed and this.usedBy and LVBM.StatusBarData[this.usedBy] and IsShiftKeyDown() then
+					local msg;
+					msg = getglobal(this:GetName().."BarText"):GetText().." - "..date("%M:%S", LVBM.StatusBarData[this.usedBy].timer - LVBM.StatusBarData[this.usedBy].elapsed);
+					if ChatFrameEditBox:IsShown() then
+						ChatFrameEditBox:Insert(msg);
+					else
+						if this.startedBy == "Battlegrounds" then
+							SendChatMessage(msg, "BATTLEGROUND");
+						else
+							SendChatMessage(msg, "RAID");
+						end
+					end
+				end
+			</OnMouseUp>
+			<OnUpdate>
+				LVBMStatusBars_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="LVBM_StatusBarTimerExtraTemplate2" enableMouse="true" virtual="true" frameStrata="MEDIUM" hidden="true">
+		<Size>
+			<AbsDimension x="195" y="24"/>
+		</Size>
+		<Frames>
+			<StatusBar name="$parentBar" enableMouse="true">
+				<Size>
+					<AbsDimension x="195" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="StatusBarTimer">
+						<Size>
+							<AbsDimension x="136" y="11"/>
+						</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimer" inherits="GameFontNormalSmall" text="0.00" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="80" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension y="0" x="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSpark" file="Interface\AddOns\LVBM_API\Textures\Spark.blp" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="83"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0.0" g="0.0" b="0.0" a="0.2"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" file="Interface\AddOns\LVBM_API\Textures\CloudStatusBarDesign.tga"/>
+				<BarColor r="0.5" g="0.5" b="1" a="0.8"/>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 2);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.isUsed = false;
+				this.usedBy = "";
+				this.syncedBy = LVBM_UNKNOWN;
+				this.startedBy = LVBM_UNKNOWN;
+			</OnLoad>
+			<OnEnter>
+				LVBMStatusBars_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				if GameTooltip:IsShown() and GameTooltipTextLeft1:GetText() == getglobal(this:GetName().."BarText"):GetText() then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+			<OnMouseUp>
+				if arg1 == "RightButton" then
+					LVBM.EndStatusBarTimer(this.usedBy, true, nil, true);
+				elseif arg1 == "LeftButton" and this.isUsed and this.usedBy and LVBM.StatusBarData[this.usedBy] and IsShiftKeyDown() then
+					local msg;
+					msg = getglobal(this:GetName().."BarText"):GetText().." - "..date("%M:%S", LVBM.StatusBarData[this.usedBy].timer - LVBM.StatusBarData[this.usedBy].elapsed);
+					if ChatFrameEditBox:IsShown() then
+						ChatFrameEditBox:Insert(msg);
+					else
+						if this.startedBy == "Battlegrounds" then
+							SendChatMessage(msg, "BATTLEGROUND");
+						else
+							SendChatMessage(msg, "RAID");
+						end
+					end
+				end
+			</OnMouseUp>
+			<OnUpdate>
+				LVBMStatusBars_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LVBM_StatusBarTimerExtraTemplate3" enableMouse="true" virtual="true" frameStrata="MEDIUM" hidden="true">
+		<Size>
+			<AbsDimension x="195" y="20"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" setAllPoints="true" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="1" right="1" top="6" bottom="6"/>
+			</BackgroundInsets>
+			<Color r="0" g="0" b="0" a="0"/>
+			<BorderColor r="0.5" g="0.5" b="0.5" a="0.8"/>
+		</Backdrop>
+		<Frames>
+			<StatusBar name="$parentBar" enableMouse="true">
+				<Size>
+					<AbsDimension x="195" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="StatusBarTimer">
+						<Size>
+							<AbsDimension x="136" y="11"/>
+						</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimer" inherits="GameFontNormalSmall" text="0.00" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="80" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension y="0" x="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0.0" g="0.0" b="0.0" a="0.3"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" file="Interface\AddOns\LVBM_API\Textures\PerlStatusBarDesign.tga"/>
+				<BarColor r="1.0" g="0.7" b="0" a="1.0"/>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 2);
+					</OnLoad>
+				</Scripts>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.isUsed = false;
+				this.usedBy = "";
+				this.syncedBy = LVBM_UNKNOWN;
+				this.startedBy = LVBM_UNKNOWN;
+			</OnLoad>
+			<OnEnter>
+				LVBMStatusBars_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				if GameTooltip:IsShown() and GameTooltipTextLeft1:GetText() == getglobal(this:GetName().."BarText"):GetText() then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+			<OnMouseUp>
+				if arg1 == "RightButton" then
+					LVBM.EndStatusBarTimer(this.usedBy, true, nil, true);
+				elseif arg1 == "LeftButton" and this.isUsed and this.usedBy and LVBM.StatusBarData[this.usedBy] and IsShiftKeyDown() then
+					local msg;
+					msg = getglobal(this:GetName().."BarText"):GetText().." - "..date("%M:%S", LVBM.StatusBarData[this.usedBy].timer - LVBM.StatusBarData[this.usedBy].elapsed);
+					if ChatFrameEditBox:IsShown() then
+						ChatFrameEditBox:Insert(msg);
+					else
+						if this.startedBy == "Battlegrounds" then
+							SendChatMessage(msg, "BATTLEGROUND");
+						else
+							SendChatMessage(msg, "RAID");
+						end
+					end
+				end
+			</OnMouseUp>
+			<OnUpdate>
+				LVBMStatusBars_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	
+<!--<Frame name="LVBM_StatusBarTimerTestTemplate" enableMouse="true" virtual="true" frameStrata="MEDIUM" hidden="true">
+		<Size>
+			<AbsDimension x="195" y="24"/>
+		</Size>
+		<Frames>
+			<StatusBar name="$parentBar" enableMouse="true">
+				<Size>
+					<AbsDimension x="195" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="StatusBarTimer">
+						<Size>
+							<AbsDimension x="136" y="11"/>
+						</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTimer" inherits="GameFontNormalSmall" text="0.00" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="80" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension y="0" x="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentSpark" file="Interface\AddOns\LVBM_API\Textures\Spark.blp" alphaMode="ADD">
+							<Size>
+								<AbsDimension x="32" y="83"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground">
+							<Color r="0.0" g="0.0" b="0.0" a="0.2"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<BarTexture name="$parentBar" file="Interface\AddOns\LVBM_API\Textures\TESTNormalBar.tga"/>
+				<BarColor r="0" g="0" b="1" a="0.5"/>
+				<Frames>
+					<StatusBar name="$parentBackgroundBar" enableMouse="true" setAllPoints="true">
+						<BarTexture name="$parentBar" file="Interface\AddOns\LVBM_API\Textures\TESTBackgroundBar.tga"/>
+						<BarColor r="0" g="0" b="1" a="1"/>
+						<Scripts>
+							<OnLoad>								
+								this:SetFrameLevel(0);
+							</OnLoad>
+						</Scripts>
+					</StatusBar>
+				</Frames>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this.isUsed = false;
+				this.usedBy = "";
+				this.syncedBy = LVBM_UNKNOWN;
+				this.startedBy = LVBM_UNKNOWN;
+			</OnLoad>
+			<OnEnter>
+				LVBMStatusBars_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				if GameTooltip:IsShown() and GameTooltipTextLeft1:GetText() == getglobal(this:GetName().."BarText"):GetText() then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+			<OnMouseUp>
+				if arg1 == "RightButton" then
+					LVBM.EndStatusBarTimer(this.usedBy, true, nil, true);
+				elseif arg1 == "LeftButton" and this.isUsed and this.usedBy and LVBM.StatusBarData[this.usedBy] and IsShiftKeyDown() then
+					local msg;
+					msg = getglobal(this:GetName().."BarText"):GetText().." - "..date("%M:%S", LVBM.StatusBarData[this.usedBy].timer - LVBM.StatusBarData[this.usedBy].elapsed);
+					if ChatFrameEditBox:IsShown() then
+						ChatFrameEditBox:Insert(msg);
+					else
+						if this.startedBy == "Battlegrounds" then
+							SendChatMessage(msg, "BATTLEGROUND");
+						else
+							SendChatMessage(msg, "RAID");
+						end
+					end
+				end
+			</OnMouseUp>
+			<OnUpdate>
+				LVBMStatusBars_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame> -->
+	
+	
+
+	<Frame name="LVBM_StatusBarTimerAnchor" parent="UIParent" frameStrata="LOW" movable="true" hidden="false">
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-165"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="195" y="13"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this:SetUserPlaced(true);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

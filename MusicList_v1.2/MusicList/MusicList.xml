@@ -1,0 +1,2319 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MusicList.lua"/>
+	<Frame name="ML_InitFrame" parent="UIParent" hidden="true">
+		<Scripts>
+			<OnLoad>
+				ML_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				ML_OnEvent();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="ML_MusicChoose" hidden="true" parent="UIParent" movable="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="350" y="600"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="160" y="-60"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop name="$parent_Backdrop" bgfile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+		</Backdrop>
+		<Frames>
+			<Button name="MusicList_MinimapButton" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+				<Size>
+					<AbsDimension x="30" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MusicList_MinimapButton_Icon" file="Interface\AddOns\MusicList\Images\MLButton">
+							<Size>
+								<AbsDimension x="21" y="21"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="7" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size>
+								<AbsDimension x="56" y="56"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="MusicList_MinimapButton_DraggingFrame" hidden="true">
+						<Scripts>
+							<OnUpdate>
+								MusicList_MinimapButton_DraggingFrame_OnUpdate()
+							</OnUpdate>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "Music List"
+						this:SetFrameLevel(5)
+						this:RegisterForClicks("LeftButtonUp","RightButtonUp","MiddleButtonUp")
+						this:RegisterForDrag("LeftButton","RightButton")
+					</OnLoad>
+					<OnDragStart>
+						this:LockHighlight()
+						MusicList_MinimapButton_DraggingFrame:Show()
+					</OnDragStart>
+					<OnDragStop>
+						this:UnlockHighlight()
+						MusicList_MinimapButton_DraggingFrame:Hide()
+					</OnDragStop>
+					<OnClick>
+						MusicList_MinimapButton_OnClick()
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT")
+						GameTooltip:SetText("Music List\n  Left-Click: Open MusicList.\n  Middle-Click: Stop playing music.\n  Right-Click: Play a random song.\n  Mouse-Wheel: Change music volume.")
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+                                                                                <OnMouseWheel>
+                                                                                                ML_MouseWheel(arg1)
+                                                                                </OnMouseWheel>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB1" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB1();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB2" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB2();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB3" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB3();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB4" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB4();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB5" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB5();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB6" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-140"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB6();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB7" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-160"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB7();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB8" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-180"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB8();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB9" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-200"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB9();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB10" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-220"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB10();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB11" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-240"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB11();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB12" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-260"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB12();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB13" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-280"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB13();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB14" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-300"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB14();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB15" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-320"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB15();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB16" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-340"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB16();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB17" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-360"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB17();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB18" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-380"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB18();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB19" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-400"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB19();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB20" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB20();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB21" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-440"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB21();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB22" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-460"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB22();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB23" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-480"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB23();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB24" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-500"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB24();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB25" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-520"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB25();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB26" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-540"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB26();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_PB27" text="Play" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-560"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_PlB27();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="ML_FS1" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS1_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS2" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-60"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS2_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS3" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS3_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS4" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS4_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS5" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-120"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS5_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS6" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-140"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS6_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS7" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-160"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS7_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS8" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-180"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS8_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS9" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-200"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS9_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS10" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-220"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS10_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS11" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-240"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS11_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS12" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-260"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS12_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS13" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-280"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS13_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS14" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-300"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS14_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS15" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-320"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS15_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS16" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-340"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS16_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS17" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-360"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS17_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS18" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-380"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS18_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS19" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-400"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS19_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS20" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-420"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS20_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS21" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-440"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS21_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS22" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-460"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS22_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS23" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-480"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS23_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS24" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-500"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS24_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS25" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-520"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS25_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS26" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-540"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS26_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+				<FontString name="ML_FS27" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="250" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-560"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							ML_FS27_OnLoad();
+						</OnLoad>
+					</Scripts>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				this:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+	<Frame name="ML_OptionChooseFrame" hidden="false" parent="ML_MusicChoose" movable="false" enableMouse="true">
+		<Size>
+			<AbsDimension x="350" y="30"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP"></Anchor>
+		</Anchors>
+		<Backdrop name="$parent_Backdrop" bgfile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+		</Backdrop>
+		<Frames>
+			<Button name="ML_Close" text="Close" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_MusicChoose:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_Add.File" text="Add File" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_FileAdd:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="Author.Name" text="MusicList"  inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="120" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ML_FileAdd" hidden="true" enableMouse="true" movable="false" parent="ML_MusicChoose">
+		<Size>
+			<AbsDimension x="350" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop name="$parent_Backdrop" bgfile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+		</Backdrop>
+		<Frames>
+			<Button name="ML_Close.File" text="Close" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_FileAdd:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ML_Adding" text="Add" inherits="OptionsButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_Adding();
+					</OnClick>
+				</Scripts>
+			</Button>
+                                                <CheckButton name="CheckButton_Delete" inherits="OptionsCheckButtonTemplate">
+                                                                <Anchors>
+                                                                 	<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetChecked("0")
+					</OnLoad>
+					<OnClick>
+						ML_CBD()
+					</OnClick>
+				</Scripts>
+			</CheckButton>      
+			<EditBox name="ML_ONumber" letters="2">
+				<Size>
+					<AbsDimension x="32" y="32"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="16" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.2" right="0.2" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="16" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal" justifyH="CENTER"></FontString>
+			</EditBox>
+			<EditBox name="ML_AdrFile">
+				<Size>
+					<AbsDimension x="300" y="32"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-55"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="150" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="1.0" right="0.7" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="150" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						ML_AddAdresse();
+					</OnEnterPressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal" justifyH="CENTER"></FontString>
+			</EditBox>
+			<EditBox name="ML_NameFile">
+				<Size>
+					<AbsDimension x="300" y="32"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-110"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="150" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="1.0" right="0.7" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="150" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						ML_AddName();
+					</OnEnterPressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal" justifyH="CENTER"></FontString>
+			</EditBox>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="ML_NumberFS" text="Delete a File."  inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="280" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="50" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ML_AddresseFS" text="Name of the file (xy.wav/mp3)."  inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="330" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ML_NameFS" text="Name the file's going to be listed."  inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="330" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-95"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ML_BottomButtonSpaceFrame" movable="false" enableMouse="true" parent="ML_MusicChoose" hidden="false">
+	  <Size>
+	    <AbsDimension x="350" y="30" />
+	  </Size>
+	<Backdrop name="$parent_Backdrop" bgfile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+	</Backdrop>
+	  <Anchors>
+	    <Anchor point="TOP" relativePoint="BOTTOM">
+	      <Offset>
+	        <AbsDimension x="0" y="0" />
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	  <Frames>
+		<Button name="ML_ShowID" text="Show ID" inherits="OptionsButtonTemplate">
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="5" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_IDFrame:Show()
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="ML_StopMusic" text="Stop" inherits="OptionsButtonTemplate">
+			<Anchors>
+				<Anchor point="RIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_StopMusic()
+				</OnClick>
+			</Scripts>
+		</Button>
+		  <Button name="ML_ShowOption" text="Options" inherits="OptionsButtonTemplate">
+			  <Anchors>
+				  <Anchor point="BOTTOM">
+					  <Offset>
+						  <AbsDimension x="0" y="5"></AbsDimension>
+					  </Offset>
+				  </Anchor>
+			  </Anchors>
+			  <Scripts>
+				  <OnClick>
+					  ML_AddOptions:Show()
+				  </OnClick>
+			  </Scripts>
+		  </Button>
+	  </Frames>
+	</Frame>
+	<Frame name="ML_IDFrame" movable="false" enableMouse="true" parent="ML_MusicChoose" hidden="true">
+	  <Size>
+	    <AbsDimension x="45" y="600"/>
+	  </Size>
+	<Backdrop name="$parent_Backdrop" bgfile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+	</Backdrop>
+	  <Anchors>
+	    <Anchor point="RIGHT" relativePoint="LEFT">
+	      <Offset>
+	        <AbsDimension x="0" y="0"/>
+	      </Offset>
+	    </Anchor>
+	  </Anchors>
+	  <Frames>
+		<Button name="ML_HideID" text="x" inherits="OptionsButtonTemplate">
+	  <Size>
+	    <AbsDimension x="15" y="15"/>
+	  </Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_IDFrame:Hide()
+				</OnClick>
+			</Scripts>
+		</Button>
+                                <CheckButton name="CheckButton_S1" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-40"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS1()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S2" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-60"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS2()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S3" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-80"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS3()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S4" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-100"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS4()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S5" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-120"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS5()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S6" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-140"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS6()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S7" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-160"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS7()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S8" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-180"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS8()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S9" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-200"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS9()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S10" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-220"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS10()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S11" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-240"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS11()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S12" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-260"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS12()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S13" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-280"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS13()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S14" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-300"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS14()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S15" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-320"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS15()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S16" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-340"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS16()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S17" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-360"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS17()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S18" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-380"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS18()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S19" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-400"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS19()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S20" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-420"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS20()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S21" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-440"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS21()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S22" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-460"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS22()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S23" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-480"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS23()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S24" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-500"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS24()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S25" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-520"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS25()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S26" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-540"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS26()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+                                <CheckButton name="CheckButton_S27" inherits="OptionsCheckButtonTemplate">
+			<Size>
+				<AbsDimension x="15" y="15"></AbsDimension>
+			</Size>
+                                	<Anchors>
+                                                               	<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-5" y="-560"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ML_CBS27()
+				</OnClick>
+			</Scripts>
+		</CheckButton>      
+	  </Frames>
+	  <Layers>
+	    <Layer level="OVERLAY">
+		 <FontString name="ML_ID1" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-40"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		  		 <FontString name="ML_ID2" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-60"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID3" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-80"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID4" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-100"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID5" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-120"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID6" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-140"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID7" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-160"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID8" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-180"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID9" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-200"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID10" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-220"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID11" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-240"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID12" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-260"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID13" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-280"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID14" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-300"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID15" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-320"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID16" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-340"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID17" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-360"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID18" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-380"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID19" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-400"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID20" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-420"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID21" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-440"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID22" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-460"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID23" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-480"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID24" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-500"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID25" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-520"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID26" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-540"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_ID27" inherits="GameFontNormalSmall" justifyH="LEFT">
+		 	<Size>
+		 		<AbsDimension x="25" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-560"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+		 <FontString name="ML_MP3?" inherits="GameFontNormalSmall" justifyH="LEFT" text="MP3?">
+		 	<Size>
+		 		<AbsDimension x="40" y="15"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="5" y="-20"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		  </FontString>
+	    </Layer>
+	  </Layers>	  
+	</Frame>
+	<Frame name="ML_AddOptions" movable="false" enableMouse="true" parent="ML_MusicChoose" hidden="true">
+		<Size>
+			<AbsDimension x="200" y="150"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="ML_IDFrame">
+				<AbsDimension x="0" y="0"></AbsDimension>
+			</Anchor>
+		</Anchors>
+		<Backdrop name="$parent_Backdrop" bgfile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+		</Backdrop>
+		<Frames>
+			<Button name="ML_HideAddOption" text="x" inherits="OptionsButtonTemplate">
+				<Size>
+					<AbsDimension x="15" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_AddOptions:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Slider name="ML_MasterVolumeSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="150" y="15"/>
+				</Size>
+				<Scripts>
+					<OnLoad>
+						ML_MVSLoad()
+					</OnLoad>
+					<OnValueChanged>
+						ML_ValueChanged();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="ML_MusicVolumeSlider" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension x="150" y="15"/>
+				</Size>
+				<Scripts>
+					<OnLoad>
+						ML_MuVSLoad()
+					</OnLoad>
+					<OnValueChanged>
+						ML_MuValueChanged();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<CheckButton name="CheckButton_MasterVolume" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="175" y="-80"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_MasterVolumeChange()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="CheckButton_MusicVolume" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="175" y="-120"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ML_MusicVolumeChange()
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="ML_MusicVolumeText" inherits="GameFontNormalSmall" justifyH="LEFT" text="Music Volume:">
+					<Size>
+						<AbsDimension x="120" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-105"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ML_MasterVolumeText" inherits="GameFontNormalSmall" justifyH="LEFT" text="Master Volume:">
+					<Size>
+						<AbsDimension x="120" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-65"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ML_MouseWheelChangeText" inherits="GameFontNormalSmall" justifyH="LEFT" text="Mouse-Wheel changes volume of:">
+					<Size>
+						<AbsDimension x="190" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

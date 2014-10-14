@@ -1,0 +1,1942 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+<Script file="BetterWaypoints.lua" />
+<Script file="Core.lua" />
+<Script file="Localization_BWP.lua" />
+<Script file="neededLocalizationStrings.lua" />
+
+<Frame name="BWPMiniMapButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="HIGH">
+		<Size>
+			<AbsDimension x="29" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+
+			<Button name="BWPButton" >
+				<Size>
+					<AbsDimension x="29" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\BetterWaypoints\Artwork\BWP_Button_Up"/>
+				<PushedTexture file="Interface\AddOns\BetterWaypoints\Artwork\BWP_Button_Down"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+					</OnLoad>
+					<OnClick>
+						BWPButton_OnClick(arg1);
+					</OnClick>
+					<OnEnter>
+						BWP_Tooltip()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent>
+				BWPEVENT_mini()
+				
+			</OnEvent>
+		</Scripts>
+</Frame>	
+
+<Frame name="BetterWaypointsMainFrame" frameStrata="HIGH" toplevel="true" 
+movable="true" parent="UIParent">
+	<Size>
+		<AbsDimension x="40" y="40"/>
+	</Size>
+	<Anchors>
+		<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" >
+			<Offset>
+				<AbsDimension x="0" y="32"/>
+			</Offset>
+		</Anchor>
+
+	</Anchors>
+
+
+
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture name="BetterWaypointsMoveMainTexture" file="">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BACKGROUND">
+			
+			
+			<Texture name="BetterWaypointsArrow" file="">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BACKGROUND">
+			
+			
+			<FontString name="BWPText" inherits="GameFontNormal">
+				<Size>
+					<AbsDimension x="500" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo = "$parent" relativePoint = "BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString> 
+		</Layer>
+		<Layer level="BACKGROUND">
+			
+			
+			<FontString name="BWPDistanceText" inherits="GameFontNormal">
+				<Size>
+					<AbsDimension x="500" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo = "$parent" relativePoint = "TOP">
+						<Offset>
+							<AbsDimension x="0" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString> 
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			BetterWaypoints_OnLoad();
+		</OnLoad>
+		<OnUpdate>
+			BetterWaypoints_OnUpdate(arg1);
+		</OnUpdate>
+		<OnEvent>
+			BetterWaypoints_OnEvent(event,arg1,arg2)
+		</OnEvent>
+		<OnDragStart>
+			BWP_StartMove()
+		</OnDragStart>
+		<OnDragStop>
+			BWP_StopMove()
+		</OnDragStop>
+	</Scripts>
+</Frame>
+
+
+<Frame name="BetterWaypointsMenuFrame" frameStrata="Low" toplevel="true" enableMouse="true" movable="true" parent="UIParent">
+	<Size>
+		<AbsDimension x="191" y="50"/>
+	</Size>
+	<Anchors>
+		<Anchor point="BOTTOM" relativeTo="PlayerFrame" relativePoint="CENTER" >
+			<Offset>
+				<AbsDimension x="50" y="10"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	
+	<Layers>
+		<Layer level="BACKGROUND">
+			
+			
+			<Texture name="BetterWaypointsMoveMenuTexture" file="">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		
+
+
+		<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate" hidden = "true" enablemouse ="false" >
+			<Anchors>
+				<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT" >
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					BetterWaypoints_SelectionDropDown_OnLoad();
+				</OnLoad>
+				
+			</Scripts>
+		</Frame>
+		
+
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			this:RegisterForDrag("LeftButton")
+		</OnLoad>
+		<OnDragStart>
+			BWP_StartMove()
+		</OnDragStart>
+		<OnDragStop>
+			BWP_StopMove()
+		</OnDragStop>
+	</Scripts>
+</Frame>
+<Frame name="BetterWaypointsOptionsForm" hidden="true" movable="true" enableMouse="true" enableKeyboard="true">
+    <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508883-59c2-4f83-ae10-27aaad48391b" />-->
+    <Size>
+      <AbsDimension x="400" y="350" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32" />
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer>
+        <Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="160" y="32" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="5" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+        </Texture>
+        <FontString name="$parentTitleString" font="Fonts\FRIZQT__.TTF" text="Better Waypoints">
+          <Size>
+            <AbsDimension x="140" y="0" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-4" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="BWPUndockButton" text="Undock from MiniMap">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="170" y="41" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="15" y="-217" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF" text="Undock from MiniMap">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF" text="Undock from MiniMap">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF" text="Undock from MiniMap">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.5" g="0.5" b="0.5" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+		<Scripts>
+			<OnClick>
+				BWP_ToggleDocking()
+			</OnClick>
+		</Scripts>
+      </Button>
+	  <Button name="BWPUnlockButton" text="Unlock Frames">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101420" frameid="2d508424-59c2-4f83-ae10-27acad48391b" />-->
+        <Size>
+          <AbsDimension x="130" y="41" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-15" y="-217" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF" text="UnlockFrames">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF" text="Unlock Frames">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF" text="Unlock Frames">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.5" g="0.5" b="0.5" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+		<Scripts>
+			<OnClick>
+				BWP_MoveFrames()
+			</OnClick>
+		</Scripts>
+      </Button>
+      <Frame name="LocationSliderOption">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508889-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="350" y="41" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="27" y="-170" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Slider name="$parentSlider" enableMouse="true" minValue="0" maxValue="360" defaultValue="0" valueStep="1" orientation="HORIZONTAL">
+            <Size>
+              <AbsDimension x="128" y="17" />
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT" />
+              <Anchor point="RIGHT" />
+            </Anchors>
+            <Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+              <BackgroundInsets>
+                <AbsInset left="3" right="3" top="6" bottom="6" />
+              </BackgroundInsets>
+              <TileSize>
+                <AbsValue val="8" />
+              </TileSize>
+              <EdgeSize>
+                <AbsValue val="8" />
+              </EdgeSize>
+            </Backdrop>
+            <Layers>
+              <Layer>
+                <FontString name="$parentTitle" font="Fonts\FRIZQT__.TTF" text="Position of Button">
+                  <Anchors>
+                    <Anchor point="BOTTOM" relativePoint="TOP" />
+                  </Anchors>
+                  <FontHeight>
+                    <AbsValue val="10" />
+                  </FontHeight>
+                  <Color r="1" g="0.82" b="0" />
+                  <Shadow>
+                    <Color r="0" g="0" b="0" />
+                    <Offset>
+                      <AbsDimension x="1" y="-1" />
+                    </Offset>
+                  </Shadow>
+                </FontString>
+                <FontString name="$parentLow" font="Fonts\FRIZQT__.TTF" text="Min">
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+                  </Anchors>
+                  <FontHeight>
+                    <AbsValue val="10" />
+                  </FontHeight>
+                  <Color r="1" g="1" b="1" />
+                  <Shadow>
+                    <Color r="0" g="0" b="0" />
+                    <Offset>
+                      <AbsDimension x="1" y="-1" />
+                    </Offset>
+                  </Shadow>
+                </FontString>
+                <FontString name="$parentHigh" font="Fonts\FRIZQT__.TTF" text="Max">
+                  <Anchors>
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+                  </Anchors>
+                  <FontHeight>
+                    <AbsValue val="10" />
+                  </FontHeight>
+                  <Color r="1" g="1" b="1" />
+                  <Shadow>
+                    <Color r="0" g="0" b="0" />
+                    <Offset>
+                      <AbsDimension x="1" y="-1" />
+                    </Offset>
+                  </Shadow>
+                </FontString>
+              </Layer>
+            </Layers>
+            <ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+              <Size>
+                <AbsDimension x="32" y="32" />
+              </Size>
+            </ThumbTexture>
+			<Scripts>
+				<OnValueChanged>
+				
+				if (not BWP_Hide) then BWP_Hide = {} end
+				if(not BWP_Hide.Undocked) then
+				BWP_Hide.BWPButtonPosition = LocationSliderOptionSlider:GetValue()
+			
+				if(BWPButton_UpdatePosition) then BWPButton_UpdatePosition() end
+				end
+				</OnValueChanged>
+			</Scripts>
+          </Slider>
+		  
+        </Frames>
+      </Frame>
+      <Frame name="DistanceSliderOption">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508889-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="350" y="41" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="27" y="-260" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Slider name="$parentSlider" enableMouse="true" minValue="0.0005" maxValue="0.01" defaultValue="0" valueStep="0.0002" orientation="HORIZONTAL">
+            <Size>
+              <AbsDimension x="128" y="17" />
+            </Size>
+            <Anchors>
+              <Anchor point="LEFT" />
+              <Anchor point="RIGHT" />
+            </Anchors>
+            <Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+              <BackgroundInsets>
+                <AbsInset left="3" right="3" top="6" bottom="6" />
+              </BackgroundInsets>
+              <TileSize>
+                <AbsValue val="8" />
+              </TileSize>
+              <EdgeSize>
+                <AbsValue val="8" />
+              </EdgeSize>
+            </Backdrop>
+            <Layers>
+              <Layer>
+                <FontString name="$parentTitle" font="Fonts\FRIZQT__.TTF" text="Distance From Destination for Arrived Message">
+                  <Anchors>
+                    <Anchor point="BOTTOM" relativePoint="TOP" />
+                  </Anchors>
+                  <FontHeight>
+                    <AbsValue val="10" />
+                  </FontHeight>
+                  <Color r="1" g="0.82" b="0" />
+                  <Shadow>
+                    <Color r="0" g="0" b="0" />
+                    <Offset>
+                      <AbsDimension x="1" y="-1" />
+                    </Offset>
+                  </Shadow>
+                </FontString>
+                <FontString name="$parentLow" font="Fonts\FRIZQT__.TTF" text="1 yrd">
+                  <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+                  </Anchors>
+                  <FontHeight>
+                    <AbsValue val="10" />
+                  </FontHeight>
+                  <Color r="1" g="1" b="1" />
+                  <Shadow>
+                    <Color r="0" g="0" b="0" />
+                    <Offset>
+                      <AbsDimension x="1" y="-1" />
+                    </Offset>
+                  </Shadow>
+                </FontString>
+                <FontString name="$parentHigh" font="Fonts\FRIZQT__.TTF" text="40yds">
+                  <Anchors>
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+                  </Anchors>
+                  <FontHeight>
+                    <AbsValue val="10" />
+                  </FontHeight>
+                  <Color r="1" g="1" b="1" />
+                  <Shadow>
+                    <Color r="0" g="0" b="0" />
+                    <Offset>
+                      <AbsDimension x="1" y="-1" />
+                    </Offset>
+                  </Shadow>
+                </FontString>
+              </Layer>
+            </Layers>
+            <ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+              <Size>
+                <AbsDimension x="32" y="32" />
+              </Size>
+            </ThumbTexture>
+			<Scripts>
+				<OnValueChanged>
+					if (not BWP_Hide) then BWP_Hide = {} end
+					
+					BWP_Hide.ClearDistance = DistanceSliderOptionSlider:GetValue()
+					
+				
+				</OnValueChanged>
+			</Scripts>
+          </Slider>
+		</Frames>
+      </Frame>
+	  <Button name="BetterWaypointsClearButton" text="Clear Destination">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="118" y="39" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="151" y="-126" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF" text="Clear Destination">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF" text="Clear Destination">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF" text="Clear Destination">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.5" g="0.5" b="0.5" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+		<Scripts>
+			<OnClick>
+				BWP_ClearDest()
+			</OnClick>
+		</Scripts>
+      </Button>
+      <CheckButton name="DispTargetCheckOption" >
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size" value="146, 33" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="206" y="-74" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Display Target Title">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<Scripts>
+			<OnClick>
+				if(not BWP_Hide) then BWP_Hide = {} end
+				if(this:GetChecked()) then BWP_Hide.Destination = nil elseif (not this:GetChecked())then BWP_Hide.Destination = 1 end
+			</OnClick>
+		</Scripts>
+      </CheckButton>
+	  <CheckButton name="Abnormal_CT_Check" hidden="true">
+        <!--<FrameSkin skinid="dcb14201-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad42091b"><Property name="Size" value="146, 33" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="10" y="7" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Display Mining/Herb Resources">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<Scripts>
+			
+		</Scripts>
+      </CheckButton>
+	   <CheckButton name="Abnormal_TitanBWP" hidden = "true">
+        <!--<FrameSkin skinid="dfgh4201-a4ab-4uyc-b234-1efa40101d21" frameid="2d2d4g86-59c2-4nm3-ae10-27aaad42091b"><Property name="Size" value="146, 33" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-125" y="7" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Undock From Titan">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<Scripts>
+			<OnClick>
+				BWP_UndockTitan_OnClick()
+			</OnClick>
+		</Scripts>
+      </CheckButton>
+	  <CheckButton name="Abnormal_NoMods" hidden = "true">
+        <!--<FrameSkin skinid="dxb14201-a4ab-4e7c-b234-1efa40101d21" frameid="2d218886-59c2-4v13-ae10-27aaad42091b"><Property name="Size" value="146, 33" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="10" y="7" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Dont Display Warning On Startup">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<Scripts>
+			<OnClick>
+				if(not BWPOption) then BWPOptions = {} end
+				if(this:GetChecked()) then BWP_Hide.WarningDisplayed = 1 elseif (not this:GetChecked())then BWP_Hide.WarningDisplayed = nil end
+			</OnClick>
+		</Scripts>
+      </CheckButton>
+      <Button name="HideOptionButton" text="Hide Button">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="118" y="40" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="27" y="-125" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+			<OnClick>
+				BWP_ToggleMini()
+			</OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF" text="Hide Button">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF" text="Hide Button">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF" text="Hide Button">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.5" g="0.5" b="0.5" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+      </Button>
+      <CheckButton name="DistDisplayCheckOption" >
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size" value="169, 33" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="27" y="-74" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Display Distance To Target">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<Scripts>
+			<OnClick>
+				if(not BWP_Hide) then BWP_Hide = {} end
+				if(this:GetChecked()) then 
+					BWP_Hide.Distance = nil
+					if(MapLibrary) then BWP_Hide.Yards = 1 end
+					DistDisplayCheckOption_Yards:SetChecked(0)
+				elseif (not this:GetChecked()) then 
+					BWP_Hide.Distance = 1 
+				end
+			</OnClick>
+		</Scripts>
+      </CheckButton>
+	  <CheckButton name="DistDisplayCheckOption_Yards" hidden = "true" >
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size" value="169, 33" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="27" y="-90" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Display Distance in Yards">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+		<Scripts>
+			<OnClick>
+				if(not BWP_Hide) then BWP_Hide = {} end
+				if(this:GetChecked()) then 
+				BWP_Hide.Distance= nil
+				BWP_Hide.Yards = nil
+				DistDisplayCheckOption:SetChecked(0)
+				elseif (not this:GetChecked()) then BWP_Hide.Distance = 1 end
+			</OnClick>
+		</Scripts>
+      </CheckButton>
+      <Button name="ConfirmButtonOption" text="Add New">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="86" y="40" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="291" y="-125" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF" text="Add New">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF" text="Add New">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF" text="Add New">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.5" g="0.5" b="0.5" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+		<Scripts>
+			<OnClick>
+				BWP_AddNewPoint()
+			</OnClick>
+		</Scripts>
+      </Button>
+      <CheckButton name="MapPointsCheckOption" checked="true">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size" value="154, 29" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="206" y="-39" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Show Map Points">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+      </CheckButton>
+      <CheckButton name="QNPCCheckOption" checked="true">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508886-59c2-4f83-ae10-27aaad48391b"><Property name="Size" value="130, 32" /></FrameSkin>-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="27" y="-36" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Show Quest NPC's">
+              <Anchors>
+                <Anchor point="LEFT" relativePoint="RIGHT">
+                  <Offset>
+                    <AbsDimension x="-2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="10" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+      </CheckButton>
+      <Button name="$parentComponent1">
+        <!--<FrameSkin skinid="5dc5ab78-d504-41b0-a23d-f0d823f697cb" frameid="5dc5ab79-d504-41b0-a23d-f0d823f697cb" />-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="365" y="-3" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>BetterWaypointsOptionsForm:Hide()</OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+      </Button>
+    </Frames>
+    <Scripts>
+		<OnLoad>tinsert(UISpecialFrames,"BetterWaypointsOptionsForm")
+		</OnLoad>
+		<OnShow>
+			BetterWaypointsMainFrame:SetFrameStrata("low")
+		</OnShow>
+    </Scripts>
+  </Frame>
+  
+   <!--Autogenerated by wowuides, Version=1.0.100.0, Culture=neutral, PublicKeyToken=null-->
+  <Frame name="BetterWaypointsAddForm" hidden = "true" enableMouse = "true" enableKeyboard = "true">
+    <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508883-59c2-4f83-ae10-27aaad48391b" />-->
+    <Size>
+      <AbsDimension x="400" y="173" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32" />
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer>
+        <Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="160" y="32" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="5" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+        </Texture>
+        <FontString name="$parentTitleString" font="Fonts\FRIZQT__.TTF" text="ADD MAPNOTE">
+          <Size>
+            <AbsDimension x="140" y="0" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-4" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="BWPADDITBUTTON" text="ADD" >
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508884-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="74" y="30" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="281" y="-26" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="80" y="22" />
+          </Size>
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF" text="ADD">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.82" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF" text="ADD">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF" text="ADD">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.5" g="0.5" b="0.5" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+		<Scripts>
+			<OnClick>
+				 BWPADDIT_OnCLICK()
+			</OnClick>
+		</Scripts>
+      </Button>
+      <EditBox name="BWPADDCOMMENTBOX" enableMouse="true"  autoFocus="false">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="215" y="23" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="105" y="-109" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" />
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" />
+              </Anchors>
+              <TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="10" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+            </Texture>
+          </Layer>
+        </Layers>
+        <FontString font="Fonts\ARIALN.TTF">
+          <FontHeight>
+            <AbsValue val="14" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+		<Scripts>
+			<OnEscapePressed>this:ClearFocus()</OnEscapePressed>
+		</Scripts>
+      </EditBox>
+      <EditBox name="BWPADDTITLEBOX" enableMouse="true"  autoFocus="false">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="213" y="22" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="105" y="-72" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" />
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" />
+              </Anchors>
+              <TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="10" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+            </Texture>
+          </Layer>
+        </Layers>
+        <FontString font="Fonts\ARIALN.TTF">
+          <FontHeight>
+            <AbsValue val="14" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+		<Scripts>
+			<OnEscapePressed>this:ClearFocus()</OnEscapePressed>
+		</Scripts>
+      </EditBox>
+      <Frame name="$parentComponent7">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="85" y="26" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="25" y="-107" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="COMMENT">
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+                <Anchor point="BOTTOMRIGHT" />
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="12" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <Frame name="$parentComponent6">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="59" y="22" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="39" y="-73" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="TITLE ">
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+                <Anchor point="BOTTOMRIGHT" />
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="12" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+		<Scripts>
+			<OnEscapePressed>
+				this:Hide()
+			</OnEscapePressed>
+		</Scripts>
+      </Frame>
+      <EditBox name="BWPADDY" enableMouse="true"  autoFocus="false">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="69" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="165" y="-36" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" />
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" />
+              </Anchors>
+              <TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="10" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+            </Texture>
+          </Layer>
+        </Layers>
+        <FontString font="Fonts\ARIALN.TTF">
+          <FontHeight>
+            <AbsValue val="14" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+		<Scripts>
+			<OnEscapePressed>this:ClearFocus()</OnEscapePressed>
+		</Scripts>
+      </EditBox>
+      <Frame name="$parentComponent3">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="31" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="142" y="-36" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Y:">
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+                <Anchor point="BOTTOMRIGHT" />
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="12" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <Button name="$parentComponent2">
+        <!--<FrameSkin skinid="5dc5ab78-d504-41b0-a23d-f0d823f697cb" frameid="5dc5ab79-d504-41b0-a23d-f0d823f697cb" />-->
+        <Size>
+          <AbsDimension x="32" y="32" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="365" y="-3" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD">
+          <Size>
+            <AbsDimension x="32" y="32" />
+          </Size>
+        </HighlightTexture>
+		<Scripts>
+			<OnClick>
+				BetterWaypointsAddForm:Hide()
+			</OnClick>
+		</Scripts>
+      </Button>
+      <Frame name="$parentComponent1">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508885-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="30" y="21" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="32" y="-36" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer>
+            <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="X:">
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+                <Anchor point="BOTTOMRIGHT" />
+              </Anchors>
+              <FontHeight>
+                <AbsValue val="12" />
+              </FontHeight>
+              <Color r="1" g="0.82" b="0" />
+              <Shadow>
+                <Color r="0" g="0" b="0" />
+                <Offset>
+                  <AbsDimension x="1" y="-1" />
+                </Offset>
+              </Shadow>
+            </FontString>
+          </Layer>
+        </Layers>
+      </Frame>
+      <EditBox name="BWPADDX" enableMouse="true"  autoFocus="false">
+        <!--<FrameSkin skinid="dcb143e1-a4ab-4e7c-b934-1efa40101d21" frameid="2d508887-59c2-4f83-ae10-27aaad48391b" />-->
+        <Size>
+          <AbsDimension x="69" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="54" y="-36" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" />
+              </Anchors>
+              <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="8" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="RIGHT" />
+              </Anchors>
+              <TexCoords left="0.9375" right="1" top="0" bottom="0.625" />
+            </Texture>
+            <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+              <Size>
+                <AbsDimension x="10" y="20" />
+              </Size>
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+              </Anchors>
+              <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+            </Texture>
+          </Layer>
+        </Layers>
+        <FontString font="Fonts\ARIALN.TTF">
+          <FontHeight>
+            <AbsValue val="14" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+		<Scripts>
+			<OnEscapePressed>this:ClearFocus()</OnEscapePressed>
+		</Scripts>
+      </EditBox>
+    </Frames>
+	<Scripts>
+      <OnLoad>tinsert(UISpecialFrames,"BetterWaypointsAddForm")</OnLoad>
+    </Scripts>
+  </Frame>
+  <Frame name="BWP_MiniDropMenu" inherits="UIDropDownMenuTemplate" hidden = "true">
+	   <Anchors>
+		  <Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+			 <Offset>
+				<AbsDimension x="0" y="0"/>
+			 </Offset>
+		  </Anchor>
+	   </Anchors>
+	   <Scripts>
+		  <OnLoad>
+			 BWP_MiniDropMenu_OnLoad();
+		  </OnLoad>
+		  <OnShow>
+			 BWP_MiniDropMenu_OnLoad();
+		  </OnShow>
+	   </Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,594 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Localization.lua"/>
+	<Script file="FelwoodGatherMap.lua"/>
+	
+	<Button name="FWG_PartyTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" file="Interface\WorldMap\WorldMapPartyIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this.toolTip="";
+				if ( this:GetID() == 0 ) then
+					this.unit = "player";
+					getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPlayerIcon");
+				else
+					this.unit = "party"..this:GetID();
+--					getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+					getglobal(this:GetName().."Icon"):SetTexture("Interface\\AddOns\\FelwoodGather\\PartyIcon.tga");
+				end
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this:RegisterForClicks("LeftButtonUp");
+			</OnLoad>
+			<OnEnter>
+				FelwoodGatherMap_SetupPCToolTip(this);
+			</OnEnter>
+			<OnLeave>
+				FWG_Tooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Frame name="FWG_RaidTemplate" inherits="FWG_PartyTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+				this.unit = "raid"..this:GetID();
+				this:RegisterForClicks("LeftButtonUp");
+--				getglobal(this:GetName().."Icon"):SetTexture("Interface\\WorldMap\\WorldMapPartyIcon");
+				getglobal(this:GetName().."Icon"):SetTexture("Interface\\AddOns\\FelwoodGather\\PartyIcon.tga");
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="FWG_CorpseTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Minimap\POIIcons" setAllPoints="true">
+					<TexCoords left="0.875" right="1.0" top="0" bottom="0.125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnEnter>
+				local x, y = this:GetCenter();
+				local parentX, parentY = this:GetParent():GetCenter();
+				if ( x > parentX ) then
+					FWG_Tooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					FWG_Tooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				FWG_Tooltip:SetText(TEXT(CORPSE_RED));
+				FWG_Tooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				FWG_Tooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<Button name="FWG_FramePOIButtonTemplate"  virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this.toolTip="no time";
+				this:SetFrameLevel(this:GetFrameLevel() + 2);
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnEnter>
+				id = this:GetID();
+				FelwoodGatherMap_SetupToolTip(id);
+			</OnEnter>
+			<OnLeave>
+				FWG_Tooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				id = this:GetID();
+				FelwoodGather_OnClick(arg1, id, this:GetName());
+			</OnClick>
+		</Scripts>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" file="Interface\Minimap\POIIcons">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+			<FontString name="$parentLabel" inherits="GameFontHighlightSmallOutline" justifyH="LEFT">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-2" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+			
+	<!-- the main frame -->
+	<Frame name="FWG_Frame" hidden="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="336" y="573"/>
+		</Size>
+		
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+ 					<AbsDimension x="100" y="50"/>
+ 				</Offset>
+			</Anchor>
+		</Anchors>
+		
+		<Frames>
+			<Frame name="FWG_BorderFrame">
+				<Size>
+					<AbsDimension x="332" y="551"/>
+				</Size>
+				
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FWG_Frame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="FWG_MapTitle" inherits="GameFontNormal" text="FelwoodGather Map">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="FWG_Frame" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="FWG_CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="FWG_Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="5" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FWG_Frame:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			
+			<!-- the map frame -->
+			<Frame name="FWG_WrapperFrame">
+				<Size>
+					<AbsDimension x="332" y="551"/>
+				</Size>
+				
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FWG_Frame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					<Layer level="ARTWORK">
+						<!-- The map, in pieces -->
+						<Texture name="FWG_Bg1" file="Interface\AddOns\FelwoodGather\FelwoodGatherBG1.tga">
+							<Size>
+								<AbsDimension x="256" y="256" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="FWG_WrapperFrame" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="FWG_Bg2" file="Interface\AddOns\FelwoodGather\FelwoodGatherBG2.tga">
+							<Size>
+								<AbsDimension x="256" y="256" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="FWG_Bg1" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="FWG_Bg3" file="Interface\AddOns\FelwoodGather\FelwoodGatherBG3.tga">
+							<Size>
+								<AbsDimension x="256" y="64" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="FWG_Bg2" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="FWG_Bg4" file="Interface\AddOns\FelwoodGather\FelwoodGatherBG4.tga">
+							<Size>
+								<AbsDimension x="128" y="256" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="FWG_Bg1" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="FWG_Bg5" file="Interface\AddOns\FelwoodGather\FelwoodGatherBG5.tga">
+							<Size>
+								<AbsDimension x="128" y="256" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="FWG_Bg4" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="FWG_Bg6" file="Interface\AddOns\FelwoodGather\FelwoodGatherBG6.tga">
+							<Size>
+								<AbsDimension x="128" y="64" />
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="FWG_Bg5" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(FWG_BorderFrame:GetFrameLevel() + 1);
+						FelwoodGatherMap_OnLoad();
+					</OnLoad>
+					<OnUpdate>
+						FelwoodGatherMap_OnUpdate(arg1);
+					</OnUpdate>
+					<OnEvent>
+						FelwoodGatherMap_OnEvent(event)
+					</OnEvent>
+					<OnMouseDown>
+						if(arg1 == "RightButton") then
+							FelwoodGatherMap_PingMap(arg1);
+						end
+					</OnMouseDown>
+				</Scripts>
+			</Frame>
+			
+			<!-- the blip frame -->
+			<Frame name="FWG_BlipFrame">
+				<Size>
+					<AbsDimension x="332" y="551"/>
+				</Size>
+				
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FWG_Frame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Frames>
+					<Button name="FWG_Player" inherits="FWG_PartyTemplate" id="0"/>
+					<Button name="FWG_Corpse" inherits="FWG_CorpseTemplate" hidden="true" />
+					
+					<Button name="FWG_FramePOI1" id="1" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI2" id="2" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI3" id="3" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI4" id="4" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI5" id="5" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI6" id="6" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI7" id="7" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI8" id="8" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI9" id="9" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI10" id="10" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI11" id="11" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI12" id="12" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI13" id="13" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI14" id="14" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI15" id="15" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI16" id="16" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI17" id="17" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI18" id="18" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI19" id="19" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI20" id="20" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI21" id="21" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI22" id="22" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI23" id="23" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI24" id="24" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI25" id="25" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI26" id="26" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI27" id="27" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI28" id="28" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI29" id="29" inherits="FWG_FramePOIButtonTemplate"/>
+					<Button name="FWG_FramePOI30" id="30" inherits="FWG_FramePOIButtonTemplate"/>
+
+					<Button name="FWG_Party1" inherits="FWG_PartyTemplate" id="1" hidden="true"/>
+					<Button name="FWG_Party2" inherits="FWG_PartyTemplate" id="2" hidden="true"/>
+					<Button name="FWG_Party3" inherits="FWG_PartyTemplate" id="3" hidden="true"/>
+					<Button name="FWG_Party4" inherits="FWG_PartyTemplate" id="4" hidden="true"/>
+					<Button name="FWG_Raid1" inherits="FWG_RaidTemplate" id="1" hidden="true"/>
+					<Button name="FWG_Raid2" inherits="FWG_RaidTemplate" id="2" hidden="true"/>
+					<Button name="FWG_Raid3" inherits="FWG_RaidTemplate" id="3" hidden="true"/>
+					<Button name="FWG_Raid4" inherits="FWG_RaidTemplate" id="4" hidden="true"/>
+					<Button name="FWG_Raid5" inherits="FWG_RaidTemplate" id="5" hidden="true"/>
+					<Button name="FWG_Raid6" inherits="FWG_RaidTemplate" id="6" hidden="true"/>
+					<Button name="FWG_Raid7" inherits="FWG_RaidTemplate" id="7" hidden="true"/>
+					<Button name="FWG_Raid8" inherits="FWG_RaidTemplate" id="8" hidden="true"/>
+					<Button name="FWG_Raid9" inherits="FWG_RaidTemplate" id="9" hidden="true"/>
+					<Button name="FWG_Raid10" inherits="FWG_RaidTemplate" id="10" hidden="true"/>
+					<Button name="FWG_Raid11" inherits="FWG_RaidTemplate" id="11" hidden="true"/>
+					<Button name="FWG_Raid12" inherits="FWG_RaidTemplate" id="12" hidden="true"/>
+					<Button name="FWG_Raid13" inherits="FWG_RaidTemplate" id="13" hidden="true"/>
+					<Button name="FWG_Raid14" inherits="FWG_RaidTemplate" id="14" hidden="true"/>
+					<Button name="FWG_Raid15" inherits="FWG_RaidTemplate" id="15" hidden="true"/>
+					<Button name="FWG_Raid16" inherits="FWG_RaidTemplate" id="16" hidden="true"/>
+					<Button name="FWG_Raid17" inherits="FWG_RaidTemplate" id="17" hidden="true"/>
+					<Button name="FWG_Raid18" inherits="FWG_RaidTemplate" id="18" hidden="true"/>
+					<Button name="FWG_Raid19" inherits="FWG_RaidTemplate" id="19" hidden="true"/>
+					<Button name="FWG_Raid20" inherits="FWG_RaidTemplate" id="20" hidden="true"/>
+					<Button name="FWG_Raid21" inherits="FWG_RaidTemplate" id="21" hidden="true"/>
+					<Button name="FWG_Raid22" inherits="FWG_RaidTemplate" id="22" hidden="true"/>
+					<Button name="FWG_Raid23" inherits="FWG_RaidTemplate" id="23" hidden="true"/>
+					<Button name="FWG_Raid24" inherits="FWG_RaidTemplate" id="24" hidden="true"/>
+					<Button name="FWG_Raid25" inherits="FWG_RaidTemplate" id="25" hidden="true"/>
+					<Button name="FWG_Raid26" inherits="FWG_RaidTemplate" id="26" hidden="true"/>
+					<Button name="FWG_Raid27" inherits="FWG_RaidTemplate" id="27" hidden="true"/>
+					<Button name="FWG_Raid28" inherits="FWG_RaidTemplate" id="28" hidden="true"/>
+					<Button name="FWG_Raid29" inherits="FWG_RaidTemplate" id="29" hidden="true"/>
+					<Button name="FWG_Raid30" inherits="FWG_RaidTemplate" id="30" hidden="true"/>
+					<Button name="FWG_Raid31" inherits="FWG_RaidTemplate" id="31" hidden="true"/>
+					<Button name="FWG_Raid32" inherits="FWG_RaidTemplate" id="32" hidden="true"/>
+					<Button name="FWG_Raid33" inherits="FWG_RaidTemplate" id="33" hidden="true"/>
+					<Button name="FWG_Raid34" inherits="FWG_RaidTemplate" id="34" hidden="true"/>
+					<Button name="FWG_Raid35" inherits="FWG_RaidTemplate" id="35" hidden="true"/>
+					<Button name="FWG_Raid36" inherits="FWG_RaidTemplate" id="36" hidden="true"/>
+					<Button name="FWG_Raid37" inherits="FWG_RaidTemplate" id="37" hidden="true"/>
+					<Button name="FWG_Raid38" inherits="FWG_RaidTemplate" id="38" hidden="true"/>
+					<Button name="FWG_Raid39" inherits="FWG_RaidTemplate" id="39" hidden="true"/>
+					<Button name="FWG_Raid40" inherits="FWG_RaidTemplate" id="40" hidden="true"/>
+				</Frames>
+				
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" and not FelwoodGatherMap_Config.lock) then
+					this:StartMoving();
+				elseif (arg1 == "RightButton") then
+					FelwoodGatherMap_OnContextMenu(arg1);
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( arg1 == "LeftButton" ) then
+					this:StopMovingOrSizing();
+					FelwoodGatherMap_SavePosition();
+				end
+			</OnMouseUp>
+			<OnShow>
+				--FWG_Print("onshow!");
+				FelwoodGatherMap_UpdateAlpha();
+				FelwoodGatherMap_UpdateScale();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="FWG_MapConextMenu" inherits="UIDropDownMenuTemplate" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="-20" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+	<Frame name="FelwoodGatherMap_OptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="300" y="300"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="FelwoodGatherMap_OptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="400" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="FelwoodGatherMap_OptionsFrameTitle" inherits="GameFontNormal" text="FelwoodGatherMap Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FelwoodGatherMap_OptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Slider name="FelwoodGatherMap_SliderAlpha" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_TRANSPARENCY);
+						getglobal(this:GetName().."High"):SetText("100%");
+						getglobal(this:GetName().."Low"):SetText("0%");
+						FelwoodGatherMap_SliderAlpha:SetMinMaxValues(0.0,1.0);
+						FelwoodGatherMap_SliderAlpha:SetValueStep(0.1);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGatherMap_Config.alpha = FelwoodGatherMap_SliderAlpha:GetValue();
+						FelwoodGatherMap_UpdateAlpha();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="FelwoodGatherMap_SliderScale" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-100" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_SCALE);
+						getglobal(this:GetName().."High"):SetText("100%");
+						getglobal(this:GetName().."Low"):SetText("5%");
+						FelwoodGatherMap_SliderScale:SetMinMaxValues(0.05,1.0);
+						FelwoodGatherMap_SliderScale:SetValueStep(0.05);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGatherMap_Config.scale = FelwoodGatherMap_SliderScale:GetValue();
+						FelwoodGatherMap_UpdateScale();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<CheckButton name="FelwoodGatherMap_AutoShow" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-140"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_AUTOSHOW);
+					</OnLoad>
+					<OnClick>
+						FelwoodGatherMap_Config.autoshow = (not FelwoodGatherMap_Config.autoshow);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Button name="FelwoodGatherMap_OptionsFrameDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(FELWOODGATHER_OPTIONS_DONE);
+					</OnLoad>
+					<OnClick>
+						FelwoodGatherMap_ToggleMapConfigWindow();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				FelwoodGatherMap_Options_OnLoad();
+			</OnLoad>
+			<OnHide>
+				FelwoodGatherMap_Options_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<GameTooltip name="FWG_Tooltip" frameStrata="TOOLTIP" hidden="true" parent="FWG_Frame" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

@@ -1,0 +1,1276 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\UI.xsd">
+        
+    <Script file="GroupOptions.lua"/>
+
+	<Frame name="OneRaid_GroupOptions_ListItem_Template" virtual="true">
+		<Size>
+			<AbsDimension x="115" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Text" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parent_Delete">
+				<Size>
+					<AbsDimension x="28" y="28"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension  x="0" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						OneRaid.GroupOptions:DeletePlayer();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\CancelButton-Up"/>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<EditBox name="OneRaid_GroupOptions_EditBox_Template" letters="100" historyLines="0" autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="136" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="120" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	
+	<EditBox name="OneRaid_GroupOptions_SmallEditBox_Template" letters="4" historyLines="0" autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="46" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString inherits="GameFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="30" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+
+	<Frame name="OneRaid_GroupOptions_Frame" inherits="OneRaid_Dialog_Template">
+		<Size>
+			<AbsDimension x="550" y="550"/>
+		</Size>	
+		<Frames>
+			<Frame name="$parent_Group"			inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="200" y="90"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-7" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>OneRaid.GroupOptions:Groups_DropDown_OnLoad();</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="$parent_Restore" inherits="OneRaid_Button_Template">
+						<Size>
+							<AbsDimension x="60" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="-27"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>OneRaid.GroupOptions:LoadDefaultGroups();</OnClick>
+							<OnLoad>getglobal(this:GetName() .. "_Text"):SetText(ONERAID_RESTORE);</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parent_DeleteGroup" inherits="OneRaid_Button_Template">
+						<Size>
+							<AbsDimension x="90" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>OneRaid.GroupOptions:DeleteGroup();</OnClick>
+							<OnLoad>getglobal(this:GetName() .. "_Text"):SetText(ONERAID_DELETE_GROUP);</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parent_NewGroup" inherits="OneRaid_Button_Template">
+						<Size>
+							<AbsDimension x="90" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>OneRaid.GroupOptions:NewGroup();</OnClick>
+							<OnLoad>getglobal(this:GetName() .. "_Text"):SetText(ONERAID_NEW_GROUP);</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_GROUP);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_TitlePanel"	inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="200" y="145"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<EditBox name="$parent_Name" inherits="OneRaid_GroupOptions_EditBox_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="18" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnterPressed>OneRaid.GroupOptions:SetTitleOption("name");</OnEnterPressed>
+							<OnTabPressed>OneRaid.GroupOptions:SetTitleOption("name");</OnTabPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+						</Scripts>
+					</EditBox>
+					<CheckButton name="$parent_TitleSize" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Name" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_SHOW_GROUP_SIZE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetTitleOption("titleSize");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parent_TitleTextColor" inherits="OneRaid_ColorPicker_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_TitleSize" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText(ONERAID_TITLE_TEXT_COLOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:Color_OnClick("titleTextColor");</OnClick>
+						</Scripts>
+					</Button>
+					<CheckButton name="$parent_TitleTextUseClassColor" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_TitleTextColor" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_USE_CLASS_COLOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetTitleOption("titleTextUseClassColor");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parent_TitleBgColor" inherits="OneRaid_ColorPicker_Template">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent_TitleTextColor" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText(ONERAID_TITLE_BG_COLOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:Color_OnClick("titleBgColor");</OnClick>
+						</Scripts>
+					</Button>
+					<CheckButton name="$parent_TitleBgUseClassColor" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_TitleBgColor" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_USE_CLASS_COLOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetTitleOption("titleBgUseClassColor");</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_TITLE);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_UnitStyle"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="200" y="60"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_TitlePanel" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="$parent_DropDown" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-7" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>OneRaid.GroupOptions:UnitStyle_DropDown_OnLoad();</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="$parent_Edit" inherits="OneRaid_Button_Template">
+						<Size>
+							<AbsDimension x="60" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="-27"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								OneRaid.UnitStyle:EditStyle(getglobal(this:GetParent():GetName() .. "_DropDownText"):GetText());
+								this:SetBackdropBorderColor(1, 1, 1, 1);
+							</OnClick>
+							<OnLoad>getglobal(this:GetName() .. "_Text"):SetText(ONERAID_EDIT);</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_UNIT_STYLE);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Display"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="200" y="205"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_UnitStyle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Locked" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_LOCKED);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("locked");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Hide" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Locked" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HIDE_ALWAYS);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("hide");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_EnableGroupToggle" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Locked" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_ENABLE_GROUP_TOGGLE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("enableGroupToggle");</OnClick>
+						</Scripts>
+					</CheckButton>					
+					<CheckButton name="$parent_HideWhenEmpty" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_EnableGroupToggle" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HIDE_WHEN_EMPTY);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("hideWhenEmpty");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_HideWhenInRaid" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_HideWhenEmpty" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HIDE_WHEN_IN_RAID);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("hideWhenInRaid");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_HideWhenNotInRaid" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_HideWhenInRaid" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HIDE_WHEN_NOT_IN_RAID);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("hideWhenNotInRaid");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parent_BgColor" inherits="OneRaid_ColorPicker_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_HideWhenNotInRaid" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText(ONERAID_BACKGROUND_COLOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:Color_OnClick("bgColor", 1);</OnClick>
+						</Scripts>
+					</Button>
+					<CheckButton name="$parent_BgUseClassColor" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_BgColor" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_USE_CLASS_COLOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDisplayOption("bgUseClassColor");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<Slider name="$parent_Scale" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="170" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_BgUseClassColor" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetMinMaxValues(.5, 2);
+								getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_SCALE);
+								getglobal(this:GetName() .. "Low"):SetText(".5");
+								getglobal(this:GetName() .. "High"):SetText("2");
+								this:SetValueStep(.01);
+								this:SetValue(1);
+							</OnLoad>
+							<OnValueChanged>OneRaid.GroupOptions:SetDisplayOption("scale");</OnValueChanged>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_DISPLAY);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Groups"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="125"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Party" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_PARTY);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption("party");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group1" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Party" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP1);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(1);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group2" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Group1" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP2);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(2);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group3" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Group2" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP3);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(3);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group4" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Group3" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP4);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(4);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Guild" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Party" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GUILD);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption("guild");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group5" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Guild" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP5);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(5);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group6" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Group5" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP6);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(6);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group7" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Group6" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP7);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(7);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group8" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Group7" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP8);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetGroupsOption(8);</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_GROUPS);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Classes"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="125"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Groups" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Warrior" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_WARRIOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_WARRIOR);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Paladin" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Warrior" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_PALADIN);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_PALADIN);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Shaman" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Paladin" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_SHAMAN);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_SHAMAN);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Priest" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Shaman" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_PRIEST);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_PRIEST);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Druid" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Priest" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_DRUID);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_DRUID);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Mage" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Warrior" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_MAGE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_MAGE);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Warlock" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Mage" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_WARLOCK);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_WARLOCK);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Hunter" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Warlock" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HUNTER);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_HUNTER);</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Rogue" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Hunter" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_ROGUE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetClassesOption(ONERAID_ROGUE);</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_CLASSES);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Players"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="170"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Classes" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<EditBox name="$parent_Name" inherits="OneRaid_GroupOptions_EditBox_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTabPressed>OneRaid.GroupOptions:AddPlayer();</OnTabPressed>
+							<OnEnterPressed>OneRaid.GroupOptions:AddPlayer();</OnEnterPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+						</Scripts>
+					</EditBox>
+					<ScrollFrame name="$parent_List" inherits="FauxScrollFrameTemplate" enableMouse="true">
+						<Size>
+							<AbsDimension x="115" y="100"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-55"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(20, function() OneRaid.GroupOptions:Players_OnUpdate(); end);
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parent_List_Background">
+						<Size>
+							<AbsDimension x="141" y="110" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-49"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="16" />
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="16" />
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="5" right="5" top="5" bottom="5" />
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropColor(0, 0, 0, 0);
+								this:SetBackdropBorderColor(1, 1, 1, 1);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parent_Player1" inherits="OneRaid_GroupOptions_ListItem_Template" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="17" y="-57"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="$parent_Player2" inherits="OneRaid_GroupOptions_ListItem_Template" id="2">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Player1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parent_Player3" inherits="OneRaid_GroupOptions_ListItem_Template" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Player2" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parent_Player4" inherits="OneRaid_GroupOptions_ListItem_Template" id="4">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Player3" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parent_Player5" inherits="OneRaid_GroupOptions_ListItem_Template" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Player4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText("|cFFFFFFFF" .. ONERAID_PLAYERS);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Health"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="80"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Players" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Min" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_MINIMUM);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetHealthOption("min");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Max" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Min" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_MAXIMUM);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetHealthOption("max");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<EditBox name="$parent_MinNum" inherits="OneRaid_GroupOptions_SmallEditBox_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Min" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="80" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnterPressed>OneRaid.GroupOptions:SetHealthOption("min");</OnEnterPressed>
+							<OnTabPressed>OneRaid.GroupOptions:SetHealthOption("min");</OnTabPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parent_MaxNum" inherits="OneRaid_GroupOptions_SmallEditBox_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Max" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="80" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnterPressed>OneRaid.GroupOptions:SetHealthOption("max");</OnEnterPressed>
+							<OnTabPressed>OneRaid.GroupOptions:SetHealthOption("max");</OnTabPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText("|cFFFFFFFF" .. ONERAID_HEALTH);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Sort"			inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="105"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Groups" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Alpha" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_ALPHA);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("alpha");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Class" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Alpha" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_CLASS);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("class");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Health" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Class" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HEALTH);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("health");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Group" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Health" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GROUP);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("group");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Dead" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Class" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_DEAD);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("dead");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Offline" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Dead" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_OFFLINE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("offline");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Reverse" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Offline" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_REVERSE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetSortOption("reverse");</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText(ONERAID_SORTING);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Dead"			inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="55"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Sort" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Hide" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HIDE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDeadOption();</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Only" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Hide" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_ONLY);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetDeadOption();</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText("|cFFFFFFFF" .. ONERAID_DEAD);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Offline"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="55"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Dead" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Hide" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HIDE);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetOfflineOption();</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Only" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Hide" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_ONLY);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetOfflineOption();</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText("|cFFFFFFFF" .. ONERAID_OFFLINE);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Layout"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="120"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Offline" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_Horizontal" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_HORIZONTAL);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetLayoutOption("horizontal");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Backwards" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Horizontal" relativePoint="BOTTOM" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_BACKWARDS);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetLayoutOption("backwards");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Grid" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Backwards" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_GRID);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetLayoutOption("grid");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_Limit" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_Grid" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_LIMIT);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetLayoutOption("limit");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<EditBox name="$parent_GridNum" inherits="OneRaid_GroupOptions_SmallEditBox_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Grid" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="80" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnterPressed>OneRaid.GroupOptions:SetLayoutOption("grid");</OnEnterPressed>
+							<OnTabPressed>OneRaid.GroupOptions:SetLayoutOption("grid");</OnTabPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parent_LimitNum" inherits="OneRaid_GroupOptions_SmallEditBox_Template">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Limit" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="80" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnterPressed>OneRaid.GroupOptions:SetLayoutOption("limit");</OnEnterPressed>
+							<OnTabPressed>OneRaid.GroupOptions:SetLayoutOption("limit");</OnTabPressed>
+							<OnEscapePressed>this:ClearFocus();</OnEscapePressed>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText("|cFFFFFFFF" .. ONERAID_LAYOUT);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parent_Monitor"		inherits="OneRaid_Panel_Template">
+				<Size>
+					<AbsDimension x="160" y="95"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Layout" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<CheckButton name="$parent_BuffMonitor" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_SET_AS_BUFF_MONITOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetMonitorOption("buffMonitor");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_DebuffMonitor" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_BuffMonitor" relativePoint="BOTTOM" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_SET_AS_DEBUFF_MONITOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetMonitorOption("debuffMonitor");</OnClick>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parent_TankMonitor" inherits="OneRaid_CheckButton_Template">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent_DebuffMonitor" relativePoint="BOTTOM" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>getglobal(this:GetName() .. "Text"):SetText("|cFFFFFFFF" .. ONERAID_SET_AS_TANK_MONITOR);</OnLoad>
+							<OnClick>OneRaid.GroupOptions:SetMonitorOption("tankMonitor");</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Header_Text"):SetText("|cFFFFFFFF" .. ONERAID_MONITOR);
+						this:SetBackdropColor(0, 0, 0, .3);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+			<Button name="$parent_Close" inherits="OneRaid_Button_Template">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>OneRaid_GroupOptions_Frame:Hide();</OnClick>
+					<OnLoad>
+						getglobal(this:GetName() .. "_Text"):SetText(ONERAID_CLOSE);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>OneRaid.GroupOptions:OnLoad();</OnLoad>
+			<OnMouseDown>OneRaid.GroupOptions:OnMouseDown();</OnMouseDown>
+			<OnMouseUp>OneRaid.GroupOptions:OnMouseUp();</OnMouseUp>
+		</Scripts>
+	</Frame>
+	
+</Ui>

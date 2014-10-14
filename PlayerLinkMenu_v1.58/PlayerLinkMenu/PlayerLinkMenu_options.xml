@@ -1,0 +1,934 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="PlayerLinkMenu_options.lua"/>
+
+  <Button name="PlayerLinkMenuButtonTemplate" inherits="OptionsButtonTemplate" virtual="true">
+    <NormalText name="$parentText" inherits="GameFontNormalSmall"/>
+    <DisabledText inherits="GameFontDisableSmall"/>
+    <HighlightText inherits="GameFontHighlightSmall"/>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="left">
+          <Size>
+            <AbsDimension x="280" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="20" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        this.text = nil;
+        this.tooltip = nil;
+      </OnLoad>
+      <OnShow>
+        if (this.text) then
+          getglobal(this:GetName().."Label"):SetText(this.text);
+          getglobal(this:GetName().."Label"):Show();
+        else
+          getglobal(this:GetName().."Label"):Hide();
+        end
+      </OnShow>
+      <OnClick>
+        PlaySound("gsTitleOptionExit");
+      </OnClick>
+      <OnEnter>
+        if (this.tooltip) then
+          GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
+          GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+        end
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+
+  <Frame name="PlayerLinkMenuEditTemplate" toplevel="true" enableMouse="true" hidden="true" virtual="true">
+    <Size>
+      <AbsDimension x="260" y="16"/>
+    </Size>
+    <Frames>
+      <CheckButton name="$parentCheckbox" inherits="OptionsCheckButtonTemplate">
+        <Size>
+          <AbsDimension x="20" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0"/>
+        </HitRectInsets>
+        <Scripts>
+          <OnClick>
+            if (this:GetChecked()) then
+              PlaySound("igMainMenuOptionCheckBoxOff");
+            else
+              PlaySound("igMainMenuOptionCheckBoxOn");
+            end
+            PlayerLinkMenu_SetVisible();
+          </OnClick>
+        </Scripts>
+      </CheckButton>
+      <Button name="$parentButtonUp">
+        <Size>
+          <AbsDimension x="20" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentCheckbox" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            PlayerLinkMenu_MoveItem(true);
+            PlaySound("igChatScrollUp");
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+        <PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+        <DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+      </Button>
+      <Button name="$parentButtonDown">
+        <Size>
+          <AbsDimension x="20" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentButtonUp" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            PlayerLinkMenu_MoveItem(false);
+            PlaySound("igChatScrollDown");
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+        <PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+        <DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+      </Button>
+      <Button name="$parentButton">
+        <NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="left"/>
+        <DisabledText inherits="GameFontDisableSmall" justifyH="left"/>
+        <HighlightText inherits="GameFontHighlightSmall" justifyH="left"/>
+        <Size>
+          <AbsDimension x="235" y="16"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentButtonDown" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="2"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this.tooltip = nil;
+          </OnLoad>
+          <OnClick>
+            PlayerLinkMenu_LabelEdit(this);
+          </OnClick>
+          <OnEnter>
+            if (this.tooltip) then
+              GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
+              GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+            end
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+    </Frames>
+  </Frame>
+
+  <Frame name="PlayerLinkMenuDropDownTemplate" inherits="UIDropDownMenuTemplate" enableMouse="true" virtual="true">
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="left">
+          <Size>
+            <AbsDimension x="40" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+              <Offset>
+                <AbsDimension x="0" y="2"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        this.text = nil;
+      </OnLoad>
+      <OnShow>
+        if (this.text) then
+          getglobal(this:GetName().."Label"):SetText(this.text);
+          getglobal(this:GetName().."Label"):Show();
+        else
+          getglobal(this:GetName().."Label"):Hide();
+        end
+      </OnShow>
+    </Scripts>
+  </Frame>
+
+  <CheckButton name="PlayerLinkMenuCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="24" y="24"/>
+    </Size>
+    <HitRectInsets>
+      <AbsInset left="0" right="-180" top="0" bottom="0"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="left">
+          <Size>
+            <AbsDimension x="180" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="5" y="1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        this.tooltip = nil;
+        this.text = nil;
+      </OnLoad>
+      <OnShow>
+        if (this.text) then
+          getglobal(this:GetName().."Label"):SetText(this.text);
+        end
+      </OnShow>
+      <OnClick>
+        if (this:GetChecked()) then
+          PlaySound("igMainMenuOptionCheckBoxOff");
+        else
+          PlaySound("igMainMenuOptionCheckBoxOn");
+        end
+      </OnClick>
+      <OnEnter>
+        if (this.tooltip) then
+          GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
+          GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+        end
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </CheckButton>
+
+  <Button name="PlayerLinkMenuTextButtonTemplate" toplevel="true" enableMouse="true" virtual="true">
+    <NormalText name="$parentText" inherits="GameFontNormalSmall"/>
+    <DisabledText inherits="GameFontDisableSmall"/>
+    <HighlightText inherits="GameFontHighlightSmall"/>
+    <Size>
+      <AbsDimension x="92" y="16"/>
+    </Size>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentLabel" inherits="GameFontHighlightSmall" justifyH="center">
+          <Size>
+            <AbsDimension x="92" y="12"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOM" relativeTo="$parent" relativePoint="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        this.label = nil;
+        this.tooltip = nil;
+        this.doShow = nil;
+      </OnLoad>
+      <OnShow>
+        if (this.label) then
+          getglobal(this:GetName().."Label"):SetText(this.label);
+          getglobal(this:GetName().."Label"):Show();
+        else
+          getglobal(this:GetName().."Label"):Hide();
+        end
+        if (this.doShow == "TIMEOUT") then
+          local tmp = PLAYERLINKMENU_TIMEOUT.." second";
+          if (PLAYERLINKMENU_TIMEOUT > 1) then
+            tmp = tmp.."s";
+          end
+          this:SetText(tmp);
+        end
+      </OnShow>
+      <OnClick>
+      </OnClick>
+      <OnEnter>
+        if (this.tooltip) then
+          GameTooltip:SetOwner(this, "ANCHOR_TOPLEFT");
+          GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+        end
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+
+
+  <Frame name="PlayerLinkMenuOptions" toplevel="true" frameStrata="DIALOG" movable="false" enableMouse="true" hidden="true" parent="UIParent">
+    <Size>
+      <AbsDimension x="470" y="480"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="20"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="320" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="12"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString inherits="GameFontNormal" text="PLAYERLINKMENU_NAME">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="$parentHeader">
+              <Offset>
+                <AbsDimension x="0" y="-14"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString inherits="GameFontDisableSmall" text="PLAYERLINKMENU_LABEL_VERSION" justifyH="right">
+          <Anchors>
+            <Anchor point="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="-14" y="-16"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+
+    <Frames>
+--***************--
+--*** General ***--
+--***************--
+      <Frame name="$parentGeneral" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="448" y="66"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="12" y="-35"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <CheckButton name="$parentPosAtCursor" inherits="PlayerLinkMenuCheckButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_POSATCURSOR;
+              </OnLoad>
+            </Scripts>
+          </CheckButton>
+          <CheckButton name="$parentTooltip" inherits="PlayerLinkMenuCheckButtonTemplate">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentPosAtCursorLabel" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="10" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_TOOLTIP;
+              </OnLoad>
+            </Scripts>
+          </CheckButton>
+          <CheckButton name="$parentFrozen" inherits="PlayerLinkMenuCheckButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentPosAtCursor" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_FROZEN;
+              </OnLoad>
+            </Scripts>
+          </CheckButton>
+          <CheckButton name="$parentShowName" inherits="PlayerLinkMenuCheckButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentTooltip" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_SHOWNAME;
+              </OnLoad>
+            </Scripts>
+          </CheckButton>
+        </Frames>
+
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+            this:SetBackdropColor(0.15, 0.15, 0.15);
+            getglobal(this:GetName().."Title"):SetText("General settings");
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+--*************************--
+--*** Left mouse button ***--
+--*************************--
+      <Frame name="$parentLeftMB" inherits="OptionFrameBoxTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="224" y="148"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentGeneral" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Frame name="$parentNone" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="55" y="-12"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_NONE;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="$parentShift" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentNone" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_SHIFT;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="$parentCtrl" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentShift" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_CTRL;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="$parentAlt" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentCtrl" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_ALT;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+            this:SetBackdropColor(0.15, 0.15, 0.15);
+            getglobal(this:GetName().."Title"):SetText("Left mouse button");
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+--**************************--
+--*** Right mouse button ***--
+--**************************--
+      <Frame name="$parentRightMB" inherits="OptionFrameBoxTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="224" y="148"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parentLeftMB" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Frame name="$parentNone" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="55" y="-12"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_NONE;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="$parentShift" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentNone" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_SHIFT;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="$parentCtrl" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentShift" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_CTRL;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="$parentAlt" inherits="PlayerLinkMenuDropDownTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentCtrl" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.text = PLAYERLINKMENU_LABEL_ALT;
+              </OnLoad>
+            </Scripts>
+          </Frame>
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+            this:SetBackdropColor(0.15, 0.15, 0.15);
+            getglobal(this:GetName().."Title"):SetText("Right mouse button");
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+--**************************--
+--*** Menu configuration ***--
+--**************************--
+      <Frame name="$parentMenuConfiguration" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="338" y="153"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentLeftMB" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <EditBox name="$parentEditBox" historyLines="1" hidden="true">
+            <Size>
+              <AbsDimension x="235" y="16"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.button = nil;
+              </OnLoad>
+              <OnShow>
+                this:SetFocus();
+              </OnShow>
+              <OnHide>
+                PlayerLinkMenu_EditBoxHide();
+              </OnHide>
+              <OnEnterPressed>
+                PlayerLinkMenu_EditBoxSave();
+              </OnEnterPressed>
+              <OnEscapePressed>
+                PlayerLinkMenu_EditBoxHide();
+              </OnEscapePressed>
+            </Scripts>
+            <FontString inherits="ChatFontNormal"/>
+          </EditBox>
+          <Frame name="$parentEdit1" inherits="PlayerLinkMenuEditTemplate" id="1">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit2" inherits="PlayerLinkMenuEditTemplate" id="2">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit3" inherits="PlayerLinkMenuEditTemplate" id="3">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit2" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit4" inherits="PlayerLinkMenuEditTemplate" id="4">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit3" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit5" inherits="PlayerLinkMenuEditTemplate" id="5">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit4" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit6" inherits="PlayerLinkMenuEditTemplate" id="6">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit5" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit7" inherits="PlayerLinkMenuEditTemplate" id="7">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit6" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit8" inherits="PlayerLinkMenuEditTemplate" id="8">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit7" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit9" inherits="PlayerLinkMenuEditTemplate" id="9">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit8" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+          <Frame name="$parentEdit10" inherits="PlayerLinkMenuEditTemplate" id="10">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentEdit9" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Frame>
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+            this:SetBackdropColor(0.15, 0.15, 0.15);
+            getglobal(this:GetName().."Title"):SetText("Menu configuration");
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+--*******************--
+--*** Misc. stuff ***--
+--*******************--
+      <Frame name="$parentMiscStuff" inherits="OptionFrameBoxTemplate">
+        <Size>
+          <AbsDimension x="110" y="78"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentMenuConfiguration" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Frames>
+          <Button name="$parentReset" inherits="PlayerLinkMenuButtonTemplate" text="PLAYERLINKMENU_LABEL_RESETWINDOW">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnClick>
+                PlayerLinkMenu_ResetWindow();
+              </OnClick>
+            </Scripts>
+          </Button>
+
+          <EditBox name="$parentEditBox" historyLines="1" hidden="true" justifyH="right">
+            <Size>
+              <AbsDimension x="25" y="16"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Layers>
+              <Layer level="BACKGROUND">
+                <FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="left">
+                  <Size>
+                    <AbsDimension x="60" y="16"/>
+                  </Size>
+                  <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+                      <Offset>
+                        <AbsDimension x="2" y="0"/>
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>
+                this.button = nil;
+              </OnLoad>
+              <OnShow>
+                this:SetFocus();
+              </OnShow>
+              <OnHide>
+                PlayerLinkMenu_TimeoutEditBoxHide();
+              </OnHide>
+              <OnEnterPressed>
+                PlayerLinkMenu_TimeoutEditBoxSave();
+              </OnEnterPressed>
+              <OnEscapePressed>
+                PlayerLinkMenu_TimeoutEditBoxHide();
+              </OnEscapePressed>
+            </Scripts>
+            <FontString inherits="ChatFontNormal"/>
+          </EditBox>
+
+          <Button name="$parentTimeout" inherits="PlayerLinkMenuTextButtonTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentReset" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-18"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this.doShow = "TIMEOUT";
+                this.label = PLAYERLINKMENU_LABEL_TIMEOUT;
+                this.tooltip = PLAYERLINKMENU_TOOLTIP_TIMEOUT;
+              </OnLoad>
+              <OnClick>
+                PlayerLinkMenu_TimeoutEdit(this);
+              </OnClick>
+            </Scripts>
+          </Button>
+        </Frames>
+        <Scripts>
+          <OnLoad>
+            this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+            this:SetBackdropColor(0.15, 0.15, 0.15);
+            getglobal(this:GetName().."Title"):SetText("");
+          </OnLoad>
+        </Scripts>
+      </Frame>
+
+--***************--
+--*** Buttons ***--
+--***************--
+      <Button name="$parentCancel" inherits="OptionsButtonTemplate" text="CANCEL">
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-12" y="12"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            PlaySound("gsTitleOptionExit");
+            PlayerLinkMenuOptions:Hide();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentOkay" inherits="OptionsButtonTemplate" text="OKAY">
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="$parentCancel" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            PlaySound("gsTitleOptionOK");
+            PlayerLinkMenu_Save();
+            PlayerLinkMenuOptions:Hide();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentApply" inherits="OptionsButtonTemplate" text="PLAYERLINKMENU_APPLY">
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="$parentOkay" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            PlaySound("gsTitleOptionOK");
+            PlayerLinkMenuFrame:Hide();
+            PlayerLinkMenu_Save();
+            PlayerLinkMenu_OnShow();
+          </OnClick>
+        </Scripts>
+      </Button>
+      <Button name="$parentDefaults" inherits="OptionsButtonTemplate" text="DEFAULTS">
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="$parentApply" relativePoint="LEFT">
+            <Offset>
+              <AbsDimension x="-15" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            PlaySound("igMainMenuOptionCheckBoxOn");
+            PlayerLinkMenu_SetDefaults();
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnShow>
+        PlayerLinkMenu_OnShow();
+      </OnShow>
+      <OnHide>
+        PlayerLinkMenu_Cancel();
+      </OnHide>
+    </Scripts>
+  </Frame>
+</Ui>

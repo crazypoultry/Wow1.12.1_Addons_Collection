@@ -1,0 +1,744 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<!--
+	///////////////////////////////////////////////
+	//
+	// Thanks to Gypsymod for the great templates
+	//
+	///////////////////////////////////////////////
+	-->	
+	<!-- Buff display template to determine how the buff icon, name text and duration text, as well as the border are displayed. -->
+	<Button name="m_DeBuffButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="155" y="36"/>
+		</Size>	
+		<!-- Background to color according to helpful/harmful Interface\Tooltips\UI-Tooltip-Background -->
+		<Backdrop name="$parentBackdrop" bgFile="interface\Addons\m_buffbar\bar1" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="48"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>	
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Icon to the left of the buff button -->
+				<Texture name="$parentIcon" file="interface\icons\Spell_Shadow_CurseOfTounges" alphamode="BLEND">
+					<Size>
+						<AbsDimension x="30" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-28" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Buff Stacks -->
+				<FontString name="$parentStack" inherits="NumberFontNormal" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Red debuff border -->
+				<Texture name="$parentDeBuffBorder" file="Interface\Buttons\UI-Debuff-Border" hidden="true">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="-29" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+
+
+
+				<!-- Changed font size -->
+				<!-- Effect name text -->
+				<FontString name="$parentDeBuffName" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="12"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- Effect duration text -->
+				<FontString name="$parentDuration" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<!-- Changed font color -->
+					<Color r="1.0" g="0.82" b="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-8" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- buffType text -->
+				<FontString name="$parentbuffTypeText" setAllPoints="true" font="Fonts\FRIZQT__.TTF" outline="NORMAL">
+					<FontHeight>
+						<AbsValue val="10"/>
+					</FontHeight>
+					<!-- Changed font color -->
+					<Color r="0" g="1.0" b="0"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="12" y="7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<!-- Script events for each buff -->
+		<Scripts>
+			<OnEvent>
+			</OnEvent>
+			<OnUpdate>
+			</OnUpdate>
+			<OnMouseDown>
+			if (m_doptions.moveable == 0) then
+				if (IsShiftKeyDown() and arg1 == "LeftButton") then
+					m_DeBuffFrameCapsule:StartMoving();
+        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+	        if(m_options:IsVisible()) then
+	        	m_options:Hide();
+	        else
+	        	m_options:Show();
+	        end
+				end
+			else
+				if (arg1 == "LeftButton") then
+					m_DeBuffFrameCapsule:StartMoving();
+        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+	        if(m_options:IsVisible()) then
+	        	m_options:Hide();
+	        else
+	        	m_options:Show();
+	        end
+				end			
+			end
+			</OnMouseDown>
+			<OnMouseUp>
+				m_DeBuffFrameCapsule:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnEnter>
+				local tmpbuff = this:GetID();
+				if(debuff_list[tmpbuff]) then
+					GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+					GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<!-- Buff frame capsule for movement -->
+	<Button name="m_DeBuffFrameCapsule" frameStrata="LOW" movable="true" parent="UIParent" hidden="true">
+		<TitleRegion setAllPoints="true"/>
+		<Size>
+			<AbsDimension x="182" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="-260"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Scripts>	
+		</Scripts>
+		<Frames>
+			<!-- Frame to place buffs in, up to a max of 24, anchored to the bottom left of the Minimap	-->
+			<Frame name="m_DeBuffFrame" parent="UIParent" frameStrata="LOW" toplevel="true" movable="true">
+				<Size>
+					<AbsDimension x="50" y="50"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="m_DeBuffFrameCapsule" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="12" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<!-- Actual buttons to display each buff, anchored off eachother -->
+				<Frames>
+					<Button name="m_DeBuffButton1" inherits="m_DeBuffButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="17" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton1a" id="1">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton1Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					
+					<Button name="m_DeBuffButton2" inherits="m_DeBuffButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton2a" id="2">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton2Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_DeBuffButton3" inherits="m_DeBuffButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton3a" id="3">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton3Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_DeBuffButton4" inherits="m_DeBuffButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton3" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton4a" id="4">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton4Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_DeBuffButton5" inherits="m_DeBuffButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton5a" id="5">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton5Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_DeBuffButton6" inherits="m_DeBuffButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton5" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton6a" id="6">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton6Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+					<Button name="m_DeBuffButton7" inherits="m_DeBuffButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton6" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton7a" id="7">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton7Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					<Button name="m_DeBuffButton8" inherits="m_DeBuffButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="m_DeBuffButton7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="m_DeBuffButton8a" id="8">
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>				
+						<Anchors>
+							<Anchor point="CENTER" relativeto="m_DeBuffButton8Icon" relativepoint="CENTER">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+								<Scripts>
+								<OnEvent>
+								</OnEvent>
+								<OnUpdate>
+								</OnUpdate>
+								<OnMouseDown>
+								if (m_boptions.moveable == 0) then
+									if (IsShiftKeyDown() and arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end
+								else
+									if (arg1 == "LeftButton") then
+										m_DeBuffFrameCapsule:StartMoving();
+										GameTooltip:Hide();
+					        elseif (IsShiftKeyDown() and arg1 == "RightButton") then
+					        	if(m_options:IsVisible()) then
+					          	m_options:Hide();
+					          else
+					          	m_options:Show();
+					          end
+									end								
+								end
+								</OnMouseDown>
+								<OnMouseUp>
+									m_DeBuffFrameCapsule:StopMovingOrSizing();
+								</OnMouseUp>
+								<OnEnter>
+									local tmpbuff = this:GetID();
+									if(debuff_list[tmpbuff]) then
+										GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+										GameTooltip:SetPlayerBuff(debuff_list[tmpbuff]['mid']);
+									end
+								</OnEnter>
+								<OnLeave>
+									GameTooltip:Hide();
+								</OnLeave>
+							</Scripts>
+					</Button>					
+					
+					
+					
+				</Frames>
+				<!-- Scripts to run for the entire buff bar -->
+				<Scripts>
+					<OnUpdate>
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

@@ -1,0 +1,1479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/"
+    xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="RaidTargets.lua" />
+	
+  <Texture name="RT_ExitIcon" virtual="true">
+		<TexCoords left="0.25" right="0.25" top="0.25" bottom="0.25"/>
+	</Texture>
+
+	<Button name="RT_IconButtonTemplate">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+			</Layer>
+		</Layers>
+		<Scripts>
+		</Scripts>
+	</Button>			
+
+
+<Button name="RT_IconButtonLineTemplate" virtual="true">
+	<Size>
+		<AbsDimension x="120" y="14" />
+	</Size>
+  <Layers>
+   	<Layer level="OVERLAY">
+		  <FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAction" text="kill?sheep?">
+			 	<Size>
+		   		<AbsDimension x="85" y="14" />
+		  	</Size>
+		  	<Color r="1.0" g="1.0" b="0.0" a="1.0"/>
+			 	<Anchors>
+			 		<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+		  			<Offset>
+		  				<AbsDimension x="0" y="0" />
+		  			</Offset>
+		  		</Anchor>
+		  	</Anchors>
+		  </FontString>		
+    </Layer>
+  </Layers>
+  <HighlightTexture alphaMode="ADD"	file="Interface\QuestFrame\UI-QuestTitleHighlight">
+    <Size>
+    	<AbsDimension x="85" y="14" />
+    </Size>
+ 		<Anchors>
+    	<Anchor point="TOP">
+    		<Offset>
+      		<AbsDimension x="0" y="-1" />
+      	</Offset>
+      </Anchor>
+   	</Anchors>
+  </HighlightTexture>
+	<Scripts>
+		<OnLoad>
+			this:RegisterForClicks("RightButtonUp", "LeftButtonUp");
+		</OnLoad>
+	</Scripts>
+</Button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	<Frame name="RTFrame" parent="UIParent" enableMouse="true" movable="true" hidden="true">
+		<Size>
+			<AbsDimension x="240" y="260"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>       
+			<Layer level="Foreground">
+				<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentTitle">
+   			  <Size>
+ 		  	    <AbsDimension x="200" y="8" />
+  			 	</Size>
+   			 	<Anchors>
+      			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+      				<Offset>
+      					<AbsDimension x="3" y="-8" />
+      	 			</Offset>
+      	 		</Anchor>
+      	  </Anchors>
+      	</FontString>			
+      </Layer>
+		</Layers>
+		<Backdrop tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="96"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>  
+		<Frames>
+			<Button name="RT_CloseButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="exit" file="Interface\Glues\Login\Glues-CheckBox-Check">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>RTFrame:Hide();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("Hide RTa GUI!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>										
+				</Scripts>
+			</Button>
+			<Button name="RT_StartMarkButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="mark" file="Interface\Icons\Ability_Hunter_SniperShot">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>RT_SetTargets();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("Start/Stop distribution of RaidIcons.", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>										
+				</Scripts>
+			</Button>
+			<Button name="RT_FindTargetButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-60" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="GetTarget" file="Interface\Icons\Ability_Marksmanship">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>RT_FindTarget();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("target the unit with your assigned RaidIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>										
+				</Scripts>
+			</Button>
+			<Button name="RT_MarkFoeButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-80" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		  	<NormalTexture file="Interface\Addons\Raidtargets\foe" />
+				<Scripts>
+					<OnClick>RT_MarkFoeButtonClick();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("put RaidIcons on ENEMY units on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>										
+				</Scripts>
+			</Button>
+			<Button name="RT_MarkNeutralButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-100" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		  	<NormalTexture file="Interface\Addons\Raidtargets\no_neutral" />
+				<Scripts>
+					<OnClick>RT_MarkNeutralButtonClick();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("put RaidIcons on NEUTRAL units on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>					
+				</Scripts>
+			</Button>
+			<Button name="RT_MarkFriendButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-120" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		  	<NormalTexture file="Interface\Addons\Raidtargets\no_friend" />
+				<Scripts>
+					<OnClick>RT_MarkFriendlyButtonClick();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("put RaidIcons on FRIENDLY units on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>					
+				</Scripts>
+			</Button>
+
+			<Button name="RT_ToolTipsButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-140" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		  	<NormalTexture file="Interface\Addons\Raidtargets\tooltips" />
+				<Scripts>
+					<OnClick>RT_ToolTipsToggle();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("RTa ToolTips On/Off!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="RT_MinOrExpandButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-160" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		  	<NormalTexture file="Interface\Addons\Raidtargets\minimize" />
+				<Scripts>
+					<OnClick>RT_MinOrExpandButtonClick();</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("Minimize/Maximize RTa window!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					</Scripts>
+			</Button>
+
+
+			
+			<Button name="RT_Icon1" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon1">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "1");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>			
+			
+			<Button name="RT_IconDescription1" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(1);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>				
+			
+				
+			<Button name="RT_Icon2" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon2">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "2");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>		
+			
+			<Button name="RT_IconDescription2" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon2">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(2);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>					
+				
+			<Button name="RT_Icon3" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon3">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "3");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>	
+			
+			<Button name="RT_IconDescription3" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon3">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(3);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>			
+			
+			<Button name="RT_Icon4" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon4">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "4");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>	
+			
+			<Button name="RT_IconDescription4" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon4">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(4);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>			
+			
+			<Button name="RT_Icon5" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon5">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "5");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>	
+			
+			<Button name="RT_IconDescription5" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon5">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(5);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>				
+			
+			<Button name="RT_Icon6" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon6">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "6");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>	
+			
+			<Button name="RT_IconDescription6" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon6">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(6);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>				
+			
+			<Button name="RT_Icon7" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-120"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon7">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "7");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>			
+			
+			<Button name="RT_IconDescription7" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon7">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(7);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>				
+																				
+			<Button name="RT_Icon8" inherits="RT_IconButtonTemplate">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="0" y="-140"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentAssignedUnit" text="unassigned">
+			    	 	<Size>
+		         		<AbsDimension x="100" y="14" />
+		        	</Size>
+			       	<Anchors>
+					   		<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+		        			<Offset>
+		        				<AbsDimension x="12" y="0" />
+		        			</Offset>
+		      			</Anchor>
+		    			</Anchors>
+		  			</FontString>
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\RT_Icon8">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentCheck">
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+								<Offset>
+									<AbsDimension x="-16" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					  <Scripts>
+				  		<OnLoad>
+				  			this:SetChecked(true);
+				  		</OnLoad>
+							<OnEnter>
+								if (RT_ShowToolTips == 1) then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetText("distribute this Icon on/off!", 0.5, 1.5, 1.5,  0.75, 1);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>						
+				  	</Scripts>
+				  	<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+					  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+					  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+					  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+					  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+					</CheckButton>      			
+				</Frames>
+				<Scripts>
+					<OnClick>RT_AssignIcon(arg1, "8");</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to assign this Icon to be your TargetIcon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>											
+				</Scripts>
+			</Button>						
+			
+			<Button name="RT_IconDescription8" inherits="RT_IconButtonLineTemplate">
+				<Size>
+					<AbsDimension x="85" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFt" relativeTo="RT_Icon8">
+						<Offset>
+							<AbsDimension x="125" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>RT_IconActionInfo_OnClick(8);</OnClick>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("click to set the action description for units having this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+			</Button>				
+			
+			
+																	
+			<Button name="RT_myTarget">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_Icon1">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="GetTarget" file="Interface\Addons\RaidTargets\myTarget">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick></OnClick>
+				</Scripts>
+			</Button>			
+
+	
+								
+      <EditBox autoFocus="false" frameStrata="HIGH" historyLines="32" name="RT_TargetMasterEdit" inherits="InputBoxTemplate">
+      	<Size>
+      			<AbsDimension x="100" y="32" />
+      	</Size>
+      	<Anchors>
+      		<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+      			<Offset>
+        			<AbsDimension x="-10" y="-185" />
+      			</Offset>
+      		</Anchor>
+      	</Anchors>
+				<Layers>
+					<Layer level="Background">
+						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" name="$parentTitle" Text="TargetMaster">
+   		     		<Size>
+ 		   					<AbsDimension x="100" y="14" />
+  		 				</Size>
+  		 				<Color r="0.0" g="1.0" b="1.0" a="1.0"/>
+   			   		<Anchors>
+       					<Anchor point="TOPLEFT" relativeTo="$parent">
+      						<Offset>
+      							<AbsDimension x="12" y="-24" />
+      						</Offset>
+      					</Anchor>
+      				</Anchors>
+      			</FontString>
+					</Layer>
+				</Layers>
+       	<Scripts>
+       		<OnShow>
+       			this:ClearFocus();
+       		</OnShow>
+       		<OnEnterPressed> this:ClearFocus(); </OnEnterPressed>
+       		<OnEscapePressed> this:ClearFocus(); </OnEscapePressed>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("Enter TargetMaster Name. This Player will be able to make you auto-assist him!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>	       		
+     	  </Scripts>
+				<FontString bytes="256" inherits="ChatFontNormal" />
+			</EditBox>			
+			
+			<CheckButton name="TargetMasterCheck">
+				<Size>
+					<AbsDimension x="16" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="RT_TargetMasterEdit">
+						<Offset>
+							<AbsDimension x="-18" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			  <Scripts>
+					<OnLoad>
+						this:SetChecked(false);
+					</OnLoad>
+      		<OnClick>
+      			RT_TargetMaster_OnClick();
+      		</OnClick>					
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("Toggle TargetMaster function on/off. When checked, this Player will be able to make you auto-assist him!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>						
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up" />
+			  <PushedTexture file="Interface\Buttons\UI-CheckBox-Down" />
+			  <HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-CheckBox-Highlight" />
+			  <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
+			  <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
+			</CheckButton>   			
+			
+
+      <EditBox autoFocus="false" frameStrata="HIGH" historyLines="32" name="RT_IconActionInfoEdit" hidden="true" inherits="InputBoxTemplate">
+      	<Size>
+      			<AbsDimension x="90" y="32" />
+      	</Size>
+      	<Anchors>
+      		<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+      			<Offset>
+        			<AbsDimension x="113" y="-25" />
+      			</Offset>
+      		</Anchor>
+      	</Anchors>
+       	<Scripts>
+       		<OnShow>
+       			this:ClearFocus();
+       		</OnShow>
+       		<OnEnterPressed> 
+       			this:ClearFocus(); 
+       			this:Hide();
+       			RT_IconActionInfo_OnEnter(RT_CurrentActionEdit);
+       		</OnEnterPressed>
+       		<OnEscapePressed> 
+       			this:ClearFocus(); 
+       			this:Hide(); 
+       		</OnEscapePressed>
+       		<OnEditFocusLost>
+       			this:Hide(); 
+       		</OnEditFocusLost>
+					<OnEnter>
+						if (RT_ShowToolTips == 1) then
+							GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+							GameTooltip:SetText("Enter Info about what action Raiders should associate with this icon!", 0.5, 1.5, 1.5,  0.75, 1);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>	       		
+     	  </Scripts>
+				<FontString bytes="256" inherits="ChatFontNormal" />
+			</EditBox>		
+
+			
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("RightButton");
+				this:RegisterForDrag("LeftButton");
+				RT_Init();
+			</OnLoad>
+			<OnEvent>
+				RT_OnEvent(event);
+			</OnEvent>
+			<OnDragStart>
+				this:StartMoving();
+			 	this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+			 	this:StopMovingOrSizing();
+			 	this.isMoving = false;
+			</OnDragStop>
+			<OnShow></OnShow>
+			<OnHide></OnHide>
+		</Scripts>	
+	</Frame>
+
+	
+</Ui>		
+

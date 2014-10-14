@@ -1,0 +1,86 @@
+WARRIORALERT_VERSION = "0.9.2";
+WARRIORALERT_WELCOME = "BAW's WarriorAlert " .. WARRIORALERT_VERSION .. " loaded.";
+WARRIORALERT_WELCOME_NO_WARRIOR = "BAW's WarriorAlert " .. WARRIORALERT_VERSION .. " not loaded. You're not a warrior";
+WARRIORALERT_LOOKUP_ACTIONS = "WarriorAlert: looking up spells...";
+
+WARRIORALERT_EXECUTE = "|cFFFF0000EXECUTE|r NOW!";
+WARRIORALERT_EXECUTE_MSG = "Your Execute hits";
+WARRIORALERT_EXECUTE_SPELLNAME = "Execute";
+
+WARRIORALERT_MORTALSTRIKE = "|cFFFF0000MORTAL STRIKE|r NOW!";
+WARRIORALERT_MORTALSTRIKE_MSG = "Your Mortal Strike hits";
+WARRIORALERT_MORTALSTRIKE_SPELLNAME = "Mortal Strike";
+
+WARRIORALERT_BLOODTHIRST = "|cFFFF0000BLOODTHIRST|r NOW!";
+WARRIORALERT_BLOODTHIRST_SPELLNAME = "Bloodthirst";
+
+WARRIORALERT_OVERPOWER = "|cFFFF0000OVERPOWER|r NOW!";
+WARRIORALERT_OVERPOWER_MSG = {	"You attack.(.+) dodges.",
+								"Your (.+) was dodged by (.+)."
+	};
+WARRIORALERT_OVERPOWER_SPELLNAME = "Overpower";
+
+WARRIORALERT_REVENGE = "|cFFFF0000REVENGE|r NOW!";
+WARRIORALERT_REVENGE_MSG = {	"(.+) attacks. You dodge.",
+								"(.+) attacks. You parry.",
+								"(.+) attacks. You block."
+	};
+WARRIORALERT_REVENGE_SPELLNAME = "Revenge";
+
+WARRIORALERT_CONF_TITLE = "WarriorAlert Configuration";
+WARRIORALERT_CONF_CLOSE = "Close";
+WARRIORALERT_CONF_TITLE_OVERPOWER = "Overpower";
+WARRIORALERT_CONF_TITLE_MORTALSTRIKE = "Mortal Strike";
+WARRIORALERT_CONF_TITLE_EXECUTE = "Execute";
+WARRIORALERT_CONF_TITLE_REVENGE = "Revenge";
+WARRIORALERT_CONF_TITLE_BLOODTHIRST = "Bloodthirst";
+WARRIORALERT_CONF_CBSHOWMESSAGE = "Show message";
+WARRIORALERT_CONF_CBPLAYSOUND = "Play sound";
+WARRIORALERT_CONF_CBBATTLESTANCE = "Battle stance";
+WARRIORALERT_CONF_CBDEFENSIVESTANCE = "Defensive stance";
+WARRIORALERT_CONF_CBBERSERKERSTANCE = "Berserker stance";
+
+--------------------------------------------------------------------------------
+-- German ----------------------------------------------------------------------
+--------------------------------------------------------------------------------
+if (GetLocale() == "deDE") then
+	WARRIORALERT_WELCOME = "BAWs WarriorAlert " .. WARRIORALERT_VERSION .. " geladen.";
+	WARRIORALERT_WELCOME_NO_WARRIOR = "BAWs WarriorAlert " .. WARRIORALERT_VERSION .. " nicht geladen. Du bist kein Krieger";
+	WARRIORALERT_LOOKUP_ACTIONS = "WarriorAlert: suche Zauber...";
+	
+	WARRIORALERT_EXECUTE = "JETZT |cFFFF0000HINRICHTEN|r!";
+	WARRIORALERT_EXECUTE_MSG = "Hinrichten von Euch trifft";
+	WARRIORALERT_EXECUTE_SPELLNAME = "Hinrichten";
+	
+	WARRIORALERT_MORTALSTRIKE = "JETZT |cFFFF0000T\195\182DLICHER STO\195\159|r!";
+	WARRIORALERT_MORTALSTRIKE_SPELLNAME = "T\195\182dlicher Sto\195\159";
+
+	WARRIORALERT_BLOODTHIRST = "JETZT |cFFFF0000BLUTDURST|r!";
+	WARRIORALERT_BLOODTHIRST_SPELLNAME = "Blutdurst";
+
+	WARRIORALERT_OVERPOWER = "JETZT |cFFFF0000\195\188BERW\195\164LTIGEN|r!";
+	WARRIORALERT_OVERPOWER_MSG = {	"Ihr greift an. (.+) weicht aus.",
+									"(.+) ist (.+) ausgewichen."
+		};
+	WARRIORALERT_OVERPOWER_SPELLNAME = "\195\156berw\195\164ltigen";
+
+	WARRIORALERT_REVENGE = "JETZT |cFFFF0000RACHE|r!";
+	WARRIORALERT_REVENGE_MSG = {	"(.+) greift an. Ihr weicht aus.",
+									"(.+) greift an. Ihr pariert.",
+									"(.+) greift an. Ihr blockt."
+		};
+	WARRIORALERT_REVENGE_SPELLNAME = "Rache";
+
+	WARRIORALERT_CONF_TITLE = "WarriorAlert-Konfiguration";
+	WARRIORALERT_CONF_CLOSE = "Schlie\195\159en";
+	WARRIORALERT_CONF_TITLE_OVERPOWER = "\195\156berw\195\164ltigen";
+	WARRIORALERT_CONF_TITLE_MORTALSTRIKE = "T\195\182dlicher Sto\195\159";
+	WARRIORALERT_CONF_TITLE_EXECUTE = "Hinrichten";
+	WARRIORALERT_CONF_TITLE_REVENGE = "Rache";
+	WARRIORALERT_CONF_TITLE_BLOODTHIRST = "Blutdurst";
+	WARRIORALERT_CONF_CBSHOWMESSAGE = "Nachricht anzeigen";
+	WARRIORALERT_CONF_CBPLAYSOUND = "Sound spielen";
+	WARRIORALERT_CONF_CBBATTLESTANCE = "Kampfhaltung";
+	WARRIORALERT_CONF_CBDEFENSIVESTANCE = "Verteidigungshaltung";
+	WARRIORALERT_CONF_CBBERSERKERSTANCE = "Berserkerhaltung";
+end

@@ -1,0 +1,1156 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="SSPVP.lua"/>
+	<Script file="SSPVP_Config.lua"/>
+	<Script file="SSPVP_UI.lua"/>
+
+	<Frame name="SSPVP">
+		<Scripts>
+			<OnLoad>
+				SSPVP_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				SSPVP_OnEvent( event );
+			</OnEvent>
+			<OnUpdate>
+				SSPVP_OnUpdate( arg1 );
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+<!--	<Button name="BattlefieldMinimapResizeBottomRight" hidden="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="2" y="-3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="0" g="1" b="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				BattlefieldMinimap:StartSizing("BOTTOMRIGHT");
+				BattlefieldMinimap.resizing = 1;
+			</OnMouseDown>
+			<OnMouseUp>
+				BattlefieldMinimap:StopMovingOrSizing();
+				BattlefieldMinimap.resizing = nil;
+			</OnMouseUp> 
+		</Scripts>
+	</Button>
+-->
+
+	<Frame name="SSPVPWorldFlag" frameStrata="HIGH" enableMouse="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="150" y="80" />
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="WorldStateAlwaysUpFrame">
+				<Offset>
+					<AbsDimension x="70" y="3" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" />
+		</Layers>
+		<Frames>
+			<Button name="$parentHorde">
+				<Size>
+					<AbsDimension x="150" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontNormal" nonspacewrap="false" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="150" y="25" />
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>
+						SSPVP_TargetHordeFlag();
+					</OnMouseDown>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentAlliance">
+				<Size>
+					<AbsDimension x="150" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent">
+						<Offset>
+						<AbsDimension x="0" y="-24" />
+							</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND"> 
+						<FontString name="$parentText" inherits="GameFontNormal" nonspacewrap="false" justifyH="LEFT">
+							<Size>
+								<AbsDimension x="150" y="25" />
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>
+						SSPVP_TargetAllianceFlag();
+					</OnMouseDown>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<GameTooltip name="SSPVPItem" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate"/>
+
+	<Frame name="SSConfigTemplate" virtual="true">
+		<Anchors>			
+			<Anchor point="TOPRIGHT" relativeTo="SSOptions" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-15" y="-23" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="400" y="357"/>
+		</Size>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="9"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="9"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="2" right="2" top="2" bottom="2"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor( 0.4, 0.4, 0.4 );
+				this:SetBackdropColor( 0.15, 0.15, 0.15 );
+			</OnLoad>
+		</Scripts>				
+	</Frame>
+	
+	<!-- CHECK BOX TEMPLATE -->
+	<CheckButton name="SSCheckBoxTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SSUI_Checkbox_OnClick();
+			</OnClick>
+			<OnEnter>
+				if( this.tooltipText ) then
+					GameTooltip:SetOwner( this, "ANCHOR_RIGHT" );
+					GameTooltip:SetText( this.tooltipText, nil, nil, nil, nil, 1 );
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	
+	<!-- COLOR PICKER TEMPLATE -->
+	<Button name="SSColorPickerTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="18" y="18"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBorder">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="7" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>							
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				SSUI_OpenColorPicker();
+			</OnClick>
+			<OnEnter>
+				if( this.tooltipText ) then
+					GameTooltip:SetOwner( this, "ANCHOR_RIGHT" );
+					GameTooltip:SetText( this.tooltipText, nil, nil, nil, nil, 1 );
+				end
+
+				getglobal( this:GetName().."Border" ):SetVertexColor( NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b );
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				getglobal( this:GetName().."Border" ):SetVertexColor( HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b );
+
+			</OnLeave>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+	</Button>
+	
+	<!-- SLIDER TEMPLATE -->
+	<Slider name="SSSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="140" y="16"/>
+		</Size>
+		<Scripts>
+			<OnValueChanged>
+				SSUI_Slider_OnValueChanged();
+			</OnValueChanged>
+			<OnEnter>
+				if( this.tooltipText ) then
+					GameTooltip:SetOwner( this, "ANCHOR_RIGHT" );
+					GameTooltip:SetText( this.tooltipText, nil, nil, nil, nil, 1 );
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Slider>
+
+	<!-- INPUT BOX TEMPLATE -->	
+	<EditBox name="SSInputTemplate" inherits="InputBoxTemplate" autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="40" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnTextChanged>
+				SSUI_Editbox_TextChange();
+			</OnTextChanged>
+			<OnEnter>
+				if( this.tooltipText ) then
+					GameTooltip:SetOwner( this, "ANCHOR_RIGHT" );
+					GameTooltip:SetText( this.tooltipText, nil, nil, nil, nil, 1 );
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</EditBox>
+	
+	<!-- BUTTON AND TAB BUTTON TEMPLATE -->
+	<Button name="SSButtonTemplate" inherits="GameMenuButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SSUI_Button_OnClick();
+			</OnClick>
+		</Scripts>
+
+		<NormalText inherits="GameFontNormalSmall"/>
+		<HighlightText inherits="GameFontHighlightSmall"/>
+		<DisabledText inherits="GameFontDisableSmall"/>
+	</Button>
+
+	<Button name="SSTabButtonTemplate" inherits="SSButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="85" y="25"/>
+		</Size>
+	</Button>
+
+
+	<Frame name="SSOptions" toplevel="true" hidden="true" enableKeyboard="false" parent="UIParent">
+		<Size>
+			<AbsDimension x="525" y="400" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				SSTitleText:SetText( SS_PVP .. " " .. SSPVPVersion );
+			</OnLoad>
+			<OnShow>
+				SSOptions_OnShow();
+			</OnShow>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="SSFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="200" y="60" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="SSTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SSOptions">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<!-- CONFIG TABS -->
+			<!-- GENERAL TAB -->
+			<Button name="SSTabGeneral" inherits="SSTabButtonTemplate">
+				<Anchors>
+					
+					<Anchor point="LEFT" relativePoint="TOPLEFT" relativeTo="SSOptions">
+						<Offset>
+							<AbsDimension x="20" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- AUTO JOIN TAB -->
+			<Button name="SSTabAutoJoin" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabGeneral">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- AUTO LEAVE TAB -->
+			<Button name="SSTabAutoLeave" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabAutoJoin">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- AUTO ACCEPT INVITE TAB -->
+			<Button name="SSTabAcceptInvite" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabAutoLeave">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- MAP TAB -->
+			<Button name="SSTabMap" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabAcceptInvite">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- ALTERAC VALLEY TAB -->
+			<Button name="SSTabAV" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabMap">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- ARATHI BASIN TAB -->
+			<Button name="SSTabAB" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabAV">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<!-- SSOVERLAY TAB -->
+			<Button name="SSTabOverlay" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabAB">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<!-- SSInvite TAB -->
+			<Button name="SSTabInvite" inherits="SSTabButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="SSTabOverlay">
+						<Offset>
+							<AbsDimension x="0" y="-35" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+
+			<!-- CLOSE -->
+			<Button name="SSTabClose" inherits="SSTabButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="SSOptions">
+						<Offset>
+							<AbsDimension x="20" y="20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- CONFIG FRAMES -->
+			<!-- OVERLAY -->
+			<Frame name="SSOverlayConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<CheckButton name="SSEnableOverlay" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSOverlayConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSOverlayAV" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSEnableOverlay" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSOverlayAB" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSOverlayAV" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSOverlayQueues" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSOverlayAB" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSOverlayLocked" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSOverlayQueues" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<Button name="SSBackgroundColor" inherits="SSColorPickerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSOverlayLocked" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="6" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="SSBorderColor" inherits="SSColorPickerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSBackgroundColor" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Button name="SSTextColor" inherits="SSColorPickerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSBorderColor" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					
+					<Slider name="SSOverlayOpacity" inherits="SSSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSTextColor" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+
+					<Slider name="SSOverlayTextOpacity" inherits="SSSliderTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSOverlayOpacity" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</Frame>
+
+			<!-- BG MAP -->
+			<Frame name="SSMapConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<CheckButton name="SSShowTeammates" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSMapConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSLockMinimap" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSShowTeammates" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>									
+
+					<Slider name="SSMinimapOpacity" inherits="SSSliderTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSLockMinimap" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+
+					<Button name="SSFixMinimap" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="125" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSLockMinimap" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="SSShowMinimap" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="125" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSFixMinimap" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+				</Frames>
+			</Frame>
+			
+			<!-- ARATHI BASIN TIMER -->
+			<Frame name="SSABConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<CheckButton name="SSEnableAB" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSABConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<EditBox name="SSABInterval" inherits="SSInputTemplate">
+						<Size>
+							<AbsDimension x="40" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSEnableAB" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="10" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+
+
+					<CheckButton name="SSABAlliance" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSABInterval" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+
+
+					<CheckButton name="SSABHorde" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSABAlliance" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>									
+				</Frames>
+			</Frame>
+
+			<!-- ALTERAC VALLEY TIMER -->
+			<Frame name="SSAVConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<CheckButton name="SSEnableAV" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSAVConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<EditBox name="SSAVInterval" inherits="SSInputTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSEnableAV" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="10" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+
+					<CheckButton name="SSAVAllianceTimers" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSAVInterval" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+
+					<CheckButton name="SSAVHordeTimers" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSAVAllianceTimers" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+				</Frames>
+			</Frame>
+			
+			<!-- AUTO ACCEPT INVITE CONFIG -->
+			<Frame name="SSAcceptInviteConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<Frame name="SSPlayerNames" inherits="UIDropDownMenuTemplate">
+						<Size>
+							<AbsDimension x="100" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSAcceptInviteConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SSUI_PlayerNames_OnLoad();
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<Button name="SSPlayerAdd" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="30" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSPlayerNames" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="55" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="SSPlayerEdit" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="30" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSPlayerAdd" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="SSPlayerDelete" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="40" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSPlayerEdit" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<CheckButton name="SSAcceptFriends" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSPlayerNames" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSAcceptBattleground" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSAcceptFriends" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+				</Frames>
+			</Frame>
+			
+			<!-- AUTO LEAVE CONFIG -->
+			<Frame name="SSAutoLeaveConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<CheckButton name="SSEnableAutoLeave" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSAutoLeaveConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<CheckButton name="SSLeaveGroup" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSEnableAutoLeave" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+					<EditBox name="SSAutoLeave" inherits="SSInputTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSLeaveGroup" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="10" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>				
+				</Frames>
+			</Frame>
+			
+			<!-- AUTO JOIN CONFIG -->
+			<Frame name="SSAutoJoinConfig" inherits="SSConfigTemplate" hidden="true">
+				<Frames>
+					<CheckButton name="SSEnableAutoJoin" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSAutoJoinConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<EditBox name="SSAutoJoin" inherits="SSInputTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSEnableAutoJoin" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="10" y="-30" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+
+
+					<CheckButton name="SSJoinInBG" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSAutoJoin" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="SSJoinInInstance" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSJoinInBG" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="SSJoinAFK" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSJoinInInstance" relativePoint="left">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="SSJoinGathering" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSJoinAFK" relativePoint="left">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="SSJoinWindowHidden" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSJoinGathering" relativePoint="left">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+				</Frames>
+			</Frame>
+			
+			<!-- GENERAL CONFIG -->
+			<Frame name="SSGeneralConfig" inherits="SSConfigTemplate">
+				<Frames>
+					<CheckButton name="SSEnabled" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSGeneralConfig" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>	
+
+					<Frame name="SSChannelNames" inherits="UIDropDownMenuTemplate">
+						<Size>
+							<AbsDimension x="100" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSEnabled" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								SSUI_ChannelNames_OnLoad();
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<Button name="SSChannelAdd" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="30" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSChannelNames" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="55" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="SSChannelEdit" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="30" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSChannelAdd" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="SSChannelDelete" inherits="SSButtonTemplate" >
+						<Size>
+							<AbsDimension x="40" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSChannelEdit" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="SSChannelNamesText" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+											<Offset>
+												<AbsDimension x="3" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Button>
+					
+					<!-- I'll fix this in 1.7 -->
+					<EditBox name="SSSoundFile" inherits="InputBoxTemplate" autoFocus="false">
+						<Size>
+							<AbsDimension x="100" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSChannelNames" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="25" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnTextChanged>
+								SSUI_Editbox_TextChange();
+							</OnTextChanged>
+							<OnEnter>
+								if( this.tooltipText ) then
+									GameTooltip:SetOwner( this, "ANCHOR_RIGHT" );
+									GameTooltip:SetText( this.tooltipText, nil, nil, nil, nil, 1 );
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</EditBox>
+
+					<Button name="SSSoundPlay" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="30" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSSoundFile" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="4" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+
+					<Button name="SSSoundStop" inherits="SSButtonTemplate">
+						<Size>
+							<AbsDimension x="30" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SSSoundPlay" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="SSSoundFileText" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent">
+											<Offset>
+												<AbsDimension x="3" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Button>
+					
+					<CheckButton name="SSSkipGossip" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSSoundFile" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="SSToggleMinimap" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSSkipGossip" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="SSAutoRelease" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSToggleMinimap" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="SSFlagUI" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSAutoRelease" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="SSKillingBlow" inherits="SSCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSFlagUI" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<Button name="SSKillingBlowColor" inherits="SSColorPickerTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="SSKillingBlow" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="6" y="-35" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>			
+		</Frames>
+	</Frame>
+
+</Ui>

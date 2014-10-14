@@ -1,0 +1,1403 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+    <Script file="localization.lua"/>
+    <Script file="ActionBarOrganizer.lua"/>
+        <CheckButton name="ABOButtonTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+                <Scripts>
+                    <OnClick>
+                            PickupAction(ABO_GetId(this));
+                            ABO_Update(this);
+                    </OnClick>
+                    <OnDragStart>
+                            if (HasAction(ABO_GetId(this))) then
+                                PickupAction(ABO_GetId(this));
+                            end
+                            ABO_Update(this);
+                    </OnDragStart>
+                    <OnReceiveDrag>
+                            PlaceAction(ABO_GetId(this));
+                            ABO_Update(this);
+                    </OnReceiveDrag>
+                    <OnEnter>
+                            ABO_SetTooltip(this);
+                    </OnEnter>
+                    <OnLeave>
+                            this.updateTooltip = nil;
+                            GameTooltip:Hide();
+                    </OnLeave>
+                    <OnLoad>
+                        this:RegisterForDrag("LeftButton", "RightButton");
+                    </OnLoad>
+                </Scripts>
+                <Layers>
+                </Layers>
+	</CheckButton>
+
+	<Button name="ABOTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				ABOTab_OnClick();
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="ABORowTemplate" virtual="true"> <!-- inherits="UIPanelButtonTemplate"-->
+                <Size>
+                        <AbsDimension x="56" y="20"/>
+                </Size>
+		<Scripts>
+			<OnClick>
+				ABORow_OnClick();
+			</OnClick>
+		</Scripts>
+		<NormalText name="$parentText" inherits="GameFontNormal"/>
+		<DisabledText inherits="GameFontDisable"/>
+		<HighlightText inherits="GameFontHighlight"/>
+		<NormalTexture inherits="UIPanelButtonUpTexture"/>
+		<PushedTexture inherits="UIPanelButtonDownTexture"/>
+		<DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+		<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	</Button>
+        <Frame name="ABOFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+        <Size>
+                <AbsDimension x="640" y="447"/>
+        </Size>
+
+        <Anchors>
+                <Anchor point="TOPLEFT">
+                        <Offset>
+                                <AbsDimension x="0" y="-104"/>
+                        </Offset>
+                </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+                <BackgroundInsets>
+                        <AbsInset left="11" right="12" top="12" bottom="11"/>
+                </BackgroundInsets>
+                <TileSize>
+                        <AbsValue val="32"/>
+                </TileSize>
+                <EdgeSize>
+                        <AbsValue val="32"/>
+                </EdgeSize>
+        </Backdrop>
+        <Layers>
+                <Layer level="ARTWORK">
+                        <Texture name="ABOFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+                                <Size>
+                                        <AbsDimension x="325" y="64"/>
+                                </Size>
+                                <Anchors>
+                                        <Anchor point="TOP">
+                                                <Offset>
+                                                        <AbsDimension x="0" y="12"/>
+                                                </Offset>
+                                        </Anchor>
+                                </Anchors>
+                        </Texture>
+                        <FontString inherits="GameFontNormal" text="ABOFRAMETITLE">
+                                <Anchors>
+                                        <Anchor point="TOP" relativeTo="ABOFrameHeader">
+                                                <Offset>
+                                                        <AbsDimension x="0" y="-14"/>
+                                                </Offset>
+                                        </Anchor>
+                                </Anchors>
+                        </FontString>
+                </Layer>
+        </Layers>
+		<Frames>
+			<Button name="ABOFrameTab1" inherits="ABOTabTemplate" id="1" text="NORMALBARS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="15" y="11"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="ABOFrameTab2" inherits="ABOTabTemplate" id="2" text="EXTRABARS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ABOFrameTab1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+                        <Frame name="$parentNormalBars">
+				<Size>
+                                        <AbsDimension x="640" y="447"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+                                <Frames>
+                                        <Button name="ABORow1" inherits="ABORowTemplate" text="ABOROW1" id="1">
+                                                <Anchors>
+                                                        <Anchor point="TOPLEFT">
+                                                                <Offset>
+                                                                        <AbsDimension x="16" y="-55"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton101" inherits="ABOButtonTemplate" id="101">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow1" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton102" inherits="ABOButtonTemplate" id="102">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton101" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton103" inherits="ABOButtonTemplate" id="103">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton102" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton104" inherits="ABOButtonTemplate" id="104">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton103" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton105" inherits="ABOButtonTemplate" id="105">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton104" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton106" inherits="ABOButtonTemplate" id="106">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton105" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton107" inherits="ABOButtonTemplate" id="107">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton106" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton108" inherits="ABOButtonTemplate" id="108">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton107" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton109" inherits="ABOButtonTemplate" id="109">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton108" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton110" inherits="ABOButtonTemplate" id="110">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton109" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton111" inherits="ABOButtonTemplate" id="111">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton110" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton112" inherits="ABOButtonTemplate" id="112">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton111" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow2" inherits="ABORowTemplate" text="ABOROW2" id="2">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow1" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton201" inherits="ABOButtonTemplate" id="201">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow2" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton202" inherits="ABOButtonTemplate" id="202">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton201" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton203" inherits="ABOButtonTemplate" id="203">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton202" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton204" inherits="ABOButtonTemplate" id="204">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton203" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton205" inherits="ABOButtonTemplate" id="205">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton204" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton206" inherits="ABOButtonTemplate" id="206">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton205" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton207" inherits="ABOButtonTemplate" id="207">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton206" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton208" inherits="ABOButtonTemplate" id="208">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton207" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton209" inherits="ABOButtonTemplate" id="209">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton208" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton210" inherits="ABOButtonTemplate" id="210">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton209" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton211" inherits="ABOButtonTemplate" id="211">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton210" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton212" inherits="ABOButtonTemplate" id="212">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton211" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow3" inherits="ABORowTemplate" text="ABOROW3" id="3">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow2" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton301" inherits="ABOButtonTemplate" id="301">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow3" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton302" inherits="ABOButtonTemplate" id="302">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton301" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton303" inherits="ABOButtonTemplate" id="303">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton302" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton304" inherits="ABOButtonTemplate" id="304">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton303" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton305" inherits="ABOButtonTemplate" id="305">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton304" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton306" inherits="ABOButtonTemplate" id="306">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton305" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton307" inherits="ABOButtonTemplate" id="307">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton306" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton308" inherits="ABOButtonTemplate" id="308">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton307" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton309" inherits="ABOButtonTemplate" id="309">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton308" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton310" inherits="ABOButtonTemplate" id="310">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton309" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton311" inherits="ABOButtonTemplate" id="311">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton310" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton312" inherits="ABOButtonTemplate" id="312">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton311" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow4" inherits="ABORowTemplate" text="ABOROW4" id="4">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow3" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton401" inherits="ABOButtonTemplate" id="401">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow4" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton402" inherits="ABOButtonTemplate" id="402">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton401" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton403" inherits="ABOButtonTemplate" id="403">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton402" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton404" inherits="ABOButtonTemplate" id="404">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton403" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton405" inherits="ABOButtonTemplate" id="405">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton404" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton406" inherits="ABOButtonTemplate" id="406">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton405" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton407" inherits="ABOButtonTemplate" id="407">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton406" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton408" inherits="ABOButtonTemplate" id="408">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton407" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton409" inherits="ABOButtonTemplate" id="409">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton408" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton410" inherits="ABOButtonTemplate" id="410">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton409" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton411" inherits="ABOButtonTemplate" id="411">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton410" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton412" inherits="ABOButtonTemplate" id="412">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton411" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow5" inherits="ABORowTemplate" text="ABOROW5" id="5">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow4" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton501" inherits="ABOButtonTemplate" id="501">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow5" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton502" inherits="ABOButtonTemplate" id="502">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton501" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton503" inherits="ABOButtonTemplate" id="503">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton502" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton504" inherits="ABOButtonTemplate" id="504">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton503" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton505" inherits="ABOButtonTemplate" id="505">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton504" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton506" inherits="ABOButtonTemplate" id="506">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton505" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton507" inherits="ABOButtonTemplate" id="507">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton506" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton508" inherits="ABOButtonTemplate" id="508">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton507" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton509" inherits="ABOButtonTemplate" id="509">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton508" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton510" inherits="ABOButtonTemplate" id="510">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton509" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton511" inherits="ABOButtonTemplate" id="511">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton510" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton512" inherits="ABOButtonTemplate" id="512">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton511" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow6" inherits="ABORowTemplate" text="ABOROW6" id="6">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow5" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton601" inherits="ABOButtonTemplate" id="601">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow6" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton602" inherits="ABOButtonTemplate" id="602">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton601" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton603" inherits="ABOButtonTemplate" id="603">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton602" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton604" inherits="ABOButtonTemplate" id="604">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton603" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton605" inherits="ABOButtonTemplate" id="605">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton604" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton606" inherits="ABOButtonTemplate" id="606">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton605" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton607" inherits="ABOButtonTemplate" id="607">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton606" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton608" inherits="ABOButtonTemplate" id="608">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton607" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton609" inherits="ABOButtonTemplate" id="609">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton608" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton610" inherits="ABOButtonTemplate" id="610">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton609" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton611" inherits="ABOButtonTemplate" id="611">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton610" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton612" inherits="ABOButtonTemplate" id="612">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton611" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                </Frames>
+                        </Frame>
+                        <Frame name="$parentSpecialBars" hidden="true">
+				<Size>
+                                        <AbsDimension x="640" y="447"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+                                <Frames>
+                                        <Button name="ABORow7" inherits="ABORowTemplate" text="ABOXROW1" id="7">
+                                                <Anchors>
+                                                        <Anchor point="TOPLEFT">
+                                                                <Offset>
+                                                                        <AbsDimension x="16" y="-55"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton701" inherits="ABOButtonTemplate" id="701">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow7" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton702" inherits="ABOButtonTemplate" id="702">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton701" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton703" inherits="ABOButtonTemplate" id="703">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton702" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton704" inherits="ABOButtonTemplate" id="704">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton703" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton705" inherits="ABOButtonTemplate" id="705">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton704" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton706" inherits="ABOButtonTemplate" id="706">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton705" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton707" inherits="ABOButtonTemplate" id="707">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton706" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton708" inherits="ABOButtonTemplate" id="708">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton707" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton709" inherits="ABOButtonTemplate" id="709">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton708" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton710" inherits="ABOButtonTemplate" id="710">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton709" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton711" inherits="ABOButtonTemplate" id="711">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton710" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton712" inherits="ABOButtonTemplate" id="712">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton711" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow8" inherits="ABORowTemplate" text="ABOXROW2" id="8">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow7" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton801" inherits="ABOButtonTemplate" id="801">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow8" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton802" inherits="ABOButtonTemplate" id="802">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton801" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton803" inherits="ABOButtonTemplate" id="803">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton802" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton804" inherits="ABOButtonTemplate" id="804">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton803" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton805" inherits="ABOButtonTemplate" id="805">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton804" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton806" inherits="ABOButtonTemplate" id="806">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton805" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton807" inherits="ABOButtonTemplate" id="807">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton806" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton808" inherits="ABOButtonTemplate" id="808">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton807" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton809" inherits="ABOButtonTemplate" id="809">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton808" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton810" inherits="ABOButtonTemplate" id="810">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton809" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton811" inherits="ABOButtonTemplate" id="811">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton810" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton812" inherits="ABOButtonTemplate" id="812">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton811" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow9" inherits="ABORowTemplate" text="ABOXROW3" id="9">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow8" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton901" inherits="ABOButtonTemplate" id="901">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow9" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton902" inherits="ABOButtonTemplate" id="902">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton901" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton903" inherits="ABOButtonTemplate" id="903">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton902" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton904" inherits="ABOButtonTemplate" id="904">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton903" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton905" inherits="ABOButtonTemplate" id="905">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton904" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton906" inherits="ABOButtonTemplate" id="906">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton905" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton907" inherits="ABOButtonTemplate" id="907">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton906" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton908" inherits="ABOButtonTemplate" id="908">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton907" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton909" inherits="ABOButtonTemplate" id="909">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton908" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton910" inherits="ABOButtonTemplate" id="910">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton909" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton911" inherits="ABOButtonTemplate" id="911">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton910" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton912" inherits="ABOButtonTemplate" id="912">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton911" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <Button name="ABORow10" inherits="ABORowTemplate" text="ABOXROW4" id="10">
+                                                <Anchors>
+                                                        <Anchor point="TOP" relativeTo="ABORow9" relativePoint="BOTTOM">
+                                                                <Offset>
+                                                                        <AbsDimension x="0" y="-26"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </Button>
+                                        <CheckButton name="ABOButton1001" inherits="ABOButtonTemplate" id="1001">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABORow10" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1002" inherits="ABOButtonTemplate" id="1002">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1001" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1003" inherits="ABOButtonTemplate" id="1003">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1002" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1004" inherits="ABOButtonTemplate" id="1004">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1003" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1005" inherits="ABOButtonTemplate" id="1005">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1004" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1006" inherits="ABOButtonTemplate" id="1006">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1005" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1007" inherits="ABOButtonTemplate" id="1007">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1006" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1008" inherits="ABOButtonTemplate" id="1008">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1007" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1009" inherits="ABOButtonTemplate" id="1009">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1008" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1010" inherits="ABOButtonTemplate" id="1010">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1009" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1011" inherits="ABOButtonTemplate" id="1011">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1010" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                        <CheckButton name="ABOButton1012" inherits="ABOButtonTemplate" id="1012">
+                                                <Anchors>
+                                                        <Anchor point="LEFT" relativeTo="ABOButton1011" relativePoint="RIGHT">
+                                                                <Offset>
+                                                                        <AbsDimension x="10" y="0"/>
+                                                                </Offset>
+                                                        </Anchor>
+                                                </Anchors>
+                                        </CheckButton>
+                                </Frames>
+                        </Frame>
+                        <Frame name="$parentStatus" hidden="true">
+				<Size>
+                                        <AbsDimension x="300" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="ABOFrame" relativePoint="BOTTOMLEFT">
+                                                <Offset>
+                                                        <AbsDimension x="64" y="30"/>
+                                                </Offset>
+                                        </Anchor>
+				</Anchors>
+                                <Layers>
+                                        <Layer>
+                                                <FontString name="$parentText" inherits="GameFontNormal" text="ABO_SELECTROW"/>
+                                        </Layer>
+                                </Layers>
+                        </Frame>
+                        <Button name="ABOCancleRow" inherits="UIPanelButtonTemplate" text="CANCLE" hidden="true">
+                                <Size>
+                                        <AbsDimension x="80" y="22"/>
+                                </Size>
+                                <Anchors>
+                                        <Anchor point="LEFT" relativeTo="ABOFrameStatus" relativePoint="RIGHT">
+                                                <Offset>
+                                                        <AbsDimension x="44" y="0"/>
+                                                </Offset>
+                                        </Anchor>
+                                </Anchors>
+                                <Scripts>
+                                        <OnClick>
+                                            ABORow_Cancle();
+                                        </OnClick>
+                                </Scripts>
+                        </Button>
+                        <Button name="ABOSwapRow" inherits="UIPanelButtonTemplate" text="SWAPAROW" hidden="false">
+                                <Size>
+                                        <AbsDimension x="80" y="22"/>
+                                </Size>
+                                <Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="ABOFrame" relativePoint="BOTTOMLEFT">
+                                                <Offset>
+                                                        <AbsDimension x="64" y="30"/>
+                                                </Offset>
+                                        </Anchor>
+                                </Anchors>
+                                <Scripts>
+                                        <OnClick>
+                                            ABORow_Swap();
+                                        </OnClick>
+                                </Scripts>
+                        </Button>
+                        <Button name="ABOCloseButton" inherits="UIPanelCloseButton">
+                                <Anchors>
+                                        <Anchor point="TOPRIGHT" relativeTo="ABOFrame" relativePoint="TOPRIGHT">
+                                                <Offset>
+                                                        <AbsDimension x="-6" y="-3"/>
+                                                </Offset>
+                                        </Anchor>
+                                </Anchors>
+                        </Button>
+                </Frames>
+                <Scripts>
+                        <OnLoad>
+                                ABO_OnLoad();
+                        </OnLoad>
+                        <OnEvent>
+                                ABO_OnEvent(event);
+                        </OnEvent>
+                        <OnUpdate>
+                                ABO_OnUpdate(arg1);
+                        </OnUpdate>
+                        <OnClose>
+                                ABORow_Cancle();
+                        </OnClose>
+                        <OnDragStart>
+                         this:StartMoving();
+                         this.isMoving = true;
+                        </OnDragStart>
+                        <OnDragStop>
+                         this:StopMovingOrSizing();
+                         this.isMoving = false;
+                        </OnDragStop>
+                </Scripts>
+        </Frame>
+</Ui>

@@ -1,0 +1,342 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="localization.lua"/>
+	<script file="Config.lua" />
+	<Script file="Library.lua"/>
+	<Script file="HateMe.lua"/>
+	<!-- Frame to handle all core events -->
+	<Frame name="HateMe">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("SPELLS_CHANGED");
+				this:RegisterEvent("PLAYER_ENTER_COMBAT");
+				this:RegisterEvent("PLAYER_LEAVE_COMBAT");
+				this:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+				this:RegisterEvent("PLAYER_TARGET_CHANGED");
+				this:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE");
+				this:RegisterEvent("CHAT_MSG_MONSTER_EMOTE");
+			</OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then
+					HateMe_Init();
+				elseif (event == "SPELLS_CHANGED") then
+					HateMe_Configure();
+				elseif (event == "PLAYER_ENTER_COMBAT") then
+					HateMe_EnterCombat();
+				elseif (event == "PLAYER_LEAVE_COMBAT") then
+					HateMe_LeaveCombat();
+				elseif (event == "UPDATE_BONUS_ACTIONBAR") then
+					HateMe_ShapeShift();
+				elseif (event == "CHAT_MSG_SPELL_SELF_DAMAGE") then
+					HateMe_SpellAffect(arg1);
+				elseif (event == "CHAT_MSG_MONSTER_EMOTE") then
+					HateMe_RunnerDetect(arg1, arg2);
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HateMeConfig" toplevel="true" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="295" y="330"/>
+		</Size>
+
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="290" y="64"/>
+					</Size>
+
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="HateMe Resurrection">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<CheckButton name="$parentCheckButtonRend" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="20" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(HateMe_SPELL_REND);
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_Rend("1");
+						else
+							HateMe_Change_Rend("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonTaunt" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonRend">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(HateMe_SPELL_TAUNT);
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_Taunt("1");
+						else
+							HateMe_Change_Taunt("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonSunder" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonTaunt">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(HateMe_SPELL_SUNDER_ARMOR.." >5");
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_Sunder("1");
+						else
+							HateMe_Change_Sunder("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonHSBetween" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonSunder">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(HateMe_SPELL_HEROIC_STRIKE.." between "..HateMe_SPELL_SUNDER_ARMOR);
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_HSBetween("1");
+						else
+							HateMe_Change_HSBetween("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonBattleShout" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonHSBetween">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Optimize "..HateMe_SPELL_BATTLE_SHOUT.." Threat");
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_BattleShout("1");
+						else
+							HateMe_Change_BattleShout("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonImmune" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonBattleShout">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Immune Check");
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_Immune("1");
+						else
+							HateMe_Change_Immune("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonTestMode" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonImmune">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Test Mode");
+					</OnLoad>
+
+					<OnClick>
+						if(this:GetChecked()) then
+							HateMe_Change_TestMode("1");
+						else
+							HateMe_Change_TestMode("0");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Button name="$parentButtonClear" inherits="OptionsButtonTemplate" text="Erase DB">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						 HateMe_Clear();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Slider name="$parentSliderExecute" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="230" y="18"/>
+				</Size>
+
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="0" y="50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(HateMe_SPELL_EXECUTE.." bonus rage");
+						getglobal(this:GetName().."High"):SetText("50");
+						getglobal(this:GetName().."Low"):SetText("0");
+						this:SetMinMaxValues(0,50);
+						this:SetValueStep(1);
+					</OnLoad>
+				
+					<OnValueChanged>
+						HateMe_Change_Execute(this:GetValue());
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			<Button name="$parentButtonToDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						 HateMe_Default_Config();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						HateMeConfig:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<GameTooltip name="HateMe_Tooltip" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<Onload>
+				this:SetOwner(this, "ANCHOR_NONE");
+			</Onload>
+		</Scripts>
+	</GameTooltip>
+</Ui>

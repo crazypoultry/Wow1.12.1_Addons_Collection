@@ -1,0 +1,513 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="GraphicViolence.lua"/>
+
+<!-- event frame -->
+	<Frame name="GraphicViolence_frame">
+		<Scripts>
+			<OnEvent>
+				GraphicViolence_OnEvent();
+			</OnEvent>
+			<OnLoad>
+				GraphicViolence_RegisterEvents();
+				GraphicViolence_RegisterSlashCommands();
+			</OnLoad>
+			<OnUpdate>
+				GraphicViolence_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+<!-- Main -->	
+	<Frame name="GraphicViolence" framestrata="BACKGROUND" hidden="false" resizable="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="250" y="157"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:SetMinResize(225,80);
+			</OnLoad>
+		</Scripts>
+		<Frames>
+<!-- TABS -->	
+			<Frame name="$parent_Tabs" parent="GraphicViolence">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"><Offset x="0" y="-21" /></Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_Texture" file="Interface\AddOns\GraphicViolence\images\bar" alphaMode="BLEND">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+
+	<!-- Title string -->	
+					<Layer level="ARTWORK">
+						<FontString name="$parent_Text" inherits="GameFontRed" text="Graphic Violence">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="4" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parent_Time" inherits="GameFontRed" text="">
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-38" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown> this:GetParent():StartMoving(); GraphicViolence_Moving=false;</OnMouseDown>
+					<OnMouseUp> this:GetParent():StopMovingOrSizing(); GraphicViolence_Moving=true; </OnMouseUp>
+					<OnDragStop> this:GetParent():StopMovingOrSizing(); GraphicViolence_Moving=true; </OnDragStop>
+				</Scripts>
+				<Frames>
+					<Button name="$parent_Close">
+						<NormalTexture file="Interface\Addons\GraphicViolence\images\close" />
+						<PushedTexture file="Interface\Addons\GraphicViolence\images\close_pushed" />
+						<HighlightTexture file="Interface\Addons\GraphicViolence\images\highlight" />
+						<Size>
+							<AbsDimension x="17" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-1" y="-2" />
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset x="-18" y="2" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								GraphicViolence:Hide();
+								GraphicViolence_Print("Graphic Violence mod hidden. Type /gvshow to show.");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_Minimize">
+						<NormalTexture file="Interface\Addons\GraphicViolence\images\minimize" />
+						<PushedTexture file="Interface\Addons\GraphicViolence\images\minimize_pushed" />
+						<HighlightTexture file="Interface\Addons\GraphicViolence\images\highlight" />
+						<Size>
+							<AbsDimension x="17" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset x="-19" y="-2" />
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset x="-36" y="2" />
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if GraphicViolence_Graph:IsVisible() then
+									GraphicViolence_Graph:Hide();
+									GraphicViolence_Timeline:Hide();
+									GraphicViolence_Select:Hide();
+								else
+									GraphicViolence_Graph:Show();
+									GraphicViolence_Timeline:Show();
+									GraphicViolence_Select:Show();
+								end
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+<!-- GRAPH -->			
+			<Frame name="$parent_Graph" enableMouse="true" framestrata="LOW">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="0" y="-21" />
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="0" y="28" />
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_Background" file="Interface\AddOns\GraphicViolence\images\graph_bg">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString name="$parent_YLabel" inherits="GameFontNormalSmall" text="">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+									<Offset x="3" y="0"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseWheel>
+						local scrolldiff = (GraphicViolence_StaticTop - GraphicViolence_StaticLow)/10;
+						if (arg1>0) then
+							GraphicViolence_StaticTop = math.floor(GraphicViolence_StaticTop - (scrolldiff));
+						else
+							GraphicViolence_StaticTop = math.floor(GraphicViolence_StaticTop + (scrolldiff));
+						end
+						
+						GraphicViolence_Graph_YLabel:SetText(GraphicViolence_StaticTop.."-")
+
+						GraphicViolence_PlotPoints();
+					</OnMouseWheel>
+					<OnEnter>GraphicViolence_Moving=false;</OnEnter>
+					<OnLeave>GraphicViolence_Moving=true;</OnLeave>
+					<OnMouseDown> GraphicViolence_dragRefX,GraphicViolence_dragRefY=GetCursorPosition(UIParent); GraphicViolence_dragging=true;</OnMouseDown>
+					<OnMouseUp>
+						GraphicViolence_dragging=false;
+						local x,y=GetCursorPosition(UIParent);
+						GraphicViolence_dragSaveX=GraphicViolence_dragSaveX+(x-GraphicViolence_dragRefX);
+						GraphicViolence_dragSaveY=GraphicViolence_dragSaveY+(y-GraphicViolence_dragRefY);
+						GraphicViolence_dragX=0;
+						GraphicViolence_dragY=0;
+						GraphicViolence_dragRefX=0;
+						GraphicViolence_dragRefY=0;
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+<!--TIMELINE-->			
+			<Frame name="$parent_Timeline" enableMouse="true" framestrata="LOW">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"><Offset x="0" y="28" /></Anchor>
+					<Anchor point="BOTTOMRIGHT"><Offset x="0" y="25" /></Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_Background" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="1" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseWheel>
+						local scrolldiff = (GraphicViolence_StaticTop - GraphicViolence_StaticLow)/10;
+						if (arg1>0) then
+							GraphicViolence_StaticTop = math.floor(GraphicViolence_StaticTop - (scrolldiff));
+						else
+							GraphicViolence_StaticTop = math.floor(GraphicViolence_StaticTop + (scrolldiff));
+						end
+						GraphicViolence_Graph_YLabel:SetText(GraphicViolence_StaticTop.."-")
+
+						GraphicViolence_PlotPoints();
+					</OnMouseWheel>
+					<OnEnter>GraphicViolence_Moving=false;</OnEnter>
+					<OnLeave>GraphicViolence_Moving=true;</OnLeave>
+					<OnMouseDown> GraphicViolence_dragRefX,GraphicViolence_dragRefY=GetCursorPosition(UIParent); GraphicViolence_dragging=true;</OnMouseDown>
+					<OnMouseUp>
+						GraphicViolence_dragging=false;
+						local x,y=GetCursorPosition(UIParent);
+						GraphicViolence_dragSaveX=GraphicViolence_dragSaveX+(x-GraphicViolence_dragRefX);
+						GraphicViolence_dragSaveY=GraphicViolence_dragSaveY+(y-GraphicViolence_dragRefY);
+						GraphicViolence_dragX=0;
+						GraphicViolence_dragY=0;
+						GraphicViolence_dragRefX=0;
+						GraphicViolence_dragRefY=0;
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+<!-- SELECT -->			
+			<Frame name="$parent_Select" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"><Offset x="0" y="25" /></Anchor>
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_texture" file="Interface\AddOns\GraphicViolence\images\bar" setAllPoints="true" alphaMode="BLEND">
+						</Texture>
+					</Layer>
+				</Layers>
+	<!-- Checkboxes -->
+		<!-- DD -->
+				<Frames>
+					<CheckButton name="$parent_DDCheck" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="15" y="15" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="3" y="-4"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetChecked(true);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					
+					<Frame name="$parent_DDlegend">
+						<Size>
+							<AbsDimension x="9" y="3"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_DDCheck" />
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parent_DDBackground" setAllPoints="true">
+									<Color r="0" g="0" b="1" a="1" />
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+		<!-- DT -->
+					<CheckButton name="$parent_DTCheck" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="15" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_DDlegend">
+								<Offset x="10" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetChecked(true);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parent_DTlegend">
+						<Size>
+							<AbsDimension x="9" y="3"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_DTCheck">
+								<!-- <Offset x="3" y="0"/> -->
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parent_DTBackground" setAllPoints="true">
+									<Color r="1" g="0" b="0" a="1" />
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+		<!-- H -->
+					<CheckButton name="$parent_HCheck" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="15" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_DTlegend">
+								<Offset x="10" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetChecked(true);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parent_Hlegend">
+						<Size>
+							<AbsDimension x="9" y="3"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_HCheck">
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parent_Background" setAllPoints="true">
+									<Color r="1" g="1" b="1" a="1" />
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+		<!-- HP -->
+					<CheckButton name="$parent_HPCheck" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="15" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Hlegend">
+								<Offset x="10" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetChecked(true);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parent_HPlegend">
+						<Size>
+							<AbsDimension x="9" y="3"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_HPCheck">
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parent_Background" setAllPoints="true">
+									<Color r="0" g="1" b="0" a="1" />
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+		<!-- D -->
+					<CheckButton name="$parent_DCheck" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="15" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_HPlegend">
+								<Offset x="10" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetChecked(true);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parent_Dlegend">
+						<Size>
+							<AbsDimension x="9" y="3"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_DCheck">
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parent_Background" setAllPoints="true">
+									<Color r="1" g="1" b="0" a="1" />
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+		<!-- O -->
+					<CheckButton name="$parent_OCheck" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="15" y="15"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent_Dlegend">
+								<Offset x="10" y="0"/>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this:SetChecked(true);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+					<Frame name="$parent_Olegend">
+						<Size>
+							<AbsDimension x="9" y="3"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_OCheck">
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parent_Background" setAllPoints="true">
+									<Color r="1" g="0.6" b="0" a="1" />
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+	<!-- Filter -->
+                	<EditBox name="$parent_Filter" inherits="InputBoxTemplate" AutoFocus="false">
+                        <Size>
+                          <AbsDimension x="40" y="5"/>
+                        </Size>
+                        <Anchors>
+                                <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parent_Olegend">
+                                        <Offset>
+                                                <AbsDimension x="20" y="-2"/>
+                                        </Offset>
+                                </Anchor>
+                        </Anchors>
+						<Scripts>
+							<OnChange>GraphicViolence_Filter=false;</OnChange>
+							<OnEnterPressed>this:ClearFocus(); GraphicViolence_Filter=true; GraphicViolence_PlotPoints();</OnEnterPressed>
+						</Scripts>
+                	</EditBox>
+
+	<!-- Drag -->
+					<Frame name="$parent_Drag">
+						<Scripts>
+							<OnMouseDown> GraphicViolence:StartSizing(); GraphicViolence_resizing=true;</OnMouseDown>
+							<OnMouseUp> GraphicViolence:StopMovingOrSizing(); GraphicViolence_resizing=false;</OnMouseUp>
+							<OnDragStop> GraphicViolence:StopMovingOrSizing(); GraphicViolence_resizing=false;</OnDragStop>
+						</Scripts>
+						<Size>
+							<AbsDimension x="16" y="16" />
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset x="-1" y="2"/>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parent_texture" file="Interface\AddOns\GraphicViolence\images\corner" alphaMode="BLEND">
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>		
+	</Frame>
+	
+<!-- TOOLTIP SUB -->			
+	<Frame name="GraphicViolence_Tip" enableMouse="false" framestrata="HIGH" hidden="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="300" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.7" />
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Title" inherits="GameTooltipHeaderText" text="" JustifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"></Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Text" inherits="GameFontNormalSmall" text="" JustifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_Title"></Anchor>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent_Title"></Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>GraphicViolence_MouseOnTooltip=true; GraphicViolence_Moving=false;</OnEnter>
+			<OnLeave> this:Hide(); GraphicViolence_MouseOnTooltip=false; GraphicViolence_Moving=true;</OnLeave>
+		</Scripts>
+	</Frame>
+</Ui>

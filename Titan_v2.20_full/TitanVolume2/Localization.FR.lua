@@ -1,0 +1,31 @@
+-- Version : French
+-- $LastChangedBy: Epsil $
+-- $Date: 2005-08-15 $
+
+function LocalizeFR()
+
+TITAN_VOLUME2_TOOLTIP = "Contr\195\180le du Volume";
+
+TITAN_VOLUME2_MASTER_TOOLTIP_VALUE = "Volume Principal : ";
+TITAN_VOLUME2_SOUND_TOOLTIP_VALUE = "Volume des Effets : ";
+TITAN_VOLUME2_AMBIENCE_TOOLTIP_VALUE = "Volume de l'Ambiance : ";
+TITAN_VOLUME2_MUSIC_TOOLTIP_VALUE = "Volume de la Musique : ";
+
+
+TITAN_VOLUME2_TOOLTIP_HINT1 = "Conseil : clic-gauche pour ajuster le"
+TITAN_VOLUME2_TOOLTIP_HINT2 = "volume sonore.";
+
+TITAN_VOLUME2_CONTROL_TOOLTIP = "Volume: ";
+TITAN_VOLUME2_CONTROL_TITLE = "Volume";
+TITAN_VOLUME2_MASTER_CONTROL_TITLE = "Principal";
+TITAN_VOLUME2_SOUND_CONTROL_TITLE = "Effets";
+TITAN_VOLUME2_AMBIENCE_CONTROL_TITLE = "Ambiance";
+TITAN_VOLUME2_MUSIC_CONTROL_TITLE = "Musique";
+
+TITAN_VOLUME2_CONTROL_HIGH = "Fort";
+TITAN_VOLUME2_CONTROL_LOW = "Faible";
+TITAN_VOLUME2_MENU_TEXT = "Ajuster le Volume";
+
+end
+
+

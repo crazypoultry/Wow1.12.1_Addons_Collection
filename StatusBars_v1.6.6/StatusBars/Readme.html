@@ -1,0 +1,403 @@
+<html>
+<head>
+	<title>StatusBars 1.6.6</title>
+</head>
+<body>
+
+<h1>StatusBars 1.6.6</h1>
+<a href="mailto:wesslen@users.sourceforge.net">Daniel Wesslén</a>
+
+<h2>About</h2>
+
+<p>StatusBars adds bars to monitor health, mana, rage, energy,
+combo points, debuffs and target/pet stats during combat (and whenever they are not fully charged / depleted).
+
+<h2>Features</h2>
+<ul>
+	<li>Health, mana, combo points, debuffs, etc visible at a glance.</li>
+	<li>Bars fade in and out when needed, as defined by the user.</li>
+	<li>Customizable bar and text colors, dependant on the current value.</li>
+	<li>Customizable text - or none, whichever you prefer.</li>
+	<li>Bars are draggable, but not by accident.</li>
+	<li>Bars flash to draw attention to low stats.</li>
+	<li>Can display mana in shifted form if DruidBar is also installed.</li>
+	<li>Can display enemy health if MobHealth is also installed.</li>
+</ul>
+
+<p>If you want to replace the default player and target frames with StatusBars, I suggest you get the <a href="http://www.curse-gaming.com/mod.php?addid=1004">HideFrames</a> addon.</p>
+
+<h2>Customization</h2>
+
+<p>Keep the shift key pressed and drag a bar to move the group it belongs to.
+If the bars are locked you will have to type <tt>/statusbars unlock</tt> first.
+
+<p>The behaviour can be controlled via the <tt>/statusbars</tt> slash command.
+
+<pre>
+  Syntax: /statusbars (lock|unlock)
+  Syntax: /statusbars (load|save) (&lt;name&gt;|defaults)
+  Syntax: /statusbars &lt;target&gt; &lt;option&gt; (&lt;value&gt|print|reset)
+  Targets:
+    all, player, target, pet, power, tpower, ppower,
+    health, mana, rage, energy, focus, combo, druid, buff, debuff,
+    thealth, tmana, trage, tenergy, tfocus, tdebuff, tbuff
+    phealth, pmana, prage, penergy, pfocus, phappy, pbuff, pdebuff
+  Options:
+    alpha (decimal, default=1)
+    enable (always/never/combat/combatonly/auto)
+    color, tcolor, pcolor (string, see Readme.html)
+    flash (on/off)
+    group (player/target/pet/group1/group2/...)
+    percentage (none/left/right)
+    ptext (string, default = &frac%, see Readme.html)
+    scale (decimal, default=1)
+    text (string, see Readme.html or print the current value)
+    warn (decimal, default=0.6)
+</pre>
+
+<p>Friendly buffs are hidden for the player and pet by default. To enable them, type
+<pre>
+  /statusbars buff enable combatonly
+  /statusbars pbuff enable combatonly
+</pre>
+
+<p>To remove all buffs and debuffs, type
+<pre>
+  /statusbars buff enable never
+  /statusbars debuff enable never
+  /statusbars tbuff enable never
+  /statusbars tdebuff enable never
+  /statusbars pbuff enable never
+  /statusbars pdebuff enable never
+</pre>
+
+<h4>Target</h4>
+<p>The target determines in which bars the option is to be set.
+Using <tt>all</tt> will set the value in all applicable bars,
+using <tt>power</tt> or <tt>tpower</tt> will set the value in
+the mana, rage, energy and focus bars.
+<tt>player</tt> and <tt>target</tt> will set set value for all bars in the group.
+
+<h4>Options</h4>
+<table>
+	<tr valign='top'>
+		<td><tt>alpha</tt>
+		<td>Opacity of the bar. Decimal value between 0.0 and 1.0.
+        Default = 1.0.
+	</tr><tr valign='top'>
+		<td><tt>enable</tt>
+		<td>When the bar should be visible.<br>
+         <tt>always</tt>, <tt>never</tt>: As expected<br>
+         <tt>auto</tt>: When the current value differs from the default
+               i.e. when damaged, when mana is not full, etc.<br>
+         <tt>combat</tt>: As <tt>auto</tt>, but also displays when in combat.<br>
+         <tt>combatonly</tt>: Only displays in combat, no matter what the value is.
+	</tr><tr valign='top'>
+		<td><tt>color</tt>, <tt>tcolor</tt>, <tt>pcolor</tt>
+		<td>The color of the bar, text and percentage text.
+			Can either be a simple named color (<tt>red</tt>, <tt>yellow</tt>, etc),
+			a hexadecimal color in <tt>rgb</tt> or <tt>rrggbb</tt> format, or a <a href='#colexp'>color expression</a>.
+	</tr><tr valign='top'>
+		<td><tt>flash</tt>
+		<td>If the bar should flash when high/low.
+	</tr><tr valign='top'>
+		<td><tt>group</tt>
+		<td>Which group the bar should belong to. <tt>player</tt>, <tt>target</tt>, <tt>pet</tt> or one of the generic <tt>group1</tt>, <tt>group2</tt>...
+	</tr><tr valign='top'>
+		<td><tt>percentage</tt>
+		<td>Placement of the percentage display. <tt>none</tt>, <tt>left</tt> or <tt>right</tt>.
+	</tr><tr valign='top'>
+		<td><tt>ptext</tt>
+		<td>Text to be displayed in the percentage field, subject to <a href='#text'>variable substitution</a>.
+	</tr><tr valign='top'>
+		<td><tt>scale</tt>
+		<td>Scale the bar. Will only work well if all the bars in a group are set to the same scale.
+	</tr><tr valign='top'>
+		<td><tt>text</tt>
+		<td>The text to be displayed in the bar, subject to <a href='#text'>variable substitution</a>.
+	</tr><tr valign='top'>
+		<td><tt>warn</tt>
+		<td>Distance from the default value where the bar will
+			start flashing if enabled.
+			Default = 0.6, which represents 60%.
+	</tr>
+</table>
+
+<h4>Option Management</h4>
+
+<p> Options can be loaded, saved and reset using the commands <tt>/statusbars load &lt;name&gt;</tt>,
+	<tt>/statusbars save &lt;name&gt;</tt> and <tt>/statusbars load defaults</tt>.
+<p> You can use the name of another character to load or save the settings of that character,
+	or use an arbitrary name to save settings for later reference.
+
+
+<h4 id='text'>Text Variable Substitution</h4>
+
+<p> The text to be displayed in the bar is subject to variable substitution;
+	any occurences of <tt>&cur</tt>, <tt>&max</tt>, <tt>&frac</tt>, <tt>&-cur</tt>,
+	<tt>&name</tt>, <tt>&rank</tt>, <tt>&class</tt>, <tt>&type</tt> and <tt>&lvl</tt>
+	will be replaced with the current value, maximum value,
+	current percentage, lost value, name, rank, class, type and level.
+
+<p> This can be used to customize the information displayed in the bar.
+	For example; if you do not like the percentage display
+	but would like to see the target level and percentage next to the name in the
+	target health bar, issue these commands:
+<pre>
+	/statusbars thealth percentage none
+	/statusbars thealth text &name, &lvl (&frac%)
+</pre>
+	This will remove the percentage display and instead show
+	text similar to "Defias Looter, 13 (43%)".
+
+<p> If you would like to see the amount of health lost as well as amount left, use:
+<pre>
+	/statusbars thealth text &cur / &max (-&-cur)
+</pre>
+	This will show "580 / 700 (-120)".
+
+<h4 id='colexp'>Color Expressions</h4>
+
+<p>Color expressions are used to make the bar color dependant on
+   the current value. The facility is perhaps best described by an example,
+   the default health bar color is:
+<pre>
+	&lt;25%:red &lt;50%:orange &lt;75%:yellow green
+</pre>
+<p>This reads as "If health is lower than 25%, the bar is red. If health is
+   below 50%, the bar is orange. If health is below 75%, the bar is yellow.
+   Otherwise, the bar is green."
+
+<p>The available conditions are <tt>=</tt>, <tt>!=</tt>, <tt>&lt;</tt>, <tt>&gt;</tt>,
+<tt>&lt;=</tt> and <tt>&gt;=.</tt>
+
+<p>The value to test against can be either absolute or a percentage.
+
+<p>Conditions are tested in order and the first one that matches will be selected,
+   so make sure you list conditions in the reverse order they are expected to apply.
+   The exception is the default color, which does not have a condition and is applied
+   when no condition matches. Every color expression must have one and only one default color,
+   and its placement is irrelevant.
+
+<p>As a trivial example, the default mana bar color is:
+<pre>
+	blue
+</pre>
+
+<p>The following examples implement a request for functionality I got earlier: <br>
+   <i>"Is there any way to color the combo bar.
+   	  Like for 1/2 points it's red. 3/4 points it's yellow. 5 points it is green?"</i>
+<pre>
+	/statusbars combo color =5:green &gt;=3:yellow red
+</pre>
+   <i>"Energy bar: Could it be yellow if Energy &gt;= 40 (Sinister Strike),
+   orange &gt;= 35 (Eviscerate), and red for Energy &lt; 35?"</i>
+<pre>
+	/statusbars energy color &lt;35:f00 &lt;40:ff8000 ff0
+</pre>
+   In the last example, colors were specified in hexadecimal <tt>rgb</tt> for illustration.
+   You can use your favourite html color picker to find out the hex code for a color.
+
+<p> If you start using complex color expressions I would suggest storing them in a macro
+	so that you will not have to retype everything when making changes.
+
+<h2>History</h2>
+
+<h4>Version 1.6.6</h4>
+<ul>
+ <li>Compatible with version 1.9.
+ <li>Added example for how to disable all buffs/debuff displays.
+</ul>
+
+<h4>Version 1.6.5</h4>
+<ul>
+ <li>Added text variable &type.
+ <li>Made fadein/-out duration more easily accessible for users in the lua file.
+ <li>Bugfix?: Possible fix for unconfirmed bug where buffs were shown on corpses.
+</ul>
+
+<h4>Version 1.6.4</h4>
+<ul>
+ <li>Bugfix: Used nonexistant string.trim() (bad Ephemeral!)
+</ul>
+
+<h4>Version 1.6.3</h4>
+<ul>
+ <li>Added pet happiness bar.
+ <li>Added text variables &rank, &class and &happy.
+ <li>Changed default target health text to include rank.
+</ul>
+
+<h4>Version 1.6.2</h4>
+<ul>
+ <li>Bugfix: Some settings were not always used correctly during initialization.
+ <li>General cleanup and optimization.
+</ul>
+
+<h4>Version 1.6.1</h4>
+<ul>
+ <li>Bars can now be locked with <tt>/statusbars lock</tt>.
+ <li>Loading and saving of settings.
+</ul>
+
+<h4>Version 1.6</h4>
+<ul>
+ <li>Added buff and debuff bars.
+ <li>Made the pet health text default dependant on if MobHealth is used, so that it matches the appearance of target health.
+ <li>Optimizations for disabled bars.
+ <li>Bugfix: Target power bar changed color before fading out in some cases.
+ <li>Bugfix: Target frame sometimes faded out and back in again when switching targets.
+</ul>
+
+<h4>Version 1.5.6</h4>
+<ul>
+ <li>Replaced text variables &player, &target, &pet, &tlvl and &plvl with generic &name and &lvl.
+ <li>Display level ?? for targets with much higher level.
+ <li>Bugfix: Target bars used to show up momentarily when selecting a new target if set to enable in combat only.
+</ul>
+
+<h4>Version 1.5.5</h4>
+<ul>
+ <li>Bugfix: Druid mana bar was not updating since 1.5.1.
+</ul>
+
+<h4>Version 1.5.4</h4>
+<ul>
+ <li>Now compatible with old MobHealth versions.
+ <li>Bugfix: Worked around a bug in WoW that causes empty frames to forget their position, usually affecting the target group.
+</ul>
+
+<h4>Version 1.5.3</h4>
+<ul>
+ <li>Bugfix: Finally fixed bug with bars getting stuck in move mode?
+ <li>Bugfix: Worked around problem with using /console reloadui while damaged.
+</ul>
+
+<h4>Version 1.5.2</h4>
+<ul>
+ <li>Added 5 generic groups.
+ <li>Added enable mode for only showing bars when in combat.
+ <li>Bugfix: Combo flashing was broken in the last release.
+ <li>Bugfix: Bars no longer get stuck in move mode.
+</ul>
+
+<h4>Version 1.5.1</h4>
+<ul>
+ <li>Bars can now be clicked through.
+ <li>Any bar can be used to drag the group (not only the first).
+ <li>Reduced CPU usage a tiny bit again.
+ <li>Changed the druid mana bar default behaviour to hide when full, even if in combat.
+</ul>
+
+<h4>Version 1.5</h4>
+<ul>
+ <li>Customizable bar grouping.
+ <li>Added scale option.
+ <li>Customizable text color.
+ <li>Combo display stays visible when switching to another form if there are combo points left.
+ <li>Much improved bar sorting, resulting in better behaviour when bars are manually disabled.
+ <li>Reduced CPU load through improvements and bugfixes.
+ <li>More slash command error checking and possibly bugfixes.
+ <li>Doc bugfix: Combo/energy examples were incorrect.
+</ul>
+
+<h4>Version 1.4.4</h4>
+<ul>
+ <li>Bugfix: Druid mana bar did not work in French and German clients.
+</ul>
+
+<h4>Version 1.4.3</h4>
+<ul>
+ <li>Compatible with DruidBar 2.01.
+ <li>Made target health text default adaptive depending on if MobHealth is installed.
+ <li>Added German localization, by Tenvan.
+ <li>Completed French localization, by Juki.
+ <li>Bugfix: Fixed problems with combat mode getting stuck when leaving an instance while in combat.
+</ul>
+
+<h4>Version 1.4.2</h4>
+<ul>
+ <li>MobHealth is used if available.
+ <li>Customizable "percentage text".
+ <li>Added text variable <tt>&-cur</tt>, for showing the amount a bar differs from the default value.
+ <li>Bugfix: Stupid bug that made it impossible to disable flashing.
+</ul>
+
+<h4>Version 1.4.1</h4>
+<ul>
+ <li>Bugfix: Error when targeting elite mobs.
+ <li>Bugfix: Could not change percentage display for combo bar (fixed in 1.4 R2).
+</ul>
+
+<h4>Version 1.4</h4>
+<ul>
+ <li>New combo display.
+ <li>Configurable bar colors.
+ <li>Added pet bars.
+ <li>Configurable percentage display placement.
+ <li>Added French localization, by Juki.
+ <li>Text can include player, target and pet level.
+ <li>You can now print and reset options.
+ <li>Improved documentation.
+ <li>Bugfix: Worked around druid mana decimal display problem.
+ <li>Bugfix: Druid mana bar was not always loading settings immediately.
+ <li>General code cleanup and many tiny improvements and bugfixes.
+</ul>
+
+<h4>Version 1.3.3</h4>
+<ul>
+ <li>Bugfix: Settings were not always loaded correctly.
+</ul>
+
+<h4>Version 1.3.2</h4>
+<ul>
+ <li>Improved error checking when setting options.
+ <li>Bugfix: Percentage option was not being honored.
+ <li>Bugfix: Settings were sometimes reset.
+</ul>
+
+<h4>Version 1.3.1</h4>
+<ul>
+ <li>Bugfix: Error when printing boolean option values.
+ <li>Bugfix: Setting options with target = all only updated the first option.
+</ul>
+
+<h4>Version 1.3</h4>
+<ul>
+ <li>Added target mana/rage/energy bar.
+ <li>Customizable text.
+ <li>Improved (more obvious) flashing.
+ <li>Per-character settings.
+ <li>Added druid mana bar in shifted form (uses the DruidBar addon).
+ <li>Bugfix: Target health bar did not always update immediately.
+ <li>Bugfix: Several minor alpha-related bugs.
+</ul>
+
+<h4>Version 1.2.1</h4>
+<ul>
+ <li>Added option to set alpha.
+ <li>Bugfix: Target health bar hides when a targeted nonhostile is dead.
+ <li>Bugfix: Weird flashing behaviour.
+</ul>
+
+<h4>Version 1.2</h4>
+<ul>
+ <li>Made the bars draggable (in two groups).
+ <li>Added target health bar.
+ <li>Added slash command for configuration.
+ <li>Cleaned up the code. Version 1.1 could potentially conflict with other addons.
+</ul>
+
+<h4>Version 1.1</h4>
+<ul>
+ <li>Health bar color changes.
+ <li>Added combo bar.
+</ul>
+
+<h4>Version 1.0</h4>
+<ul>
+ <li>First release.
+</ul>
+
+</body>
+</html>

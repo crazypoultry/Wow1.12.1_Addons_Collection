@@ -1,0 +1,178 @@
+Cooperative Healing API
+Version 0.99
+Date: 09/13/2006
+
+Author: Drowsey
+---------------
+
+This document explains the messages used in CoOp healing. 
+Currently this protocol is used in several addons including:
+
+Genesis 
+Heart 
+Panza 
+QuickHeal
+
+Requirements: 
+-------------
+1. WoW client 1.12
+2. Process events that trigger messages.
+
+===============
+WoW client 1.12
+===============
+
+The SendAddonMessage() wow API call is used to peform Cooperative Healing.
+Messages are processed from CHAT_MSG_ADDON events.
+
+=============================
+Events that trigger Messages:
+=============================
+
+Addons must process these events
+
+SPELLCAST_START			- Message will indicate a regular heal spell has begun casting.
+SPELLCAST_STOP			- Message will indicate a hot spell has begun.
+SPELLCAST_DELAYED		- Message will indicate spell being cast is delayed
+SPELLCAST_FAILED		- Message will indicate spell has failed
+SPELLCAST_INTERRUPTED		- Message will indicate spell has failed
+CHAT_MSG_ADDON			- For receiving the CoOp Healing Message.
+
+
+The CooP Message
+-----------------
+The message used is always composed of 8 fields, 4 string, and 4 numeric.
+It is up to each addon receiving the messages to decay values over time. This can be done in an OnUpdate event. Processing should
+occur in small increments of time, something < 0.5 seconds, and > 0.1 seconds.
+
+============================
+Sending Event Based Messages
+============================
+
+This section will explain each event based message. Each event will trigger a different message. all messages have 4 string fields, and 4 numeric fields.
+These 8 fields make up arg2 of SendAddonMessage.
+
+
+Regular heal messages (SPELLCAST_START)
+---------------------------------------
+A message should be sent when this event fires, and the spell is a regular healing spell (non-heal over time).
+
+SendAddonMessage() Format: "Prefix", "Update, <'healing target'>, <'spellname'>, <healamount>, 0, <Casting Time>, <Remaining Casting Time>", RAID|PARTY|GUILD|BATTLEGROUND, author
+
+Prefix		AddonPrefix 	(arg1 of SendAddonMessage)
+"Update...."	Message		(arg2 of SendAddonMessage) See message note below.
+"RAID..."	Destination	(arg3 of SendAddonMessage)
+author		senders name	(arg4 of SendAddonMessage) - Note this argument is automatic. 
+
+Message Note
+------------
+"Update", the first text field indicates a healing message.
+<'Healing Target'> the second text field must contain the target's full name.
+<'spellname'> the third text field should contain the spell name including rank
+<healamount> the average yeild expected for the heal. This should be the mean of spell minimum and spell maximum.
+0 indicates a regular heal spell. This field is only populated for heal over time spells.
+<casting time> casting time for the spell.
+<remaining cast time> this field should be identical to casting time on SPELLCAST_START events.
+
+* Remaining cast time should be decayed over time.
+
+
+
+Heal over Time messages (SPELLCAST_STOP)
+----------------------------------------
+A message should be sent on this event for Heal over Time spells. HoT spells do not trigger a SPELLCAST_START event because they
+are instant cast. Make sure the numeric data is non-zero when sending "Update" Messages.
+
+SendAddonMessage() Format: "Prefix", "Update, <'healing target'>, <'spellname'>, <One Tick healamount>, <total remaining HoT>, 0, <Duration of Spell>", RAID|PARTY|GUILD|BATTLEGROUND, author
+
+Prefix		AddonPrefix 	(arg1 of SendAddonMessage)
+"Update...."	Message		(arg2 of SendAddonMessage) See message note below.
+"RAID..."	Destination	(arg3 of SendAddonMessage)
+author		senders name	(arg4 of SendAddonMessage) - Note this argument is automatic. 
+
+Message Note
+------------
+"Update", the first text field indicates a healing message.
+<'Healing Target'> the second text field must contain the target's full name.
+<'spellname'> the third text field should contain the spell name including rank
+<One Tick healamount> the average yeild expected for one tick of the HoT. HoT spells hit every 3 seconds (One Tick)
+<total remaining HoT> This field will be the total HoT heal minus the first Tick.
+0 indicates a instant cast spell.
+<Duration> In HoT messages, duration is the length of time the spell will be active.
+
+* Duration, and remaining hot should be decayed over time.
+
+
+
+Delayed spells (SPELLCAST_DELAYED)
+---------------------------------------
+A message should be sent when this event fires, indicating the time to hit is altered.
+This message should re-use the same data that was sent in the SPELLCAST_START event, and modify the times.
+The receiving addon should have the data for this message already, and should match this message with author, target, and spellname.
+
+SendAddonMessage() Format: "Prefix", "Update, <'healing target'>, <'spellname'>, <healamount>, 0, <Casting Time>, <Remaining Casting Time>", RAID|PARTY|GUILD|BATTLEGROUND, author
+
+Prefix		AddonPrefix 	(arg1 of SendAddonMessage)
+"Update...."	Message		(arg2 of SendAddonMessage) See message note below.
+"RAID..."	Destination	(arg3 of SendAddonMessage)
+author		senders name	(arg4 of SendAddonMessage) - Note this argument is automatic. 
+
+Message Note
+------------
+"Update", the first text field indicates a healing message.
+<'Healing Target'> Reuse the same data from SPELLCAST_START event message.
+<'spellname'> Reuse the same data from SPELLCAST_START event message.
+<healamount> Reuse the same data from SPELLCAST_START event message.
+0 indicates a regular heal spell. This field is only populated for heal over time spells.
+<casting time> casting time for the spell (increased by the delay)
+<remaining cast time> remaining time (as decayed with the delay added by the event).
+
+* Remaining cast time should be decayed over time.
+
+
+
+Failed heal messages (SPELLCAST_FAILED|SPELLCAST_INTERRUPTED)
+---------------------------------------
+A message should be sent when this event fires, and the spell is a heal spell.
+
+SendAddonMessage() Format: "Prefix", "Fail, <'healing target'>, <'spellname'>, 0, 0, 0, 0", RAID|PARTY|GUILD|BATTLEGROUND, author
+
+Prefix		AddonPrefix 	(arg1 of SendAddonMessage)
+"FAIL...."	Message		(arg2 of SendAddonMessage) See message note below.
+"RAID..."	Destination	(arg3 of SendAddonMessage)
+author		senders name	(arg4 of SendAddonMessage) - Note this argument is automatic. 
+
+
+Message Note
+------------
+"Fail", the first text field indicates a healing message.
+<'Healing Target'> Reuse the same data from SPELLCAST_START event message.
+<'spellname'> Reuse the same data from SPELLCAST_START event message.
+<healamount> Reuse the same data from SPELLCAST_START event message.
+0,0,0,0 all zeros should be used for numeric data. This should trigger the addon to remove this data.
+
+
+
+======================
+Receiving the messages
+======================
+
+Addons that wish to utilize the data sent in these messages must process the CHAT_MSG_ADDON event.
+Match the Prefix with Addons that utilize this protocol.
+Match the first field as "Update", or "Fail" as the first field in arg2 of the CHAT_MSG_ADDON event.
+Expect and process the 4 string fields, and 4 numeric fields of arg2.
+Decay remaining casting time, Duration of Hot Spells.
+Adjust casting time, and remaining casting time for delay messages received.
+Usually the addon should reject messages sent by Player, as this data should already be present.
+
+The decay function should be processed in an OnEvent() function. This processing should be utilized between 0.1 seconds and 0.5 seconds.
+The decay function should be utilized on all data active, and remove data that has expired (landed), or the duration is 0.
+Any processing delay above 0.5 seconds will lower the resolution (accuracy of the healing data maintained), any processing faster 
+than 0.1 seconds has shown to cause lag using the addon. The more people that utilize the addon, the higher this value should be to reduce lag.
+Include some check to ensure no duplicate data is being used. Healers may have upto 2 HoTs (Druid Rejuv and Regrowth), and one healing spell active.
+
+
+
+
+
+

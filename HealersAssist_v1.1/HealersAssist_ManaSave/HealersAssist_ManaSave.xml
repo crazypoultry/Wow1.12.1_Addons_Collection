@@ -1,0 +1,601 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+  <Script file="localization.lua"/> 
+  <Script file="HealersAssist_ManaSave.lua"/> 
+
+  <Frame name="HealersAssist_ManaSaveMainFrame" frameStrata="LOW" enableMouse="false" hidden="false">
+    <Scripts>
+      
+    </Scripts>
+  </Frame>
+  
+  <EditBox name="HA_EditBox16Template" letters="5" autoFocus="false" historyLines="256" virtual="true" >
+		<Size>
+			<AbsDimension x="50" y="16"/>
+		</Size>
+		<TextInsets>
+				<AbsInset left="0" right="5" />
+		</TextInsets>
+		<Layers>
+			<Layer>
+				<FontString name="$parentText" inherits="GameTooltipTextSmall">
+          <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="4" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-2" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="4" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.9575" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="6" y="13"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<FontString inherits="GameTooltipTextSmall" bytes="256"/>
+		<Scripts>
+			<OnShow>
+				this:ClearFocus();
+			</OnShow>
+			<OnEnterPressed>
+				this:ClearFocus();
+			</OnEnterPressed>
+			<OnEscapePressed>
+				this:ClearFocus();
+			</OnEscapePressed>
+		</Scripts>
+	</EditBox>
+  
+  <Button name="HA_MS_SpellTemplate" virtual="true">
+	 	<Size>
+			<AbsDimension x="320" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentSpellName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="138" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parentMinTimeEB" letters="5" inherits="HA_EditBox16Template">
+				<Size>
+					<AbsDimension x="42" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="140" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("s");
+					</OnLoad>
+					<OnTextChanged>
+						if(this:GetText() ~= "")
+						then
+							if(not string.find(this:GetText(), "^[%d%.]+$"))
+							then
+								this:SetText(this.last);
+							else
+								this.last = this:GetText();
+							end
+						end
+					</OnTextChanged>
+				</Scripts>
+			</EditBox>
+			<EditBox name="$parentRelativeEB" letters="3" numeric="true" inherits="HA_EditBox16Template">
+				<Size>
+					<AbsDimension x="30" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="210" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("%");
+					</OnLoad>
+				</Scripts>
+			</EditBox>
+			<CheckButton name="$parentRelativeCB" inherits="HA_Checkbutton16Template">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="252" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						getglobal(this:GetParent():GetName().."AbsoluteCB"):SetChecked(0);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<EditBox name="$parentAbsoluteEB" letters="5" numeric="true" inherits="HA_EditBox16Template">
+				<Size>
+					<AbsDimension x="42" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="280" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<CheckButton name="$parentAbsoluteCB" inherits="HA_Checkbutton16Template">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="322" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						getglobal(this:GetParent():GetName().."RelativeCB"):SetChecked(0);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="320" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOP">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+  </Button>
+  
+  <!--  ******************* Main Frame ******************* -->
+  <Frame name="HA_MS_ConfFrame" frameStrata="HIGH" toplevel="true" hidden="true" movable="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="400" y="300" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32" />
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer>
+        <Texture name="$parentTitleBorder" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="240" y="32" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="5" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <TexCoords left="0.2" right="0.8" top="0" bottom="0.6" />
+        </Texture>
+        <FontString name="$parentTitleString" font="Fonts\FRIZQT__.TTF" text="HA_MS_GUI_TITAL">
+          <Size>
+            <AbsDimension x="240" y="0" />
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="-4" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="$parentSpellList">
+        <Size>
+          <AbsDimension x="360" y="200" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT">
+            <Offset>
+              <AbsDimension x="20" y="-30" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+        </Backdrop>
+        <Frames>
+          <Button name="$parentHdrSpellName" inherits="HA_PluginHeaderTemplate" text="HA_MS_GUI_SPELLNAME">
+            <Anchors>
+              <Anchor point="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="-10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                HASetColumnWidth(130);
+              </OnLoad>
+            </Scripts>
+          </Button>
+          <Button name="$parentHdrMinTime" inherits="HA_PluginHeaderTemplate" text="HA_MS_GUI_MINTIME">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentHdrSpellName" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                HASetColumnWidth(70);
+              </OnLoad>
+            </Scripts>
+          </Button>
+          <Button name="$parentHdrRelative" inherits="HA_PluginHeaderTemplate" text="HA_MS_GUI_RELATIVE">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentHdrMinTime" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                HASetColumnWidth(70);
+              </OnLoad>
+            </Scripts>
+          </Button>
+          <Button name="$parentHdrAbsolute" inherits="HA_PluginHeaderTemplate" text="HA_MS_GUI_ABSOLUTE">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parentHdrRelative" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="0" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                HASetColumnWidth(70);
+              </OnLoad>
+            </Scripts>
+          </Button>
+          <Button name="$parentSpell1" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentHdrSpellName" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-2" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell2" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell1" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell3" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell2" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell4" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell3" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell5" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell4" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell6" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell5" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell7" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell6" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell8" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell7" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell9" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell8" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+          <Button name="$parentSpell10" inherits="HA_MS_SpellTemplate">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parentSpell9" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </Button>
+        </Frames>
+      </Frame>
+      <!--  ******************* Bottom buttons ******************* -->
+      <Button name="$parentClose" text="HA_MS_GUI_CLOSE">
+        <Size>
+          <AbsDimension x="100" y="22" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-10" y="34" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+          	this:GetParent():Hide();
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+      </Button>
+      <Button name="$parentSave" hidden="false" text="HA_MS_GUI_SAVE">
+        <Size>
+          <AbsDimension x="100" y="22" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parentClose" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-10" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+          	HA_MS_Config_Save();
+          	this:GetParent():Hide();
+          </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-Panel-Button-Up">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-Panel-Button-Down">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </PushedTexture>
+        <DisabledTexture file="Interface\Buttons\UI-Panel-Button-Disabled">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </DisabledTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-Button-Highlight" alphaMode="ADD">
+          <TexCoords left="0" right="0.625" top="0" bottom="0.6875" />
+        </HighlightTexture>
+        <NormalText name="$parentText" font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="0.8196079" b="0" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </NormalText>
+        <HighlightText font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="1" g="1" b="1" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </HighlightText>
+        <DisabledText font="Fonts\FRIZQT__.TTF">
+          <FontHeight>
+            <AbsValue val="12" />
+          </FontHeight>
+          <Color r="0.4980392" g="0.4980392" b="0.4980392" />
+          <Shadow>
+            <Color r="0" g="0" b="0" />
+            <Offset>
+              <AbsDimension x="1" y="-1" />
+            </Offset>
+          </Shadow>
+        </DisabledText>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        HA_MS_OnLoad();
+      </OnLoad>
+      <OnShow>
+      	HA_MS_Config_OnShow();
+      </OnShow>
+      <OnMouseUp>
+        if ( this.isMoving ) then
+          this:StopMovingOrSizing();
+          this.isMoving = false;
+        end
+      </OnMouseUp>
+      <OnMouseDown>
+        if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+          this:StartMoving();
+          this.isMoving = true;
+        end
+      </OnMouseDown>
+      <OnHide>
+        if ( this.isMoving ) then
+          this:StopMovingOrSizing();
+          this.isMoving = false;
+        end
+      </OnHide>
+     </Scripts>
+  </Frame>
+
+
+</Ui>
+

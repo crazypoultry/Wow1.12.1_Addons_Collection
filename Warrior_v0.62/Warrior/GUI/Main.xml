@@ -1,0 +1,334 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+
+<Script file="Main.lua"/>
+
+
+<!-- the overall frame -->
+<Button name="WARRIORGUIFrame" movable="true" hidden="true" parent="UIParent" frameStrata="DIALOG">
+	<Size><AbsDimension x="410" y="337"/></Size>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Frames>
+		<!-- close window button -->
+		<Button hidden="false" virtual="true">
+			<Size><AbsDimension x="32" y="32"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-5" y="-5"/></Offset>
+				</Anchor>
+			</Anchors>
+			<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+			<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+			<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			<Scripts>
+				<OnClick>
+					WARRIORGUIFrame:Hide();
+				</OnClick>
+			</Scripts>
+		</Button>
+		
+		<!-- activate class button -->
+		<Button name="WARRIORGUI_ActivateClassButton" inherits="UIPanelButtonTemplate" hidden="false">
+			<Size><AbsDimension x="50" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT">
+					<Offset><AbsDimension x="-13" y="-47"/></Offset>
+				</Anchor>
+			</Anchors>
+			<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString name="$parent_Text" inherits="ChatFontNormal" font="Fonts\ARIALN.TTF" text="Activate">
+						<Color r="1.0" g="1.0" b="1.0"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<FontHeight>
+							<AbsValue val="11"/>
+						</FontHeight>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnClick>
+					if (WARRIOR.Classes:Activate(WARRIORGUI_ClassSelection.prevvalue)) then
+						WARRIORGUI_ActivateClassButton:Disable();
+						WARRIORGUI_DeleteClassButton:Disable();
+					end
+				</OnClick>
+			</Scripts>
+		</Button>
+		
+		<!-- custom keybinding button -->
+		<CheckButton name="WARRIORGUI_ClassKeybindingButton" inherits="WARRIORGUI_KeybindingTemplate">
+			<Size><AbsDimension x="40" y="20"/></Size>
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativeTo="WARRIORGUI_ActivateClassButton" relativePoint="TOPLEFT"/>
+			</Anchors>
+			<Scripts>
+				<OnShow>
+					WARRIORGUI_KeyBindingButton_Update();
+				</OnShow>
+			</Scripts>
+		</CheckButton>
+		
+		<!-- scrolling frame to hold the spells in the class -->
+		<ScrollFrame name="WARRIORGUI_ClassSpellScrollFrame" inherits="FauxScrollFrameTemplate">
+			<Size><AbsDimension x="364" y="190"/></Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset><AbsDimension x="10" y="-74"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnVerticalScroll>
+					FauxScrollFrame_OnVerticalScroll(32, WARRIORGUI_ClassSpellScrollFrame_Update);
+				</OnVerticalScroll>
+			</Scripts>
+		</ScrollFrame>
+		<Frame name="WARRIORGUI_ClassSpellButton_1" inherits="WARRIORGUI_ClassSpellButtonTemplate" id="1">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="WARRIORGUI_ClassSpellScrollFrame" relativePoint="TOPLEFT">
+					<Offset><AbsDimension x="5" y="0"/></Offset>
+				</Anchor>
+			</Anchors>
+		</Frame>
+		<Frame name="WARRIORGUI_ClassSpellButton_2" inherits="WARRIORGUI_ClassSpellButtonTemplate" id="2"/>
+		<Frame name="WARRIORGUI_ClassSpellButton_3" inherits="WARRIORGUI_ClassSpellButtonTemplate" id="3"/>
+		<Frame name="WARRIORGUI_ClassSpellButton_4" inherits="WARRIORGUI_ClassSpellButtonTemplate" id="4"/>
+		<Frame name="WARRIORGUI_ClassSpellButton_5" inherits="WARRIORGUI_ClassSpellButtonTemplate" id="5"/>
+		<Frame name="WARRIORGUI_ClassSpellButton_6" inherits="WARRIORGUI_ClassSpellButtonTemplate" id="6"/>
+
+		<!-- class selection box -->
+		<Frame name="WARRIORGUI_ClassSelection" inherits="WARRIORGUI_EditMenuControlTemplate">
+			<Size><AbsDimension x="100" y="22"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativeTo="WARRIORGUI_ClassSpellScrollFrame" relativePoint="TOPLEFT">
+					<Offset><AbsDimension x="10" y="2"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					this:SetBackdropColor(0.0, 0.0, 0.0);
+					this.menu = "WARRIORGUI_DropMenu";
+					this.table = "WARRIOR.Classes._database";
+					this.clickFunc = WARRIORGUI_ClassDropMenu_OnClick;
+					this.editFunc = WARRIORGUI_ClassDropMenu_Edit;
+					this.prevvalue = WARRIOR.Classes._active;
+					getglobal(this:GetName().."_Label"):SetText("Classes");
+				</OnLoad>
+			</Scripts>
+		</Frame>
+		
+		<!-- delete class button -->
+		<Button name="WARRIORGUI_DeleteClassButton" inherits="UIPanelButtonTemplate" hidden="false">
+			<Size><AbsDimension x="25" y="20"/></Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="WARRIORGUI_ClassSelection" relativePoint="RIGHT">
+					<Offset><AbsDimension x="12" y="4"/></Offset>
+				</Anchor>
+			</Anchors>
+			<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString name="$parent_Text" inherits="ChatFontNormal" font="Fonts\ARIALN.TTF" text="Del">
+						<Color r="1.0" g="1.0" b="1.0"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<FontHeight>
+							<AbsValue val="11"/>
+						</FontHeight>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnClick>
+					if (WARRIOR.Classes:Remove(WARRIORGUI_ClassSelection.prevvalue)) then
+						WARRIORGUI_ClassSpellScrollFrame_Update("ALERTS");
+					end
+				</OnClick>
+			</Scripts>
+		</Button>
+		
+		<CheckButton name="WARRIORGUI_ClassType" inherits="WARRIORGUI_CheckBoxTemplate">
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="WARRIORGUI_DeleteClassButton" relativePoint="RIGHT">
+					<Offset><AbsDimension x="0" y="-1"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					this.index = function() 
+						if (WARRIOR.Classes._database[WARRIORGUI_ClassSelection.prevvalue].type == "fifo") then return true end
+						return false;
+					end
+					this.func = function(value)
+						local type = "default";
+						if (value) then type = "fifo" end
+						WARRIOR.Classes._database[WARRIORGUI_ClassSelection.prevvalue].type = type;
+						WARRIOR.Settings.Save("WARRIOR.Classes._database");
+					end
+					
+					getglobal(this:GetName().."_Label"):SetText("fifo");
+				</OnLoad>
+			</Scripts>
+		</CheckButton>
+
+		<!-- the drag and drop zone for adding spells -->
+		<Button name="WARRIORGUI_SpellDropZoneButton" inherits="ItemButtonTemplate" enableMouse="true">
+			<Size><AbsDimension x="36" y="36"/></Size>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT">
+					<Offset><AbsDimension x="17" y="21"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture name="$parent_Icon" file="Interface\AddOns\Warrior\Textures\EmptyButton">
+						<Size><AbsDimension x="36" y="36"/></Size>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<FontString name="$parent_Text1" inherits="WGUI_LargeFont" text="Spell">
+						<Size><AbsDimension x="60" y="18"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Icon" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="-12" y="-2"/></Offset>
+							</Anchor>
+						</Anchors>
+						<FontHeight>
+							<AbsValue val="13"/>
+						</FontHeight>
+					</FontString>
+					<FontString name="$parent_Text2" inherits="WGUI_LargeFont" text="Drop Zone">
+						<Size><AbsDimension x="60" y="18"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Text1" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="15" y="6"/></Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					this:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
+				<OnClick>
+					WARRIORGUI_SpellDropZone();
+				</OnClick>
+				<OnReceiveDrag>
+					WARRIORGUI_SpellDropZone();
+				</OnReceiveDrag>
+			</Scripts>
+		</Button>
+		
+		<!-- rage slider -->
+		<Slider name="WARRIORGUI_RageLimit" inherits="WARRIORGUI_SliderTemplate" minValue="1" maxValue="100"  valueStep="1" frameStrata="DIALOG">
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativeTo="WARRIORGUI_ClassSpellScrollFrame" relativePoint="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-20" y="-30"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Frames>
+				<CheckButton name="$parent_Enable" inherits="WARRIORGUI_CheckBoxTemplate">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset><AbsDimension x="-2" y="20"/></Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnLoad>
+							this.index = function() return WARRIOR.Player.Rage._enabled end;
+							this.func = function(value) 
+								WARRIOR.Player.Rage._enabled = value
+								WARRIOR.Settings.Save("WARRIOR.Player.Rage._enabled");
+							end;
+							
+							getglobal(this:GetName().."_Label"):SetText("Rage Limit");
+						</OnLoad>
+					</Scripts>
+				</CheckButton>
+			</Frames>
+			<Scripts>
+				<OnLoad>
+					this.index = function() return WARRIOR.Player.Rage._limit end;
+					this.func = function(e) return WARRIOR.Player.Rage:SetReserve(e) end;
+				</OnLoad>
+			</Scripts>
+		</Slider>
+	</Frames>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<!-- dialog background -->
+			<Texture file="Interface\AddOns\Warrior\Textures\ClassBackground">
+				<Size><AbsDimension x="512" y="512" /></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="8" y="-8" /></Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<!-- title of the gui -->
+			<FontString inherits="WGUI_LargeFont" text="WARRIOR: Configuration">
+				<Color r="1.0" g="1.0" b="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="15" y="-15" /></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="false">
+		<BackgroundInsets>
+			<AbsInset left="11" right="11" top="11" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize>
+			<AbsValue val="32"/>
+		</TileSize>
+		<EdgeSize>
+			<AbsValue val="32"/>
+		</EdgeSize>
+	</Backdrop>
+	<Scripts>
+		<OnLoad>
+			WARRIORGUI_OnLoad();
+		</OnLoad>
+		<OnShow>
+			this:SetScale(2.0 - UIParent:GetScale());
+			WARRIORGUI_ClassSpellScrollFrame_Update((WARRIORGUI_ClassSelection.prevvalue or WARRIOR.Classes._active));
+		</OnShow>
+		<OnHide>
+			WARRIOR.Settings:Save();
+		</OnHide>
+		<OnClick>
+			WARRIORGUI_DropMenu:Hide();
+		</OnClick>
+		<OnDragStart>
+			this.moving = true;
+			this:StartMoving();
+		</OnDragStart>
+		<OnDragStop>
+			WARRIORGUI_StopMoving();
+		</OnDragStop>
+		<OnHide>
+			WARRIORGUI_StopMoving();
+		</OnHide>
+		<OnLeave>
+			WARRIORGUI_StopMoving();
+		</OnLeave>
+	</Scripts>
+</Button>
+
+<!-- class selection list -->
+<Button name="WARRIORGUI_DropMenu" inherits="WARRIORGUI_DropMenuTemplate" parent="WARRIORGUI_ClassSelection" hidden="true" />
+
+</Ui>

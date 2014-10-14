@@ -1,0 +1,941 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+  <Script file="GogglesCastHelper.lua"/>
+  	-- Dummy Frame
+	<Frame name="GogglesCastHelperFrame" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				GogglesCastHelper:OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				GogglesCastHelper:OnUpdate();
+			</OnUpdate>
+			<OnEvent>
+				GogglesCastHelper:OnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	-- Range Check Item Texture
+	<Texture name="GogglesCastHelperRangeCheckTexture" alphaMode="DISABLE" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT"/>
+		</Anchors>
+	</Texture>	
+	-- Spell Item
+	<Button name="GogglesCastHelperSpellItemButton" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="36"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="16"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>	
+				<FontString name="$parentDescription" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="16"/>
+					</Size>	
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</FontString>				
+			</Layer>			
+		</Layers>
+		<Frames>
+			<Button name="$parentIco">		
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIconTexture">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>				
+				<Scripts>
+					<OnClick>
+						if (arg1 == "LeftButton") then
+							GogglesCastHelper:SetCurrent(this:GetID());
+							GogglesCastHelper:AddSpell(this:GetID());
+						elseif (arg1 == "RightButton") then
+							GogglesCastHelper:RemoveSpell(this:GetID());
+						end
+					</OnClick>				
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT",0,32);
+						GameTooltip:SetSpell(this.spellId, this.bookType);
+						GameTooltip:Show();
+						this:GetParent():LockHighlight();
+					</OnEnter>
+					<OnLeave>GameTooltip:Hide();
+						this:GetParent():UnlockHighlight();
+					</OnLeave>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+					</OnLoad>					
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnClick>
+				if (arg1 == "LeftButton") then
+					GogglesCastHelper:SetCurrent(this:GetID());
+					GogglesCastHelper:AddSpell(this:GetID());
+				elseif (arg1 == "RightButton") then
+					GogglesCastHelper:RemoveSpell(this:GetID());
+				end
+			</OnClick>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+			</OnLoad>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>	
+	-- State Item
+	<Button name="GogglesCastHelperStateItemButton" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="36"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="16"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDescription" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="16"/>
+					</Size>	
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>					
+				</FontString>					
+			</Layer>			
+		</Layers>
+		<Frames>
+			<Button name="$parentIco">		
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIconTexture">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>				
+				<Scripts>
+					<OnClick>
+						if (arg1 == "LeftButton") then
+							GogglesCastHelper:UpdateState(this:GetID());
+						end
+					</OnClick>				
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT",0,32);
+						GameTooltip:SetSpell(this.spellId, this.bookType);
+						GameTooltip:Show();
+						this:GetParent():LockHighlight();
+					</OnEnter>
+					<OnLeave>GameTooltip:Hide();
+						this:GetParent():UnlockHighlight();
+					</OnLeave>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp");
+					</OnLoad>					
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnClick>
+				if (arg1 == "LeftButton") then
+					GogglesCastHelper:UpdateState(this:GetID());
+				end
+			</OnClick>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp");
+			</OnLoad>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>
+	-- Whisper Item
+	<Button name="GogglesCastHelperWhisperItemButton" virtual="true">
+		<Size>
+			<AbsDimension x="120" y="18"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="16"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="25" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>				
+			</Layer>			
+		</Layers>
+		<Frames>
+			<Button name="$parentIco">		
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIconTexture">
+							<Size>
+								<AbsDimension x="16" y="16"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>				
+				<Scripts>
+					<OnClick>
+						if (arg1 == "LeftButton") then
+							GogglesCastHelper:CastWhisper(this:GetID());
+						elseif (arg1 == "RightButton") then
+							GogglesCastHelper:RemoveWhisper(this:GetID());
+						end
+					</OnClick>				
+					<OnEnter>
+						this:GetParent():LockHighlight();
+					</OnEnter>
+					<OnLeave>
+						this:GetParent():UnlockHighlight();
+					</OnLeave>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+					</OnLoad>					
+				</Scripts>
+			</Button>			
+		</Frames>
+		<Scripts>
+			<OnClick>
+				if (arg1 == "LeftButton") then
+					GogglesCastHelper:CastWhisper(this:GetID());
+				elseif (arg1 == "RightButton") then
+					GogglesCastHelper:RemoveWhisper(this:GetID());
+				end
+			</OnClick>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+			</OnLoad>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>	
+	-- Configuration UI
+	<Frame name="GogglesCastHelperMainFrame" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="400" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" inherits="GameFontHighlightLarge" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="251" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentGlobals" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-21"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOptions" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-96"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>					
+				<FontString name="$parentStates" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="220" y="120"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>						
+				<FontString name="$parentWhisperCastLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="250" y="-45"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>					
+				<FontString name="$parentRangeCheckLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="250" y="-70"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>							
+				<FontString name="$parentShortNameLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-120"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>							
+				<FontString name="$parentRangeLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-145"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>							
+				<FontString name="$parentTargetLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-170"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>					
+				<FontString name="$parentActionSlotLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="220" y="-195"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>						
+				<FontString name="$parentGlobalCooldownLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="250" y="-220"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>					
+				<FontString name="$parentWhisperLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="150" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="250" y="-245"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>			
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<ScrollFrame name="$parentSpellListScrollFrame" inherits="FauxScrollFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-32"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-250" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(36, GogglesCastHelper_SpellListScrollFrameUpdate);
+					</OnVerticalScroll>
+					<OnShow>
+						GogglesCastHelper:SpellListScrollFrameUpdate()
+					</OnShow>
+				</Scripts>
+			</ScrollFrame>	
+			<ScrollFrame name="$parentStateListScrollFrame" inherits="FauxScrollFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-284"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(36, GogglesCastHelper_StateListScrollFrameUpdate);
+					</OnVerticalScroll>
+					<OnShow>
+						GogglesCastHelper:StateListScrollFrameUpdate()
+					</OnShow>
+				</Scripts>
+			</ScrollFrame>					
+			<EditBox name="$parentShortName" autoFocus="false">
+				<Size>
+					<AbsDimension x="75" y="20"></AbsDimension>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="295" y="-115"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="4" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnTextChanged>
+						GogglesCastHelper:ShortNameChange();
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>		
+			<EditBox name="$parentRange" autoFocus="false">
+				<Size>
+					<AbsDimension x="50" y="20"></AbsDimension>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="295" y="-140"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="4" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnTextChanged>
+						GogglesCastHelper:RangeChange();
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>		
+			<EditBox name="$parentTarget" autoFocus="false">
+				<Size>
+					<AbsDimension x="75" y="20"></AbsDimension>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="295" y="-165"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="4" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnTextChanged>
+						GogglesCastHelper:TargetChange();
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>		
+			<EditBox name="$parentActionSlot" autoFocus="false">
+				<Size>
+					<AbsDimension x="50" y="20"></AbsDimension>
+				</Size>			
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="295" y="-190"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-11" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size>
+								<AbsDimension x="12" y="29"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="4" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>				
+				<Scripts>
+					<OnTextChanged>
+						GogglesCastHelper:ActionSlotChange();
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontHighlightSmall"/>
+			</EditBox>
+			<CheckButton name="$parentWhisperCast" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="220" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> 
+						GogglesCastHelper:WhisperCastClick(); 
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentRangeCheck" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="220" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> 
+						GogglesCastHelper:RangeCheckClick(); 
+					</OnClick>
+				</Scripts>
+			</CheckButton>					
+			<CheckButton name="$parentGlobalCooldown" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="220" y="-210"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> 
+						GogglesCastHelper:GlobalCooldownClick(); 
+					</OnClick>
+				</Scripts>
+			</CheckButton>	
+			<CheckButton name="$parentWhisper" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="220" y="-235"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> 
+						GogglesCastHelper:WhisperClick(); 
+					</OnClick>
+				</Scripts>
+			</CheckButton>			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				GogglesCastHelper:MainFrameInit();
+			</OnLoad>		
+			<OnShow>
+  				GogglesCastHelper:OptionsUpdate();
+			</OnShow>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				GogglesCastHelper:AddSpell();
+				if (arg1 == "LeftButton") then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	-- Whisper Queue UI
+	<Frame name="GogglesCastHelperWhisperFrame" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="136" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if (arg1 == "LeftButton") then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+	-- Range Check UI
+	<Frame name="GogglesCastHelperRangeCheckFrame" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="30" y="30"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			--<Layer level="OVERLAY">
+			--	<FontString name="$parentRange" inherits="GameFontHighlight" justifyH="LEFT">
+			--		<Size>
+			--			<AbsDimension x="30" y="16"/>
+			--		</Size>					
+			--		<Anchors>
+			--			<Anchor point="BOTTOMLEFT">
+			--				<Offset>
+			--					<AbsDimension x="6" y="8"/>
+			--				</Offset>
+			--			</Anchor>
+			--		</Anchors>
+			--	</FontString>
+			--</Layer>
+			--<Layer level="BACKGROUND">
+			--	<Texture name="$parentTexture" alphaMode="DISABLE">
+			--		<Size>
+			--			<AbsDimension x="24" y="24"/>
+			--		</Size>
+			--		<Anchors>
+			--			<Anchor point="BOTTOMLEFT">
+			--				<Offset>
+			--					<AbsDimension x="3" y="3"/>
+			--				</Offset>
+			--			</Anchor>
+			--		</Anchors>
+			--	</Texture>
+			--</Layer>				
+		</Layers>		
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnMouseUp>
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if (arg1 == "LeftButton") then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>	
+</Ui>

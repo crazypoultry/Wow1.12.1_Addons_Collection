@@ -1,0 +1,1098 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+  	<Script file="RDM.lua"/>
+  	<Script file="localization.lua"/>
+	<!-- Frame : Fenetre principale -->
+	<Frame name="RDM_Main_Frame" movable="true" hidden="false" parent="UIParent">
+		<Size>
+			<AbsDimension x="170" y="105"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Fontstring name="RDM_Frame_Titre_Text" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+				<!-- Texture de fond de la barre de titre -->
+				<Texture name="RDM_Frame_Titre_Background" file="Interface\TargetingFrame\UI-StatusBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="RDM_Main_Frame" relativePoint="TOPLEFT">
+							<Offset x="4" y="-5"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="RDM_Main_Frame" relativePoint="BOTTOMRIGHT">
+							<Offset x="-4" y="85"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Texture de fond de la barre du bas -->
+				<Texture name="RDM_Frame_BarreBas_Background" file="Interface\TargetingFrame\UI-StatusBar">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="RDM_Main_Frame" relativePoint="BOTTOMLEFT">
+							<Offset x="4" y="4"/>
+						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame" relativePoint="TOPRIGHT">
+							<Offset x="-4" y="-85"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Barre de separation du haut -->
+				<Texture name="RDM_Frame_Top_Line" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="RDM_Main_Frame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-15"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1" right="1.0" top="0" bottom="0.8"/>
+				</Texture>
+				<!-- Barre de separation du bas -->
+				<Texture name="RDM_Frame_Bottom_Line" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="RDM_Main_Frame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="4" y="-7"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="RDM_Main_Frame" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-4" y="7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.1" right="1.0" top="0" bottom="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- Texte : Affiche les informations de DPS et DPS max au survol de l'histogramme -->
+				<Fontstring name="RDM_HistoAtText" inherits="GameFontNormalSmall" text="">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeTo="RDM_Main_Frame">
+							<Offset>
+								<AbsDimension x="0" y="7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				RDM_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				RDM_OnEvent(event, arg1, arg2, arg3, arg4, arg5);
+			</OnEvent>
+			<OnUpdate>
+				RDM_OnUpdate();
+			</OnUpdate>
+	   		<OnMouseDown>
+				if ( arg1 == "LeftButton" ) then
+					if (RDM_returnValeurLock() == true) then
+						this:StartMoving();
+						this.isMoving = true;
+					end
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( arg1 == "LeftButton" ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+		</Scripts>
+		<Frames>
+			<!-- Bouton 1 : Permet de diminuer / agrandir la fenetre -->
+			<Button name="RDM_Frame_Titre_B1" inherits="OptionsButtonTemplate" text= "-">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_MiniMaxiMainFrame();
+					</OnClick>
+					<OnEnter>
+						RDM_HistoAtText:SetText(RDM_MINIMAXI_SWITCH);
+					</OnEnter>
+					<OnLeave>
+						RDM_HistoAtText:SetText("");
+					</OnLeave>
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+			</Button>
+			<!-- Bouton 2 : Permet de verrouiller / deverrouiller la fenetre -->
+			<Button name="RDM_Frame_Titre_B2" inherits="OptionsButtonTemplate" text= "L">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-21" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_Lock_Unlock();
+					</OnClick>
+					<OnEnter>
+						RDM_HistoAtText:SetText(RDM_LOCKUNLOCK_SWITCH);
+					</OnEnter>
+					<OnLeave>
+						RDM_HistoAtText:SetText("");
+					</OnLeave>					
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+			</Button>
+			<!-- Bouton 3 : Permet de d'ouvrir le panneau d'option -->
+			<Button name="RDM_Frame_Titre_B3" inherits="OptionsButtonTemplate" text= "0">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-37" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_ShowHideOptions();
+					</OnClick>
+					<OnEnter>
+						RDM_HistoAtText:SetText(RDM_OPEN_OPTIONS);
+					</OnEnter>
+					<OnLeave>
+						RDM_HistoAtText:SetText("");
+					</OnLeave>						
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />	
+			</Button>
+			<!-- Bouton 2 : Permet de cacher / afficher la console -->
+			<Button name="RDM_OPT_B4" inherits="OptionsButtonTemplate" text= "#">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-53" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_ShowHideConsole();
+					</OnClick>
+					<OnEnter>
+						RDM_HistoAtText:SetText(RDM_OPEN_CONSOLE);
+					</OnEnter>
+					<OnLeave>
+						RDM_HistoAtText:SetText("");
+					</OnLeave>						
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>				
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+			</Button>
+		</Frames>		
+	</Frame>
+	<!-- Frame affichant le DPS, le DPS Moyen et le DPSMAX-->
+	<Frame name="RDM_DPSDPSMAX_Frame" movable="true" hidden="false" parent="UIParent">
+		<Size>
+			<AbsDimension x="69" y="75"/>
+		</Size>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="false">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>		
+		</Backdrop>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeto="RDM_Main_Frame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-15"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- Texte : Affiche le DPS actuel -->
+				<Fontstring name="RDM_DPSActuel" inherits="NumberFontNormalYellow" text="">
+					<FontHeight>
+						<AbsValue val="6"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>				
+				</Fontstring>
+				<!-- Texte : Affiche le DPS Moyen -->
+				<Fontstring name="RDM_DPSMoyen" inherits="NumberFontNormalYellow" text="">
+					<FontHeight>
+						<AbsValue val="6"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>				
+				</Fontstring>
+				<!-- Texte : Affiche le DPS max -->
+				<Fontstring name="RDM_DPSMax" inherits="NumberFontNormalYellow" text="">
+					<FontHeight>
+						<AbsValue val="6"/>
+					</FontHeight>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-48"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor(1, 1, 1, 1);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<!--Frame : Histogramme -->
+	<Frame name="RDM_Frame_Graphique" movable="false" hidden="false" parent="UIParent">
+		<Size>
+			<AbsDimension x="111" y="75"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeto="RDM_Main_Frame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-0" y="-15"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"  tile="false">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<StatusBar name="RDM_Graph_Bar1" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="5" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(1));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>	
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar2" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(2));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar3" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="15" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(3));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar4" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(4));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar5" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="25" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(5));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar6" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="30" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(6));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar7" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="35" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(7));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar8" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="40" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(8));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar9" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="45" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(9));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>						
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar10" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="50" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(10));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>						
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar11" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="55" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(11));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar12" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(12));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>						
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar13" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="65" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(13));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar14" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="70" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(14));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>						
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar15" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="75" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(15));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>						
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar16" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="80" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(16));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>				
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar17" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="85" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(17));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar18" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="90" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(18));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar19" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="95" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(19));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>						
+				</Scripts>
+			</StatusBar>
+			<StatusBar name="RDM_Graph_Bar20" inherits="TextStatusBar" framestrata="highlight">
+				<Size>
+					<AbsDimension x="5" y="0.1"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="100" y="6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<Scripts>
+					<OnEnter>
+						this:SetStatusBarColor(1,1,1,1);						
+						RDM_AtHistoGTT:SetOwner(this, "ANCHOR_CURSOR");
+						RDM_AtHistoGTT:SetText(RDM_ShowAtHisto(20));
+					</OnEnter>
+					<OnLeave>
+						if (RDM_getStatut() == 0) then
+							this:SetStatusBarColor(0,0.6,0.2);
+						elseif (RDM_getStatut() == 1) then
+							this:SetStatusBarColor(0.4, 0.5, 0.6);						
+						elseif (RDM_getStatut() == 2) then
+							this:SetStatusBarColor(1,0.5,0);						
+						end
+
+						RDM_AtHistoGTT:Hide();
+					</OnLeave>					
+				</Scripts>
+			</StatusBar>
+			<GameTooltip name="RDM_AtHistoGTT" inherits="GameTooltipTemplate">
+				<Scripts>
+					<Onload>
+						this:SetOwner(this, "ANCHOR_CURSOR");
+						this:SetScale(0.8);
+					</Onload>
+				</Scripts>
+			</GameTooltip>
+		</Frames>
+	</Frame>
+	<Frame name="RDM_Main_Frame_Mini" movable="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="170" y="25"/>
+		</Size>
+		<Backdrop bgFile="Interface\TargetingFrame\UI-StatusBar" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="RDM_Main_Frame" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Fontstring name="RDM_Frame_Titre_Text2" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Fontstring>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor(1, 0, 0, 1);
+			</OnLoad>
+			<OnEvent>
+				RDM_OnEvent(event, arg1, arg2, arg3, arg4, arg5);
+			</OnEvent>
+			<OnUpdate>
+				RDM_OnUpdate();
+			</OnUpdate>
+			<OnMouseDown>
+				if ( arg1 == "LeftButton" ) then
+					if (RDM_returnValeurLock() == true) then
+						RDM_Main_Frame:StartMoving();
+						RDM_Main_Frame.isMoving = true;
+					end
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( arg1 == "LeftButton" ) then
+					RDM_Main_Frame:StopMovingOrSizing();
+					RDM_Main_Frame.isMoving = false;
+				end
+			</OnMouseUp>
+		</Scripts>
+		<Frames>
+			<!-- Bouton 1 : Permet de diminuer / agrandir la fenetre -->
+			<Button name="RDM_FrameMini_Titre_B1" inherits="OptionsButtonTemplate" text= "+">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame_Mini" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_MiniMaxiMainFrame();
+					</OnClick>
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+			</Button>
+			<!-- Bouton 2 : Permet de verrouiller / deverrouiller la fenetre -->
+			<Button name="RDM_FrameMini_Titre_B2" inherits="OptionsButtonTemplate" text= "L">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame_Mini" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-21" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_Lock_Unlock();
+					</OnClick>				
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+			</Button>
+			<!-- Bouton 3 : Permet de d'ouvrir le panneau d'option -->
+			<Button name="RDM_Frame_Titre_B3" inherits="OptionsButtonTemplate" text= "0">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame_Mini" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-37" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_ShowHideOptions();
+					</OnClick>					
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />	
+			</Button>
+			<!-- Bouton 4 : Permet de cacher / afficher la console -->
+			<Button name="RDM_OPT_B4" inherits="OptionsButtonTemplate" text= "#">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="RDM_Main_Frame_Mini" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-53" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>						
+				<Scripts>
+					<OnClick>
+						RDM_ShowHideConsole();
+					</OnClick>					
+				</Scripts>	
+				<NormalText inherits="GameFontNormalSmall"/>				
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

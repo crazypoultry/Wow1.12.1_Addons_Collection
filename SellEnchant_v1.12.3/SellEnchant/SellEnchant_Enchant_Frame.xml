@@ -1,0 +1,998 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="SellEnchant_Enchant_Frame.lua" />
+	<Button name="SellEnchant_Enchante_HeaderTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				SortEnchante(string.sub(this:GetName(), 28));
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(SELLENCHANT_ENCHANT_TOOLTIP_HEADER);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>		
+	</Button>
+	<Button name = "SellEnchant_Enchante_ReagentsListTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="300" y="14" />
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parent_Icone">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+<!--				<NormalTexture file=""/> -->
+				</Texture>
+				<FontString name="$parent_Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="120" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Icone" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.85" g="0.85" b="0.85"/>
+				</FontString>
+				<FontString name="$parent_Nb" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="40" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Name" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.85" g="0.85" b="0.85"/>
+				</FontString>
+				<FontString name="$parent_NbOther" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="40" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Nb" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.85" g="0.85" b="0.85"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name = "$parent_PriceUnite" inherits="SellEnchant_Price_Template">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_NbOther" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+			<Frame name = "$parent_PriceTotal" inherits="SellEnchant_Price_Template">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_PriceUnite" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+	<Button name = "SellEnchant_Enchante_ReagentsTemplate" inherits="SellEnchant_Enchante_ReagentsListTemplate" virtual="true" hidden="true">
+		<Scripts>
+			<OnClick>
+				if ( IsShiftKeyDown() ) then
+					if ( ChatFrameEditBox:IsVisible() ) then
+							addText = this.ChatTextForAdd;
+						if ( addText ) then
+							ChatFrameEditBox:Insert(addText);
+						end
+					end
+				end
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(SELLENCHANT_ENCHANT_TOOLTIP_REAGENTS);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnDoubleClick>
+				if (not (Colums == 1)) then
+					SortComponant(1);
+				end
+				local idReagent = ESell_Reagent_getId(getglobal(this:GetName().."_Name"):GetText());
+				Toggle_SellEnchant("SellEnchant_Componant_Frame");
+				SelectIdComponant(idReagent);
+			</OnDoubleClick>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<Button name = "SellEnchant_Enchante_EnchanteListTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="285" y="14" />
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<!-- =================================== -->
+				<!-- ===== Number available column ===== -->
+				<!-- =================================== -->
+<!--			<FontString name="$parent_MakeCount" inherits="SellEnchant_VerySmallFont" wraponspaces="false" justifyH="LEFT">		-->
+				<FontString name="$parent_MakeCount" inherits="SellEnchant_VerySmallFont" nonspacewrap="true" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="20" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<Color r="0.85" g="0.85" b="0.85"/>
+				</FontString>
+				<!-- ======================= -->
+				<!-- ===== Name column ===== -->
+				<!-- ======================= -->
+				<FontString name="$parent_Name" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="144" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_MakeCount" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<!-- ======================================================== -->
+				<!-- ===== Type column; Reducing this isn't deleting it ===== -->
+				<!-- ======================================================== -->
+				<FontString name="$parent_OnThis" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="1" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_Name" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.85" g="0.85" b="0.85"/>
+				</FontString>
+				<!-- ============================ -->
+				<!-- ===== Attribute column ===== -->
+				<!-- ============================ -->
+				<FontString name="$parent_Bonus" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="75" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_OnThis" relativePoint="TOPRIGHT"/>
+					</Anchors>
+					<Color r="0.85" g="0.85" b="0.85"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name = "$parent_Price" inherits="SellEnchant_Price_Template">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Bonus" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+	<Button name="SellEnchant_Enchante_ListTemplate" inherits="SellEnchant_Enchante_EnchanteListTemplate" virtual="true" hidden="true">
+
+		<Scripts>
+			<OnClick>
+				if ( IsShiftKeyDown() ) then
+					if ( ChatFrameEditBox:IsVisible() ) then
+							addText = this.ChatTextForAdd;
+						if ( addText ) then
+							ChatFrameEditBox:Insert(addText);
+						end
+					end
+				else
+					SellEnchant_Enchante_List_OnClick();
+				end
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetText(SELLENCHANT_ENCHANT_TOOLTIP_LIST);
+			</OnEnter>   
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+	<!-- ============= -->
+	<!-- End Templates -->
+	<!-- ============= -->
+	<Frame name="SellEnchant_Enchante_Frame" setAllPoints="true" enableMouse="true" parent="SellEnchant_Frame" hidden="true" id="1">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+<!--			<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture> -->
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\PaperDollInfoFrame\SkillFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+
+		<Frames>
+			<Frame name="SellEnchant_NameEnchantorSelected">
+				<Size>
+					<AbsDimension x="200" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-51"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parent_Name" inherits="GameFontNormal" justifyH="CENTER" text="Test">
+							<Size>
+								<AbsDimension x="200" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<CheckButton name="SellEnchant_CheckSortByDoCraft" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="22" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-72"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="SELLENCHANT_ENCHANT_SHOWPOSSIBLE">
+							<Size>
+								<AbsDimension x="100" y="22"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="25" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						this:SetChecked(SellEnchant_Config.CheckSortByDoCraft);
+					</OnShow>
+					<OnClick>
+						SellEnchant_Config.CheckSortByDoCraft = this:GetChecked();
+						SortEnchante();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			
+<!-- This added for the second drop down menu by me -->
+			<Frame name="SellEnchant_DropDownBonusType" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="190" y="-83"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(80);
+						this.tooltipText= "Bonus Type.";
+					</OnLoad>
+					<OnShow>
+						UIDropDownMenu_ClearAll(this);
+						UIDropDownMenu_Initialize(this, ESell_Option_DropDownBonusType_Initialize);
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(this.tooltipText);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+
+
+			<Frame name="SellEnchant_DropDownArmor" inherits="UIDropDownMenuTemplate" id="1">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="295" y="-83"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(80);
+						this.tooltipText= "Item type.";
+					</OnLoad>
+					<OnShow>
+						UIDropDownMenu_ClearAll(this);
+						UIDropDownMenu_Initialize(this, ESell_Option_DropDownArmor_Initialize);
+					</OnShow>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText(this.tooltipText);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+
+			
+
+			
+			<Button name="SellEnchant_CraftCreateButton" inherits="UIPanelButtonTemplate" text="SELLENCHANT_ENCHANT_BUTTON_LABEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-422"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SellEnchant_DoCraft(listIdSelected);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="SellEnchant_Enchante_PriceFrame" hidden="false">
+		<!--		Save this. It is code that will show where a frame is.
+				<Layers> 
+					<Layer level="OVERLAY"> 
+						<Texture name="$parent_Background" setAllPoints="true">
+							<Color r="0" g="0" b="1" a="0.5" /> 
+						</Texture> 
+					</Layer> 
+				</Layers> -->
+				<Size>
+					<AbsDimension x="176" y="87" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-75" y="-408"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Frame name="SellEnchant_Enchante_MoneyFrame" inherits="SmallMoneyFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-40" y="-6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MoneyFrame_SetType("PLAYER_TRADE");
+							</OnLoad>
+						</Scripts>
+					</Frame>
+<!--					Save this. It is code that will show a button
+					<Button name="SellEnchant_Enchante_MoneyChangeButton" toplevel="true" inherits="UIPanelButtonTemplate"> -->
+					<Button name="SellEnchant_Enchante_MoneyChangeButton" toplevel="true">
+						<Size>
+							<AbsDimension x="117" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-3"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SELLENCHANT_ENCHANT_TOOLTIP_TOTALPRICE);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnDoubleClick>
+								SellEnchant_Enchante_Price_DoubleClic();
+							</OnDoubleClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+
+			
+			
+			<ScrollFrame name="SellEnchant_Enchante_ScrollFrame" inherits="FauxScrollFrameTemplate">
+
+				<Size>
+					<!-- Scroll list w/o scroll bar= == x: Left/Right location  === y: ? -->
+					<AbsDimension x="296" y="220"/>
+					
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="SellEnchant_Enchante_Frame" relativePoint="TOPRIGHT">
+						<Offset>
+							<!-- Scroll list w/ scroll bar === x: left/right location === y: up/down -->
+							<AbsDimension x="-67" y="-97"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetHeight( 20 + (SELLENCHANT_NUM_LINE_ENCHANTES * 14) );
+					</OnLoad>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(SELLENCHANT_NUM_LINE_ENCHANTES, UpDateListeEnchante);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Frame name="SellEnchant_Enchante_ScrollFrame_Children">
+				<Frames>
+					<!-- =============================================================================== -->
+					<!-- === Name, Title of first column... even though it aligns with second column === -->
+					<!-- =============================================================================== -->
+					<Button name = "SellEnchant_Enchante_HeaderName" inherits="SellEnchant_Enchante_HeaderTemplate" id="1">
+						<Size>
+							<AbsDimension x="164" y="14"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_ScrollFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="8" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+<!--							<FontString inherits="GameFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="SELLENCHANT_ENCHANT_HEADER_NAME"/> -->
+								<FontString inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="LEFT" text="SELLENCHANT_ENCHANT_HEADER_NAME"/>
+							</Layer>
+						</Layers>
+					</Button>
+					<!-- ============================================================================================ -->
+					<!-- === Type, Title of second column... aligns with third column, but is hidden for 100g bug === -->
+					<!-- ============================================================================================ -->
+					<Button name = "SellEnchant_Enchante_HeaderOnThis" inherits="SellEnchant_Enchante_HeaderTemplate" id="2">
+						<Size>
+							<AbsDimension x="1" y="14"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_HeaderName" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="CENTER" text="SELLENCHANT_ENCHANT_HEADER_TYPE"/>
+							</Layer>
+						</Layers>
+					</Button>
+					<!-- ===================================================================== -->
+					<!-- === Attribute, Title of third column... Aligns with fourth column === -->
+					<!-- ===================================================================== -->
+					<Button name = "SellEnchant_Enchante_HeaderBonus" inherits="SellEnchant_Enchante_HeaderTemplate" id="3">
+						<Size>
+							<AbsDimension x="75" y="14"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_HeaderOnThis" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="CENTER" text="SELLENCHANT_ENCHANT_HEADER_ATTRIBUTE"/>
+							</Layer>
+						</Layers>
+					</Button>
+					<!-- ====================================================================== -->
+					<!-- === Price, Title of fourth column... doesn't align with any column === -->
+					<!-- ====================================================================== -->
+					<Button name = "SellEnchant_Enchante_HeaderPrice" inherits="SellEnchant_Enchante_HeaderTemplate" id="4">
+						<Size>
+							<AbsDimension x="45" y="14"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_HeaderBonus" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" nonspacewrap="true" justifyH="RIGHT" text="SELLENCHANT_ENCHANT_HEADER_PRICE"/>
+							</Layer>
+						</Layers>
+					</Button>		
+					<Button name = "SellEnchant_Enchante_List1" inherits="SellEnchant_Enchante_ListTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_HeaderName" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List2" inherits="SellEnchant_Enchante_ListTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List3" inherits="SellEnchant_Enchante_ListTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List2" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List4" inherits="SellEnchant_Enchante_ListTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List3" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List5" inherits="SellEnchant_Enchante_ListTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List4" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List6" inherits="SellEnchant_Enchante_ListTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List5" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List7" inherits="SellEnchant_Enchante_ListTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List6" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List8" inherits="SellEnchant_Enchante_ListTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List7" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List9" inherits="SellEnchant_Enchante_ListTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List8" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List10" inherits="SellEnchant_Enchante_ListTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List9" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List11" inherits="SellEnchant_Enchante_ListTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List10" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List12" inherits="SellEnchant_Enchante_ListTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List11" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List13" inherits="SellEnchant_Enchante_ListTemplate" id="13">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List12" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List14" inherits="SellEnchant_Enchante_ListTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List13" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_List15" inherits="SellEnchant_Enchante_ListTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_List14" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="SellEnchant_Enchante_FrameHorizontalBar">
+				<Size>
+					<AbsDimension x="256" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_ScrollFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-5" y="5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<!-- Left half of middle bar -->
+						<Texture name="SellEnchant_Enchante_FrameHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size>
+								<AbsDimension x="256" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+						<!-- Right half of middle bar -->
+						<Texture name="SellEnchant_Enchante_FrameHorizontalBarRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+							<Size>
+								<AbsDimension x="75" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="SellEnchant_Enchante_FrameHorizontalBarLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/> 
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame name="SellEnchant_Enchante_DetailFrame" enableMouse="true" hidden="true">
+				<Size>
+					<AbsDimension x="296" y="107"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="SellEnchant_Enchante_ScrollFrame" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name = "SellEnchant_Enchante_DetailFrame_Icone">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_DetailFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="28" y="28"/>
+						</Size>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(SellEnchant_Enchante_DetailFrame, "ANCHOR_RIGHT");
+								GameTooltip:SetCraftSpell(GetCraftSelectionIndex());
+								CursorUpdate();
+<!--								if SellfEnchant_Enchante_DetailFrame_Icone.hitemLink then
+									GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+									GameTooltip:SetHyperlink(ESell_HitemFromLink(SellEnchant_Enchante_DetailFrame_Icone.hitemLink)); -->
+<!--								GameTooltip:SetHyperlink(SellEnchant_Enchante_DetailFrame_Icone.hitemLink); -->
+<!--								else
+									SellEnchant_DebugMessage("Link as nil value"); 
+								end -->
+							</OnEnter>
+							<OnClick>
+								if ( IsShiftKeyDown() ) then
+									if ( ChatFrameEditBox:IsVisible() ) then
+										local link = SellEnchant_Enchante_DetailFrame_Icone.hitemLink;
+										if ( link ) then
+											ChatFrameEditBox:Insert(link);
+										end
+									end
+								end
+							</OnClick>
+							<OnLeave>
+								GameTooltip:Hide();
+								ResetCursor();
+							</OnLeave>
+						</Scripts>
+						<NormalTexture file=""/>
+					</Button>
+					<Button name = "SellEnchant_Enchante_DetailFrame_Detail">
+						<Size>
+							<AbsDimension x="295" y="48" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_DetailFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parent_Name" inherits="GameFontNormal" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="295" y="12"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_DetailFrame_Icone" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="5" y="2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parent_OutilNeededHeader" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" text="SELLENCHANT_ENCHANT_TOOLNEEDED_HEADER">
+									<Size>
+										<AbsDimension x="60" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_Name" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.85" g="0.85" b="0.85"/>
+								</FontString>
+								<FontString name="$parent_OutilNeeded" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" >
+									<Size>
+										<AbsDimension x="210" y="20"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_OutilNeededHeader" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.85" g="0.85" b="0.85"/>
+								</FontString>
+								<FontString name="$parent_CountMaked" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="100" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_OutilNeededHeader" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.85" g="0.85" b="0.85"/>
+								</FontString>
+								<FontString name="$parent_Description" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
+									<Size>
+										<AbsDimension x="295" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_DetailFrame_Icone" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.85" g="0.85" b="0.85"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								if ( IsShiftKeyDown() ) then
+									if ( ChatFrameEditBox:IsVisible() ) then
+											addText = this.ChatTextForAdd;
+										if ( addText ) then
+											ChatFrameEditBox:Insert(addText);
+										end
+									end
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SELLENCHANT_ENCHANT_TOOLTIP_DETAIL_NAMEDESCRIPTION);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_ListHeader" hidden="true">
+						<Size>
+							<AbsDimension x="295" y="12" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_DetailFrame_Detail_Description" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parent_Name" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP" text="SELLENCHANT_ENCHANT_REAGENT_HEADER_NAME">
+									<Size>
+										<AbsDimension x="120" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_ListHeader" relativePoint="TOPLEFT">
+											<Offset>
+												<!-- Added y="0" -->
+												<AbsDimension x="12" y="0" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parent_Nb" inherits="GameFontNormalSmall" justifyH="CENTER" text="SELLENCHANT_ENCHANT_REAGENT_HEADER_BAGANDNEEDED">
+									<Size>
+										<AbsDimension x="40" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_Name" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parent_NbOther" inherits="GameFontNormalSmall" justifyH="CENTER" text="SELLENCHANT_ENCHANT_REAGENT_HEADER_BANKANDALTERNATE">
+									<Size>
+										<AbsDimension x="40" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_Nb" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parent_PriceUnit" inherits="GameFontNormalSmall" justifyH="CENTER" text="SELLENCHANT_ENCHANT_REAGENT_HEADER_ONEREAGENT">
+									<Size>
+										<AbsDimension x="46" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_NbOther" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parent_PriceTotal" inherits="GameFontNormalSmall" justifyH="CENTER" text="SELLENCHANT_ENCHANT_REAGENT_HEADER_TOTAL">
+									<Size>
+										<AbsDimension x="46" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent_PriceUnit" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								if ( IsShiftKeyDown() ) then
+									if ( ChatFrameEditBox:IsVisible() ) then
+											addText = this.ChatTextForAdd;
+										if ( addText ) then
+											ChatFrameEditBox:Insert(addText);
+										end
+									end
+								end
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+								GameTooltip:SetText(SELLENCHANT_ENCHANT_TOOLTIP_REAGENTSHEADER);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List1" inherits="SellEnchant_Enchante_ReagentsTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_ListHeader" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List2" inherits="SellEnchant_Enchante_ReagentsTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List3" inherits="SellEnchant_Enchante_ReagentsTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List2" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List4" inherits="SellEnchant_Enchante_ReagentsTemplate" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List3" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List5" inherits="SellEnchant_Enchante_ReagentsTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List4" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List6" inherits="SellEnchant_Enchante_ReagentsTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List5" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List7" inherits="SellEnchant_Enchante_ReagentsTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List6" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List8" inherits="SellEnchant_Enchante_ReagentsTemplate" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List7" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List9" inherits="SellEnchant_Enchante_ReagentsTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List8" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name = "SellEnchant_Enchante_Reagents_List10" inherits="SellEnchant_Enchante_ReagentsTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="SellEnchant_Enchante_Reagents_List9" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Frame name="SellEnchant_Enchante_TotalPriceNotBenefFrame"  hidden="true">
+						<Size>
+							<AbsDimension x="170" y="100" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="SellEnchant_Enchante_PriceFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="60" y="44"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parent_Title" inherits="GameFontNormalSmall" justifyH="CENTER" justifyV="TOP" text="SELLENCHANT_ENCHANT_REAGENT_HEADER_NOMARKUP">
+									<Size>
+										<AbsDimension x="70" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="LEFT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+<!--						<Frame name = "$parent_Price" inherits="SellEnchant_Price_Template" justifyH="CENTER" justifyV="CENTER"> -->
+							<Frame name = "$parent_Price" inherits="SellEnchant_Price_Template" justifyH="RIGHT">								
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parent_Title" relativePoint="RIGHT"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>					
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+			<OnShow>
+				SellEnchant_Enchante_Frame_OnShow();
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

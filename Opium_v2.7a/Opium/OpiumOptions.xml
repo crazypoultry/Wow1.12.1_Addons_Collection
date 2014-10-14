@@ -1,0 +1,459 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="OpiumOptions.lua"/>
+
+
+	<Frame name="OpiumOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="500" y="390"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="OpiumOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="OPIUM_OPTIONS_TITLE">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="OpiumOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="OpiumOptionsStoreText" inherits="GameFontNormal"                      text="OPIUM_TEXT_OPTIONS_STOREPLAYERS">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-110" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+
+				</FontString>
+
+				<FontString name="OpiumOptionsChatFrameText" inherits="GameFontNormal" text="OPIUM_TEXT_OPTIONS_USECHATFRAME">
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-100" y="-100"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="OpiumOptionsFrameToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_SHOWMINIMAP);
+					</OnLoad>
+					<OnClick>
+						OpiumButton_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_MINIMAPTOGGLEHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			
+			<Slider name="OpiumSliderButtonPos" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsFrameToggleButton"  relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_MINIMAPPOS);
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						OpiumSliderButtonPos:SetMinMaxValues(0,360);
+						OpiumSliderButtonPos:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+						OpiumData.config.mmbuttonposition = OpiumSliderButtonPos:GetValue();
+						OpiumButton_UpdatePosition();
+					</OnValueChanged>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_MINIMAPPOSHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+				
+				</Scripts>
+			</Slider>
+
+			<CheckButton name="OpiumOptionsGuildnameToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumSliderButtonPos" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_GUILDNAME);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsGuildname_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_GUILDNAMEHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="OpiumOptionsTextalertToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsGuildnameToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_TEXTALERT);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsTextalert_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_TEXTALERTHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="OpiumOptionsSoundalertToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsTextalertToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_SOUNDALERT);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsSoundalert_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_SOUNDALERTHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			<Frame name="OpiumOptionsStoreDropDown" inherits="UIDropDownMenuTemplate" id="1" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsStoreText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="-20" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+             		<OnShow>
+						OpiumOptionsStoreDropDown_OnShow();
+					</OnShow>
+				   <OnEnter>
+				 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_STOREOPTIONSHELP);
+				   </OnEnter>
+				   <OnLeave>
+					   GameTooltip:Hide();
+				   </OnLeave>
+
+				</Scripts>
+			</Frame>
+
+
+		<EditBox name="OK_ChatFrameEditBox" letters="1" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+			<Size>
+ 	     		<AbsDimension x="30" y="15"/>
+     		</Size>
+
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsChatFrameText" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+		<Scripts>
+			<OnEscapePressed>
+				OpiumOptions_Toggle();
+			</OnEscapePressed>
+			<OnEnterPressed>
+				OpiumOptions_Toggle();
+			</OnEnterPressed>
+		   <OnEnter>
+		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+			   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_CHATFRAMEHELP);
+		   </OnEnter>
+		   <OnLeave>
+			   GameTooltip:Hide();
+		   </OnLeave>
+
+		</Scripts>
+
+		</EditBox>
+
+			<CheckButton name="OpiumOptionsTargetbuttonToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsChatFrameText" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_TARGETFRAMEBUTTON);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsTargetbutton_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_TARGETBUTTONHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="OpiumOptionsTrackPvPStatsToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsTargetbuttonToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_PVPSTATS);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsTrackPvPStats_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_PVPSTATSHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="OpiumOptionsStorePvPRankToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsTrackPvPStatsToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_PVPRANKS);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsStorePvPRank_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_PVPRANKSHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="OpiumOptionsBlockSendersToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsSoundalertToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_BLOCKSENDERS);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsBlockSenders_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_BLOCKSENDERSHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="OpiumOptionsColorWhoToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsStorePvPRankToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_COLORWHO);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsColorWho_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_COLORWHOHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+
+
+			<CheckButton name="OpiumOptionsOnlyEnemyAlertsToggleButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="OpiumOptionsBlockSendersToggleButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(OPIUM_TEXT_OPTIONS_ONLYENEMYALERTS);
+					</OnLoad>
+					<OnClick>
+						OpiumOptionsOnlyEnemyAlerts_Toggle();
+					</OnClick>
+				   <OnEnter>
+        		 	   GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+		        	   GameTooltip:SetText(OPIUM_TEXT_OPTIONS_ONLYENEMYALERTSHELP);
+        		   </OnEnter>
+         		   <OnLeave>
+         			   GameTooltip:Hide();
+         		   </OnLeave>
+
+				</Scripts>
+			</CheckButton>
+
+
+
+			<Button name="OpiumOptionsFrameDone" inherits="OptionsButtonTemplate" text="OPIUM_TEXT_OPTIONS_DONE">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						OpiumOptions_Toggle();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				OpiumOptions_OnLoad();
+			</OnLoad>
+			<OnShow>
+				OpiumOptions_OnShow();
+			</OnShow>
+			<OnHide>
+				OpiumOptions_OnHide();
+			</OnHide>
+
+            <OnMouseUp>
+                OpiumOptionsFrame:StopMovingOrSizing();
+            </OnMouseUp>
+            <OnMouseDown>
+                OpiumOptionsFrame:StartMoving();
+            </OnMouseDown>
+
+		</Scripts>
+	</Frame>
+</Ui>

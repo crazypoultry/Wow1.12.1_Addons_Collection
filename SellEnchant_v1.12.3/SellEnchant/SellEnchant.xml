@@ -1,0 +1,551 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="SellEnchant.lua" />
+	<Script file="localization.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	
+	<Button name="SellEnchant_Frame_TabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 4);
+			</OnLoad>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(SellEnchant_Frame);
+				SellEnchant_Tab_OnClick();
+			</OnClick>
+			<OnShow>
+				PanelTemplates_TabResize(10);
+				getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+			</OnShow>
+		</Scripts>
+	</Button>
+
+	<Frame name="SellEnchant_ConfirmFrame"  toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="300" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_Msg" inherits="GameFontNormal" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="270" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>	 
+			</Layer>
+		</Layers>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="10" right="10" top="10" bottom="10"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="$parent_YesButton" inherits="UIPanelButtonTemplate" text="YES">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="25" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SellEnchant_ConfirmFrame.FunctionArg2 = nil;
+						SellEnchant_ConfirmFrame:Hide();
+						if SellEnchant_ConfirmFrame.FunctionArg1 then
+							SellEnchant_ConfirmFrame.FunctionArg1();
+						end
+						SellEnchant_ConfirmFrame.FunctionArg1 = nil;
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_NoButton" inherits="UIPanelButtonTemplate" text="NO">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SellEnchant_ConfirmFrame.FunctionArg1 = nil;
+						SellEnchant_ConfirmFrame:Hide();
+						if SellEnchant_ConfirmFrame.FunctionArg2 then
+							SellEnchant_ConfirmFrame.FunctionArg2();
+						end
+						SellEnchant_ConfirmFrame.FunctionArg2 = nil;
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-25" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						SellEnchant_ConfirmFrame.FunctionArg1 = nil;
+						SellEnchant_ConfirmFrame.FunctionArg2 = nil;						
+						SellEnchant_ConfirmFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="SellEnchant_ChangeEnchantePriceFrame"  toplevel="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="280" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="10" right="10" top="10" bottom="10"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Frame name="$parent_PriceWithPourcent">
+				<Size>
+					<AbsDimension x="280" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="160" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parent_Header" inherits="GameFontNormal" justifyH="LEFT" text="SELLENCHANT_ENCHANT_MARKUPPRICE_HEADER">
+							<Size>
+								<AbsDimension x="110" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</FontString>	 
+						<FontString name="$parent_Price" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" text="Prix">
+							<Size>
+								<AbsDimension x="80" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="10" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>	 
+					</Layer>
+				</Layers>
+			</Frame>
+			<CheckButton name="$parent_CheckButton" hidden="false" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="22" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="50" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parent_Header" inherits="GameFontNormal" justifyH="LEFT" text="SELLENCHANT_ENCHANT_MARKUPPRICE_CHECKBOX">
+							<Size>
+								<AbsDimension x="200" y="16"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>	 
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						ESell_ChangeEnchantePrice_SetStatuEditBox(this:GetChecked())
+					</OnShow>
+					<OnClick>
+						ESell_ChangeEnchantePrice_SetStatuEditBox(this:GetChecked())
+					</OnClick>
+				</Scripts>
+			</CheckButton>			
+			<EditBox name="$parent_GoldEditBox" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+				<Size>
+					<AbsDimension x="45" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="55" y="-110"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\MoneyFrame\UI-MoneyIcons.blp">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="17" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parent_up" inherits="UIPanelScrollUpButtonTemplate">
+						<Size>
+							<AbsDimension x="11" y="11"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-9" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetParent():GetNumber() == 999 then return end
+								this:GetParent():SetNumber(this:GetParent():GetNumber() + 1);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_down" inherits="UIPanelScrollDownButtonTemplate">
+						<Size>
+							<AbsDimension x="11" y="11"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-9" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():SetNumber(this:GetParent():GetNumber() - 1);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</EditBox>
+			<EditBox name="$parent_SilverEditBox" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+				<Size>
+					<AbsDimension x="35" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_GoldEditBox" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\MoneyFrame\UI-MoneyIcons.blp">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="17" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parent_up" inherits="UIPanelScrollUpButtonTemplate">
+						<Size>
+							<AbsDimension x="11" y="11"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-9" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetParent():GetNumber() == 99 then return end
+								this:GetParent():SetNumber(this:GetParent():GetNumber() + 1);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_down" inherits="UIPanelScrollDownButtonTemplate">
+						<Size>
+							<AbsDimension x="11" y="11"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-9" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():SetNumber(this:GetParent():GetNumber() - 1);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</EditBox>
+			<EditBox name="$parent_CopperEditBox" letters="2" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+				<Size>
+					<AbsDimension x="35" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_SilverEditBox" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="25" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\MoneyFrame\UI-MoneyIcons.blp">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="17" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parent_up" inherits="UIPanelScrollUpButtonTemplate">
+						<Size>
+							<AbsDimension x="11" y="11"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-9" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if this:GetParent():GetNumber() == 99 then return end
+								this:GetParent():SetNumber(this:GetParent():GetNumber() + 1);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_down" inherits="UIPanelScrollDownButtonTemplate">
+						<Size>
+							<AbsDimension x="11" y="11"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-9" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								this:GetParent():SetNumber(this:GetParent():GetNumber() - 1);
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</EditBox>
+
+
+
+			<Button name="$parent_OkButton" inherits="UIPanelButtonTemplate" text="OK">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="40" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ESell_ChangeEnchantePrice_SetNewPrice();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ESell_ChangeEnchantePrice_Reset(true);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<MessageFrame name="SellEnchant_Msg" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="450" y="60"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-122"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+		</Scripts>
+		<FontString inherits="ErrorFont" justifyH="CENTER"/>
+	</MessageFrame>
+
+	<FontString name="SellEnchant_VerySmallFont" inherits="MasterFont" font="Fonts\ARIALN.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="11"/>
+		</FontHeight>
+	</FontString>
+	
+	<Frame name="SellEnchant_Price_Template" virtual="true">
+		<Size>
+			<AbsDimension x="50" y="14"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentGold" inherits="SellEnchant_VerySmallFont" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="22" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSilver" inherits="SellEnchant_VerySmallFont" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="14" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentGold" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentCopper" inherits="SellEnchant_VerySmallFont" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="14" y="14"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSilver" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Gold"):SetTextColor(MONEYCOLOR.Gold[1],MONEYCOLOR.Gold[2],MONEYCOLOR.Gold[3]);
+				getglobal(this:GetName().."Silver"):SetTextColor(MONEYCOLOR.Silver[1],MONEYCOLOR.Silver[2],MONEYCOLOR.Silver[3]);
+				getglobal(this:GetName().."Copper"):SetTextColor(MONEYCOLOR.Copper[1],MONEYCOLOR.Copper[2],MONEYCOLOR.Copper[3]);
+			</OnLoad>
+		</Scripts>		
+	</Frame>
+		
+	<Frame name="SellEnchant">
+		<Scripts>
+			<OnLoad>
+				ESell_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				ESell_OnEvent(event);
+			</OnEvent>
+<!--
+			<OnUpdate>
+				ESell_OnUpdate();
+			</OnUpdate>
+-->
+		</Scripts>
+	</Frame>
+	<Frame name="SellEnchantUpdateToolTipFrame" parent="UIParent">
+		<Scripts>
+			<OnUpdate>
+				ESell_ToolTip_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,528 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="localization.lua"/> 
+	<Script file="TauntBuddy.lua"/>
+	<Frame name="TauntBuddyFrame" frameStrata="BACKGROUND" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+		<Scripts>
+			<OnLoad>TB_OnLoad();</OnLoad>
+			<OnEvent>TB_OnEvent(event);</OnEvent>
+		</Scripts>
+		<Size><AbsDimension x="200" y="250"/></Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+ 		</Anchors>
+		<Frames>
+			<Button name="ButtonClose" inherits="OptionsButtonTemplate" text="TB_GUI_Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TauntBuddyFrame:Hide();</OnClick>
+				</Scripts>
+			</Button>
+			<CheckButton name="$parentCheckButton" inherits="OptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-20"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>TB_toggleStatus();</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame name="$parentTitle" frameStrata="MEDIUM" toplevel="true" enableMouse="true" movable="true" parent="TauntBuddyFrame">
+				<Size><AbsDimension x="125" y="32"/></Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TauntBuddyFrame">
+						<Offset>
+							<AbsDimension x="0" y="15"/>
+						</Offset>
+  					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="TitleText" inherits="GameFontNormal" text="Taunt Buddy">
+							<Anchors>
+								<Anchor point="TOPCENTER" relativeTo="TauntBuddyFrameTitle">
+									<Offset>
+  										<AbsDimension x="0" y="-16" /> 
+  									</Offset>
+  								</Anchor>
+  							</Anchors>
+						</FontString>
+						<FontString name="EnableText" inherits="GameFontNormalSmall" text="TB_GUI_EnableTauntBuddy">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="TauntBuddyFrame">
+									<Offset>
+  										<AbsDimension x="65" y="-30"/> 
+  									</Offset>
+  								</Anchor>
+  							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Backdrop bgFile="Interface\AuctionFrame\UI-AuctionFrame-Bid-Bot" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="24"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="64"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+ 				</Backdrop>
+			</Frame>
+			<Frame name="TB_ChannelDropDown" inherits="UIDropDownMenuTemplate" hidden="false">
+				<Size>
+					<AbsDimension x="64" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TauntBuddyFrame">
+						<Offset>
+							<AbsDimension x="0" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						TB_ChannelDropDown_OnLoad();
+					</OnLoad>
+					<OnClick>
+						ToggleDropDownMenu(1, nil, this);
+					</OnClick>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="AnnouncementChannelText" inherits="GameFontNormalSmall" text="TB_GUI_AnnouncementChannel">
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TB_ChannelDropDown">
+									<Offset>
+  										<AbsDimension x="0" y="12" /> 
+  									</Offset>
+  								</Anchor>
+  							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="ButtonCustomChannel" inherits="OptionsButtonTemplate" text="TB_GUI_SetCustomChannel">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="TB_ChannelDropDown">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="AnnouncementText" inherits="GameFontNormalSmall" text="TB_GUI_AnnouncementTexts">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeTo="ButtonCustomChannel">
+									<Offset>
+  										<AbsDimension x="0" y="-25" /> 
+  									</Offset>
+  								</Anchor>
+  							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						ButtonCustomChannel:SetWidth(165);
+						ButtonCustomChannel:SetHeight("20");
+						ButtonCustomChannel:SetTextColor("1","1","1","1");
+					</OnLoad>
+					<OnClick>
+						TB_SetCustomChannel();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name ="SetCustomChannel" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="TauntBuddyFrame" hidden="true">
+				<Size><AbsDimension x="250" y="85"/></Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="TauntBuddyFrame"/>
+				</Anchors>
+				<Frames>
+					<EditBox name="EditboxCustomChannel" letters="30" hidden="false">
+						<Size>
+							<AbsDimension x="175" y="32"></AbsDimension>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SetCustomChannel">
+								<Offset>
+									<AbsDimension x="0" y="-20"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="SetCustomChannelText" inherits="GameFontNormalSmall" text="TB_GUI_EnterChannelName">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="SetCustomChannel">
+											<Offset>
+  												<AbsDimension x="0" y="-12" /> 
+  											</Offset>
+  										</Anchor>
+  									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="60" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SetCustomChannel">
+											<Offset>
+												<AbsDimension x="25" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.2" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+									<Size>
+										<AbsDimension x="60" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="SetCustomChannel">
+											<Offset>
+												<AbsDimension x="-25" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="100" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="SetCustomChannel">
+											<Offset>
+												<AbsDimension x="0" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad></OnLoad>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"></FontString>
+					</EditBox>
+					<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="TB_GUI_Close">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-12" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TB_CloseCustomChannel();</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="28"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+ 				</Backdrop>
+			</Frame>
+			<Button name="ButtonAnnouncementTextTaunt" inherits="OptionsButtonTemplate" text="TB_GUI_Taunt">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="AnnouncementText">
+						<Offset>
+							<AbsDimension x="0" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						ButtonAnnouncementTextTaunt:SetWidth(80);
+						ButtonAnnouncementTextTaunt:SetHeight("20");
+						ButtonAnnouncementTextTaunt:SetTextColor("1","1","1","1");
+					</OnLoad>
+					<OnClick>
+						TB_SetTauntText();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="ButtonAnnouncementTextMB" inherits="OptionsButtonTemplate" text="TB_GUI_MB">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="ButtonAnnouncementTextTaunt">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						ButtonAnnouncementTextMB:SetWidth(120);
+						ButtonAnnouncementTextMB:SetHeight("20");
+						ButtonAnnouncementTextMB:SetTextColor("1","1","1","1");
+					</OnLoad>
+					<OnClick>
+						TB_SetMBText();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+			<Frame name ="SetTauntText" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="TauntBuddyFrame" hidden="true">
+				<Size><AbsDimension x="500" y="85"/></Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="TauntBuddyFrame"/>
+				</Anchors>
+				<Frames>
+					<EditBox name="EditboxTauntText" letters="80" hidden="false">
+						<Size>
+							<AbsDimension x="425" y="32"></AbsDimension>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SetTauntText">
+								<Offset>
+									<AbsDimension x="0" y="-20"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="SetTauntTextText" inherits="GameFontNormalSmall" text="TB_GUI_EnterNewTauntText">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="SetTauntText">
+											<Offset>
+  												<AbsDimension x="0" y="-12" /> 
+  											</Offset>
+  										</Anchor>
+  									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="60" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SetTauntText">
+											<Offset>
+												<AbsDimension x="25" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.2" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+									<Size>
+										<AbsDimension x="60" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="SetTauntText">
+											<Offset>
+												<AbsDimension x="-25" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="370" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="SetTauntText">
+											<Offset>
+												<AbsDimension x="0" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad></OnLoad>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"></FontString>
+					</EditBox>
+					<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="TB_GUI_Close">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-12" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TB_CloseTauntText();</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="28"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+ 				</Backdrop>
+			</Frame>
+
+
+			<Frame name ="SetMBText" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="TauntBuddyFrame" hidden="true">
+				<Size><AbsDimension x="500" y="85"/></Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="TauntBuddyFrame"/>
+				</Anchors>
+				<Frames>
+					<EditBox name="EditboxMBText" letters="80" hidden="false">
+						<Size>
+							<AbsDimension x="425" y="32"></AbsDimension>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="SetMBText">
+								<Offset>
+									<AbsDimension x="0" y="-20"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="SetMBTextText" inherits="GameFontNormalSmall" text="TB_GUI_EnterNewMBText">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="SetMBText">
+											<Offset>
+  												<AbsDimension x="0" y="-12" /> 
+  											</Offset>
+  										</Anchor>
+  									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="60" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="SetMBText">
+											<Offset>
+												<AbsDimension x="25" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.2" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+									<Size>
+										<AbsDimension x="60" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="SetMBText">
+											<Offset>
+												<AbsDimension x="-25" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+									<Size>
+										<AbsDimension x="370" y="32"></AbsDimension>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="SetMBText">
+											<Offset>
+												<AbsDimension x="0" y="-20"></AbsDimension>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad></OnLoad>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"></FontString>
+					</EditBox>
+					<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="TB_GUI_Close">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-12" y="12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>TB_CloseMBText();</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="28"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="32"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+ 				</Backdrop>
+			</Frame>
+
+
+		</Frames>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="28"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+ 		</Backdrop>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="VersionText" inherits="GameFontNormalSmall" text="TB_version">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="TauntBuddyFrame">
+									<Offset>
+  										<AbsDimension x="16" y="16" /> 
+  									</Offset>
+  								</Anchor>
+  							</Anchors>
+						</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>
+
+
+			

@@ -1,0 +1,239 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="MiniFriends.lua" />
+	<Button name = "FriendTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="16" />
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parent_Text" inherits="GameFontHighlight" wraponspaces="false" justifyH="LEFT" text="A friend"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnLeave>
+				MiniFriends_OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<GameTooltip name="MiniFriendsTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+ 	<Frame name="MiniFriendsFrame" toplevel="true" parent="UIParent" frameStrata="MEDIUM" enableMouse="true" movable="true" hidden="false" resizable="false">
+		<Size>
+			<AbsDimension x="100" y="96"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\ChatBubble-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Scripts>
+			<OnLoad>
+				MiniFriends_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				MiniFriends_OnEvent();
+			</OnEvent>
+			<OnMouseUp>
+				if(this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if((MFFlags[MFF_Locked] == false) and (arg1 == "LeftButton")) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnShow>
+				MFFlags[MFF_Visible] = true;
+			</OnShow>
+			<OnHide>
+				MFFlags[MFF_Visible] = false;
+				if (this.isMoving) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+			<OnEnter>
+				MiniFriendsList_Update();
+			</OnEnter>
+		</Scripts>
+
+		<Frames>
+			<MessageFrame name="MiniFriendsSplashFrame" frameStrata="LOW" insertMode="TOP" parent="UIParent" toplevel="true">
+				<Size>
+					<AbsDimension x="512" y="100"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="NumberFontNormalHuge" justifyH="CENTER"></FontString>
+			</MessageFrame>
+
+			<Frame name="MiniFriendsMenu" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MiniFriendsFrame" >
+					<Offset>
+						<absDimension x="0" y="0" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+		 	<Button name="MiniFriendsOptionsButton">
+				<Size>
+					<AbsDimension x="100" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="MiniFriendsFrame" relativePoint="TOPLEFT" />
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\ChatBubble-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+					<BackgroundInsets>
+						<AbsInset left="4" right="4" top="4" bottom="4"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+				<Scripts>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnMouseUp>
+						if(MiniFriendsFrame.isMoving) then
+							MiniFriendsFrame:StopMovingOrSizing();
+							MiniFriendsFrame.isMoving = false;
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if((MFFlags[MFF_Locked] == false) and (arg1 == "LeftButton")) then
+							MiniFriendsFrame:StartMoving();
+							MiniFriendsFrame.isMoving = true;
+						end
+					</OnMouseDown>
+					<OnClick>
+						MiniFriends_OnClickOptions(arg1);
+					</OnClick>
+				</Scripts>
+	 		</Button>
+
+			<ScrollFrame name="MiniFriendsList" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="64" y="80"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MiniFriendsFrame">
+						<Offset>
+							<AbsDimension x="8" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(16, MiniFriendsList_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+
+			<Button name="FriendEntry1" inherits="FriendTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MiniFriendsList" relativePoint="TOPLEFT"/>
+				</Anchors>
+			<Scripts>
+				<OnEnter>
+					MiniFriends_OnEnter(FriendEntry1_Text:GetText(), this);
+				</OnEnter>
+				<OnClick>
+					MiniFriends_OnClick(FriendEntry1_Text:GetText(),arg1);
+				</OnClick>
+			</Scripts>
+			</Button>
+			<Button name="FriendEntry2" inherits="FriendTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FriendEntry1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			<Scripts>
+				<OnEnter>
+					MiniFriends_OnEnter(FriendEntry2_Text:GetText(), this);
+				</OnEnter>
+				<OnClick>
+					MiniFriends_OnClick(FriendEntry2_Text:GetText(),arg1);
+				</OnClick>
+			</Scripts>
+			</Button>
+			<Button name="FriendEntry3" inherits="FriendTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FriendEntry2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			<Scripts>
+				<OnEnter>
+					MiniFriends_OnEnter(FriendEntry3_Text:GetText(), this);
+				</OnEnter>
+				<OnClick>
+					MiniFriends_OnClick(FriendEntry3_Text:GetText(),arg1);
+				</OnClick>
+			</Scripts>
+			</Button>
+			<Button name="FriendEntry4" inherits="FriendTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FriendEntry3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			<Scripts>
+				<OnEnter>
+					MiniFriends_OnEnter(FriendEntry4_Text:GetText(), this);
+				</OnEnter>
+				<OnClick>
+					MiniFriends_OnClick(FriendEntry4_Text:GetText(),arg1);
+				</OnClick>
+			</Scripts>
+			</Button>
+			<Button name="FriendEntry5" inherits="FriendTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FriendEntry4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+			<Scripts>
+				<OnEnter>
+					MiniFriends_OnEnter(FriendEntry5_Text:GetText(), this);
+				</OnEnter>
+				<OnClick>
+					MiniFriends_OnClick(FriendEntry5_Text:GetText(),arg1);
+				</OnClick>
+			</Scripts>
+			</Button>
+
+ 		</Frames>
+	</Frame>
+</Ui>

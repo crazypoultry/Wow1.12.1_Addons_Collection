@@ -1,0 +1,467 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Localization.en.lua" />
+	<Script file="Localization.de.lua" /> 
+	<Script file="Localization.fr.lua" />
+	<Script file="WatchDog.lua"/>
+	<Script file="WatchDogCustom.lua"/>
+	<Script file="WatchDogUtil.lua"/>
+				
+	<!-- Templates First -->
+
+	<!-- Template Button for Debuffs-->
+		
+	<Button name="WatchDog_DebuffTemplate" virtual="true">
+		<Size><AbsDimension x="14" y="14"/></Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parent_Overlay" file="Interface\Buttons\UI-Debuff-Border" hidden="false">
+					<Size><AbsDimension x="16" y="16"/></Size>
+					<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+				</Texture>
+				<FontString name="$parent_Count" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>							
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -15);								
+				GameTooltip:SetUnitDebuff(this:GetParent():GetParent().unit, this.id);				
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>	
+
+	<!-- Template for Buffs (No Overlay needed) -->
+	<Button name="WatchDog_BuffTemplate" virtual="true">
+		<Size><AbsDimension x="15" y="15"/></Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Count" inherits="NumberFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-1" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("RightButtonUp")
+			</OnLoad>
+			<OnClick>
+				CancelPlayerBuff(GetPlayerBuff(this.id - 1, "HELPFUL"))
+			</OnClick>
+			<OnEnter>				
+				GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -15);			
+				GameTooltip:SetUnitBuff(this:GetParent():GetParent().unit, this.id);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<!-- Template for Unit StatusBars+Text -->
+	<Button name ="WatchDog_UnitTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="64" y="34"/>
+		</Size>
+		
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize><AbsValue val="16"/></EdgeSize>
+			<TileSize><AbsValue val="8"/></TileSize>
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<Frames>		
+			<Frame>
+				<Layers>			
+					<Layer level="OVERLAY">
+					<FontString name="$parent_Text1Left" inherits="GameFontHighlightSmall" justifyH="LEFT" text="WatchDog" >
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="5" y="-5"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="LEFT">
+								<Offset><AbsDimension x="5" y="0"/></Offset>
+							</Anchor>																		
+						</Anchors>
+					</FontString>
+					<FontString name="$parent_Text1Right" inherits="GameFontHighlightSmall" justifyH="RIGHT" text="">
+						<Anchors>							
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="-5" y="-5"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="RIGHT">
+								<Offset><AbsDimension x="-5" y="0"/></Offset>
+							</Anchor>											
+						</Anchors>
+					</FontString>	
+					<FontString name="$parent_Text1Center" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Text1Left" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" relativeTo="$parent_Text1Right" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>																						
+						</Anchors>
+					</FontString>											
+					<FontString name="$parent_Text2Left" inherits="GameFontHighlightSmall" justifyH="LEFT" text="WatchDog">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Text1Left" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="4"/></Offset>
+							</Anchor>																													
+						</Anchors>
+					</FontString>
+					<FontString name="$parent_Text2Right" inherits="GameFontHighlightSmall" justifyH="RIGHT" text="">
+						<Anchors>							
+							<Anchor point="TOPRIGHT" relativeTo="$parent_Text1Right" relativePoint="BOTTOMRIGHT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset><AbsDimension x="0" y="4"/></Offset>
+							</Anchor>																															
+						</Anchors>
+					</FontString>
+					<FontString name="$parent_Text2Center" inherits="GameFontHighlightSmall" justifyH="CENTER" text="">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Text2Left" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" relativeTo="$parent_Text2Right" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="0"/></Offset>
+							</Anchor>
+							<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+								<Offset><AbsDimension x="0" y="4"/></Offset>
+							</Anchor>																	
+						</Anchors>
+					</FontString>									
+					</Layer>			
+				</Layers>	
+			</Frame>
+					
+			<!-- 16 buttons for buffs -->
+			<Frame name="$parent_Buff" movable="true">
+				<Size x="120" y="30"/>
+				<Anchors><Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="RIGHT"><Offset x="-2" y="-2"></Offset></Anchor></Anchors>														
+				<Frames>
+					<Button name="$parent1" inherits="WatchDog_BuffTemplate" id="1" movable="true">
+						<Anchors><Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT"><Offset x="0" y="0"></Offset></Anchor></Anchors>
+					</Button>
+					<Button name="$parent2" inherits="WatchDog_BuffTemplate" id="3">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent1" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent3" inherits="WatchDog_BuffTemplate" id="5">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent2" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent4" inherits="WatchDog_BuffTemplate" id="7">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent3" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>	
+					<Button name="$parent5" inherits="WatchDog_BuffTemplate" id="9">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent4" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent6" inherits="WatchDog_BuffTemplate" id="11">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent5" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>	
+					<Button name="$parent7" inherits="WatchDog_BuffTemplate" id="13">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent6" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent8" inherits="WatchDog_BuffTemplate" id="15">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent7" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>		
+					
+					<Button name="$parent9" inherits="WatchDog_BuffTemplate" id="2">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent10" inherits="WatchDog_BuffTemplate" id="4">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent9" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent11" inherits="WatchDog_BuffTemplate" id="6">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent10" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>	
+					<Button name="$parent12" inherits="WatchDog_BuffTemplate" id="8">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent11" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent13" inherits="WatchDog_BuffTemplate" id="10">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent12" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>	
+					<Button name="$parent14" inherits="WatchDog_BuffTemplate" id="12">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent13" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent15" inherits="WatchDog_BuffTemplate" id="14">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent14" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent16" inherits="WatchDog_BuffTemplate" id="16">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parent15" relativePoint="TOPRIGHT"><Offset x="0" y="0"/></Anchor></Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			
+			<Frame name="$parent_Debuff" movable="true">
+				<Size x="120" y="15"/>
+				<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT"><Offset x="2" y="-2"></Offset></Anchor></Anchors>							
+				<Frames>			
+					<Button name="$parent1" inherits="WatchDog_DebuffTemplate" id="1" movable="true">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"><Offset x="-1" y="-2"/></Anchor></Anchors>			
+					</Button>
+					<Button name="$parent2" inherits="WatchDog_DebuffTemplate" id="3">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent1" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent3" inherits="WatchDog_DebuffTemplate" id="5">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent2" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent4" inherits="WatchDog_DebuffTemplate" id="7">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent3" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent5" inherits="WatchDog_DebuffTemplate" id="9">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent4" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent6" inherits="WatchDog_DebuffTemplate" id="11">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent5" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent7" inherits="WatchDog_DebuffTemplate" id="13">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent6" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent8" inherits="WatchDog_DebuffTemplate" id="15">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent7" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+
+					<Button name="$parent9" inherits="WatchDog_DebuffTemplate" id="2" movable="false">
+						<Anchors><Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"><Offset x="-1" y="-2"/></Anchor></Anchors>			
+					</Button>
+					<Button name="$parent10" inherits="WatchDog_DebuffTemplate" id="4">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent1" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent11" inherits="WatchDog_DebuffTemplate" id="6">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent2" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent12" inherits="WatchDog_DebuffTemplate" id="8">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent3" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent13" inherits="WatchDog_DebuffTemplate" id="10">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent4" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent14" inherits="WatchDog_DebuffTemplate" id="12">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent5" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent15" inherits="WatchDog_DebuffTemplate" id="14">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent6" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+					<Button name="$parent16" inherits="WatchDog_DebuffTemplate" id="16">
+						<Anchors><Anchor point="TOPRIGHT" relativeTo="$parent7" relativePoint="TOPLEFT"><Offset x="-1" y="0"/></Anchor></Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			
+			<StatusBar name="$parent_StatusBar1" minValue="0" maxValue="100">
+				<Size>
+					<AbsDimension x="50" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="5" y="-5"/></Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset><AbsDimension x="-5" y="-5"/></Offset>
+					</Anchor>
+				</Anchors>				
+				<BarTexture name="$parent_Texture" file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+			
+			<StatusBar name="$parent_StatusBar2" minValue="0" maxValue="100">
+				<Size>
+					<AbsDimension x="50" y="12"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_StatusBar1" relativePoint="BOTTOMLEFT">
+						<Offset><AbsDimension x="0" y="0"/></Offset>
+					</Anchor>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset><AbsDimension x="0" y="5"/></Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent_StatusBar1" relativePoint="BOTTOMRIGHT">
+						<Offset><AbsDimension x="0" y="0"/></Offset>
+					</Anchor>
+				</Anchors>				
+				<BarTexture name="$parent_Texture" file="Interface\TargetingFrame\UI-StatusBar"/>
+			</StatusBar>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>				
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up");	
+				this:SetBackdropColor(0,0,0,0)			
+			</OnLoad>
+			<OnClick>
+				WatchDog_OnClick(arg1);
+			</OnClick>
+			<OnEnter>
+				if not WatchDog.locked then 
+					WatchDog.gtt = true
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT", 15, -15);								
+					GameTooltip:SetText("Left-Drag to move all frames.\nAlt-Left-Drag to move this frame.");				
+				elseif WatchDog.tooltips then 
+					UnitFrame_OnEnter() 
+				end
+			</OnEnter>
+			<OnLeave>
+				if not WatchDog.locked then 
+					GameTooltip:Hide()
+					WatchDog.gtt = false
+				elseif WatchDog.tooltips then 
+					UnitFrame_OnLeave() 
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<!-- Real Definitions -->
+
+	<GameTooltip name="WatchDogTooltip" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(this, "ANCHOR_NONE")
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	
+	<Frame name="WatchDogFrame" frameStrata="LOW" parent="UIParent" movable="true" enableMouse="true" hidden="false">
+		<Size>
+			<AbsDimension x="1" y="1"/>
+		</Size>			
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent"/>
+		</Anchors>					
+		
+		<Frames>
+				
+			<Button name="$parent_target" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent_targettarget" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="250" y="0"/></Offset>
+					</Anchor>
+				</Anchors>				
+			</Button>
+		
+		
+			<Button name="$parent_player" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="0" y="-33"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<Button name="$parent_pet" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="250" y="-33"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>						
+					
+		
+			
+			<Button name="$parent_party1" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="0" y="-64"/></Offset>
+					</Anchor></Anchors>
+			</Button>
+			<Button name="$parent_partypet1" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="250" y="-64"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			
+			<Button name="$parent_party2" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="0" y="-95"/></Offset>
+					</Anchor></Anchors>
+			</Button>
+			<Button name="$parent_partypet2" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="250" y="-95"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			
+			<Button name="$parent_party3" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="0" y="-126"/></Offset>
+					</Anchor></Anchors>
+			</Button>
+			<Button name="$parent_partypet3" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="250" y="-126"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			
+			<Button name="$parent_party4" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="0" y="-157"/></Offset>
+					</Anchor></Anchors>
+			</Button>
+			<Button name="$parent_partypet4" inherits="WatchDog_UnitTemplate" movable="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset><AbsDimension x="250" y="-157"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+		</Frames>		
+		
+		<Scripts>
+			<OnLoad>				
+				WatchDog_OnLoad()			
+			</OnLoad>
+			<OnEvent>
+				WatchDog_OnEvent(event);	
+			</OnEvent>
+			<OnUpdate>
+				if WatchDog.toft then WatchDog_UpdateTOFT() elseif WatchDogFrame_targettarget:IsVisible() then WatchDogFrame_targettarget:Hide() end;
+			</OnUpdate>					
+		</Scripts>
+	</Frame>
+</Ui>

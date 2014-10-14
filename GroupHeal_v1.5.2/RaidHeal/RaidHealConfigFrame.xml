@@ -1,0 +1,552 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Include file="..\..\FrameXML\CharacterFrameTemplates.xml"/>
+	
+	<CheckButton name="RaidHeal_CheckBoxTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-100" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				RaidHealConfig_CheckBox_OnClick();
+			</OnClick>
+			<OnShow>
+				RaidHealConfig_CheckBox_OnShow();
+			</OnShow>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+				if ( this.tooltipRequirement ) then
+					GameTooltip:AddLine(this.tooltipRequirement, "", 1.0, 1.0, 1.0);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	
+	<Frame name="RaidHeal_ButtonPosition_DropDownMenuTemplate" inherits="UIDropDownMenuTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="130" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-135" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				RaidHealConfig_PositionDropDownMenu_OnLoad();
+			</OnLoad>
+			<OnShow>
+				RaidHealConfig_PositionDropDownMenu_OnShow();
+			</OnShow>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+				GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<Slider name="RaidHeal_SliderTemplate" orientation="HORIZONTAL" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="200" y="17"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+		</HitRectInsets>
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="8"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="8"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="6" bottom="6"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLow" inherits="GameFontHighlightSmall" text="LOW">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentHigh" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentValue" inherits="GameFontNormalSmall" text="VALUE">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				RaidHealConfig_Slider_OnLoad( this:GetID() );
+				local min, max = this:GetMinMaxValues();
+				getglobal(this:GetName().."Low"):SetText(min);
+				getglobal(this:GetName().."High"):SetText(max);
+			</OnLoad>
+			<OnShow>
+				RaidHealConfig_Slider_OnShow();
+				getglobal(this:GetName().."Value"):SetText(this:GetValue());
+			</OnShow>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnValueChanged>
+				RaidHealConfig_Slider_ValueChanged();
+				getglobal(this:GetName().."Value"):SetText(this:GetValue());
+			</OnValueChanged>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<ThumbTexture name="$parentThumb" file="Interface\Buttons\UI-SliderBar-Button-Horizontal">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+		</ThumbTexture>
+	</Slider>
+	
+	<Button name="RaidHealConfig_TabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(RaidHealConfigFrame);
+				RaidHealConfig_Tab_OnClick();
+			</OnClick>
+			<OnEnter>
+				
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Frame name="RaidHealConfigFrame" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" movable="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="70"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\MacroFrame\MacroFrame-Icon">
+					<Size>
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentTitleText" inherits="GameFontNormal" text="RaidHeal Configuration">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="6" y="230"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-26"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<!-- Tabs -->
+			<Button name="RaidHealConfigFrameTab1" inherits="RaidHealConfig_TabTemplate" id="1" text="General">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="61"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="RaidHealConfigFrameTab2" inherits="RaidHealConfig_TabTemplate" id="2" text="Advanced">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="RaidHealConfigFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<!-- General Options Tab -->
+			<Frame name="RaidHealConfigFrame_TabFrame1">
+				<Frames>
+					<Frame name="$parentHealButtons">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="RaidHealConfigFrame">
+								<Offset>
+									<AbsDimension x="34" y="-90"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="270" y="130"/>
+						</Size>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitleText" inherits="GameFontNormal" text="Raid Heal Buttons">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentBigHeal" inherits="RaidHeal_ButtonPosition_DropDownMenuTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-3" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentFastHeal" inherits="RaidHeal_ButtonPosition_DropDownMenuTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parentBigHeal" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentOverTimeHeal" inherits="RaidHeal_ButtonPosition_DropDownMenuTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parentFastHeal" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentShield" inherits="RaidHeal_ButtonPosition_DropDownMenuTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOPRIGHT" relativeTo="$parentOverTimeHeal" relativePoint="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame name="$parentReportingOptions">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentHealButtons" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="300" y="50"/>
+						</Size>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitleText" inherits="GameFontNormal" text="Heal Reporting Options">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton name="$parentRaidToSay" inherits="RaidHeal_CheckBoxTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="3" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										this.option = "raidToSay";
+										RaidHealConfig_CheckBox_OnLoad();
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parentRaidToParty" inherits="RaidHeal_CheckBoxTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentRaidToSay" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										this.option = "raidToParty";
+										RaidHealConfig_CheckBox_OnLoad();
+									</OnLoad>
+								</Scripts>
+							</CheckButton>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+				
+			<!-- Advanced Options Tab -->
+			<Frame name="RaidHealConfigFrame_TabFrame2" hidden="true">
+				<Frames>
+					<Frame name="RaidHealConfig_SpacingOptions">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="RaidHealConfigFrame">
+								<Offset>
+									<AbsDimension x="34" y="-90"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="270" y="90"/>
+						</Size>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitleText" inherits="GameFontNormal" text="Button Position Options">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Slider name="$parentXOffset" inherits="RaidHeal_SliderTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="12" y="-15"/>
+										</Offset>
+									</Anchor>
+								</Anchors>			
+							</Slider>
+							<Slider name="$parentYOffset" inherits="RaidHeal_SliderTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentXOffset" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-30"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Slider>
+							<Slider name="$parentSpacing" inherits="RaidHeal_SliderTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentYOffset" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-30"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Slider>
+						</Frames>
+						<Script>
+							getglobal(this:GetName().."TitleText"):SetText(RaidHeal_Strings["SPACING_OPTIONS"]);
+						</Script>
+					</Frame>
+					
+					<Frame name="RaidHealConfig_MiscOptions">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="RaidHealConfig_SpacingOptions" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size>
+							<AbsDimension x="270" y="30"/>
+						</Size>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."TitleText"):SetText(GROUPHEALCONFIG_MISCOPTIONS_TITLE);
+							</OnLoad>
+						</Scripts>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitleText" inherits="GameFontNormal">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="RaidHeal_RaidUI_DropDownMenu" inherits="UIDropDownMenuTemplate" hidden="false">
+								<Size>
+									<AbsDimension x="130" y="32"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-3" y="-3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+											<Anchors>
+												<Anchor point="LEFT" relativePoint="LEFT">
+													<Offset>
+														<AbsDimension x="-135" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnLoad>
+										RaidHealConfig_RaidUISelection_OnLoad();
+									</OnLoad>
+									<OnShow>
+										RaidHealConfig_RaidUISelection_OnShow();
+									</OnShow>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+										GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				RaidHealConfigFrame_OnLoad();
+			</OnLoad>
+			<OnShow>
+				RaidHealConfigFrame_OnShow();
+			</OnShow>
+			<OnHide>
+				RaidHealConfigFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>
+

@@ -1,0 +1,723 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="WeaponRebuff.lua"/>
+	<Script file="WeaponRebuff-Core.lua"/>
+	<Script file="WeaponRebuff-DropDowns.lua"/>
+	
+	<MessageFrame name="WeaponRebuff_InfodumpFrame" insertMode="BOTTOM" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<FontString inherits="ErrorFont" justifyH="CENTER"/>
+	</MessageFrame>
+
+	<GameTooltip name="wrItemTempTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip> 
+
+	<Button name="WeaponRebuffDropdownButtonTemplate" virtual="true" hidden="true">
+  	<Size>
+  		<AbsDimension x="50" y="12"/>
+  	</Size>
+  	<Scripts>
+			<OnClick>
+				WeaponRebuff:DropDownMenu_OnClick(this:GetID());
+			</OnClick>
+  	</Scripts>
+  	<NormalText inherits="GameFontNormal" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+		</NormalText>
+
+  	<HighlightText inherits="GameFontHighlight" justifyH="LEFT"/>
+  	<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+  	<DisabledText inherits="GameFontDisable" justifyH="LEFT"/>
+	</Button>
+	
+	<Button name="WeaponRebuffButtonTemplate" virtual="true">
+		<Size>
+    	<AbsDimension x="16" y="16"/>
+		</Size>
+		<Anchors>
+    	<Anchor point="TOPLEFT">
+      	<Offset>
+        	<AbsDimension x="4" y="-4"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+    <Layers>
+    	<Layer level="BACKGROUND">
+      	<FontString name="$parentText" inherits="GameFontHighlightSmall" justifyH="LEFT">
+          <Anchors>
+            <Anchor point="LEFT">
+              <Offset>
+              	<AbsDimension x="18" y="2"/>
+            	</Offset>
+          	</Anchor>
+        	</Anchors>
+      	</FontString>
+    	</Layer>
+    </Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp");				
+			</OnLoad>
+			<OnMouseDown>
+				if ( WeaponRebuffInfo.wrPositionLocked == 0) then
+					WeaponBuffBar:StartMoving();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if ( WeaponRebuffInfo.wrPositionLocked == 0 ) then
+					WeaponBuffBar:StopMovingOrSizing();
+				end
+				if ( WeaponRebuffInfo.wrPositionLocked == 1 and arg1 == "RightButton" ) then
+					WeaponRebuff:ShowDropdown(this:GetName());
+				end
+			</OnMouseUp>
+			<OnClick>
+				if ( WeaponRebuffInfo.wrPositionLocked == 1 and arg1 == "LeftButton") then
+					WeaponRebuff:Rebuff(this:GetID());
+				end
+			</OnClick>
+		</Scripts>
+    <NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+  	<HighlightTexture alphaMode="ADD" file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight"/>
+	</Button>
+
+
+	<Frame name="newDropdown" frameStrata="DIALOG" hidden="false" parent="UIParent">
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+        <Anchors>
+          <Anchor point="RIGHT" relativeTo="UIParent" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="-50" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+		<Frames>
+			<Button name="WeaponRebuffDropdownButton1" inherits="WeaponRebuffDropdownButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="newDropdown" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton2" inherits="WeaponRebuffDropdownButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton3" inherits="WeaponRebuffDropdownButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton4" inherits="WeaponRebuffDropdownButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton3" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton5" inherits="WeaponRebuffDropdownButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton4" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton6" inherits="WeaponRebuffDropdownButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton5" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton7" inherits="WeaponRebuffDropdownButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton6" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton8" inherits="WeaponRebuffDropdownButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton7" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton9" inherits="WeaponRebuffDropdownButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton8" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton10" inherits="WeaponRebuffDropdownButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton9" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton11" inherits="WeaponRebuffDropdownButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton10" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="WeaponRebuffDropdownButton12" inherits="WeaponRebuffDropdownButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="WeaponRebuffDropdownButton11" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+ 				this:SetBackdropBorderColor(1, 1, 1);
+				this:SetBackdropColor(0.09, 0.09, 0.09);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="WeaponBuffBar" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true" parent="UIParent">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="45"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="16" y="42"/>
+		</Size>
+        <Frames>
+        	<Button name="wrMainhandButton" inherits="WeaponRebuffButtonTemplate" id="16"/>
+        	<Button name="wrOffhandButton"  inherits="WeaponRebuffButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrMainhandButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+   </Frames>
+	</Frame>
+	
+	<Frame name="wrOptions" toplevel="true" enableMouse="true" movable="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="700" y="425"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<TitleRegion setAllPoints="true"/>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="320" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="1" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="WeaponRebuff Options" nonspacewrap="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeader">
+							<Offset>
+								<AbsDimension x="0" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="wrInvisibleAddonCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Make WeaponRebuff Invisible");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrInvisibleAddon = 1;
+						else
+							WeaponRebuff.db.profile.wrInvisibleAddon = 0;
+						end
+						WeaponRebuff:UpdateTextures();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="wrDisableOffhandCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrInvisibleAddonCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Disable offhand rebuff-button");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrDisableOffhandButton = 1;
+						else
+							WeaponRebuff.db.profile.wrDisableOffhandButton = 0;
+						end
+						WeaponRebuff:UpdateTextures();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="wrRebuffDisableRememberBuffTextCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrDisableOffhandCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Disable remembered-buff text");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrDisableRememberBuffText = 1;
+						else
+							WeaponRebuff.db.profile.wrDisableRememberBuffText = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="wrSkipReplacePopupCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrRebuffDisableRememberBuffTextCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Skip the 'replace-popup'");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrSkipReplacePopup = 1;
+						else
+							WeaponRebuff.db.profile.wrSkipReplacePopup = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="wrSoundAlarmsCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrSkipReplacePopupCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Buff Wearing Off: Sound Alarms");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrSoundAlarms = 1;
+						else
+							WeaponRebuff.db.profile.wrSoundAlarms = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			<CheckButton name="wrTextAlarmsCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrSoundAlarmsCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Buff Wearing Off: Text Alarms");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrTextAlarms = 1;
+						else
+							WeaponRebuff.db.profile.wrTextAlarms = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			
+			-- 
+			
+			<CheckButton name="wrSoundChargeAlarmsCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrInvisibleAddonCheckbutton" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="300" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Charges Running Out: Sound Alarms");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrSoundAlarms_ChargeRemaining = 1;
+						else
+							WeaponRebuff.db.profile.wrSoundAlarms_ChargeRemaining = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="wrTextChargeAlarmsCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrSoundChargeAlarmsCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Charges Running Out: Text Alarms");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrTextAlarms_ChargeRemaining = 1;
+						else
+							WeaponRebuff.db.profile.wrTextAlarms_ChargeRemaining = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>			
+			
+			-- 
+			<CheckButton name="wrLowChargeAlarmsCheckbutton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrTextChargeAlarmsCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Less-than-5 Buffing Items: Text Alarm");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrTextAlarms = 1;
+						else
+							WeaponRebuff.db.profile.wrTextAlarms = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>				
+
+			<CheckButton name="wrEnableShowTextCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrLowChargeAlarmsCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Show Text next to Icons");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrEnableShowText = 1;
+						else
+							WeaponRebuff.db.profile.wrEnableShowText = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>						
+
+
+			<CheckButton name="wrEnableSideBySideCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrEnableShowTextCheckButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Display Icons Side-by-Side");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrEnableSideBySide = 1;
+						else
+							WeaponRebuff.db.profile.wrEnableSideBySide = 0;
+						end
+						WeaponRebuff:ResizeButton(WeaponRebuff.db.profile.wrButtonSize)
+					</OnClick>
+				</Scripts>
+			</CheckButton>						
+
+
+
+
+
+
+
+			<Frame name="wrSetFrameStrata" inherits="UIDropDownMenuTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrEnableSideBySideCheckButton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="80" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Set Frame Strata">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						UIDropDownMenu_Initialize(wrSetFrameStrata, function()
+								local tex1 = { text = "HIGH",
+							  value = 1,
+							  func = function()
+									WeaponRebuff:SetFrameStata(1);
+									UIDropDownMenu_SetSelectedID(wrSetFrameStrata, 1)
+							  end }
+				
+								local tex2 = { text = "MEDIUM",
+							  value = 2,
+							  func = function()
+									WeaponRebuff:SetFrameStata(2);
+									UIDropDownMenu_SetSelectedID(wrSetFrameStrata, 2)
+							  end }
+				
+								local tex3 = { text = "LOW",
+							  value = 3,
+							  func = function()
+									WeaponRebuff:SetFrameStata(3);
+									UIDropDownMenu_SetSelectedID(wrSetFrameStrata, 3)
+							  end }
+				
+								UIDropDownMenu_AddButton(tex1);
+								UIDropDownMenu_AddButton(tex2);
+								UIDropDownMenu_AddButton(tex3);
+						end);
+				
+						UIDropDownMenu_SetSelectedID(wrSetFrameStrata, WeaponRebuff.db.profile.wrFrameStrata);
+						UIDropDownMenu_SetWidth(100, wrSetFrameStrata);
+
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+
+
+
+			<CheckButton name="wrUseCustomSoundsCheckButton" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="wrTextAlarmsCheckbutton" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Use the custom Warning and Lost .wav files");
+					</OnLoad>
+					<OnClick>
+						if (this:GetChecked()) then
+							WeaponRebuff.db.profile.wrUseCustomSounds = 1;
+						else
+							WeaponRebuff.db.profile.wrUseCustomSounds = 0;
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>						
+			
+
+			<!-- Slider - wrSlider_SetSound_BuffWarning -->
+			<Slider name="wrSlider_SetSound_BuffWarning" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="280" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="wrUseCustomSoundsCheckButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Set BuffWarning Sound");
+						getglobal(this:GetName().."High"):SetText("8");
+						getglobal(this:GetName().."Low"):SetText("1");
+            this:SetMinMaxValues(1,8);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+						this:SetValue(WeaponRebuff.db.profile.wrSoundIndex_BuffWarning);
+					</OnShow>
+					<OnValueChanged>
+						WeaponRebuff.db.profile.wrSoundIndex_BuffWarning = this:GetValue();
+						WeaponRebuff:PlaySound(WeaponRebuff.db.profile.wrSoundIndex_BuffWarning);
+						<!-- Debug -->
+						<!-- DEFAULT_CHAT_FRAME:AddMessage("Frame Scale Value - "..wrSoundIndex_BuffWarning); -->
+						<!-- Debug -->
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			
+			<!-- Slider - wrSlider_SetSound_BuffLost -->
+			<Slider name="wrSlider_SetSound_BuffLost" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="280" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="wrSlider_SetSound_BuffWarning" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Set BuffLost Sound");
+						getglobal(this:GetName().."High"):SetText("8");
+						getglobal(this:GetName().."Low"):SetText("1");
+            this:SetMinMaxValues(1,8);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+						this:SetValue(WeaponRebuff.db.profile.wrSoundIndex_BuffLost);
+					</OnShow>
+					<OnValueChanged>
+						WeaponRebuff.db.profile.wrSoundIndex_BuffLost = this:GetValue();
+						WeaponRebuff:PlaySound(WeaponRebuff.db.profile.wrSoundIndex_BuffLost);
+						<!-- Debug -->
+						<!-- DEFAULT_CHAT_FRAME:AddMessage("Frame Scale Value - "..wrSoundIndex_BuffLost); -->
+						<!-- Debug -->
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			
+			<!-- Slider - wrSlider_SetSound_ChargesWarning -->
+			<Slider name="wrSlider_SetSound_ChargesWarning" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="280" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="wrSlider_SetSound_BuffLost" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Set ChargesWarning Sound");
+						getglobal(this:GetName().."High"):SetText("8");
+						getglobal(this:GetName().."Low"):SetText("1");
+            this:SetMinMaxValues(1,8);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnShow>
+						this:SetValue(WeaponRebuff.db.profile.wrSoundIndex_ChargeWarning);
+					</OnShow>
+					<OnValueChanged>
+						WeaponRebuff.db.profile.wrSoundIndex_ChargeWarning = this:GetValue();
+						WeaponRebuff:PlaySound(WeaponRebuff.db.profile.wrSoundIndex_ChargeWarning);
+						<!-- Debug -->
+						<!-- DEFAULT_CHAT_FRAME:AddMessage("Frame Scale Value - "..wrSoundIndex_BuffWarning); -->
+						<!-- Debug -->
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+
+			
+			<Button name="WeaponRebuff:SaveAndExit" text="Save and Close" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="180" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						WeaponRebuff:SaveAndExit_Onclick();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlaySound("UChatScrollButton");
+			</OnShow>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,646 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="EnchantingSell_Option_Frame.lua" />
+
+	<Frame name="EnchantingSell_Option_OpenFrame" hidden="true">
+		<Scripts>
+			<OnShow>
+				Toggle_EnchantingSell("EnchantingSell_Option_Frame");
+				this:Hide();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="EnchantingSell_Option_Frame" setAllPoints="true" enableMouse="true" parent="EnchantingSell_Frame" hidden="true" id="3">
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Frames>
+			<Frame name="EnchantingSell_Option_Enchanting">
+				<Size>
+					<AbsDimension x="296" y="220"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="EnchantingSell_Option_Frame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-67" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					
+					<Frame name="EnchantingSell_DropDownEnchantorPlayerSelect" inherits="UIDropDownMenuTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="80" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parent_Title" inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_ENCHANTING_ENCHANTORSELECTED">
+									<Size>
+										<AbsDimension x="75" y="20"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="EnchantingSell_DropDownEnchantorPlayerSelect" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(200);
+								this.tooltipText= "";
+							</OnLoad>
+							<OnShow>
+								UIDropDownMenu_ClearAll(this);
+								UIDropDownMenu_Initialize(this, ESell_Option_Enchanting_DropDownEnchantorPlayerSelect_Initialize);
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltipText);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+
+					<EditBox name="EnchantingSell_Option_PourcentBenefice_EditBox" letters="3" numeric="true" autoFocus="false" inherits="InputBoxTemplate">
+						<Size>
+							<AbsDimension x="40" y="14"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_DropDownEnchantorPlayerSelect" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="25" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parent_Title" inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_ENCHANTING_POURCENTBENEFICE">
+									<Size>
+										<AbsDimension x="100" y="14"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativeTo="EnchantingSell_Option_PourcentBenefice_EditBox" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this.tooltipText= "";
+							</OnLoad>
+							<OnShow>
+								ESell_Option_Enchanting_PourcentBeneficeEditBox_UpDate();
+							</OnShow>
+							<OnEnterPressed>
+								ESell_Option_Enchanting_PourcentBeneficeEditBox_OnEnterPressed();
+							</OnEnterPressed>
+							<OnTabPressed>
+								ESell_Option_Enchanting_PourcentBeneficeEditBox_OnEnterPressed();
+							</OnTabPressed>
+							<OnEnter>
+								GameTooltip:SetOwner(EnchantingSell_Option_Frame, "ANCHOR_TOPLEFT");
+								GameTooltip:SetText(this.tooltipText);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</EditBox>
+					<Frame name="EnchantingSell_Option_TypeOfCalcul">
+						<Size>
+							<AbsDimension x="180" y="80"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_PourcentBenefice_EditBox" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="33" y="35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" justifyH="CENTER" text="ENCHANTINGSELL_OPTION_PRICE_TYPECALCULATE">
+									<Size>
+										<AbsDimension x="200" y="22"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOP" relativeTo="EnchantingSell_Option_TypeOfCalcul" relativePoint="TOP">
+											<Offset>
+												<AbsDimension x="0" y="-3"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="32"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="32"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="10" right="10" top="10" bottom="10"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Frames>
+							<CheckButton name="$parent_Check1" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="18" y="18"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="15" y="-23"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_PRICE_TYPECALCULATE_TYPE1">
+											<Size>
+												<AbsDimension x="150" y="18"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="20" y=""/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										local typePrice = EnchantingSell_Config.EnchantePriceTypeCalculate;
+										if not typePrice then EnchantingSell_Config.EnchantePriceTypeCalculate = 1; typePrice = 1 end
+										if typePrice then
+											if typePrice == 1 then this:SetChecked(true) end
+										end
+									</OnShow>
+									<OnClick>
+										EnchantingSell_Option_TypeOfCalcul_Check2:SetChecked(false);
+										EnchantingSell_Option_TypeOfCalcul_Check3:SetChecked(false);
+										EnchantingSell_Config.EnchantePriceTypeCalculate = 1;
+										ESell_Enchante_UpdateAllPrice();
+										EnchantingSell_Enchante_Frame_OnUpdate();
+										this:SetChecked(true);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parent_Check2" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="18" y="18"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="15" y="-38"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_PRICE_TYPECALCULATE_TYPE2">
+											<Size>
+												<AbsDimension x="150" y="18"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="20" y=""/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										local typePrice = EnchantingSell_Config.EnchantePriceTypeCalculate;
+										if not typePrice then EnchantingSell_Config.EnchantePriceTypeCalculate = 1; typePrice = 1 end
+										if typePrice then
+											if typePrice == 2 then this:SetChecked(true) end
+										end
+									</OnShow>
+									<OnClick>
+										EnchantingSell_Option_TypeOfCalcul_Check1:SetChecked(false);
+										EnchantingSell_Option_TypeOfCalcul_Check3:SetChecked(false);
+										EnchantingSell_Config.EnchantePriceTypeCalculate = 2;
+										ESell_Enchante_UpdateAllPrice();
+										EnchantingSell_Enchante_Frame_OnUpdate();
+										this:SetChecked(true);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="$parent_Check3" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="18" y="18"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="15" y="-53"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BORDER">
+										<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_PRICE_TYPECALCULATE_TYPE3">
+											<Size>
+												<AbsDimension x="150" y="18"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="20" y=""/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										local typePrice = EnchantingSell_Config.EnchantePriceTypeCalculate;
+										if not typePrice then EnchantingSell_Config.EnchantePriceTypeCalculate = 1; typePrice = 1 end
+										if typePrice then
+											if typePrice == 3 then this:SetChecked(true) end
+										end
+									</OnShow>
+									<OnClick>
+										EnchantingSell_Option_TypeOfCalcul_Check1:SetChecked(false);
+										EnchantingSell_Option_TypeOfCalcul_Check2:SetChecked(false);
+										EnchantingSell_Config.EnchantePriceTypeCalculate = 3;
+										ESell_Enchante_UpdateAllPrice();
+										EnchantingSell_Enchante_Frame_OnUpdate();
+										this:SetChecked(true);
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+						</Frames>
+					</Frame>
+					<CheckButton name="EnchantingSell_Option_EnchanteChatPrice" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="22" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_PourcentBenefice_EditBox" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-95" y="-40"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_CHAT_SHOWPRICEFORCHATINFO">
+									<Size>
+										<AbsDimension x="200" y="22"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteChatPrice" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="25" y=""/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnShow>
+								this:SetChecked(EnchantingSell_PlayerConfig.EnchanteChatPrice);
+							</OnShow>
+							<OnClick>
+								EnchantingSell_PlayerConfig.EnchanteChatPrice = this:GetChecked();
+							</OnClick>
+							<OnEnter>
+							</OnEnter>
+							<OnLeave>
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="EnchantingSell_Option_EnchanteUseAuctioneer" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="22" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteChatPrice" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_USE_AUCTIONEER">
+									<Size>
+										<AbsDimension x="200" y="22"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteUseAuctioneer" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="25" y=""/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnShow>
+								this:SetChecked(EnchantingSell_PlayerConfig.EnchanteUseAuctioneer);
+							</OnShow>
+							<OnClick>ESell_Option_EnchanteUseAuctioneer_Toggle();</OnClick>
+							<OnEnter>
+							</OnEnter>
+							<OnLeave>
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="EnchantingSell_Option_EnchanteDebug" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="22" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteUseAuctioneer" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="Debug?">
+									<Size>
+										<AbsDimension x="200" y="22"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteDebug" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="25" y=""/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnShow>
+								this:SetChecked(ESell_Debug);
+							</OnShow>
+							<OnClick>ESell_Option_Enchanting_Debug_Toggle();</OnClick>
+							<OnEnter>
+							</OnEnter>
+							<OnLeave>
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="EnchantingSell_Option_EnchanteUseTooltips" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="22" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="EnchantingSell_Option_EnchanteDebug" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="100" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="Use Tooltips?">
+									<Size>
+										<AbsDimension x="200" y="22"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteUseTooltips" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="25" y=""/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnShow>
+								this:SetChecked(EnchantingSell_PlayerConfig.UseTooltips);
+							</OnShow>
+							<OnClick>ESell_Option_UseTooltips_Toggle();</OnClick>
+							<OnEnter>
+							</OnEnter>
+							<OnLeave>
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="EnchantingSell_Option_EnchanteMinimap" inherits="OptionsCheckButtonTemplate">
+						<Size>
+							<AbsDimension x="22" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteDebug" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString inherits="GameFontNormalSmall" justifyH="LEFT" text="ENCHANTINGSELL_OPTION_USE_MINIMAP_BUTTON">
+									<Size>
+										<AbsDimension x="200" y="22"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_EnchanteMinimap" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="25" y=""/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnShow>
+								this:SetChecked(EnchantingSell_PlayerConfig.UseMinimapIcon);
+							</OnShow>
+							<OnClick>ESell_Option_Enchanting_MinimapIcon_Toggle();</OnClick>
+							<OnEnter>
+							</OnEnter>
+							<OnLeave>
+							</OnLeave>
+						</Scripts>
+					</CheckButton>
+					<Button name="EnchantingSell_Option_DefaultBDEnchante_Button" inherits="UIPanelButtonTemplate" text="ENCHANTINGSELL_OPTION_BD_DEFAULTENCHANTEBUTTON">
+						<Size>
+							<AbsDimension x="280" y="23"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.tooltipText = "";
+							</OnLoad>
+							<OnShow>
+								if not EnchantingSell_DefaultList.Enchantes then
+									this:Disable();
+								end
+							</OnShow>
+							<OnClick>
+								ESell_ConfirmDialogYesOrNo(ENCHANTINGSELL_MSG_LOADDEFAULTDATAENCHANTEAREYOUSURE, ESell_Enchante_LoadDefaultData, nil);
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(EnchantingSell_Option_Frame, "ANCHOR_TOPLEFT");
+								GameTooltip:SetText(this.tooltipText);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>					
+					</Button>
+					<Button name="EnchantingSell_Option_DefaultBDComponant_Button" inherits="UIPanelButtonTemplate" text="ENCHANTINGSELL_OPTION_BD_DEFAULTCOMPONANTEBUTTON">
+						<Size>
+							<AbsDimension x="280" y="23"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_DefaultBDEnchante_Button" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.tooltipText = "";
+							</OnLoad>
+							<OnShow>
+								if not EnchantingSell_DefaultList.Componantes then
+									this:Disable();
+								end
+							</OnShow>
+							<OnClick>
+								ESell_ConfirmDialogYesOrNo(ENCHANTINGSELL_MSG_LOADDEFAULTDATACOMPONANTAREYOUSURE, ESell_Reagent_LoadDefaultData, nil);
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(EnchantingSell_Option_Frame, "ANCHOR_TOPLEFT");
+								GameTooltip:SetText(this.tooltipText);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>					
+					</Button>
+					<Button name="EnchantingSell_Option_ResetBD_Button" inherits="UIPanelButtonTemplate" text="ENCHANTINGSELL_OPTION_BD_RESETBUTTON">
+						<Size>
+							<AbsDimension x="280" y="23"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="EnchantingSell_Option_DefaultBDComponant_Button" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.tooltipText = "";
+							</OnLoad>
+							<OnShow>
+							</OnShow>
+							<OnClick>
+								ESell_ConfirmDialogYesOrNo(ENCHANTINGSELL_MSG_RESETALLDATAAREYOUSURE, ESell_ResetAllData, nil);
+							</OnClick>
+							<OnEnter>
+								GameTooltip:SetOwner(EnchantingSell_Option_Frame, "ANCHOR_TOPLEFT");
+								GameTooltip:SetText(this.tooltipText);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>					
+					</Button>
+					<Slider name="EnchantingSell_MiniMapIcon_SliderPosition" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="280" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(ENCHANTINGSELL_OPTION_UI_MINIMAPPOSITION);
+								getglobal(this:GetName().."High"):SetText();
+								getglobal(this:GetName().."Low"):SetText();
+								this:SetMinMaxValues(0, 360);
+								this:SetValueStep(1);
+								this.tooltipText = "";
+							</OnLoad>
+							<OnShow>
+								if (EnchantingSell_PlayerConfig.MiniMapButtonPosition) then
+									this:SetValue(EnchantingSell_PlayerConfig.MiniMapButtonPosition);
+									getglobal(this:GetName().."Text"):SetText(ENCHANTINGSELL_OPTION_UI_MINIMAPPOSITION.." : "..this:GetValue().."\194\176");
+								end
+							</OnShow>
+							<OnValueChanged>
+								EnchantingSell_PlayerConfig.MiniMapButtonPosition = this:GetValue();
+								getglobal(this:GetName().."Text"):SetText(ENCHANTINGSELL_OPTION_UI_MINIMAPPOSITION.." : "..this:GetValue().."\194\176");
+								ESell_MiniMapIcon_Update();
+							</OnValueChanged>
+							<OnEnter>
+								GameTooltip:SetOwner(EnchantingSell_Option_Frame, "ANCHOR_TOPLEFT");
+								GameTooltip:SetText(this.tooltipText);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

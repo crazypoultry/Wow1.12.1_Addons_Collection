@@ -1,0 +1,194 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <!-- Healing Bar -->
+	<Frame name="QuickHealHealingBar" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size><AbsDimension x="196" y="23"/></Size> 	
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="CastingBarFrame" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="30"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+        <!-- Border -->
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+
+		<Frames>
+            <!-- Health statusbar (current) -->
+			<StatusBar name="QuickHealHealingBarStatusBar">
+				<Size>
+					<AbsDimension x="186" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+                    <Layer level="OVERLAY">
+                        <Texture name="QuickHealHealingBarSparkOne" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+                            <Size>
+                                <AbsDimension x="16" y="30"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <Texture name="QuickHealHealingBarSparkTwo" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+                            <Size>
+                                <AbsDimension x="16" y="30"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <FontString name="QuickHealHealingBarText" inherits="GameFontHighlightSmall" text="Healing Target">
+                            <Size>
+                                <AbsDimension x="196" y="16"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER" relativeTo="QuickHealHealingBar" relativePoint="CENTER">
+                                    <Offset>
+                                        <AbsDimension x="0" y="1"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+					<OnLoad>
+                        this:SetMinMaxValues(0,1);
+                        this:SetValue(0.2);
+					</OnLoad>
+				</Scripts>
+				<BarTexture name="QuickHealHealingBarTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+                <BarColor r="0.0" g="1.0" b="0.0"/>
+			</StatusBar>
+            <!-- Heal statusbar (heal from others) -->
+			<StatusBar name="QuickHealHealingBarStatusBarPre">
+				<Size>
+					<AbsDimension x="372" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+                        this:SetMinMaxValues(0,2);
+                        this:SetValue(0.4);
+						this:SetFrameLevel(this:GetFrameLevel() - 1)
+					</OnLoad>
+				</Scripts>
+				<BarTexture name="QuickHealHealingBarPostTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+                <BarColor r="0.5" g="1.0" b="0.5"/>
+			</StatusBar>
+            <!-- Heal statusbar (after heal) -->
+			<StatusBar name="QuickHealHealingBarStatusBarPost">
+				<Size>
+					<AbsDimension x="558" y="13"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+                <Layers>
+                <Layer level="BACKGROUND">
+                    <Texture name="QuickHealHealingBarBackground">
+                        <Size>
+                            <AbsDimension x="186" y="15"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Color r="0" g="0" b="0" a="0.5"/>
+                    </Texture>		
+                </Layer>
+                </Layers>
+				<Scripts>
+					<OnLoad>
+                        this:SetMinMaxValues(0,3);
+                        this:SetValue(0.6);
+						this:SetFrameLevel(this:GetFrameLevel() - 2)
+					</OnLoad>
+				</Scripts>
+				<BarTexture name="QuickHealHealingBarPostTexture" file="Interface\TargetingFrame\UI-StatusBar"/>
+                <BarColor r="0.0" g="1.0" b="0.0"/>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+ 			<OnMouseDown>
+ 				if QuickHealConfig:IsVisible() and (arg1 == "LeftButton") then
+ 					this:StartMoving();
+ 				end
+ 			</OnMouseDown>
+ 			<OnMouseUp>
+                if QuickHealConfig:IsVisible() then
+                    if (arg1 == "LeftButton") then
+                        this:StopMovingOrSizing();
+                    elseif (arg1 == "RightButton") then
+                        QuickHealHealingBar:ClearAllPoints();
+                        QuickHealHealingBar:SetPoint("CENTER",CastingBarFrame,"CENTER",0,30)
+                    end
+                end
+ 			</OnMouseUp>
+            <OnEnter>
+                if QuickHealConfig:IsVisible() then
+                    GameTooltip:SetOwner(this,"ANCHOR_TOPLEFT");
+                    GameTooltip:SetText("Healing Bar Configuration\nLeft-click to drag.\nRight-click to re-attach to Casting Bar.");
+                    this.tooltipShown = true;
+                end
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+                this.tooltipShown = false;
+            </OnLeave>
+            <OnLoad>
+                this:SetFrameLevel(this:GetFrameLevel() + 1)
+            </OnLoad>
+		</Scripts>
+	</Frame>
+
+    <!-- Overheal status label -->
+    <Frame name="QuickHealOverhealStatus" parent="UIParent" hidden="true">
+        <Size> <AbsDimension x="300" y="13"/> </Size>
+        <Anchors> <Anchor point="CENTER" relativeTo="QuickHealHealingBar" relativePoint="CENTER"><Offset><AbsDimension x="0" y="10"/></Offset></Anchor></Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parent_Text" outline="NORMAL" inherits="GameFontNormal" text="">
+                    <Anchors><Anchor point="BOTTOM" relativePoint="TOP"><Offset><AbsDimension x="0" y="0"/></Offset></Anchor></Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+</Ui>

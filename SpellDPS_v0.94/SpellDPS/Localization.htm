@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>SpellDPS Localization.htm</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.2  (Win32)">
+	<META NAME="CREATED" CONTENT="20050620;17553235">
+	<META NAME="CHANGEDBY" CONTENT="David Down">
+	<META NAME="CHANGED" CONTENT="20050919;20080656">
+	<META NAME="DESCRIPTION" CONTENT="This describes how to customize the localization file for SpellDPS.">
+	<META NAME="KEYWORDS" CONTENT="WoW addin">
+	<STYLE>
+	<!--
+		@page { size: 8.5in 11in }
+		P { color: #00ffff }
+		H2 { color: #00ffff }
+		A:link { color: #ffff00 }
+		A:visited { color: #00ff00 }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#00ffff" LINK="#ffff00" VLINK="#00ff00" BGCOLOR="#000080" DIR="LTR">
+<H2 ALIGN=CENTER><FONT FACE="Arial"><U><FONT SIZE=5 STYLE="font-size: 20pt">SpellDPS
+Localization</FONT> <SPAN STYLE="font-weight: medium"><FONT SIZE=4 STYLE="font-size: 16pt">by
+Vincent of Blackhand</FONT> <FONT SIZE=3 STYLE="font-size: 13pt">(D.A.Down)</FONT></SPAN></U></FONT></H2>
+<OL>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Intro:</FONT><BR><B>SpellDPS</B>
+	uses a localization file to control how the tooltip information is
+	parsed and how the appended information is formatted. The templates
+	in this file have to match the way that the tooltips are formatted
+	or the spell information won't be correctly recognized.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Text
+	formatting:</FONT><BR><FONT COLOR="#ffff00">SpellDPS_XPS</FONT>
+	controls the format of the left side of the appended tooltip and
+	<FONT COLOR="#ffff00">SpellDPS_XPM</FONT> controls the right side.
+	The first element of each one is for damage and the second element
+	is for healing. More elements could be added for additional types.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Tooltip
+	prelude:</FONT><BR>The second and third lines of the tooltip are
+	parsed by these templates. The second line always lists the <FONT COLOR="#ffff00">Mana</FONT>
+	used by the spell. If this fails to match, no further parsing will
+	be attempted.<BR><BR>The third line specifies the <FONT COLOR="#ffff00">casting
+	time</FONT> for the spell. If a number is given, it can either be an
+	integer or a decimal fraction. For most instant cast spells, the
+	casting cooldown time of 1.4 seconds is used. For channeled spells
+	and spells with effect over time, the time in the description is
+	used except in special cases (see Special Cases below).<BR><BR>Hunter
+	weapon spells and Shaman totem spells have a fourth prelude line, so
+	there are templates for these two cases that will use the text of
+	the fifth line for the spell description.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Tooltip
+	description:</FONT><BR>In most cases, the fourth line of the tooltip
+	contains the description of the spell. In the two cases previously
+	mentioned it will be the fifth line. The full description is
+	contained internally as a single line of text even though the
+	tooltip will wrap the display of longer descriptions over multiple
+	lines.<BR><BR>The templates in the <FONT COLOR="#ffff00">SpellDPS_Desc</FONT>
+	table are applied in order against the description until a match is
+	found. If no match is found, processing stops. The first number in
+	the matching table entry is then used to index the text formatting
+	values for either damage or healing. In the template, each <FONT COLOR="#ffff00">(%d+)</FONT>
+	expression will extract one number from the description. This list
+	of extracted numbers is then indexed by the sub-table of numbers in
+	the matching entry.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>XPS
+	calculation:</FONT><BR>The XPS and XPM that are display are
+	calculated from five selected values and the Mana.<BR><BR>The
+	damage/healing per second (XPS) is calculated by: (<FONT COLOR="#ffff00">V1</FONT>+<FONT COLOR="#ffff00">V2</FONT>)/2/<FONT COLOR="#ffff00">V3</FONT>
+	+ <FONT COLOR="#ffff00">V4</FONT>/<FONT COLOR="#ffff00">V5</FONT><BR><BR>The
+	damage/healing per mana (XPM) is calculated by: ( (<FONT COLOR="#ffff00">V1</FONT>+<FONT COLOR="#ffff00">V2</FONT>)/2
+	+ <FONT COLOR="#ffff00">V4</FONT>)/<FONT COLOR="#ffff00">Mana</FONT><BR><BR>The
+	values <FONT COLOR="#ffff00">V1</FONT> and <FONT COLOR="#ffff00">V2</FONT>
+	are usually the low and high numbers in the specified range and <FONT COLOR="#ffff00">V3</FONT>
+	is usually the corresponding casting time. For effects over time and
+	channeling, <FONT COLOR="#ffff00">V4</FONT> is the total effect and
+	<FONT COLOR="#ffff00">V5</FONT> is the time. In many cases some of
+	these values will be zero. The time is always forced to be non-zero
+	so that a divide-by-zero error won't occur. If the numerator is
+	zero, then the denominator doesn't matter.<BR><BR>The numbers
+	selected for these values are determined by the entry sub-table. The
+	first five numbers in the sub-table correspond to the five selected
+	values. If the number is positive, it indicates which extracted
+	number is to be used for that value. If the number is less than 1,
+	the value is the absolute value of the number, except for time
+	values which default to the casting time if the number is
+	zero.<BR><BR>Example: A spell heals 30 to 40 using 50 mana and takes
+	1.5 seconds to cast. The numbers '30' and '40' will be the extracted
+	from the description. The sub-table will be <FONT COLOR="#ffff00">{1,2,0,0,0}</FONT>,
+	which indicates the V1 gets the first extracted number and V2 gets
+	the second extracted number. The third entry is zero so the time
+	defaults to the casting time. The fourth value is also zero so V4 is
+	zero. The calculated values are then XPS=(30+40)/2/1.5+0/1.5 and
+	XPM=((30+40)/2+0)/50.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Special
+	cases:</FONT><BR>The sixth table number is a flag that indicates a
+	special case when it is non-zero.  A positive value indicates the
+	repeat interval in seconds which requires the damage to be
+	multiplied by the duration and divided by the interval.  <BR><BR>A
+	negative value indicates a special calculation is required, with two
+	cases defined:<BR><FONT COLOR="#ffff00">-1</FONT>: Add an additional
+	mana cost of (V1+V2/10)*V4.<BR><FONT COLOR="#ffff00">-2</FONT>: The
+	damage is &frac12; the drained mana range so divide V1 and V2 by 2.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Pattern
+	matching:</FONT><BR>The pattern matching uses the Lua function
+	string.find as defined in the <A HREF="http://www.lua.org/manual/5.0/manual.html#5.3">Lua:
+	5.0 reference manual</A>. The following expressions are used, but
+	any expression from the manual is valid:<BR><FONT COLOR="#ffff00">(%d)</FONT>:
+	extract a number with one digit.<BR><FONT COLOR="#ffff00">(%d+)</FONT>:
+	extract a number with one or more digits.<BR><FONT COLOR="#ffff00">%a+</FONT>:
+	match one or more letters(one word).<BR><FONT COLOR="#ffff00">.+</FONT>:
+	match any number of characters.<BR><FONT COLOR="#ffff00">%.</FONT>:
+	match a period(<FONT COLOR="#ffff00">.</FONT>).<BR><FONT COLOR="#ffff00">[Hh]</FONT>:
+	match <FONT COLOR="#ffff00">H</FONT> or <FONT COLOR="#ffff00">h</FONT>.</FONT></P>
+	<LI><P STYLE="margin-right: 0.3in"><FONT FACE="Arial"><FONT SIZE=4>Debugging:</FONT><BR>The
+	command <FONT COLOR="#ffff00">/sdps debug</FONT> will toggle the
+	debug flag. When the flag is on and a template match occurs, three
+	lines of trace data will be displayed: <BR>- the template that was
+	matched.<BR>- the extracted values before case processing is
+	applied.<BR>- after case expressions ((V1+V2)/2) / V3 and V4/V5.</FONT></P>
+</OL>
+<HR>
+<P ALIGN=LEFT STYLE="margin-left: 0.3in"><A HREF="mailto:dadown@cox.net">Send
+comment to Vincent</A></P>
+<P ALIGN=LEFT STYLE="margin-left: 0.3in"><CITE><FONT SIZE=2>Last
+update: 9/19/05</FONT></CITE></P>
+</BODY>
+</HTML>

@@ -1,0 +1,1429 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/"> 
+    <Script file="localization.lua"/>
+    <Script file="Wardrobe.lua"/>
+    <Script file="Wardrobe_UI.lua"/>
+    <Script file="Wardrobe_Item.lua"/>
+   <Frame name="Wardrobe_ScriptFrame"> 
+      <Scripts> 
+         <OnLoad>
+            Wardrobe_OnLoad();
+         </OnLoad>
+         <OnEvent>
+            Wardrobe_OnEvent(event);
+         </OnEvent>
+      </Scripts>
+   </Frame>
+   <Button name="Wardrobe_IconFrame" hidden="false" enableMouse="true" movable="true" parent="Minimap" toplevel="true">
+        <Size>
+            <AbsDimension x="33" y="33"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativeTo="Minimap" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="-37" y="-74"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture name="Wardrobe_IconTexture" file="Interface\AddOns\Wardrobe\Images\Wardrobe">
+                    <Size>
+                        <AbsDimension x="33" y="33"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter>
+                Wardrobe_HandleUIMenuTriggerEnter();
+            </OnEnter>
+            <OnLoad>
+                Wardrobe_ButtonOnLoad();
+            </OnLoad>
+            <OnLeave>
+                Wardrobe_HandleUIMenuTriggerLeave();
+            </OnLeave>
+            <OnDragStart>
+                Wardrobe_OnDragStart(this);
+            </OnDragStart>
+            <OnDragStop>
+                Wardrobe_OnDragStop(this);
+            </OnDragStop>
+       </Scripts>
+    </Button>
+    <Button name="Wardrobe_PopupButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="64" y="12"/>
+        </Size>
+        <Scripts>
+            <OnClick>
+                Wardrobe_ButtonClick();
+            </OnClick>
+        </Scripts>
+        <NormalText inherits="GameFontNormal"/>
+        <HighlightText inherits="GameFontHighlight"/>
+        <DisabledText inherits="GameFontDisable"/>
+    </Button>
+    <Frame name="Wardrobe_Popup" frameStrata="DIALOG" hidden="true" parent="Wardrobe_IconFrame">
+        <Anchors>
+            <Anchor point="TOPRIGHT" relativeTo="Wardrobe_IconFrame" relativePoint="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="1" y="1"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" relativeTo="Wardrobe_Popup" tile="true">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+        </Backdrop>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="Wardrobe_PopupTitle" inherits="GameFontHighlight" text="WARDROBE_TEXT_MENU_TITLE" parent="Wardrobe_IconFrame">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="Wardrobe_Popup">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="Wardrobe_PopupButton1" inherits="Wardrobe_PopupButtonTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupTitle" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton2" inherits="Wardrobe_PopupButtonTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton1" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton3" inherits="Wardrobe_PopupButtonTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton2" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton4" inherits="Wardrobe_PopupButtonTemplate" id="4">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton3" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton5" inherits="Wardrobe_PopupButtonTemplate" id="5">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton4" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton6" inherits="Wardrobe_PopupButtonTemplate" id="6">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton5" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton7" inherits="Wardrobe_PopupButtonTemplate" id="7">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton6" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton8" inherits="Wardrobe_PopupButtonTemplate" id="8">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton7" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton9" inherits="Wardrobe_PopupButtonTemplate" id="9">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton8" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton10" inherits="Wardrobe_PopupButtonTemplate" id="10">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton9" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton11" inherits="Wardrobe_PopupButtonTemplate" id="11">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton10" relativePoint="BOTTOM"/>
+                         <Offset>
+                            <AbsDimension x="0" y="-8"/>
+                        </Offset>                   
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton12" inherits="Wardrobe_PopupButtonTemplate" id="12">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton11" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton13" inherits="Wardrobe_PopupButtonTemplate" id="13">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton12" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton14" inherits="Wardrobe_PopupButtonTemplate" id="14">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton13" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton15" inherits="Wardrobe_PopupButtonTemplate" id="15">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton14" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton16" inherits="Wardrobe_PopupButtonTemplate" id="16">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton15" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton17" inherits="Wardrobe_PopupButtonTemplate" id="17">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton16" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton18" inherits="Wardrobe_PopupButtonTemplate" id="18">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton17" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton19" inherits="Wardrobe_PopupButtonTemplate" id="19">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton18" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton20" inherits="Wardrobe_PopupButtonTemplate" id="20">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton19" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+            <Button name="Wardrobe_PopupButton21" inherits="Wardrobe_PopupButtonTemplate" id="21">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="Wardrobe_PopupButton20" relativePoint="BOTTOM"/>
+                </Anchors>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnShow>
+                PlaySound("UChatScrollButton");
+            </OnShow>
+            <OnUpdate>
+                Wardrobe_OnUpdateUIMenu(arg1);
+            </OnUpdate>
+        </Scripts>      
+    </Frame>
+    <Button name="WardrobePopupButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="64" y="20"/>
+        </Size>
+        <NormalTexture file="Interface\Buttons\UI-DialogBox-Button-Up">
+            <TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+        </NormalTexture>
+        <PushedTexture file="Interface\Buttons\UI-DialogBox-Button-Down">
+            <TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+        </PushedTexture>
+        <HighlightTexture file="Interface\Buttons\UI-DialogBox-Button-Highlight" alphaMode="ADD">
+            <TexCoords left="0.0" right="1.0" top="0.0" bottom="0.625"/>
+        </HighlightTexture>
+        <NormalText inherits="GameFontNormal"/>
+        <HighlightText inherits="GameFontHighlight"/>
+    </Button>
+    <Frame name="WardrobePopupWindowTemplate" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent" virtual="true">
+        <Size>
+            <AbsDimension x="196" y="112"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="0" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+        </Backdrop>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentText" text="WARDROBE_POPUP_TITLE" inherits="GameFontHighlight">
+                    <Size>
+                        <AbsDimension x="300" y="0"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-25"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentAcceptButton" inherits="WardrobePopupButtonTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-5" y="15"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_PopupConfirm();
+                    </OnClick>
+                </Scripts>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_ACCEPT"/>
+                <HighlightText inherits="GameFontNormalSmall" text="WARDROBE_TXT_ACCEPT"/>
+            </Button>
+            <Button name="$parentCancelButton" inherits="WardrobePopupButtonTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="5" y="15"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_PopupCancel();
+                    </OnClick>
+                </Scripts>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_CANCEL"/>
+                <HighlightText inherits="GameFontNormalSmall" text="WARDROBE_TXT_CANCEL"/>
+            </Button>
+        </Frames>
+    </Frame>
+    <Frame name="WardrobeNamePopup" toplevel="true" inherits="WardrobePopupWindowTemplate" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
+        <Frames>
+            <EditBox name="$parentEditBox" letters="30" historyLines="1">
+                <Size>
+                    <AbsDimension x="150" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+                            <Size>
+                                <AbsDimension x="150" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="LEFT">
+                                    <Offset>
+                                        <AbsDimension x="-5" y="0"/>
+                                    </Offset>
+                                </Anchor>    
+                            </Anchors>
+                        </Texture>
+                        <Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+                            <Size>
+                                <AbsDimension x="150" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="RIGHT"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnEnterPressed>
+                        Wardrobe_PopupConfirm();
+                    </OnEnterPressed>
+                    <OnEscapePressed>
+                        Wardrobe_PopupCancel();
+                    </OnEscapePressed>
+                </Scripts>
+                <FontString inherits="ChatFontNormal"/>
+            </EditBox>          
+        </Frames>
+    </Frame>
+    <Frame name="WardrobePopupConfirm" toplevel="true" inherits="WardrobePopupWindowTemplate" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent"/>
+    <GameTooltip name="WardrobeTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate"/>
+
+    <CheckButton name="WardrobeOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+        <HitRectInsets>
+            <AbsInset left="0" right="0" top="0" bottom="0"/>
+        </HitRectInsets>
+        <Size>
+            <AbsDimension x="25" y="25"/>
+        </Size>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture name="$parentGlow" file="Interface\AddOns\Wardrobe\Images\Glow" alphaMode="ADD"/>
+            </Layer>
+        </Layers>        
+    </CheckButton>
+   
+    <Frame name="WardrobeCheckboxesFrame" toplevel="true" enableMouse="true" hidden="true" parent="PaperDollFrame">
+        <Anchors>
+            <Anchor point="CENTER" relativePoint="CENTER">
+                <Offset>
+                    <AbsDimension x="0" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <CheckButton name="CharacterHeadSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterHeadSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterNeckSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterNeckSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterShoulderSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterShoulderSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterBackSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterBackSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterChestSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterChestSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterShirtSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterShirtSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterTabardSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterTabardSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterWristSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterWristSlot" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterHandsSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterHandsSlot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterWaistSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterWaistSlot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterLegsSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterLegsSlot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+           </CheckButton>
+            <CheckButton name="CharacterFeetSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterFeetSlot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterFinger0SlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterFinger0Slot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterFinger1SlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterFinger1Slot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterTrinket0SlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEfT" relativeTo="CharacterTrinket0Slot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterTrinket1SlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CharacterTrinket1Slot" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-50" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterMainHandSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="CharacterMainHandSlot" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="50"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterSecondaryHandSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="CharacterSecondaryHandSlot" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="50"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="CharacterRangedSlotWardrobeCheckBox" inherits="WardrobeOptionsCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="CharacterRangedSlot" relativePoint="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="50"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Button name="WardrobeCheckboxToggle" inherits="WardrobePopupButtonTemplate">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="PaperDollFrame"  relativePoint="TOP">
+                        <Offset>
+                            <AbsDimension x="120" y="-55"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_ToggleCheckboxes();
+                    </OnClick>
+                </Scripts>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_TOGGLE"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_TOGGLE"/>
+            </Button>
+            <Button name="WardrobeCheckboxAccept" inherits="WardrobePopupButtonTemplate" frameStrata="DIALOG">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="CharacterFrameCloseButton"  relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="3" y="2"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_ConfirmWardrobeConfigurationScreen();
+                    </OnClick>
+                </Scripts>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_ACCEPT"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_ACCEPT"/>
+            </Button>
+            <Button name="WardrobeCheckboxColorpick" inherits="WardrobePopupButtonTemplate">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativeTo="WardrobeCheckboxToggle"  relativePoint="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_ShowColorPickFrame();
+                    </OnClick>
+                </Scripts>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_COLOR"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_COLOR"/>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnEnterPressed>
+                Wardrobe_ConfirmWardrobeConfigurationScreen();
+            </OnEnterPressed>
+        </Scripts>
+    </Frame>
+    
+    <Button name="WardrobeMainMenuFrameEntryTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="140" y="16" />
+        </Size>
+        <Layers>
+            <Layer level="BORDER">
+                <FontString name="$parentOutfit" inherits="GameFontNormalSmall" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="140" y="14" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter>
+                Wardrobe_WardrobeMainMenuFrameEntry_OnEnter();
+            </OnEnter>
+            <OnLeave>
+                Wardrobe_WardrobeMainMenuFrameEntry_OnLeave();
+            </OnLeave>
+            <OnClick>
+                Wardrobe_WardrobeMainMenuFrameEntry_OnClick();
+            </OnClick>
+        </Scripts>
+    </Button>           
+    
+    <Frame name="WardrobeMainMenuFrame" inherits="DialogBoxFrame">
+        <Size>
+            <AbsDimension x="180" y="260"/>
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+               <FontString name="$parentTitle" inherits="GameFontNormal" text="WARDROBE_TXT_EDITOUTFITS">
+                     <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+               </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="WardrobeMainMenuFrameNewButton">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativeTo="WardrobeMainMenuFrame" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="20" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_NewOutfitButtonClick();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture inherits="DialogButtonNormalTexture"/>
+                <PushedTexture inherits="DialogButtonPushedTexture"/>
+                <HighlightTexture inherits="DialogButtonHighlightTexture"/>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_NEW"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_NEW"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameCloseButton">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="WardrobeMainMenuFrame" relativePoint="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-20" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_MainMenuCloseButton();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture inherits="DialogButtonNormalTexture"/>
+                <PushedTexture inherits="DialogButtonPushedTexture"/>
+                <HighlightTexture inherits="DialogButtonHighlightTexture"/>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_CLOSE"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_CLOSE"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameMoveUpButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="WardrobeMainMenuFrameCloseButton" relativePoint="CENTER">
+                        <Offset>
+                            <AbsDimension x="-20" y="22"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Wardrobe_ShowButtonTooltip(WARDROBE_UPBUTTON_TIP1);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>          
+                    <OnClick>
+                        Wardrobe_MoveOutfit_OnClick(-1);
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\Wardrobe\Images\Moveup"/>
+                <PushedTexture file="Interface\AddOns\Wardrobe\Images\Moveup"/>
+                <HighlightTexture file="Interface\AddOns\Wardrobe\Images\Moveup-Over"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameMoveDownButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="WardrobeMainMenuFrameMoveUpButton" relativePoint="CENTER">
+                        <Offset>
+                            <AbsDimension x="20" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Wardrobe_ShowButtonTooltip(WARDROBE_DOWNBUTTON_TIP1);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>          
+                    <OnClick>
+                        Wardrobe_MoveOutfit_OnClick(1);
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\Wardrobe\Images\Movedown"/>
+                <PushedTexture file="Interface\AddOns\Wardrobe\Images\Movedown"/>
+                <HighlightTexture file="Interface\AddOns\Wardrobe\Images\Movedown-Over"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameDeleteButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="WardrobeMainMenuFrameMoveDownButton" relativePoint="CENTER">
+                        <Offset>
+                            <AbsDimension x="20" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Wardrobe_ShowButtonTooltip(WARDROBE_DELETEBUTTON_TIP1);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>          
+                    <OnClick>
+                        Wardrobe_DeleteOutfit_OnClick();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\Wardrobe\Images\Delete"/>
+                <PushedTexture file="Interface\AddOns\Wardrobe\Images\Delete"/>
+                <HighlightTexture file="Interface\AddOns\Wardrobe\Images\Delete-Over"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEditButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="WardrobeMainMenuFrameNewButton" relativePoint="CENTER">
+                        <Offset>
+                            <AbsDimension x="-20" y="22"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Wardrobe_ShowButtonTooltip(WARDROBE_EDITBUTTON_TIP1);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>          
+                    <OnClick>
+                        Wardrobe_EditOutfitButtonClick();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\Wardrobe\Images\Edit"/>
+                <PushedTexture file="Interface\AddOns\Wardrobe\Images\Edit"/>
+                <HighlightTexture file="Interface\AddOns\Wardrobe\Images\Edit-Over"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameUpdateButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="WardrobeMainMenuFrameEditButton" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="20" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Wardrobe_ShowButtonTooltip(WARDROBE_UPDATEBUTTON_TIP1);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>          
+                    <OnClick>
+                        Wardrobe_UpdateOutfitButtonClick();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\Wardrobe\Images\Update"/>
+                <PushedTexture file="Interface\AddOns\Wardrobe\Images\Update"/>
+                <HighlightTexture file="Interface\AddOns\Wardrobe\Images\Update-Over"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameColorButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="WardrobeMainMenuFrameUpdateButton" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="20" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        Wardrobe_ShowButtonTooltip(WARDROBE_COLORBUTTON_TIP1);
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>          
+                    <OnClick>
+                        Wardrobe_ShowColorPickFrame();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\AddOns\Wardrobe\Images\ColorSelect"/>
+                <PushedTexture file="Interface\AddOns\Wardrobe\Images\ColorSelect"/>
+                <HighlightTexture file="Interface\AddOns\Wardrobe\Images\ColorSelect-Over"/>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry1" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrame">
+                        <Offset>
+                            <AbsDimension x="30" y="-35" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry2" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry1" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry3" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry2" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry4" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry3" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry5" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry4" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry6" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry5" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry7" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry6" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry8" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry7" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry9" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry8" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry10" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry9" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry11" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry10" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry12" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry11" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry13" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry12" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry14" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry13" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry15" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry14" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry16" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry15" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry17" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry16" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry18" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry17" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry19" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry18" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry20" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry19" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="WardrobeMainMenuFrameEntry21" inherits="WardrobeMainMenuFrameEntryTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeMainMenuFrameEntry20" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <ScrollFrame name="WardrobeSortScrollFrame" inherits="UIPanelScrollFrameTemplate">
+                <ScrollChild>
+                    <Frame name="WardrobeSortScrollFrameScrollChildFrame">
+                        <Size>
+                            <AbsDimension x="180" y="160"/> 
+                        </Size>
+                    </Frame>
+                </ScrollChild>
+                <Size>
+                    <AbsDimension x="180" y="160"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="WardrobeMainMenuFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-33" y="-35"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+
+                <Scripts>
+                    <OnVerticalScroll>
+                        FauxScrollFrame_OnVerticalScroll(WARDROBE_MAX_SCROLL_ENTRIES, Wardrobe_PopulateMainMenu, true);
+                    </OnVerticalScroll>
+                </Scripts>                
+            </ScrollFrame>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                WardrobeMainMenuFrameButton:Hide();
+            </OnLoad>
+            <OnHide>
+            </OnHide>
+        </Scripts>
+    </Frame>
+    
+    <Button name="WardrobeColorPickFrameBoxTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="28" y="30"/>
+        </Size>
+        <Scripts>
+            <OnClick>
+                Wardrobe_ColorPickFrameColor_OnClick();
+            </OnClick>
+        </Scripts>
+        <NormalTexture name="$parentTexture" file="Interface\AddOns\Wardrobe\Images\ColorSquareBlank" alphamode="ADD"/>
+    </Button>
+    <Frame name="WardrobeColorPickFrame" inherits="DialogBoxFrame">
+        <Size>
+            <AbsDimension x="220" y="200"/>
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+               <FontString name="$parentTitle" inherits="GameFontNormal" text="WARDROBE_TXT_SELECTCOLOR">
+                     <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-16"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+               </FontString>
+               <FontString name="$parentExampleText" inherits="GameFontNormal" text="">
+                     <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-32"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+               </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+           <Button name="$parentOKButton">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="40" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_AcceptColorPickFrame();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture inherits="DialogButtonNormalTexture"/>
+                <PushedTexture inherits="DialogButtonPushedTexture"/>
+                <HighlightTexture inherits="DialogButtonHighlightTexture"/>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_OK"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_OK"/>
+            </Button>
+            <Button name="$parentCancelButton">
+                <Size>
+                    <AbsDimension x="64" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-40" y="16"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Wardrobe_HideColorPickFrame();
+                    </OnClick>
+                </Scripts>
+                <NormalTexture inherits="DialogButtonNormalTexture"/>
+                <PushedTexture inherits="DialogButtonPushedTexture"/>
+                <HighlightTexture inherits="DialogButtonHighlightTexture"/>
+                <NormalText inherits="GameFontNormalSmall" text="WARDROBE_TXT_CANCEL"/>
+                <HighlightText inherits="GameFontHighlightSmall" text="WARDROBE_TXT_CANCEL"/>
+            </Button>
+            <Frame name="WardrobeColorPickFrameGrid">
+                <Size>
+                    <AbsDimension x="256" y="128"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="-40"/>
+                        </Offset>
+                    </Anchor>    
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <Texture name="WardrobeColorPickFrameGridTexture" file="Interface\AddOns\Wardrobe\Images\ColorSelectGrid">
+                            <Size>
+                                <AbsDimension x="256" y="128"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>    
+            <Button name="$parentBox1" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="WardrobeColorPickFrameGrid"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="45" y="-10"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox2" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox1"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox3" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox2"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox4" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox3"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox5" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox4"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox6" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox5"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="27" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox7" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox1"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox8" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox7"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox9" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox8"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox10" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox9"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox11" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox10"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox12" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox11"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="27" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox13" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox7"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox14" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox13"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox15" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox14"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox16" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox15"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox17" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox16"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox18" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox17"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="27" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox19" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox13"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox20" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox19"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox21" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox20"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox22" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox21"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox23" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox22"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="28" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentBox24" inherits="WardrobeColorPickFrameBoxTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBox23"  relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="27" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+       </Frames>
+       <Scripts>
+            <OnLoad>
+                WardrobeColorPickFrameButton:Hide();
+            </OnLoad>
+        </Scripts>
+    </Frame>    
+</Ui>

@@ -1,0 +1,696 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.en.lua"/>
+	<Script file="localization.de.lua"/>
+	<Script file="localization.fr.lua"/>
+	<Script file="GamesListFrame.lua"/>
+
+	<Texture name="SkinnedButtonUpTexture" file="Interface\AddOns\MiniGames\Skin\Button-Up" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="SkinnedButtonDownTexture" file="Interface\AddOns\MiniGames\Skin\Button-Down" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="SkinnedButtonDisabledTexture" file="Interface\AddOns\MiniGames\Skin\Button-Disabled" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Texture name="SkinnedButtonHighlightTexture" file="Interface\AddOns\MiniGames\Skin\Button-Highlight" alphaMode="ADD" virtual="true">
+		<TexCoords left="0" right="0.625" top="0" bottom="0.6875"/>
+	</Texture>
+	<Button name="SkinnedButton" virtual="true">
+	<Size>
+		<AbsDimension x="80" y="22"/>
+	</Size>
+	<Scripts>
+		<OnClick>
+			PlaySound("GAMESCREENMEDIUMBUTTONMOUSEDOWN");
+		</OnClick>
+	</Scripts>
+	<NormalText inherits="GameFontNormal" justifyH="LEFT">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</NormalText>
+	<DisabledText inherits="GameFontNormal">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</DisabledText>
+	<PushedText inherits="GameFontNormal">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="2" y="-3"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</PushedText>
+	<HighlightText inherits="GameFontHighlight">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="2"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</HighlightText>
+	<NormalTexture inherits="SkinnedButtonUpTexture"/>
+	<PushedTexture inherits="SkinnedButtonDownTexture"/>
+	<DisabledTexture inherits="SkinnedButtonDisabledTexture"/>
+	<HighlightTexture inherits="SkinnedButtonHighlightTexture"/>
+	</Button>
+	<Button name="SkinnedQuitButton" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				PlaySound("GAMESCREENSMALLBUTTONMOUSEDOWN");
+				HideUIPanel(this:GetParent());
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\MiniGames\Skin\QuitButton-Up"/>
+		<PushedTexture file="Interface\AddOns\MiniGames\Skin\QuitButton-Down"/>
+		<HighlightTexture file="Interface\AddOns\MiniGames\Skin\QuitButton-Highlight" alphaMode="ADD"/>
+	</Button>
+	<Button name="GamesListTitleButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="300" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTag" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="50" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>
+			<OnClick>
+				GamesList_OnClick(arg1, this:GetID());
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."Tag"):SetTextColor(1, 1, 1);
+			</OnEnter>
+			<OnLeave>
+				if (this:GetID() ~= GamesListFrame.selectedButtonID) then
+					getglobal(this:GetName().."Tag"):SetTextColor(this.r, this.g, this.b);
+				end
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\MiniGames\Skin\Minus-Button-Up">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\AddOns\MiniGames\Skin\Plus-Button-Down" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\AddOns\MiniGames\Skin\Plus-Button-Hightlight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+		<NormalText name="$parentNormalText" inherits="GameFontNormal" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<DisabledText name="$parentDisabledText" inherits="GameFontHighlight" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="275" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="20" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledText>
+	</Button>
+	<Frame name="GamesListFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+		<Scripts>
+			<OnLoad>
+				GamesList_OnLoad();
+			</OnLoad>
+			<OnShow>
+				GamesList_OnShow();
+			</OnShow>
+			<OnHide>
+				GamesList_OnHide();
+			</OnHide>
+		</Scripts>
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="2" y="-1"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture file="Interface\AddOns\MiniGames\Skin\Night-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AddOns\MiniGames\Skin\Night-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AddOns\MiniGames\Skin\Night-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AddOns\MiniGames\Skin\Night-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="GamesListTitleText" inherits="GameFontHighlightLarge" text="Games">
+					<Size>
+						<AbsDimension x="310" y="44"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="GamesListFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="GamesListFrameLogo" file="Interface\AddOns\MiniGames\Skin\MiniGames-Logo">
+					<Size>
+						<!--<AbsDimension x="128" y="128"/> -->
+						<AbsDimension x="58" y="58"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<!-- <AbsDimension x="-5" y="18"/>	-->
+								<AbsDimension x="30" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="GamesListFrameBarLeft" file="Interface\AddOns\MiniGames\Skin\HorizontalBar-Left">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="GamesListFrame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-70" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="GamesListFrameBarRight" file="Interface\AddOns\MiniGames\Skin\HorizontalBar-Right">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="GamesListFrame" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="58" y="-13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="GamesListFrameVersionBox" file="Interface\AddOns\MiniGames\Skin\Version-Box">
+					<Size>
+						<AbsDimension x="128" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="GamesListFrame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="22" y="82"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="GamesListFrameCloseButton" inherits="SkinnedQuitButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GamesListFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-65" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Frame name="GamesListSortFrame">
+				<Size>
+					<AbsDimension x="222" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-50" y="-180"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="GamesListSortFrameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder" hidden="true">
+							<Size>
+								<AbsDimension x="12" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="GamesListSortFrameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder" hidden="true">
+							<Size>
+								<AbsDimension x="148" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="GamesListSortFrameRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="GamesListSortFrameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder" hidden="true">
+							<Size>
+								<AbsDimension x="12" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="GamesListSortFrameMiddle" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="GamesListSortDropDown" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="GamesListSortFrameLeft">
+								<Offset>
+									<AbsDimension x="118" y="2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								GamesListSortDropDown_OnLoad();
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="GamesListGoButton" inherits="SkinnedButton">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="GamesListFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						this:SetText(TEXT(GAMES_PLAY));
+					</OnShow>
+					<OnClick>
+						GamesList_Go_OnClick();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						if (this:GetText() == TEXT(GAMES_PLAY)) then
+							GameTooltip:SetText(TEXT(GAMES_PLAY_TOOLTIP), 1.0, 1.0, 1.0);
+						else
+							GameTooltip:SetText(TEXT(GAMES_CANCEL_TOOLTIP), 1.0, 1.0, 1.0);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="GamesListJoinButton" inherits="SkinnedButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GamesListFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						this:SetText(TEXT(GAMES_JOIN));
+					</OnShow>
+					<OnClick>
+						GamesList_Join_OnClick();
+						GameTooltip:Hide();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						GameTooltip:SetText(TEXT(GAMES_JOIN_TOOLTIP), 1.0, 1.0, 1.0);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Frame name="GamesListHighlightFrame" hidden="true">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="GamesListHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="GamesListTitle1" inherits="GamesListTitleButtonTemplate" id="1" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListFrame">
+						<Offset>
+							<AbsDimension x="22" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle2" inherits="GamesListTitleButtonTemplate" id="2" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle3" inherits="GamesListTitleButtonTemplate" id="3" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle4" inherits="GamesListTitleButtonTemplate" id="4" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle5" inherits="GamesListTitleButtonTemplate" id="5" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle6" inherits="GamesListTitleButtonTemplate" id="6" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle7" inherits="GamesListTitleButtonTemplate" id="7" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle8" inherits="GamesListTitleButtonTemplate" id="8" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle9" inherits="GamesListTitleButtonTemplate" id="9" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle10" inherits="GamesListTitleButtonTemplate" id="10" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle11" inherits="GamesListTitleButtonTemplate" id="11" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle12" inherits="GamesListTitleButtonTemplate" id="12" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle13" inherits="GamesListTitleButtonTemplate" id="13" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle14" inherits="GamesListTitleButtonTemplate" id="14" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle13" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle15" inherits="GamesListTitleButtonTemplate" id="15" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle14" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle16" inherits="GamesListTitleButtonTemplate" id="16" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle15" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle17" inherits="GamesListTitleButtonTemplate" id="17" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle16" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle18" inherits="GamesListTitleButtonTemplate" id="18" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle17" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="GamesListTitle19" inherits="GamesListTitleButtonTemplate" id="19" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="GamesListTitle18" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="GamesListListScrollFrame" inherits="ClassTrainerListScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="310"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GamesListFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-67" y="-96"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(16, GamesList_Update);
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+			<Frame name="GamesListVersionFrame">
+				<Size>
+					<AbsDimension x="225" y="23"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="GamesListFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-20" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="GamesListVersionText" inherits="GameFontNormal" justifyH="RIGHT"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(this,"ANCHOR_RIGHT");
+						GameTooltip:SetText(GAMES_VERSION_TOOLTIP, 1.0, 1.0, 1.0);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+
+	<Include file="TicTacToeFrame.xml"/>
+	<Include file="ConnectFrame.xml"/>
+	<Include file="OthelloFrame.xml"/>
+	<Include file="ChessFrame.xml"/>
+	<Include file="MinesweeperFrame.xml"/>
+
+	<!-- Mobilize -->
+	<Frame name="$parentMobileBar" inherits="MobileBarTemplate" parent="GamesListFrame" id="40" />
+	<Frame name="$parentMobileBar" inherits="MobileBarTemplate" parent="TicTacToeFrame" id="40" />
+	<Frame name="$parentMobileBar" inherits="MobileBarTemplate" parent="ConnectFrame" id="40" />
+	<Frame name="$parentMobileBar" inherits="MobileBarTemplate" parent="OthelloFrame" id="40" />
+	<Frame name="$parentMobileBar" inherits="MobileBarTemplate" parent="ChessFrame" id="40" />
+	<Frame name="$parentMobileBar" inherits="MobileBarTemplate" parent="MinesweeperFrame" id="40" />
+</Ui>

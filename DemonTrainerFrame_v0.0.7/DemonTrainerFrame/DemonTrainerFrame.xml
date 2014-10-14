@@ -1,0 +1,746 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="localization.fr.lua" /> 
+  	<Script file="localization.de.lua" /> 
+	<Script file="DemonTrainerFrame.lua"/>
+	<Button name="DemonTrainerFrameSkillButtonTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="293" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentSubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetFrameLevel(this:GetFrameLevel() + 1);
+			</OnLoad>
+			<OnClick>
+				DemonTrainerFrameSkillButton_OnClick(arg1);
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."SubText"):SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."SubText"):SetTextColor(this.r, this.g, this.b);
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightTexture>
+		<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+			<Size>
+				<AbsDimension x="16" y="16"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT">
+					<Offset>
+						<AbsDimension x="3" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledTexture>
+		<NormalText name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="2" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText name="$parentHighlightText" inherits="GameFontHighlight" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="2" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<DisabledText name="$parentDisabledText" inherits="GameFontDisable" justifyH="LEFT">
+			<Size>
+				<AbsDimension x="0" y="0"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="2" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledText>
+	</Button>
+	<ScrollFrame name="DemonTrainerFrameDetailScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTop" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+					<Size>
+						<AbsDimension x="30" y="123"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.46875" top="0" bottom="0.9609375"/>
+				</Texture>
+				<Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+					<Size>
+						<AbsDimension x="30" y="123"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				ScrollFrame_OnLoad();
+				this.scrollBarHideable = 1;
+			</OnLoad>
+		</Scripts>
+	</ScrollFrame>
+	<ScrollFrame name="DemonTrainerFrameListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+					<Size>
+						<AbsDimension x="30" y="120"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+					<Size>
+						<AbsDimension x="30" y="123"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</ScrollFrame>
+	<Frame name="DemonTrainerFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnLoad>
+				DemonTrainerFrame_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				DemonTrainerFrame_OnEvent();
+			</OnEvent>
+			<OnShow>
+				DemonTrainerFrame_OnShow();
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+				DemonTrainerFrame_Hide();
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+		</Scripts>
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="DemonTrainerFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="DemonTrainerFrameBottomLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="DemonTrainerFrameBottomRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				<FontString name="DemonTrainerFrameNameText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="DemonTrainerFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="DemonTrainerFrameGreetingText" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP">
+					<Size>
+						<AbsDimension x="260" y="26"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="76" y="-38"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="DemonTrainerFrameHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="256" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-275"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+				</Texture>
+				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+					<Size>
+						<AbsDimension x="75" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="DemonTrainerFrameHorizontalBarLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="DemonTrainerFrameExpandButtonFrame">
+				<Size>
+					<AbsDimension x="54" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="DemonTrainerFrameExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
+							<Size>
+								<AbsDimension x="8" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="DemonTrainerFrameExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+							<Size>
+								<AbsDimension x="38" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="DemonTrainerFrameExpandTabLeft" relativePoint="RIGHT">
+									<Offset>
+										<AbsDimension x="0" y="6"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+							<Size>
+								<AbsDimension x="8" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="DemonTrainerFrameExpandTabMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="DemonTrainerFrameCollapseAllButton" hidden="false" inherits="DemonTrainerFrameSkillButtonTemplate" text="ALL">
+						<Size>
+							<AbsDimension x="40" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="DemonTrainerFrameExpandTabLeft" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								DemonTrainerFrameExpandTabMiddle:SetWidth(this:GetTextWidth() + 24);
+							</OnLoad>
+							<OnClick>
+								DemonTrainerFrameCollapseAllButton_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="DemonTrainerFrameFilterDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-26" y="-64"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						DemonTrainerFrameFilterDropDown_OnLoad();
+					</OnLoad>
+					<OnShow>
+						DemonTrainerFrameFilterDropDown_OnLoad();
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="DemonTrainerFrameSkillHighlightFrame" hidden="true">
+				<Size>
+					<AbsDimension x="293" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="DemonTrainerFrameSkillHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="DemonTrainerFrameSkill1" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrame">
+						<Offset>
+							<AbsDimension x="22" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill2" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill3" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill4" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill5" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill6" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill7" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill8" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill9" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill10" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="DemonTrainerFrameSkill11" inherits="DemonTrainerFrameSkillButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkill10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="DemonTrainerFrameListScrollFrame" inherits="DemonTrainerFrameListScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="184"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="DemonTrainerFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-67" y="-96"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(CLASS_TRAINER_SKILL_HEIGHT, DemonTrainerFrame_Update)
+					</OnVerticalScroll>
+					<OnScrollRangeChanged>
+					</OnScrollRangeChanged>
+				</Scripts>
+			</ScrollFrame>
+			<Frame name="DemonTrainerFrameMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Scripts>
+					<OnClick>
+					</OnClick>
+					<OnEnter>
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>			
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="DemonTrainerFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="180" y="86"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<ScrollFrame name="DemonTrainerFrameDetailScrollFrame" inherits="DemonTrainerFrameDetailScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="296" y="135"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameListScrollFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="DemonTrainerFrameDetailScrollChildFrame">
+						<Size>
+							<AbsDimension x="296" y="50"/>
+						</Size>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="DemonTrainerFrameSkillName" inherits="GameFontNormal" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="244" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="46" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="DemonTrainerFrameSubSkillName" inherits="GameFontNormal" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="0" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="DemonTrainerFrameSkillName" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="5" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="DemonTrainerFrameSkillRequirements" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="244" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameSkillName" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="DemonTrainerFrameCostLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="COSTS_LABEL">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="5" y="-50"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="DemonTrainerFrameSkillDescription" inherits="GameFontHighlightSmall" justifyH="LEFT">
+									<Size>
+										<AbsDimension x="290" y="0"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="DemonTrainerFrameCostLabel" relativePoint="BOTTOMLEFT">
+											<Offset>
+												<AbsDimension x="0" y="-10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="DemonTrainerFrameSkillIcon">
+								<Size>
+									<AbsDimension x="37" y="37"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="-4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture file="Interface\Buttons\UI-EmptySlot">
+											<Size>
+												<AbsDimension x="64" y="64"/>
+											</Size>
+											<Anchors>
+												<Anchor point="TOPLEFT">
+													<Offset>
+														<AbsDimension x="-13" y="13"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+										GameTooltip:SetMerchantItem(DemonTrainerFrame_getSelectedService()); 
+										GameTooltip:Show();
+									</OnEnter>
+									<OnLeave>
+										GameTooltip:Hide();
+									</OnLeave>
+								</Scripts>
+							</Button>
+							<Frame name="DemonTrainerFrameDetailMoneyFrame" inherits="SmallMoneyFrameTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="DemonTrainerFrameCostLabel" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="5" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										SmallMoneyFrame_OnLoad();
+										MoneyFrame_SetType("STATIC");
+									</OnLoad>
+								</Scripts>
+							</Frame>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button name="DemonTrainerFrameBuyButton" inherits="UIPanelButtonTemplate" text="DEMON_TRAINER_FRAME_BUYBUTTON">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="DemonTrainerFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="224" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DemonTrainerFrameBuyButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="DemonTrainerFrameCancelButton" inherits="UIPanelButtonTemplate" text="EXIT">
+				<Size>
+					<AbsDimension x="80" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="DemonTrainerFrame" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="305" y="-420"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						DemonTrainerFrame_Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="DemonTrainerFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="DemonTrainerFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="DemonTrainerFrameTimer" frameStrata="LOW" enableMouse="false" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				DemonTrainerFrame_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	<GameTooltip name="DemonTrainerFrameTT" hidden="true">
+   		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTextLeft1" inherits="GameTooltipHeaderText" hidden="true"/>
+        		<FontString name="$parentTextRight1" inherits="GameTooltipHeaderText" hidden="true"/>
+				<FontString name="$parentTextLeft2" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight2" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft3" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight3" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft4" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight4" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft5" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight5" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft6" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight6" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft7" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight7" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft8" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight8" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextLeft9" inherits="GameTooltipText" hidden="true"/>
+				<FontString name="$parentTextRight9" inherits="GameTooltipText" hidden="true"/>
+			</Layer>
+		</Layers>
+	</GameTooltip>
+</Ui>

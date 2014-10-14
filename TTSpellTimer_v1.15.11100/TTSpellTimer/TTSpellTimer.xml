@@ -1,0 +1,326 @@
+<!--
+
+	TTSpellTimer
+	Copyright (c) Matthew Johnson.  All rights reserved.
+
+	This work may be freely adapted and distributed as long as this notice remains intact.
+	This work may NOT be (re)sold or included in any compilations that are (re)sold.
+
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+	<!-- Base timer button template. -->
+	<Button name="TTST_TimerButton_Template" enableMouse="true" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parent_Texture">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parent_TimeLeft" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent_Texture" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				TTST_TimerButton_OnClick(arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<!-- Timer button template that includes the spell name and target name. -->
+	<Button name="TTST_TimerButtonEx_Template" inherits="TTST_TimerButton_Template" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_SpellName" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent_Texture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="8" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_TargetName" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent_SpellName" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<!-- Tooltip frame. -->
+	<GameTooltip name="TTST_TooltipFrame" inherits="GameTooltipTemplate" frameStrata="TOOLTIP" hidden="true"/>
+
+	<!-- Timer frame.  This is where all of the active timers appear. -->
+	<Frame name="TTST_TimerFrame" topLevel="true" enableMouse="true" moveable="true" resizeable="false" hidden="true" parent="UIParent">
+		<TitleRegion setAllPoints="true"/>
+		<Size>
+			<AbsDimension x="136" y="136"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT"/>
+		</Anchors>
+		<Frames>
+			<Frame name="$parent_Background">
+				<Size>
+					<AbsDimension x="136" y="136"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		            <BackgroundInsets>
+		                <AbsInset left="5" top="5" right="4" bottom="4"/>
+		            </BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+			</Frame>
+			<Frame name="$parent_Positioning" hidden="true">
+				<Size>
+					<AbsDimension x="72" y="72"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-4" y="4"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parent_AnchorTopLeft" inherits="UIPanelButtonTemplate">
+						<Size>
+							<AbsDimension x="8" y="8"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TTST_Settings_General_AnchorPoint_OnClick("TOPLEFT");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_AnchorTopRight" inherits="UIPanelButtonTemplate">
+						<Size>
+							<AbsDimension x="8" y="8"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TTST_Settings_General_AnchorPoint_OnClick("TOPRIGHT");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_AnchorBottomLeft" inherits="UIPanelButtonTemplate">
+						<Size>
+							<AbsDimension x="8" y="8"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TTST_Settings_General_AnchorPoint_OnClick("BOTTOMLEFT");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_AnchorBottomRight" inherits="UIPanelButtonTemplate">
+						<Size>
+							<AbsDimension x="8" y="8"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TTST_Settings_General_AnchorPoint_OnClick("BOTTOMRIGHT");
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parent_MoveDone" inherits="UIPanelButtonTemplate" text="TTST_SETTINGS_GENERAL_MOVEDONE">
+						<Size>
+							<AbsDimension x="60" y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								TTST_Settings_General_MoveDone_OnClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="TTST_Timers" hidden="true">
+				<Size>
+					<AbsDimension x="32" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-4"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parent_Timer1" inherits="TTST_TimerButton_Template" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer2" inherits="TTST_TimerButton_Template" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer1" relativePoint="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer3" inherits="TTST_TimerButton_Template" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer2" relativePoint="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer4" inherits="TTST_TimerButton_Template" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer3" relativePoint="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer5" inherits="TTST_TimerButton_Template" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer6" inherits="TTST_TimerButton_Template" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer5" relativePoint="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer7" inherits="TTST_TimerButton_Template" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer6" relativePoint="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer8" inherits="TTST_TimerButton_Template" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer7" relativePoint="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="TTST_TimersEx" hidden="true">
+				<Size>
+					<AbsDimension x="128" y="64"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="4" y="4"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parent_Timer1" inherits="TTST_TimerButtonEx_Template" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer2" inherits="TTST_TimerButtonEx_Template" id="2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer1" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer3" inherits="TTST_TimerButtonEx_Template" id="3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer2" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer4" inherits="TTST_TimerButtonEx_Template" id="4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer3" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer5" inherits="TTST_TimerButtonEx_Template" id="5">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer4" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer6" inherits="TTST_TimerButtonEx_Template" id="6">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer5" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer7" inherits="TTST_TimerButtonEx_Template" id="7">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer6" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+					<Button name="$parent_Timer8" inherits="TTST_TimerButtonEx_Template" id="8">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent_Timer7" relativePoint="BOTTOMLEFT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent>
+				TTST_OnEvent();
+			</OnEvent>
+			<OnLoad>
+				TTST_OnLoad();
+			</OnLoad>
+			<OnUpdate>
+				TTST_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+</Ui>
+

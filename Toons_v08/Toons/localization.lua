@@ -1,0 +1,15 @@
+BINDING_NAME_TOGGLETOONSTAB = "Toggle Toons Pane";
+BINDING_HEADER_TOONSFRAMEHEADER = "Toons Frame";
+TOONS = "Toons"; -- Generic "Toons" text
+SERVER = "Server";
+BAGS = "Bags";
+BANK = "Bank";
+TIMEPLAYED = "Time Played";
+TIMEATLEVEL = "Time at Level";
+THISLEVEL = "This level";
+TIMEPLAYEDFORMAT = "%dd %dh %dm %ds";
+TRADE_SKILL = "Profession";
+NO_PROFESSIONS = "You have no professions.";
+XP_TEXT = "XP";
+MAX_TEXT = "Max";
+PERCENT_TEXT = "%";

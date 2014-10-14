@@ -1,0 +1,1362 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="Localization.lua"/>
+	<Script file="Localization-functions-en.lua"/>
+	<Script file="Localization-functions-de.lua"/>
+	<Script file="Localization-functions-fr.lua"/>
+	<Script file="Localization-functions-tw.lua"/>
+	<Script file="Localization-functions-cn.lua"/> 
+	<Script file="Localization-dialog-en.lua"/>
+	<Script file="Localization-dialog-de.lua"/>
+	<Script file="Localization-dialog-fr.lua"/>
+	<Script file="Localization-dialog-tw.lua"/>
+	<Script file="Localization-dialog-cn.lua"/> 
+	<Script file="Speech.lua"/>
+	<Script file="SerenityMessage.lua"/>
+	<Script file="SerenityTimerFunction.lua"/>
+	<Script file="SerenityGraphicalTimer.lua"/>
+	<Script file="SerenityInitialize.lua"/>
+	<Script file="Serenity.lua"/>
+
+	<Button name="SerenitySpellTimerButton" frameStrata="MEDIUM" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="120" y="340"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityListSpells" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="SerenitySpellTimerButton">
+							<Offset>
+								<AbsDimension x="23" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				this:Hide();
+			</OnLoad>
+			<OnDragStart>
+				Serenity_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "SpellTimer", AnchorSpellTimerTooltip);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_UseItem("Hearthstone", arg1);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\SpellTimerButton-Normal"/>
+		<PushedTexture file="Interface\AddOns\Serenity\UI\SpellTimerButton-Pushed"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\SpellTimerButton-Highlight"/>
+	</Button>
+
+	<Button name="SerenityButton" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="58" y="58"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityShardCount" inherits="GameFontNormal" text="">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				Serenity_Toggle(arg1);
+			</OnClick>
+			<OnDragStart>
+				Serenity_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Main", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnLoad>
+				Serenity_OnLoad();
+				HideUIPanel(this);
+			</OnLoad>
+			<OnUpdate>
+				Serenity_OnUpdate();
+			</OnUpdate>
+			<OnEvent>
+				Serenity_OnEvent(event);
+			</OnEvent>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Shard"/>
+	</Button>
+
+	<Button name="SerenitySpellButtonTemplate" hidden="false" virtual="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="-17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>			
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Shard"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseMenu-02"/>
+	</Button>
+	<Button name="SerenityLeftSpellButton" inherits="SerenitySpellButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityLeftSpellText" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityLeftSpellButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				Serenity_BuildSpellTooltip(this, "Left", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnClick>
+				Serenity_SpellButtonCast("Left", arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="SerenityMiddleSpellButton" inherits="SerenitySpellButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityMiddleSpellText" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityMiddleSpellButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				Serenity_BuildSpellTooltip(this, "Middle", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnClick>
+				Serenity_SpellButtonCast("Middle", arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="SerenityRightSpellButton" inherits="SerenitySpellButtonTemplate">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityRightSpellText" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityRightSpellButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				Serenity_BuildSpellTooltip(this, "Right", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnClick>
+				Serenity_SpellButtonCast("Right", arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="SerenityPotionButton" hidden="false" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityPotionCooldown" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityPotionButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="-17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Potion", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_UseItem("Potion", arg1);
+			</OnClick>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Potion00-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseMenu-02"/>
+	</Button>
+
+	<Button name="SerenityDrinkButton" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityDrinkCount" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityDrinkButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Drink", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_UseItem("Drink", arg1);
+			</OnClick>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Water00-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseMenu-02"/>
+	</Button>
+
+	<Button name="SerenityDispelButton" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Dispel", "ANCHOR_LEFT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(7, arg1, "none");
+			</OnClick>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\DispelButton-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseMenu-02"/>
+	</Button>
+	
+	<Button name="SerenityMountButton" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Mount", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_UseItem("Mount", arg1);
+			</OnClick>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\MountButton01-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseMenu-02"/>
+	</Button>
+	<Button name="SerenityBuffMenuButton" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Buff", "ANCHOR_RIGHT");
+				if SerenityConfig.QuickBuff then Serenity_BuffMenu("LeftButton"); end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_BuffMenu(arg1);
+			</OnClick>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Holy\BuffMenuButton-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BuffMenuButton-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu1" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>		
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityFortitudeCandleCount" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityBuffMenu1" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu1);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Fortitude", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(38, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Fortitude-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu2" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenitySpiritCandleCount" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityBuffMenu2" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu2);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "DivineSpirit", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(8, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\DivineSpirit-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu3" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityShadowCandleCount" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityBuffMenu3" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu3);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "ShadowProtection", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(51, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\ShadowProtection-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu4" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu4);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "InnerFire", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(20, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\InnerFire-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>	
+	<Button name="SerenityBuffMenu5" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityFeatherCount" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityBuffMenu8" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu5);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Levitate", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(23, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Levitate-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	
+<Button name="SerenityBuffMenu6" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu6);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Racial", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(11, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\FearWard-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu7" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>		
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu7);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Racial", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(9, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\ElunesGrace-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>	
+	<Button name="SerenityBuffMenu8" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu8);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Racial", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(54, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Shadowguard-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu9" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu9);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Racial", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(59, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\TouchOfWeakness-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu10" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu10);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Racial", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(12, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Feedback-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu11" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityFocusCooldown" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityBuffMenu11" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu11);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "InnerFocus", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(19, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\InnerFocus-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu12" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityInfusionCooldown" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityBuffMenu12" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu12);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "PowerInfusion", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(37, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\PowerInfusion-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenityBuffMenu13" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenityBuffMenu13);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Shadowform", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(53, arg1, "buff");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Shadowform-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	<Button name="SerenitySpellMenuButton" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				this:RegisterForClicks("LeftButtonUp", "MiddleButtonUp", "RightButtonUp");
+				HideUIPanel(this);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Spell", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellMenu(arg1);
+			</OnClick>
+			<OnDragStart>
+				if not SerenityLockServ then Serenity_OnDragStart(this); end
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Holy\SpellMenuButton-01"/>
+		<HighlightTexture alphaMode="BLEND" file="Interface\AddOns\Serenity\UI\Holy\BaseMenu-02"/>
+	</Button>
+	
+	<Button name="SerenitySpellMenu1" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityFadeCooldown" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenitySpellMenu1" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu1);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Fade", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(10, arg1, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Fade-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	
+	<Button name="SerenitySpellMenu2" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityLightwellCooldown" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenitySpellMenu2" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu2);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Lightwell", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(24,arg1,"spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Lightwell-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	
+	<Button name="SerenitySpellMenu3" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityTeleportCount3" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenitySpellMenu3" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu3);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Resurrection", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(48,arg1, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Resurrection-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	
+	<Button name="SerenitySpellMenu4" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityScreamCooldown" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenitySpellMenu4" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu4);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "Scream", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(45,arg1, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\Scream-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	
+	<Button name="SerenitySpellMenu5" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu5);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "MindControl", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+					Serenity_SpellCast(33,arg, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\MindControl-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+	
+	<Button name="SerenitySpellMenu6" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu6);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "MindSoothe", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(35,arg1, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\MindSoothe-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+
+	<Button name="SerenitySpellMenu7" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu7);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "MindVision", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(36,arg1, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\MindVision-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+
+	<Button name="SerenitySpellMenu8" frameStrata="HIGH" hidden="false" enableMouse="true"  toplevel="true" parent="UIParent" movable="true">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenitySpellCount2" inherits="GameFontNormal">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenitySpellMenu8" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="17" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				HideUIPanel(SerenitySpellMenu8);
+			</OnLoad>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "ShackleUndead", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_SpellCast(49,arg1, "spell");
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Serenity\UI\ShackleUndead-01"/>
+		<HighlightTexture file="Interface\AddOns\Serenity\UI\Holy\BaseBuff-02"/>
+	</Button>
+
+	<Button name="SerenityShadowTranceButton" frameStrata="MEDIUM" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="40" y="40"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="100" y="-30"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SerenityShadowTranceTimer" inherits="GameFontNormal" text="">
+					<Color r="1.0" g="1.0" b="1.0" a="1"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="SerenityShadowTranceButton" relativeFrom="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnDragStart>
+				Serenity_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+			<OnEnter>
+				Serenity_BuildTooltip(this, "ShadowTrance", "ANCHOR_RIGHT");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				Serenity_CastShadowBolt();
+			</OnClick>
+        		<OnLoad>
+				HideUIPanel(SerenityShadowTranceButton);
+			</OnLoad>
+		</Scripts>
+		<NormalTexture file="Interface\Addons\Serenity\UI\ShadowTrance-Icon-01"/>
+		<PushedTexture file="Interface\Addons\Serenity\UI\ShadowTrance-Icon-03"/>
+		<HighlightTexture file="Interface\Addons\Serenity\UI\ShadowTrance-Icon-02"/>
+	</Button>
+	
+	<Button name="SerenityAntiFearButton" frameStrata="MEDIUM" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="43" y="43"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="100" y="30"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnDragStart>
+				Serenity_OnDragStart(this);
+			</OnDragStart>
+			<OnDragStop>
+				Serenity_OnDragStop(this);
+			</OnDragStop>
+			<OnMouseUp>
+				Serenity_OnDragStop(this);
+			</OnMouseUp>
+			<OnLoad>
+				HideUIPanel(SerenityAntiFearButton);
+			</OnLoad>
+		</Scripts>
+		<NormalTexture file="Interface\Addons\Serenity\UI\AntiFear-01"/>
+		<HighlightTexture file="Interface\Addons\Serenity\UI\AntiFear-02"/>
+	</Button>
+		
+	<GameTooltip name="SerenityTooltip" frameStrata="LOW" toplevel="true" movable="true" parent="UIParent" inherits="GameTooltipTemplate" />
+</Ui>

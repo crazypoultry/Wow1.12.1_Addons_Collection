@@ -1,0 +1,271 @@
+<!--
+	AlarmClockWrangler
+-->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.lua"/>
+	<Script file="AlarmClockWrangler.lua"/>
+	<FontString name="ACWFontNormal" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" virtual="true">
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<FontHeight>
+			<AbsValue val="10"/>
+		</FontHeight>
+		<Color r="1.0" g="0.82" b="0"/>
+	</FontString>
+	<Frame name="ACWFrame" toplevel="true" parent="MinimapCluster" movable="true" enableMouse="true" frameStrata="HIGH" hidden="false">
+		<Size>
+			<AbsDimension x="51" y="51"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="MinimapCluster" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="145" y="-19"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<!--
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		-->
+		<TitleRegion setAllPoints="true"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="ACWCircle" file="Interface\AddOns\AlarmClockWrangler\circle4">
+					<Size>
+						<AbsDimension x="67" y="67"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="ACWFrame" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="ACWBGFrame" hidden="false">
+				<Size>
+					<AbsDimension x="37" y="37"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-6"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ACWDayNight" file="Interface\AddOns\AlarmClockWrangler\dayImg7">
+							<Size>
+								<AbsDimension x="39" y="39"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ACWBGFrame" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-1" y="1"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() - 2);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="ACWOptionsButton" frameStrata="HIGH" hidden="true">
+				<Size>
+					<AbsDimension x="31" y="31"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="4" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 100);
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuClose");
+						ACWAcknowledgeAlarm();
+					</OnClick>
+					<OnEnter>
+						ACWButtonTooltips();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="ACWRedButton" file="Interface\AddOns\AlarmClockWrangler\redLight">
+							<Size>	
+								<AbsDimension x="11" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ACWOptionsButton" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="4" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Minimap\MiniMap-TrackingBorder"/>
+				<PushedTexture file="Interface\Minimap\MiniMap-TrackingBorder"/>
+				<DisabledTexture file="Interface\Minimap\MiniMap-TrackingBorder"/>
+			</Button>
+			<Button name="ACWSnoozeButton" frameStrata="HIGH" hidden="true">
+				<Size>
+					<AbsDimension x="31" y="31"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="28" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetFrameLevel(this:GetFrameLevel() + 100);
+					</OnLoad>
+					<OnClick>
+						PlaySound("igMainMenuClose");
+						ACWSnooze();
+					</OnClick>
+					<OnEnter>
+						ACWButtonTooltips();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="ACWBlueButton" file="Interface\AddOns\AlarmClockWrangler\blueLight">
+							<Size>	
+								<AbsDimension x="11" y="11"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ACWSnoozeButton" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="3" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Minimap\MiniMap-TrackingBorder"/>
+				<PushedTexture file="Interface\Minimap\MiniMap-TrackingBorder"/>
+				<DisabledTexture file="Interface\Minimap\MiniMap-TrackingBorder"/>
+			</Button>
+			<Frame name="ACWTextFrame" hidden="false">
+				<Size>
+					<AbsDimension x="38" y="38"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<!--
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+				-->
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWText" justifyH="CENTER" justifyV="TOP" inherits="ACWFontNormal" nonspacewrap="false">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="TOP">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<FontString name="ACWMeridianText" justifyH="CENTER" justifyV="TOP" inherits="ACWFontNormal" nonspacewrap="false">
+							<Size>
+								<AbsDimension x="38" y="38"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						ACWStatusTooltip();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnMouseDown>
+						ACW_OnMouseDown(arg1);
+					</OnMouseDown>
+					<OnMouseUp>
+						ACWFrame:StopMovingOrSizing();
+					</OnMouseUp>
+				</Scripts>
+			</Frame>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				ACW_OnLoad();
+				this:SetBackdropBorderColor(0,0,0,0);
+			</OnLoad>
+			<OnEvent>
+				ACW_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				ACW_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

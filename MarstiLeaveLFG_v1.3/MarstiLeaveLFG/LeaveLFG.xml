@@ -1,0 +1,91 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="LeaveLFG.lua"/>
+	<Script file="localization.lua"/>
+	<Frame name="LeaveLFG" parent="ChatFrame1" hidden="false" frameStrata="BACKGROUND" enableMouse="true" movable="true">
+		<Size>
+			<AbsDimension x="42" y="22"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="ChatFrame1" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="LeaveLFGMover" setAllPoints="true" frameStrata="MEDIUM" hidden="true">
+				<Scripts>
+					<OnMouseDown>
+						if (arg1 == "LeftButton") then
+							LeaveLFG:StartMoving();
+						end
+					</OnMouseDown>
+					<OnMouseUp>
+						if (arg1 == "LeftButton") then
+							LeaveLFG:StopMovingOrSizing();
+						elseif (arg1 == "RightButton") then
+							if(IsShiftKeyDown()) then
+								LeaveLFG_Lock();
+							elseif(IsControlKeyDown()) then
+								LeaveLFG_ResetPosition();
+							end
+						end
+					</OnMouseUp>
+					<OnEnter>
+						LeaveLFG_MoverOnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size>
+								<AbsDimension x="20" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="42" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="LeaveLFG" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>LeaveLFG_OnButtonClick();</OnClick>
+					<OnEnter>LeaveLFG_OnButtonEnter();</OnEnter>
+					<OnLeave>GameTooltip:Hide();</OnLeave>
+					<OnLoad>
+						this:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
+					</OnLoad>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent>LeaveLFG_OnEvent();</OnEvent>
+			<OnLoad>LeaveLFG_OnLoad();</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

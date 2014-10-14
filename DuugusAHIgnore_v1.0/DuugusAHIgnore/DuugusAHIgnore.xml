@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="DuugusAHIgnore.lua"/>
+	<Frame name="DuuguAuctionFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnLoad>
+				DuuguAuctionFrame_OnLoad();
+				this:RegisterEvent("AUCTION_HOUSE_SHOW");
+				this:RegisterEvent("VARIABLES_LOADED");
+
+			</OnLoad>
+			<OnEvent>
+				if event == "VARIABLES_LOADED" then
+					if (not DAHIAuctioneerOnOffFlag) then
+						DAHIAuctioneerOnOffFlag = false;
+					end
+					if (not DAHIIgnorelist) then
+						DAHIIgnorelist = {};
+					end
+				end
+
+				if event == "AUCTION_HOUSE_SHOW" then
+					if Auctioneer then
+						DAHIOldStartAuctionScan = Auctioneer.Event.StartAuctionScan;
+						DAHIOldStopAuctionScan = Auctioneer.Event.StopAuctionScan;
+						Auctioneer.Event.StartAuctionScan = DAHIstartAuctionScan;
+						Auctioneer.Event.StopAuctionScan = DAHIstopAuctionScan;
+					end
+
+					if (not DAHIOldGetAuctionItemInfo) then
+						DAHIOldGetAuctionItemInfo = GetAuctionItemInfo;
+						GetAuctionItemInfo = DAHIGetAuctionItemInfo;
+					end
+					
+					if (not DAHIOldAuctionFrameBrowse_Update) then
+						DAHIOldAuctionFrameBrowse_Update = AuctionFrameBrowse_Update;
+						AuctionFrameBrowse_Update = DAHIAuctionFrameBrowse_Update;
+					end
+					for x = 1, 8, 1 do
+						obj = getglobal("BrowseButton"..x);
+						obj:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+					end
+					BrowseButton_OnClick = DuuguBrowseButton_OnClick;
+				end
+			</OnEvent>
+
+		</Scripts>
+	</Frame>
+
+</Ui>
+

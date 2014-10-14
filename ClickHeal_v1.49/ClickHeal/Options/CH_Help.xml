@@ -1,0 +1,447 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<!-- ##################################################################################################################################### -->
+	<!-- # HELP / FAQ PAGES                                                                                                                  # -->
+	<!-- ##################################################################################################################################### -->
+
+        <!-- ===== The Help / FAQ Frame ======================================================================================================= -->
+	<Frame name="CHH_HelpGeneralFrameTemplate" inherits="CHH_FrameBoxTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="10" y="-10"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-10" y="40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentMyText" inherits="GameFontNormal" justifyV="TOP" justifyH="LEFT" text="Show Targets">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-40" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-15" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName()..'TitleText'):SetText( CHHT_HELP_TITLE );
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.15, 0.15, 0.15);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<!-- ##################################################################################################################################### -->
+	<!-- # MAIN FRAMES, THE CONTAINER                                                                                                        # -->
+	<!-- ##################################################################################################################################### -->
+
+        <!-- ===== The main help frame ========================================================================================================= -->
+	<Frame name="CHH_Frame" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="750" y="620"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="20" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />	
+				<Size>
+					<AbsDimension x="128" y="17" />
+				</Size>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="CHH_Image" />
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="CHH_FrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="276" y="64" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="CHH_FrameTitleMove">
+				<Size>
+					<AbsDimension x="140" y="28" />
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-9" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="CHH_FrameTitleText" inherits="GameFontNormal" text="CHHT_HELP_MSG" />
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>
+						CHH_Frame:StartMoving();
+					</OnMouseDown>
+					<OnMouseUp>
+						CHH_Frame:StopMovingOrSizing();
+					</OnMouseUp>
+					<OnHide>
+						CHH_Frame:StopMovingOrSizing();
+					</OnHide>
+				</Scripts>
+			</Button>
+
+			<Frame name="CHH_Content" inherits="CHH_ContentTemplate">
+				<Frames>
+                                        <!-- ===== The help / faq button config ======================================================================= -->
+					<Frame name="CHH_Help" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonHelp';
+							</OnLoad>
+						</Scripts>
+						<Frames>
+							<Frame name="$parentGeneral" inherits="CHH_HelpGeneralFrameTemplate" />
+
+							<Button name="$parentPage1Button" inherits="OptionsButtonTemplate" text="CHHT_HELP_PAGE1">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="20" y="16"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										CHH_Page( 'help' );
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentPage2Button" inherits="OptionsButtonTemplate" text="CHHT_HELP_PAGE2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPage1Button" relativePoint="RIGHT" />
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										CHH_Page( 'abbr' );
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentPage3Button" inherits="OptionsButtonTemplate" text="CHHT_HELP_PAGE3">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPage2Button" relativePoint="RIGHT" />
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										CHH_Page( 'faq' );
+									</OnClick>
+								</Scripts>
+							</Button>
+							<Button name="$parentPage4Button" inherits="OptionsButtonTemplate" text="CHHT_HELP_PAGE4">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPage3Button" relativePoint="RIGHT" />
+								</Anchors>
+								<Scripts>
+									<OnClick>
+										CHH_Page( 'credits' );
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+
+                                        <!-- ===== The other tabs ===================================================================================== -->
+					<Frame name="CHH_Config" inherits="CHH_ConfigTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonConfig';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Gui" inherits="CHH_GuiTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonGui';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Extended" inherits="CHH_ExtendedTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonExtended';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Friend" inherits="CHH_FriendTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonFriendly';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Target" inherits="CHH_TargetTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonTarget';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Panic" inherits="CHH_PanicTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonPanic';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Extra" inherits="CHH_ExtraTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonExtra';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Buff" inherits="CHH_BuffTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonBuff';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Totem" inherits="CHH_TotemTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonTotem';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="CHH_Chain" inherits="CHH_ChainTemplate">
+						<Scripts>
+							<OnLoad>
+								this.ch_tab_button_name = 'CHH_ButtonChain';
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<!-- === endframe ==== -->
+				</Frames>
+			</Frame>
+
+                        <!-- ===== Main dialog, close button and tabbed pages buttons ================================================================ -->
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="CHHT_LABEL_CLOSE">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_Frame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonHelp" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_HELP">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_Page('help');
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonConfig" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_CONFIG">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonHelp" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_MiscPage();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonGui" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_GUI">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonConfig" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_GuiMiscTab();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonExtended" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_EXTENDED">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonGui" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_ExtendedRaidTab();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonFriendly" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_FRIEND">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonExtended" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_FriendInit();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonTarget" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_ENEMY">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonFriendly" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_TargetInit();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonPanic" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_PANIC">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonTarget" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_PanicInit( );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonExtra" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_EXTRA">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonPanic" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_ExtraInit( );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonChain" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_CHAINS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonExtra" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_ChainSpellAssign( 1 );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonBuff" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_BUFFS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonChain" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_BuffInit( 'options' );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="CHH_ButtonTotem" inherits="CharacterFrameTabButtonTemplate" text="CHHT_TAB_TOTEMS">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="CHH_ButtonBuff" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-18" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_TotemInit();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor( 0.5, 0.5, 0.5 );
+				tinsert( UISpecialFrames, "CHH_Frame" );
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+</Ui>

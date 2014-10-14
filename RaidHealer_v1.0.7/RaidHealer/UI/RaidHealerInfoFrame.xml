@@ -1,0 +1,282 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+
+	<Button name="RaidHealer_HealTargetStatusBarTemplate" virtual="true" hidden="true">
+		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="6" right="6" top="2" bottom="12"/>
+			</BackgroundInsets>
+		</Backdrop>
+	  <!-- <TitleRegion setAllPoints="true"/> -->
+	  <Size>
+	    <AbsDimension x="155" y="26"/>
+	  </Size>
+	  <Layers>
+      <Layer level="BACKGROUND">
+        <!-- Icon -->
+        <Texture name="$parent_Icon">
+          <Size>
+            <AbsDimension x="16" y="16"/>
+          </Size>
+          <Anchors>
+            <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="152" y="5"/>
+          </Offset>
+      	</Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+	  <Layers>
+	    <Layer level="OVERLAY">
+	      <FontString name="$parent_Text" inherits="GameFontHighlight">
+	        <Size>
+	          <AbsDimension x="140" y="14"/>
+	        </Size>
+	        <Anchors>
+	          <Anchor point="TOP" />
+	        </Anchors>
+	      </FontString>
+				<FontString name="$parent_PlayerName" inherits="GameFontHighlight" text="">
+					<FontHeight>
+						<AbsValue val="14"/>
+					</FontHeight>
+					<Color r="1.0" g="1.0" b="1.0"/>
+					<Anchors>
+					  <Anchor point="LEFT">
+						  <Offset>
+							  <AbsDimension x="170" y="5.5"/>
+						  </Offset>
+					  </Anchor>
+				   </Anchors>
+				</FontString>
+	      <!-- Steal the casting bar's border -->
+	      <Texture file="Interface\Tooltips\UI-StatusBar-Border">
+	        <Size>
+	          <AbsDimension x="150" y="20"/>
+	        </Size>
+	        <Anchors>
+	          <Anchor point="TOP">
+	            <Offset>
+	              <AbsDimension x="0" y="2"/>
+	            </Offset>
+	          </Anchor>
+	        </Anchors>
+	      </Texture>
+	    </Layer>
+	  </Layers>
+	
+	  <Frames>
+	    <!-- Status bar to update duration visually -->
+	    <StatusBar name="$parent_StatusBar">
+	      <Size>
+	        <AbsDimension x="140" y="13"/>
+	      </Size>
+	      <Anchors>
+	        <Anchor point="TOP">
+	          <Offset>
+	            <AbsDimension x="0" y="-2"/>
+	          </Offset>
+	        </Anchor>
+	      </Anchors>
+	      <BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+	      <BarColor r="1.0" g="0.7" b="0.0"/>
+	      <Scripts>
+	        <OnLoad>
+	          this:SetFrameLevel(this:GetFrameLevel() - 1);
+	        </OnLoad>
+	      </Scripts>
+	    </StatusBar>
+	  </Frames>
+	  <Scripts>
+     <OnLoad>
+     	this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+     </OnLoad>
+     <OnClick>
+       RaidHealer_HealTargetStatusBar_OnClick();
+     </OnClick>
+	  </Scripts>
+	</Button>
+
+	<Frame name="RaidHealer_InfoFrame" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="150" y="24"/>
+		</Size>
+		<Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <TitleRegion setAllPoints="true" />
+    <Frames>
+    	<Frame name="$parent_Title">
+	    	<Size>
+					<AbsDimension x="151" y="26"/>
+				</Size>
+				<Anchors>
+		      <Anchor point="TOPLEFT">
+		        <Offset>
+		          <AbsDimension x="2" y="5"/>
+		        </Offset>
+		      </Anchor>
+		    </Anchors>
+    		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<Color r="0.5" g="0.5" b="0.5" a="0.75" />
+					<BorderColor r="0.5" g="0.5" b="0.5" />
+				</Backdrop>
+		    <Layers>
+					<Layer level="OVERLAY">
+			      <FontString name="$parent_TitleText" inherits="GameFontHighlight" text="RAIDHEALER_NAME" justifyH="LEFT">
+			      	<Size>
+			      		<AbsDimension x="140" y="26" />
+			      	</Size>
+			      	<Anchors>
+			      		<Anchor point="TOPLEFT" relativeTo="RaidHealer_InfoFrame" relativePoint="TOPLEFT">
+			      			<Offset>
+					          <AbsDimension x="8" y="6"/>
+					        </Offset>
+			      		</Anchor>
+			      	</Anchors>
+			      </FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Close Button -->
+					<Button name="RaidHealer_InfoFrame_CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="3" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>RaidHealer_ToggleInfoFrame()</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+    	</Frame>
+    	
+			<!-- Targets -->
+			<Frame name="$parent_Spacer">
+				<Size>
+			    <AbsDimension x="155" y="10"/>
+			  </Size>
+			  <Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="$parent_Target1" inherits="RaidHealer_HealTargetStatusBarTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Spacer" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target2" inherits="RaidHealer_HealTargetStatusBarTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target1" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target3" inherits="RaidHealer_HealTargetStatusBarTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target2" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target4" inherits="RaidHealer_HealTargetStatusBarTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target3" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target5" inherits="RaidHealer_HealTargetStatusBarTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target4" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target6" inherits="RaidHealer_HealTargetStatusBarTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target5" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target7" inherits="RaidHealer_HealTargetStatusBarTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target6" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target8" inherits="RaidHealer_HealTargetStatusBarTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target7" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target9" inherits="RaidHealer_HealTargetStatusBarTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target8" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parent_Target10" inherits="RaidHealer_HealTargetStatusBarTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Target9" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>RaidHealer_InfoFrame_OnLoad()</OnLoad>
+			<OnEvent>RaidHealer_InfoFrame_OnEvent()</OnEvent>
+			<OnUpdate>RaidHealer_InfoFrame_OnUpdate()</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+</Ui>

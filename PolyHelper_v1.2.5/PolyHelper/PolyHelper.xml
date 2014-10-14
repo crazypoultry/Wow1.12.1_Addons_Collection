@@ -1,0 +1,331 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="PolyHelper.lua"/>
+	<Script file="localization.lua"/>
+	<Frame name="PolyHelper">
+		<Scripts>
+			<OnLoad>
+				PolyHelper_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PolyHelper_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				PolyHelper_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PolyHelperUI_CountDown" toplevel="true" enableMouse="false" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="48" y="30"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTimer" inherits="GameFontNormalLarge" text="--" justifyH="CENTER" justifyV="CENTER">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT"/>
+					</Anchors>
+					<Size>
+						<AbsDimension x="24" y="16"/>
+					</Size>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				PolyHelperUI_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				PolyHelperUI_OnEvent(event);
+			</OnEvent>
+			<OnMouseDown>
+				if (arg1 == "LeftButton") then
+					PolyHelperUI_CountDown:StartMoving();
+					PolyHelperUI_HideMenu();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if (arg1 == "LeftButton") then
+					PolyHelperUI_CountDown:StopMovingOrSizing();
+					PolyHelperUI_CountDownFrameOnEnter();
+				end
+			</OnMouseUp>
+			<OnEnter>
+				PolyHelperUI_CountDownFrameOnEnter();
+			</OnEnter>
+		</Scripts>
+	</Frame>
+
+	<Frame name="IB_PolyHelperUI_CountDown" inherits="IB_TextFrame" parent="InfoBarFrame">
+		<Size>
+			<AbsDimension x="35" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentComboText" inherits="GameFontNormal" justifyH="CENTER" justifyV="CENTER">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIcon" relativePoint="RIGHT"/>
+					</Anchors>
+					<Size>
+						<AbsDimension x="19" y="16"/>
+					</Size>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				if (InfoBarFrame ~= nil) then
+					IB_PolyHelperUI_OnLoad();
+				end
+			</OnLoad>
+			<OnEvent>
+				PolyHelperUI_OnEvent(event);
+			</OnEvent>
+			<OnEnter>
+				PolyHelperUI_CountDownFrameOnEnter();
+			</OnEnter>
+		</Scripts>
+	</Frame>
+	<Frame parent="UIParent">
+		<Frames>
+			<Button name="TitanPanelPolyHelperUIButton" inherits="TitanPanelComboTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+						if (TitanPanelBarButton ~= nil) then
+							TitanPanel_PolyHelperUI_OnLoad();
+						end						
+					</OnLoad>
+					<OnEvent>
+						PolyHelperUI_OnEvent(event);
+					</OnEvent>
+					<OnEnter>
+						if (TitanPanelBarButton ~= nil) then
+							TitanPanelButton_OnEnter();
+						end
+						PolyHelperUI_CountDownFrameOnEnter();
+					</OnEnter>
+					<OnUpdate>
+						if (TitanPanelBarButton ~= nil) then						
+							TitanPanelButton_OnUpdate(arg1);
+						end
+					</OnUpdate>		
+					<OnClick>
+						if (arg1 == "RightButton") then
+							PolyHelperUI_HideMenu();
+						end
+						if (TitanPanelBarButton ~= nil) then
+							TitanPanelButton_OnClick(arg1);
+						end
+					</OnClick>
+				</Scripts>
+			</Button>	
+		</Frames>
+	</Frame>
+
+	<FontString name="PolyHelper_GameFontPaleGreen" inherits="GameFontNormal" virtual="true">
+		<Color r="0.5" g="1.0" b="0.5"/>
+	</FontString>
+	<FontString name="PolyHelper_GameFontPaleBlue" inherits="GameFontNormal" virtual="true">
+		<Color r="0.8" g="0.8" b="1.0"/>
+	</FontString>
+	<FontString name="PolyHelper_GameFontBlue" inherits="GameFontNormal" virtual="true">
+		<Color r="0.1" g="0.1" b="1.0"/>
+	</FontString>
+	<FontString name="PolyHelper_GameFontOrange" inherits="GameFontNormal" virtual="true">
+		<Color r="1.0" g="0.5" b="0.1"/>
+	</FontString>
+
+	<MessageFrame name="PolyHelperUI_MessageFrame" insertMode="TOP" parent="UIParent" frameStrata="HIGH" toplevel="true">
+		<Size>
+			<AbsDimension x="512" y="30"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIErrorsFrame" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<FontString inherits="GameFontNormal" justifyH="CENTER"/>
+	</MessageFrame>
+
+	<Button name="PolyHelperUI_PopupButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="12"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				PolyHelperUI_ButtonClick(this.OptionID);
+			</OnClick>
+		</Scripts>
+		<NormalText inherits="PolyHelper_GameFontPaleGreen" justifyH="LEFT"/>
+		<HighlightText inherits="PolyHelper_GameFontPaleBlue" justifyH="LEFT"/>
+		<DisabledText inherits="GameFontDisable" justifyH="LEFT"/>
+	</Button>
+
+	<Frame name="PolyHelperUI_Popup" frameStrata="DIALOG" hidden="true" parent="UIParent">
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="8" right="9" top="9" bottom="8"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="24"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="24"/>
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Button name="$parentButton0" inherits="PolyHelperUI_PopupButtonTemplate" id="10" text="Resume Timer">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetWidth(this:GetTextWidth() + 2 * POLYHELPERUI_BORDER_WIDTH);
+					</OnLoad>
+					<OnClick>
+						Toggle_PolyHelper_Resume();
+					</OnClick>
+				</Scripts>
+				<NormalText inherits="PolyHelper_GameFontBlue"/>
+				<HighlightText inherits="PolyHelper_GameFontOrange"/>
+				<DisabledText inherits="GameFontDisable"/>
+			</Button>
+			<Button name="$parentButton1" inherits="PolyHelperUI_PopupButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton0" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton2" inherits="PolyHelperUI_PopupButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton3" inherits="PolyHelperUI_PopupButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton4" inherits="PolyHelperUI_PopupButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton5" inherits="PolyHelperUI_PopupButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton6" inherits="PolyHelperUI_PopupButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton7" inherits="PolyHelperUI_PopupButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton8" inherits="PolyHelperUI_PopupButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton9" inherits="PolyHelperUI_PopupButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton10" inherits="PolyHelperUI_PopupButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton11" inherits="PolyHelperUI_PopupButtonTemplate" id="21">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton12" inherits="PolyHelperUI_PopupButtonTemplate" id="22">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton13" inherits="PolyHelperUI_PopupButtonTemplate" id="23">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton12" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton14" inherits="PolyHelperUI_PopupButtonTemplate" id="24">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton13" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton15" inherits="PolyHelperUI_PopupButtonTemplate" id="25">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton14" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlaySound("UChatScrollButton");
+				PolyHelperUI_InitializeMenu();
+			</OnShow>
+		</Scripts>		
+	</Frame>
+</Ui>
+

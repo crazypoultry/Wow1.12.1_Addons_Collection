@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="MiniMage.lua"/>
+	<Script file="localization.lua"/>
+	
+	<!-- Empty core frame used for initialization and such -->
+	
+	<Frame name="MM_CoreFrame" parent="Minimap" frameStrata="MEDIUM" enableMouse="true" hidden="false">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+			</OnLoad>
+			<OnEvent>
+				if (event == "PLAYER_ENTERING_WORLD") then
+					MM_Initialize();
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+	<!-- Button frame for minimap button and drop down menu -->
+	
+	<Frame name="MM_ButtonFrame" parent="Minimap" enableMouse="true" hidden="false" frameStrata="LOW">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="Minimap" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="2" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="MM_Button">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\MiniMage\Images\mm"/>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnLoad>
+
+						this:RegisterForDrag("RightButton");
+
+						this.dragme = false;
+
+					</OnLoad>
+
+					<OnDragStart>
+
+						this.dragme = true;
+
+					</OnDragStart>
+
+					<OnDragStop>
+
+						this.dragme = false;
+
+					</OnDragStop>
+
+					<OnUpdate>
+
+						if(this.dragme == true) then
+
+							MM_Button_BeingDragged();
+
+						end
+
+					</OnUpdate>
+					<OnClick>
+						MM_Button_OnClick();
+					</OnClick>
+					<OnEnter>
+						MM_Button_OnEnter();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Frame name="MM_DropDownFrame" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="10" y="10"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MM_Button">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						MM_DropDown_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnEvent>
+				MM_Button_Initialize();
+				MM_Button_UpdatePosition();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,51 @@
+function StunWatch_Globals()
+
+StunWatch_Save = {}
+
+STUNWATCH = {}
+STUNWATCH.PROFILE = ""
+STUNWATCH.COMBO = 0
+STUNWATCH.STATUS = 0
+
+STUNWATCH.INVERT = false
+STUNWATCH.GROWTH = 0
+STUNWATCH.SCALE = 1
+STUNWATCH.WIDTH = 160
+STUNWATCH.ALPHA = 1
+
+STUNWATCH.VARIABLES_LOADED = false
+STUNWATCH.VARIABLE_TIMER = 0
+
+-- time threshold before an event is trashed, may need to be raised in high lag situations
+STUNWATCH.THRESHOLD = 0.25
+
+-- most recent unit aura seen
+STUNWATCH.UNIT_AURA = {}
+STUNWATCH.UNIT_AURA.TARGET = ""
+STUNWATCH.UNIT_AURA.TIME = 0
+
+-- most recent effect seen
+STUNWATCH.EFFECT = {}
+STUNWATCH.EFFECT.TYPE = ""
+STUNWATCH.EFFECT.TARGET = ""
+STUNWATCH.EFFECT.TIME = 0
+STUNWATCH.EFFECT.STATUS = 0  -- 0 = no effect, 1 = applied, 2 = broken, 3 = faded
+
+-- effect groups for each bar
+STUNWATCH.GROUPS = {}
+STUNWATCH.GROUPS[1] = {}
+STUNWATCH.GROUPS[1].EFFECT = {}
+
+STUNWATCH.GROUPS[2] = {}
+STUNWATCH.GROUPS[2].EFFECT = {}
+
+STUNWATCH.GROUPS[3] = {}
+STUNWATCH.GROUPS[3].EFFECT = {}
+
+STUNWATCH.GROUPS[4] = {}
+STUNWATCH.GROUPS[4].EFFECT = {}
+
+STUNWATCH.GROUPS[5] = {}
+STUNWATCH.GROUPS[5].EFFECT = {}
+
+end

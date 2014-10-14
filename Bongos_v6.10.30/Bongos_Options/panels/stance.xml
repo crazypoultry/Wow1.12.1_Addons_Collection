@@ -1,0 +1,345 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+	<Script file="stance.lua"/>
+	
+	<Frame name="BongosOptionsComponent" virtual="true">
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<BackgroundInsets>
+				<AbsInset left="2" right="2" top="2" bottom="2"/>
+			</BackgroundInsets>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BorderColor r="0.6" g="0.6" b="0.6"/>
+		</Backdrop>
+
+		<Layers>
+			<Layer level ="BACKGROUND">
+				<Texture file="Interface\ChatFrame\ChatFrameBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="4" y="-4"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="-4" y="4"/>
+						</Anchor>
+					</Anchors>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="0" b="0" a="0.9"/>
+						<MaxColor r="0.2" g="0.2" b="0.2" a="0.9"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<EditBox name="BongosOptionsNumBox" inherits="BongosOptionsComponent" autoFocus="false" letters="3" numeric="true" virtual="true">
+		<Size x="42" y="24"/>
+		
+		<Scripts>
+			<OnLoad>
+				this:SetTextInsets(8, 8, 0, 1)
+			</OnLoad>
+			<OnEscapePressed>
+				this:ClearFocus()
+			</OnEscapePressed>
+		</Scripts>		
+		<FontString font="GameFontHighlight"/>
+	</EditBox>
+
+	<Frame name="BongosOptionsRange" inherits="BongosOptionsComponent" virtual="true">
+		<Size x="82" y="26"/>
+		
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" font="GameFontNormal" text="-">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>		
+			<EditBox name="$parentMin" autoFocus="false" letters="3" numeric="true">
+				<Size x="42" y="26"/>
+				
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="2" y="0"/>
+					</Anchor>
+				</Anchors>
+				
+				<Scripts>
+					<OnLoad>
+						this:SetTextInsets(8, 8, 0, 1)
+					</OnLoad>
+					<OnEscapePressed>
+						this:ClearFocus()
+					</OnEscapePressed>
+					<OnTextChanged>
+						BOptionsStanceBarsMin_OnTextChanged()
+					</OnTextChanged>
+				</Scripts>			
+				<FontString font="GameFontHighlight"/>
+			</EditBox>
+			
+			<EditBox name="$parentMax" autoFocus="false" letters="3" numeric="true">
+				<Size x="42" y="26"/>
+				
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						this:SetTextInsets(8, 8, 0, 1)
+					</OnLoad>
+					<OnEscapePressed>
+						this:ClearFocus()
+					</OnEscapePressed>
+					<OnFocusLost>
+						BOptionsStanceBarsMax_OnFocusLost()
+					</OnFocusLost>
+				</Scripts>				
+				<FontString font="GameFontHighlight"/>
+			</EditBox>
+		</Frames>
+	</Frame>
+	
+	<Button name="BongosOptionsStanceButton" virtual="true">
+		<Scripts>
+			<OnClick>
+				BOptionsStanceButton_OnClick(this)
+			</OnClick>
+			<OnMouseWheel>
+				BOptionsStance_OnMousewheel(getglobal(this:GetParent():GetName() .. 'ScrollFrame'), arg1)
+			</OnMouseWheel>
+			<OnEnter>
+				if (this:GetTextWidth() * UIParent:GetScale()) > this:GetWidth() then
+					GameTooltip:SetOwner(this, "ANCHOR_LEFT")
+					GameTooltip:SetText(this:GetText())
+					GameTooltip:Show()
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+
+		<ButtonText setAllPoints="true"/>
+		<NormalFont font="GameFontNormal" justifyH="LEFT"/>
+		<HighlightFont font="GameFontHighlight" justifyH="LEFT"/>
+		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
+	</Button>
+
+	<!-- edit dialog -->
+	<Frame name="BongosOptionsStanceDialog" setAllPoints="true" enableMouse="true" movable="true" topLevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4"/>
+			</BackgroundInsets>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<BorderColor r="0.6" g="0.6" b="0.6"/>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ChatFrame\ChatFrameBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="4" y="-4"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="-4" y="4"/>
+						</Anchor>
+					</Anchors>
+					<Gradient orientation="VERTICAL">
+						<MinColor r="0" g="0" b="0" a="0.9"/>
+						<MaxColor r="0.2" g="0.2" b="0.2" a="0.9"/>
+					</Gradient>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" font="GameFontNormal" text="BONGOS_STANCE_ADD">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="0" y="-8"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBarTitle" font="GameFontNormal" text="BONGOS_STANCE_BARS">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset x="12" y="-56"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStanceTitle" font="GameFontNormal" text="BONGOS_STANCE_STANCE">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentBarTitle">
+							<Offset x="0" y="-40"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOffsetTitle" font="GameFontNormal" text="BONGOS_STANCE_OFFSET">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="$parentStanceTitle">
+							<Offset x="0" y="-40"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame name="$parentBars" inherits="BongosOptionsRange">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+						<Offset x="-10" y="-62"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnShow>
+						BOptionsStanceBars_OnShow()
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			<Frame name="$parentStance" inherits="BongosOptionsDropDown">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentBars">
+						<Offset x="12" y="-44"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnShow>
+						BOptionsStanceStance_OnShow()
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			<EditBox name="$parentOffset" inherits="BongosOptionsNumBox">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentStance">
+						<Offset x="-12" y="-36"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnShow>
+						BOptionsStanceOffset_OnShow()
+					</OnShow>
+				</Scripts>
+			</EditBox>
+
+			<Button name="$parentAccept" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="44" y="24"/>
+
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-4" y="4"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						BOptionsStance_Save()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentCancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="52" y="24"/>
+
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentAccept" relativePoint="LEFT">
+						<Offset x="-6" y="0"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<!-- Panel for hiding/showing bars -->
+	<Frame name="BongosOptionsStance" inherits="BongosOptionsPanel" virtual="true">
+		<Frames>
+			<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset x="-48" y="-4"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset x="-24" y="42"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(3, BOptionsStance_UpdateScrollBar)
+					</OnVerticalScroll>
+				</Scripts>
+			</ScrollFrame>
+
+			<Button name="$parentNew" inherits="UIPanelButtonTemplate" text="BONGOS_OPTIONS_ADD">
+				<Size x="44" y="24"/>
+
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset x="4" y="4"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						getglobal(this:GetParent():GetName() .. "StanceAdd"):Show()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentDelete" inherits="UIPanelButtonTemplate" text="BONGOS_OPTIONS_DELETE">
+				<Size x="52" y="24"/>
+
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentNew" relativePoint="RIGHT">
+						<Offset x="6" y="0"/>
+					</Anchor>
+				</Anchors>
+
+				<Scripts>
+					<OnClick>
+						BOptionsStance_Delete()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Frame name="$parentStanceAdd" inherits="BongosOptionsStanceDialog"/>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				BOptionsStance_OnLoad()
+			</OnLoad>
+			<OnShow>
+				BOptionsStance_OnShow()
+			</OnShow>
+			<OnMouseWheel>
+				BOptionsStance_OnMousewheel(getglobal(this:GetName() .. "ScrollFrame"), arg1)
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+</Ui>

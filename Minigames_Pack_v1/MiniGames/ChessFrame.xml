@@ -1,0 +1,756 @@
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Sam Lantinga (Blizzard Entertainment) -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="ChessFrame.lua"/>
+	<CheckButton name="ChessButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" setAllPoints="true" hidden="true"/>
+				<FontString name="$parentTeam" inherits="GameFontNormal" hidden="true" justifyH="LEFT" text="1"/>
+				<FontString name="$parentState" inherits="GameFontNormal" hidden="true" justifyH="LEFT" text="1">
+					<Size>
+						<AbsDimension x="103" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="4" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Model name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				ChessFrame_OnClick();
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="64" y="64"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+	<Frame name="ChessFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="450" y="520"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-100"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="ChessFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="ChessTitle" inherits="GameFontNormal" text="Chess">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ChessAnchorLeft" inherits="GameFontNormal" text="*">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-45" y="-45"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ChessNameLeft" inherits="GameFontNormal" text="vjeux">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="ChessAnchorLeft" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-20" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="ChessNameRight" inherits="GameFontNormal" text="enemy">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="ChessAnchorLeft" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="110" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Misc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButtonLeft" inherits="ChessButtonTemplate" id="0">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="-47" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButtonRight" inherits="ChessButtonTemplate" id="0">
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="47" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ First Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton1_1" inherits="ChessButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-100"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_2" inherits="ChessButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_3" inherits="ChessButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_4" inherits="ChessButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_5" inherits="ChessButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_6" inherits="ChessButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_7" inherits="ChessButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton1_8" inherits="ChessButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="ChessButton1_7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Second Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton2_1" inherits="ChessButtonTemplate" id="21">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_2" inherits="ChessButtonTemplate" id="22">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_3" inherits="ChessButtonTemplate" id="23">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_4" inherits="ChessButtonTemplate" id="24">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_5" inherits="ChessButtonTemplate" id="25">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_6" inherits="ChessButtonTemplate" id="26">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_7" inherits="ChessButtonTemplate" id="27">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton2_8" inherits="ChessButtonTemplate" id="28">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton1_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Third Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton3_1" inherits="ChessButtonTemplate" id="31">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_2" inherits="ChessButtonTemplate" id="32">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_3" inherits="ChessButtonTemplate" id="33">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_4" inherits="ChessButtonTemplate" id="34">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_5" inherits="ChessButtonTemplate" id="35">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_6" inherits="ChessButtonTemplate" id="36">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_7" inherits="ChessButtonTemplate" id="37">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton3_8" inherits="ChessButtonTemplate" id="38">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton2_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Fourth Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton4_1" inherits="ChessButtonTemplate" id="41">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_2" inherits="ChessButtonTemplate" id="42">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_3" inherits="ChessButtonTemplate" id="43">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_4" inherits="ChessButtonTemplate" id="44">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_5" inherits="ChessButtonTemplate" id="45">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_6" inherits="ChessButtonTemplate" id="46">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_7" inherits="ChessButtonTemplate" id="47">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton4_8" inherits="ChessButtonTemplate" id="48">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton3_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Fifth Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton5_1" inherits="ChessButtonTemplate" id="51">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_2" inherits="ChessButtonTemplate" id="52">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_3" inherits="ChessButtonTemplate" id="53">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_4" inherits="ChessButtonTemplate" id="54">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_5" inherits="ChessButtonTemplate" id="55">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_6" inherits="ChessButtonTemplate" id="56">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_7" inherits="ChessButtonTemplate" id="57">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton5_8" inherits="ChessButtonTemplate" id="58">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton4_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Sixth Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton6_1" inherits="ChessButtonTemplate" id="61">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_2" inherits="ChessButtonTemplate" id="62">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_3" inherits="ChessButtonTemplate" id="63">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_4" inherits="ChessButtonTemplate" id="64">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_5" inherits="ChessButtonTemplate" id="65">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_6" inherits="ChessButtonTemplate" id="66">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_7" inherits="ChessButtonTemplate" id="67">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton6_8" inherits="ChessButtonTemplate" id="68">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton5_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Seventh Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton7_1" inherits="ChessButtonTemplate" id="71">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_2" inherits="ChessButtonTemplate" id="72">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_3" inherits="ChessButtonTemplate" id="73">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_4" inherits="ChessButtonTemplate" id="74">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_5" inherits="ChessButtonTemplate" id="75">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_6" inherits="ChessButtonTemplate" id="76">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_7" inherits="ChessButtonTemplate" id="77">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton7_8" inherits="ChessButtonTemplate" id="78">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton6_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<!-- ~~~~~~~~~~~~~~~~~~~ Eigth Line ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<CheckButton name="ChessButton8_1" inherits="ChessButtonTemplate" id="81">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_2" inherits="ChessButtonTemplate" id="82">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_2" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_3" inherits="ChessButtonTemplate" id="83">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_3" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_4" inherits="ChessButtonTemplate" id="84">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_4" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_5" inherits="ChessButtonTemplate" id="85">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_5" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_6" inherits="ChessButtonTemplate" id="86">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_6" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_7" inherits="ChessButtonTemplate" id="87">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_7" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="ChessButton8_8" inherits="ChessButtonTemplate" id="88">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChessButton7_8" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+
+			<Button name="ChessButtonQuit" inherits="GameMenuButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Chess_Quit_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalText inherits="GameFontHighlight" text="GAMES_QUIT"/>
+				<HighLightText inherits="GameFontHighlight" text="GAMES_QUIT"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				Chess_OnLoad();
+			</OnShow>
+			<OnHide>
+				Chess_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,27 @@
+
+function Skinner:AutoBag()
+
+	self:keepRegions(AB_Profile_ListBoxScrollFrame, {})                                                              
+	self:skinScrollBar(AB_Profile_ListBoxScrollFrame)                                                             
+	self:keepRegions(AB_Profile_ListBox, {9})                                                              
+	self:applySkin(AB_Profile_ListBox, nil)
+	self:moveObject(AB_Profile_AddTextInput, "-", 10, nil,nil)                                                             
+	self:skinEditBox(AB_Profile_AddTextInput)                                                              
+	self:keepRegions(AB_Slot_Dropdown, {4, 5})                                                               
+	self:hookDDScript(AB_Slot_DropdownButton)                                                             
+	self:keepRegions(AB_Divider_Profiles, {2})                                                              
+	self:keepRegions(AB_Arrange_ListBoxHighlight, {1})                                                              
+	self:applySkin(AB_Arrange_ListBoxHighlight, nil)                                                              
+	self:keepRegions(AB_Arrange_ListBoxScrollFrame, {})                                                              
+	self:skinScrollBar(AB_Arrange_ListBoxScrollFrame)                                                             
+	self:keepRegions(AB_Arrange_ListBox, {9})                                                              
+	self:applySkin(AB_Arrange_ListBox, nil)                                                              
+	self:moveObject(AB_Arrange_AddTextInput, "-", 10, nil,nil)                                                             
+	self:skinEditBox(AB_Arrange_AddTextInput)                                                              
+	self:keepRegions(AB_Divider_AutoBag, {2})                                                              
+	self:keepRegions(AB_Bag_Dropdown, {4, 5})                                                               
+	self:hookDDScript(AB_Bag_DropdownButton)                                                             
+	self:keepRegions(AB_Options, {11, 12})                                                               
+	self:applySkin(AB_Options, true)                                                              
+
+end

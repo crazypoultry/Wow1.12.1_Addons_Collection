@@ -1,0 +1,482 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+
+	<!-- DROPDOWN TEMPLATE -->
+	<Frame name="RaidHealer_DropdownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="128" y="16"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				UIDropDownMenu_Initialize(this, nil);
+			</OnLoad>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<!-- CheckBox Template -->
+	<CheckButton name="RaidHealer_CheckTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				RaidHealer_AssignmentCheckButton_OnClick(this);
+			</OnClick>
+		</Scripts>
+		
+	</CheckButton>
+	
+	<!-- Image Checkbox -->
+	<CheckButton name="RaidHealer_ImageCheckButtonTemplate" inherits="RaidHealer_CheckTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentTexture" file="Interface\Icons\Spell_Magic_GreaterBlessingofKings">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="-1" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file=""/>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."Texture"):SetHeight(this:GetHeight()*0.7);
+				getglobal(this:GetName().."Texture"):SetWidth(this:GetWidth()*0.7);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	
+	<!-- Configuration CheckBox Template -->
+	<CheckButton name="RaidHealer_ConfigCheckTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="0" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_Label" inherits="GameFontNormal" text="">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="6" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				RaidHealer_ConfigCheckButton_OnClick(this);
+			</OnClick>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	
+	<!-- Image Config Checkbox -->
+	<CheckButton name="RaidHealer_ImageConfigCheckButtonTemplate" inherits="RaidHealer_ConfigCheckTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Texture" file="Interface\Buttons\UI-Slot-Background">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset>
+								<AbsDimension x="-1" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture file=""/>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName().."_Texture"):SetHeight(this:GetHeight()*0.7);
+				getglobal(this:GetName().."_Texture"):SetWidth(this:GetWidth()*0.7);
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	
+	<!-- Tab Button Template -->
+	<Button name="RaidHealer_TabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(RaidHealer_MainFrame);
+				RaidHealer_Tab_OnClick(this:GetName());
+			</OnClick>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<!-- Minimap Button -->
+	<Button name="RaidHealer_MinimapButtonTemplate" toplevel="true" virtual="true">
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="Minimap" relativePoint="CENTER">
+				<Offset>
+					<AbsDimension x="-16.66" y="-79.6"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				RaidHealer_MinimapButton_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				RaidHealer_MinimapButton_OnEvent(event);
+			</OnEvent>
+			<OnMouseDown>
+				RaidHealer_MinimapButton_OnMouseDown();
+			</OnMouseDown>
+			<OnMouseUp>
+				RaidHealer_MinimapButton_OnMouseUp();
+			</OnMouseUp>
+			<OnHide>
+				RaidHealer_MinimapButton_OnHide();
+			</OnHide>
+			<OnUpdate>
+				RaidHealer_MinimapButton_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\RaidHealer\Skin\RaidHealerButton"/>
+		<PushedTexture file="Interface\AddOns\RaidHealer\Skin\RaidHealerButtonDown"/>
+		<DisabledTexture file="Interface\Minimap\UI-Minimap-ZoomOutButton-Disabled"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>
+	
+	<!-- Healer Templates -->
+	<Frame name="RaidHealer_HealerTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="720" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentClassTexture">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="6" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentPlayerName" inherits="GameFontNormal" text="PlayerName">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentClassTexture">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parent_Tank1" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="140" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank2" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank1" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank3" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank2" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank4" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank3" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank5" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank4" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank6" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank5" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank7" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank6" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank8" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank7" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank9" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank8" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Tank10" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="19" y="19"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_Tank9" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="60" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	
+	<!-- Buffer Templates -->
+	<Frame name="RaidHealer_BufferTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="745" y="34"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentClassTexture">
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="6" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentPlayerName" inherits="GameFontNormal" text="PlayerName">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentClassTexture">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parent_Group1" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="200" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group2" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group1" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group3" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group2" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group4" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group3" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group5" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group4" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group6" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group5" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group7" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group6" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parent_Group8" inherits="RaidHealer_CheckTemplate">
+				<Size>
+					<AbsDimension x="25" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent_Group7" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="70" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>

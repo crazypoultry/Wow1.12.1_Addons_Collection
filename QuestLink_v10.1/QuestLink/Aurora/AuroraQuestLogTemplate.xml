@@ -1,0 +1,653 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="AuroraQuestLog.lua"/>
+
+	<!-- Quest Items --> 
+	<Button name="AuroraQuestItemTemplate" inherits="AuroraObjectTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="147" y="41"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture">
+					<Size>
+						<AbsDimension x="39" y="39"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentIconTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="36"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentNameFrame">
+							<Offset>
+								<AbsDimension x="15" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIconTexture">
+							<Offset>
+								<AbsDimension x="-4" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				AuroraQuestLog_Item_OnLoad();
+			</OnLoad>
+			<OnClick>
+				if( this.onClick ) then
+					this.onClick();
+				end
+			</OnClick>
+		</Scripts>
+	</Button>	
+	<Button name="AuroraQuestLogRewardItemTemplate" inherits="AuroraQuestItemTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				AuroraQuestLog_RewardItem_OnLoad();
+			</OnLoad>
+			<OnClick>
+				if( this.onClick ) then
+					this.onClick();
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<!-- Main Log Frame -->
+	<Frame name="AuroraQuestLogTemplate" inhertis="AuroraObjectTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="296" y="261"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentQuestTitle" inherits="QuestTitleFont" justifyH="LEFT" text="Quest title">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+							<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjectivesText" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="275" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentQuestTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTimerText" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjectivesText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective1" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTimerText" relativePoint="BOTTOMLEFT">
+							<Offset>
+									<AbsDimension x="0" y="-10"/>
+						</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective2" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective1" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective3" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+						</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective2" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective4" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective3" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective5" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective4" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective6" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective5" relativePoint="BOTTOMLEFT">
+								<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective7" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective6" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective8" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective7" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective9" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective8" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective10" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective9" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective11" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective10" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective12" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective11" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective13" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+						</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective12" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective14" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective13" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective15" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective14" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective16" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective15" relativePoint="BOTTOMLEFT">
+								<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective17" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective16" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective18" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective17" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective19" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective18" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective20" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective19" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective21" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective20" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective22" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective21" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective23" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+						</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective22" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective24" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective23" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective25" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective24" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective26" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective25" relativePoint="BOTTOMLEFT">
+								<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective27" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective26" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					</FontString>
+				<FontString name="$parentObjective28" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective27" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective29" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective28" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentObjective30" inherits="QuestFontNormalSmall" justifyH="LEFT" hidden="true">
+					<Size>
+							<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective29" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRequiredMoneyText" inherits="QuestFontNormalSmall" text="REQUIRED_MONEY" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDescriptionTitle" inherits="QuestTitleFont" justifyH="LEFT" text="QUEST_DESCRIPTION">
+					<Size>
+						<AbsDimension x="285" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentObjective10" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentQuestDescription" inherits="QuestFont" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="270" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDescriptionTitle" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRewardTitleText" inherits="QuestTitleFont" text="QUEST_REWARDS" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="300" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentQuestDescription" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentItemChooseText" inherits="QuestFont" text="REWARD_CHOICES" hidden="true" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="295" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentRewardTitleText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentItemReceiveText" inherits="QuestFont" text="Reward receive text" hidden="true" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItem1" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem2" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem3" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem4" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem5" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem6" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem7" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem8" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem9" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentItem10" inherits="AuroraQuestLogRewardItemTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Frame name="$parentMoneyFrame" inherits="MoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentItemReceiveText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						QuestMoneyFrame_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentRequiredMoneyFrame" inherits="MoneyFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRequiredMoneyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSpacerFrame">
+				<Size>
+					<AbsDimension x="5" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				if( this.onClick ) then
+					this.onClick();
+				end
+			</OnClick>
+		</Scripts>
+	</Frame>
+
+
+
+</Ui>
+
+

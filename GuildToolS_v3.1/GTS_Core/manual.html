@@ -1,0 +1,373 @@
+<html>
+<head>
+<title>GuildToolS 3.1 manual</title>
+</head>
+<body>
+<img src="Img\GTS.jpg">
+<br>
+<b>GuildToolS v 3.1</b> (formally GuildBank) Manual.<br>
+<br>
+<a name="Content"><u>Table of Content</u></a><br>
+<br>
+<pre>
+<b>1.</b> <a href="#Ch1">About GuildToolS</a>
+<b>2.</b> <a href="#Ch2">Installation</a>
+<b>3.</b> <a href="#Ch3">Using GuildToolS (AddOn)</a>
+   -<a href="#Ch3.1">BankScan</a>
+   -<a href="#Ch3.2">IncomingMail</a>
+   -<a href="#Ch3.3">OutgoingMail</a>
+   -<a href="#Ch3.4">GuildRosterScan</a>
+<b>4.</b> <a href="#Ch4">Using parser (GTS.exe)</a>
+<b>5.</b> <a href="#Ch5">Uploading to GBM</a>
+<b>6.</b> <a href="#Ch6">FAQ</a>
+<b>7.</b> <a href="#Ch7">List of /commands</a>
+<b>8.</b> <a href="#Ch8">Reading and using the code</a></pre>
+<br>
+<br>
+<br>
+<b><a href="#Content" name="Ch1">1. About GuildToolS</a></b><br>
+<br>
+GuildTools is a combination of tools for guild use.<br>
+Contains several parts:<br>
+<i>GTS_Core</i> - this is the main part of the addon that contains all the standard functions for GTS package.<br>
+<i>GTS_BankScan</i> (BS) - allows to scan characters possessions (including personal possessions and content of the bank) and parse it for the web site. Consists of 2 parts: WoW addon part and executable application for data parsing.<br>
+<i>GTS_IncomingMail</i> (IM) - Keeps track of every received item in local database, also gives capability to parse that data for web site. Consists of 2 parts: WoW addon part and executable application for data parsing.<br>
+<i>GTS_OutgoingMail</i> (OM) - Keeps track of every sent item in local database, also gives capability to parse that data for web site. Consists of 2 parts: WoW addon part and executable application for data parsing.<br>
+<i>GTS_GuildRosterScan</i> (GRS) – Scans the guild roster including character name, class, level, rank, professions*, main-alt relations*.<br>
+* - only if GTS specific guild note is filled out by player.<br>
+<u>As of version 3.0 GTS is fully compatible with GuildBankManager (GBM) by Marshall "Silverwings" Radziwilko.</u> A PHP application to manage guild bank items online, GBM Enables the user to Show Guild items in bank, Incoming Mail, Outgoing Mail and more... To see how to upload data directly to GBM see part 5.<br>
+<br>
+<br>
+<b><a href="#Content" name="Ch2">2. Installation</a></b><br>
+<br>
+<b>************ Important *************</b><br>
+If you used older version of this AddOn (GuildBank or GTS under 3.0) you will have to remove it and then install GuildToolS 3.0+.<br>
+GTS is compiled for windows environment only. It is not guaranteed to work on MacOS or Linux, however the code is written in standard C and should be compilable on other operating systems. You will also need to download appropriate version of mysql.dll for your OS.<br>
+<br>
+To remove GuildBank(GuildTools version under 3.0) do the following:<br>
+Remove GuildBank(GuildTools) folder from WoW/Interface/AddOns/ folder.<br>
+Run WoW.<br>
+Exit WoW.<br>
+<br>
+To install GuildToolS 3.0+:<br>
+Unzip the content of the archive into WOW/ folder, where WOW is the location of your WoW (by default: c:/Program Files/World of Warcraft).<br>
+<br>
+There is an optional component available, called ImagePack. This part contains all the WoW icons you might need in .jpg files. Images needed for html files.<br>
+<br>
+<br>
+<b><a href="#Content" name="Ch3">3. Using GuildToolS</a></b><br>
+<br>
+GuildToolS (GTS) is the combination of smaller addons each of which does something specific.<br>
+GTS_Core is the master addon and is required by all smaller parts, it also contains standard functions and GUI.<br>
+After installing GTS make sure the GTS_Core addon is enabled.<br>
+Typing '/gts info' in-game will display the available / commands for GTS.<br>
+As of version 3.1 GTS now has a GUI you can use in-game. To bring up the GUI just type /gts.<br>
+<br>
+<img src="Img\main.jpg"><br>
+<br>
+All of the subAddOns are disabled by default starting from 3.1. In order to enable subAddOn you can either run appropriate /command (/gts bson for Bank Scan, /gts imon for Incoming Mail, /gts omon for Outgoing Mail, and /gts grson for Guild Roster Scan) or enable it through the GUI by clicking on “Load now” button for appropriate subAddOn.<br>
+<br>
+<img src="Img\notloaded.jpg"><br>
+<br>
+“Load now” button is only available when subAddOn is not loaded (which is indicated in the top-left corner), once subAddOn is loaded button will be disabled.<br>
+<br>
+<img src="Img\loaded.jpg"><br>
+<br>
+There is also a checkmark “load on log-in” for every subAddOn, if it is checked that subAddOn will be loaded by default for this character.<br>
+When subAddOn is loaded you can see the version of it to the left from "Load now" button, ultimately it should be the same as GTS_Core version.<br>
+<br>
+Currently there are 4 subAddOns built into GTS:<br>
+<br>
+<i><a href="#Content" name="Ch3.1">Bank Scan:</a></i><br>
+<br>
+This part of AddOn will scan the possessions of the character (including bags and bank) and parse it into html or text file.<br>
+GUI is located in the top portion of “Bank management” tab.<br>
+<br>
+<img src="Img\bs.jpg"><br>
+<br>
+There are two custom options available for this subAddOn:<br>
+Scan on bank open (disabled by default) - will scan the content of the bank char every time the bank is opened.<br>
+Use sort (enabled by default) - Items in the html file will appear sorted by type and quality rather then in order they appear in the bags.<br>
+<br>
+Below the custom options you can see status messages:<br>
+- Last scan date.<br>
+- Bank frame status (bank can be scanned only if bank frame is opened).<br>
+- Number of distinct items scanned on last scan together with number of items prices for which were available to the addon through LootLink at the time. Note that if vendor price for the item is 0 (like for enchanting materials) it will be considered as unknown.<br>
+- Addon used to get the prices for the items. (At this point only LootLink can be used, but I am working on incorporating Auctioneer as well).<br>
+<br>
+On the right-hand side you can see 4 buttons:<br>
+Load now - to load BankScan (if not yet loaded).<br>
+Scan now - to scan the content of the bank (only available if bank frame is open).<br>
+Update - Will update the prices for already scanned items from the LootLink database.<br>
+Clear - will clear all the data stored for this character.<br>
+<br>
+To scan items in possession of guild bank character follow the following steps:<br>
+<br>
+- Run WoW and activate GuildToolS (GTS_Core and GTS_BankScan are needed, to activate GTS_BankScan either run /gts bson from the console or activate it through GUI).<br>
+- Log in as the character, whose possessions need to be scanned.<br>
+- Open the bank dialog window.<br>
+- Type '/gts bscan' to scan inventory or click “Scan now” button in the GUI.<br>
+- If BankScan succeeds you will get the message that it did, otherwise you will get error message, in that case try to eliminate cause of the error in messages description.<br>
+- Close WoW via exit button.<br>
+<br>
+Your data should be saved in SV.lua file. Refer to part 4 on how to parse it into html or text file.<br>
+<br>
+<i><a href="#Content" name="Ch3.2">Incoming Mail:</a></i><br>
+<br>
+This part of AddOn will record all the received items through inbox for later parsing it into html or text file. <br>
+GUI is located in the top portion of “Bank management” tab.<br>
+<br>
+<img src="Img\im.jpg"><br>
+<br>
+In the bottom you can see status messages:<br>
+- Dates the first and the last mail was logged using IncomingMail.<br>
+- Number of distinct items logged together with number of items prices for which were available to the addon through LootLink. Note that if vendor price for the item is 0 (like for enchanting materials) it will be considered as unknown.<br>
+- Addon used to get the prices for the items. (At this point only LootLink can be used, but I am working on incorporating Auctioneer as well).<br>
+<br>
+On the right-hand side you can see 3 buttons:<br>
+Load now - to load IncomingMail (if not yet loaded).<br>
+Update - Will update the prices for already logged items from the LootLink database.<br>
+Clear - will clear all the data stored for this character.<br>
+<br>
+IM automatically saves all the incoming items in SV.lua as long as it is active. To activate IM do the following:<br>
+<br>
+- Run WoW and activate GuildToolS (GTS_Core and GTS_IncomingMail are needed, to activate GTS_IncomingMail either run /gts imon from the console or activate it through GUI).<br>
+- To have the logs saved close WoW via exit button.<br>
+<br>
+IM does NOT grab your mail for you from the mailbox automatically. There were some issues with that implementation. You can use other mods to grab the mail for you. IM is tested to work with CT_MailMod 1.43 (most likely will not work with earlier versions).<br>
+Your data should be saved in SV.lua file. Refer to part 4 on how to parse it into html or text file.<br>
+<br>
+<i><a href="#Content" name="Ch3.3">Outgoing Mail:</a></i><br>
+<br>
+This part of AddOn will record all the sent items through outbox for later parsing it into html or text file. <br>
+GUI is located in the bottom portion of “Bank management” tab.<br>
+<br>
+<img src="Img\om.jpg"><br>
+<br>
+In the bottom you can see status messages:<br>
+- Dates the first and the last mail was logged using OutgoingMail.<br>
+- Number of distinct items logged together with number of items prices for which were available to the addon through LootLink. Note that if vendor price for the item is 0 (like for enchanting materials) it will be considered as unknown.<br>
+- Addon used to get the prices for the items. (At this point only LootLink can be used, but I am working on incorporating Auctioneer as well).<br>
+<br>
+On the right-hand side you can see 3 buttons:<br>
+Load now - to load OutgoingMail (if not yet loaded).<br>
+Update - Will update the prices for already logged items from the LootLink database.<br>
+Clear - will clear all the data stored for this character.<br>
+<br>
+OM automatically saves all the incoming items in SV.lua as long as it is active. To activate OM do the following:<br>
+<br>
+- Run WoW and activate GuildToolS (GTS_Core and GTS_OutgoingMail are needed, to activate GTS_OutgoingMail either run /gts omon from the console or activate it through GUI).<br>
+- To have the logs saved close WoW via exit button.<br>
+<br>
+OM should log all the outgoing items regardless if you send it through standard dialog or through mods. OM is tested to work with CT_MailMod 1.43.<br>
+<br>
+Your data should be saved in SV.lua file. Refer to part 4 on how to parse it into html or text file.<br>
+<br>
+<i><a href="#Content" name="Ch3.4">Guild Roster Scan:</a></i><br>
+<br>
+This part of AddOn scans the guild roster including character name, class, level, rank, professions*, main-alt relations* for later parsing it into html or text file.<br>
+* - only if GTS specific guild note is filled out by player. <br>
+GUI is located in the top portion of “Guild management” tab.<br>
+<br>
+<img src="Img\grs.jpg"><br>
+<br>
+There is one custom option available for this subAddOn:<br>
+Scan on guild roster update (disabled by default) - will scan the guild roster every time update to the roster is detected. It is HIGHLY URECOMENDED to use this option, because in the large guilds this will drain alot of resources to do a scan every time roster is updated.<br>
+<br>
+Below the custom options you can see status messages:<br>
+- Last scan date.<br>
+- Number of members in guild, together with the number of members that filled out Guild note according to GTS standards (see below).
+<br>
+On the right-hand side you can see 3 buttons:<br>
+Load now - to load GuildRosterScan (if not yet loaded).<br>
+Scan now - to scan the guild roster (only available if you are member of guild).<br>
+Clear - will clear all the data stored for this character.<br>
+Update is not available for this subAddOn since it will essentially be a scan.<br>
+<br>
+To scan guild roster follow these steps:<br>
+<br>
+- Run WoW and activate GuildToolS (GTS_Core and GTS_GuildRosterScaner are needed, to activate GTS_GuildRosterScan either run /gts grson from the console or activate it through GUI).<br>
+- Log in as the character, whose guild roster needs to be scanned.<br>
+- Open the guild roster dialog window.<br>
+- Make sure entire guild roster is loaded (ie you can see all guild members).<br>
+- Type '/gts grscan' to scan guild members or press “Scan now” button in GUI.<br>
+- If GRS succeeds you will get the message that it did, otherwise you will get error message, in that case try to eliminate cause of the error in messages description.<br>
+- Close WoW via exit button.<br>
+<br>
+In order for GRS to pick up guild members professions and main-alt relations guild note should be filled for every guild member in the following manner:<br>
+“GTS-A:Name;Prof1:100;Prof2:200;note”<br>
+Every note should begin with “GTS-“ case sensitive. This allows GRS to distinguish between note intended for it and random note.<br>
+GTS- is followed by 4 sections ; separated. Since the guild note is restricted to 32 characters this has to be a bit cryptic. <br>
+First section “A:Name;” represents the main-alt relation. If the character is main it should look like: “Main:;”, if the character is the alt of char named Name, it should look like “A:Name;”. “A” meaning that char is an alt and “Name” showing who’s alt it is. Note that name is case-sensitive. <br>
+Second section “Prof1:100;” represents the first profession of the char. Professions had to be shortened to fit in 32 character limit. Here’s the full list of professions and their shortened representation:<br>
+<pre>
+A  - Alchemy 
+Q  - Armorsmith
+BA - Axesmith
+B  - Blacksmith
+LD - Dragonscale Leatherworking
+LE - Elemental Leatherworking
+C  - Enchanting
+E  - Engineering
+EN - Gnome Engineering
+EO - Goblin Engineering
+H  - Herbalism 
+L  - Leatherworking
+BM - Macesmith 
+M  - Mining
+N  – None
+S  - Skinning
+BS - Swordsmith
+T  - Tailoring
+LT - Tribal Leatherworking
+</pre>
+So, for example Goblin engineering with 300 skill will look like “EO:300;” and enchanter with skill 11 will look like “C:11;”.<br>
+Third portion is the second profession of the character. See second portion on how to fill it out.<br>
+Forth and last portion is a personal note of player. You can put pretty much whatever you want in there as long as you have space.<br>
+Examples of the guild note:<br>
+Say you have a main whose name is Blah and who is 300 in Armorsmith and 300 in Mining. The guild note for this char should look like:<br>
+“GTS-Main:;Q:300;M:300;”<br>
+Say, you also have an alt named Doh, who is 210 in Skinning and does not have other profession. Then the note for this char should look like:<br>
+“GTS-A:Blah;S:210;N:0;Blah’s bank”<br>
+There you have the personal note saying it is your bank char. This note only visible inside the game and will not be visible in html or text file.<br>
+Note that guild note should be without “ characters around it.<br>
+Also it is VERY important that the note is filled in properly, if it is not GRS might give an error during execution.<br>
+<br>
+If the guild note is not filled as described above, the profession will be filled as “n/a” and every character will be considered a main.<br>
+<br>
+Your data should be saved in SV.lua file. Refer to part 4 on how to parse it into html or text file.<br>
+<br>
+<br>
+<b><a href="#Content" name="Ch4">4. Using Parser</a></b><br>
+<br>
+All the parsers were combined into one executable in 3.0.<br>
+<br>
+First off you will need to copy data file to the location where Parser can pick it up:<br>
+- Copy GTS_Core.lua file from WoW/WTF/Account/[your account name]/SavedVariables/GTS_Core.lua to WoW/Interface/AddOn/GTS_Core/SV/. Very important not to copy it to WoW/Interface/AddOn/GTS_Core/ because this will screw up the addon.<br>
+<br>
+There are 4 batch files included in the apps folder. Each of them will generate html file for one of the parts:<br>
+<pre><i>BankParser.bat</i>   – for GTS_BankScan
+<i>IMainParser.bat</i>  – for GTS_IncomingMail
+<i>OMailParser.bat</i>  – for GTS_OutgoingMail
+<i>RosterParser.bat</i> – for GTS_GuildRosterScan
+</pre>
+Running those will produce a ready to use html file in GTS_Core/html/ folder. Bank.html, inbox.html, outbox.html and roster.html representatively.<br>
+<br>
+It is possible to customize the output of parser by running it with several flags. This is intended for advanced users with at least some knowledge of dos shell and html.<br>
+<br>
+Advanced mode of GTS.exe:<br>
+Access to advanced mode of parser is available through command line interface. Basically GTS.exe is a combination of 6 parsers and 1 uploader (for GBM only) combined into one executable. To access one or another parser you will need to run GTS.exe with proper flag. Running GTS.exe with ‘-help’ flag will bring out all the available flags:<br>
+Available commands:<br>
+<pre>
+-upload     - Uploads all the data to the GBM server.
+              See '-upload -help' for details.
+-textupload - Generates flat files for upload to GBM server.
+              See '-textupload -help' for details.
+-bank       - Generates html file with the content of the bank.
+              See '-bank -help' for details.
+-textbank   - Generates text file with the content of the bank with user
+               specified format.
+              See '-textbank' for details.
+-imail      - Generates html file with the list of received items.
+              See '-imail -help' for details.
+-textimail  - Generates text file with the list of received items with user
+               specified format.
+              See '-textimail' for details.
+-omail      - Generates html file with the list of sent items.
+              See '-imail -help' for details.
+-textomail  - Generates text file with the list of sent items with user
+               specified format.
+              See '-textimail' for details.
+-roster     - Generates html file with the list of guild members.
+              See '-roster -help' for details.
+-textroster - Generates text file with the list of guild members with user
+               specified format.
+              See '-textroster' for details.
+</pre>
+For more details on ‘–upload’ and '-textupload' see part 5.<br>
+For each of the 4 sub-addons (BS, IM, OM, GRS) there are 2 types of parsers: html(bank, imail, omail, roster rep.) and text(textbank, textimail, textomail, textroster rep.). Html parsers will produce an html output file with all the data organized in neat tables. There are several modifiable variables, to see a full list you can run parser with ‘–help’ flag (eg ‘GTS.exe –bank –help’). Text mode on the other hand will produce the user formatted text strings per each entry in the database. This is most convenient for making sql statements for direct DB upload. On more information as for how to format your string run textparser without any flags (eg ‘GTS.exe –textbank’).<br>
+To produce the same output every time it is very useful to create a batch file with all your settings, you can also modify already existing .bat files. <br>
+<br>
+<br>
+<b><a href="#Content" name="Ch5">5. Uploading to GBM</a></b><br>
+<br>
+First you will need to have GBM of version 5.0+ installed and running. You will also need to set up a remote MySQL user. See GBM manuals for details.<br>
+Note that GBMuploader updates all the data from SV.lua file and overwrite any and all the data in the DB, so use it cautiously. If you do not want some of the data uploaded make sure to clear it through the addon first.<br>
+To perform the upload you will first need to copy data file to the location where uploder can pick it up:<br>
+- Copy GTS_Core.lua file from WoW/WTF/Account/[your account name]/SavedVariables/GTS_Core.lua to WoW/Interface/AddOn/GTS_Core/SV/. Very important not to copy it to WoW/Interface/AddOn/GTS_Core/ because this will screw up the addon.<br>
+After that you can run the uploader from the GTS_Core/apps/ folder. GBMuploader is part of GTS.exe program (see part 4 for details). <br>
+To get to the uploader part of GTS.exe you will need to run it with ‘-upload’ flag. <br>
+Running “GTS.exe –upload” will initiate upload on default settings (server=localhost, user=<current user>, password=blank, port=<standard MySQL port, DB=default>. If you want to change some or all of those settings this can be accomplished with additional flags (eg ‘–user ASD’ will change username to ASD) for full list of parameters see the help built-in in GTS.exe (run ‘GTS.exe –upload –help’).<br>
+It is very convenient to create batch file that will hold all of the log-in information, but it is unsecure, because batch files are not encrypted in any way, so it is up to you if you want to enter information every time or willing to risk.<br>
+GTS.exe outputs all the status information on standard output (screen if you will) it is very convenient to redirect all that information into the file, which can be accessed later on. To do that you will need to add one more parameter to the GTS.exe in the end (important: it has to be the last one) ‘>filename’ where filename is the name of file where you want log to be saved. Eg: ‘GTS.exe –upload –user me –host 192.168.0.1 >./log.txt’ will connect to GBM on server with IP 192.168.0.1 and log in as user ‘me’ and will log all the transactions in file log.txt, which will be created in current folder. Note that if you redirect output nothing will be printed on the screen and it might look like program has froze up, so before killing the process make sure the program actually froze up by checking the output file (log.txt in the case above) because terminationg program in the middle of upload can corrupt GBM’s database.<br>
+If you do not have the remote MySQL access you can use '-textupload' wich will creat a "flat-file" with sql statements that can be manually applied to the GBM database. This "flat-file" has some limitations since it does not have 2-way communication '-upload' does, thus it is not recomended to use "flat-file" unless you have no other choice.<br>
+<br>
+<br>
+<b><a href="#Content" name="Ch6">6. FAQ</a></b><br>
+<br>
+<u>Q:</u><br>
+I cannot see the tooltips on the page. What did I do wrong?<br>
+<u>A:</u><br>
+If you copied the text from the generated html file make sure you copied it all. Most likely you are missing java script at the top of the html file.<br>
+<br>
+<u>Q:</u><br>
+I just look at the generated html file and still can't see the tooltip, other people say they can see it.<br>
+<u>A:</u><br>
+There is a setting in browser that disables Active content. Tooltip is actually active content, so if it is disabled you will not be able to see the tooltip.<br>
+<br>
+<u>Q:</u><br>
+I ran the script, but when I try to run GTS.exe it says that data was not found in SavedVariables.<br>
+<u>A:</u><br>
+Make sure you follow all the steps:<br>
+- Run WoW and run /gts bscan with bank window opened. You should get message like: "Scan was successful ... run .exe" (or follow steps in part 3 for other parts of addon).<br>
+- Exit WoW, or at least log out from current character.<br>
+- Copy GTS_Core.lua from WoW/WTF/[AcountName]/SavedVariables/ to the addon folder (WoW/Interface/AddOns/GTS_Core/SV/)<br>
+- Run GTS.exe.<br>
+<br>
+<u>Q:</u><br>
+I have a batch file for textbank parser, but it does not work, if I place it in command line it works fine though, here it is:<br>
+GBM.exe –textbank INSERT INTO items (`name`) VALUES ( %n );<br>
+<u>A:</u><br>
+% is a special character in batch files and you need to escape it, so write %% instead of %. In your example it should look like:<br>
+GBM.exe –textbank INSERT INTO items (`name`) VALUES ( %%n );<br>
+<br>
+<br>
+<b><a href="#Content" name="Ch7">7. List of /commands</a></b><br>
+<br>
+<pre>
+<i>GuildTools:</i> 
+/gts debug    - toggles debug mode on/off (off by default). 
+/gts info     - shows a help message.
+/gts clear    - clears all variables (all data from all parts and all characters will be cleared!).
+
+<i>BankScan:</i> 
+/gts bson     - turns the BankScan addon on (unless it is already on).
+/gts bssort   - toggles sorting option on/off.
+/gts bscan    - performs the scan of possesions of this char for parsing into SV.lua.
+/gts bsinfo   - shows a help message.
+/gts bsclear  - clears all the BS data for current character.
+
+<i>IncomingMail:</i>
+/gts imon     - turns the IncomingMail addon on (unless it is already on).
+/gts imreeval - updates vendor prices for stored item (LootLink is required).
+/gts iminfo   - shows this screen.
+/gts imclear  - clears database for this character.
+
+<i>OutgoingMail:</i>
+/gts omon     - turns the OutgoingMail addon on (unless it is already on).
+/gts omreeval - updates vendor prices for stored item (LootLink is required).
+/gts ominfo   - shows this screen.
+/gts omclear  - clears database for this character.
+
+<i>GuildRosterScan:</i>
+/gts grson    - turns the GuildRosterScan addon on (unless it is already on).
+/gts grscan   - scnas the guild roster (make sure guild roster is loaded).
+/gts iminfo   - shows this screen.
+/gts imclear  - clears database for this character (Saved with /gm imsave stays intact).
+</pre>
+
+<br>
+<b><a href="#Content" name="Ch8">8. Reading and using the code.</a></b><br>
+<br>
+GuildToolS is a freeware program and distributed as such. The source code for the executive is included in GTS_Core/apps/src/, there is also a project file for Dev-C++ (gcc for windows) included. Program is using freeware MySQL library for communication with GBM. <br>
+You are free to use this software, however if you want to distribute or modify it <u>please contact me beforehand</u> either through forums, game or via e-mail.  <br>

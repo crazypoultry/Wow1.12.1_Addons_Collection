@@ -1,0 +1,234 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<!--
+	//////////////////////////////////////////////
+	//
+	//		Gypsy_PartyFrame.xml
+	//		GypsyVersion++2004.11.03++
+	//
+	//		This add-on adds a small frame to each
+	//		party bar that displays party health
+	//		in large colored text.
+	//
+	//////////////////////////////////////////////
+	-->
+	<Script file="Gypsy_PartyFrame.lua"/>
+	<!-- Setup registrations for the party frame -->
+	<Button name="Gypsy_PartyFrameSetup" enableMouse="true" movable="true" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				Gypsy_PartyFrameSetupOnLoad();
+			</OnLoad>
+			<OnEvent>
+				Gypsy_PartyFrameSetupOnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Button>
+	<!-- Template for party buff display, note the default PartyBuffButtonTemplate is really displaying DEBUFFS -->
+	<Button name="Gypsy_PartyBuffButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="15" y="15"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<!-- New texture with blue border for party buff display -->
+				<Texture name="$parentOverlay" file="Interface\AddOns\Gypsy_UnitBars\Gypsy_Buff-Border">
+					<Size>
+						<AbsDimension x="17" y="17"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				GameTooltip:SetUnitBuff("party"..this:GetParent():GetID(), this:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<!-- Template for our addon -->
+	<Button name="Gypsy_PartyFrameTemplate" movable="true" virtual="true">
+		<Size>
+			<AbsDimension x="86" y="19"/>
+		</Size>
+		<Frames>
+			<Frame setAllPoints="true">
+				<Frames>
+					<Frame setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<!-- Plain texture to act as a background -->
+								<Texture name="$parentBackground">
+									<Size>
+										<AbsDimension x="82" y="18"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-10" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="0.5"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<!-- Addon frame graphic -->
+								<Texture name="$parentFrameRight" file="Interface\AddOns\Gypsy_UnitBars\Gypsy_PartyFrameRight">
+									<Size>
+										<AbsDimension x="128" y="128"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-12" y="7"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<!-- Font string to display the members HP text (1234 / 1234). It is placed relative to our party frame	-->
+								<FontString name="$parentMemberHealth" inherits="GameFontNormalSmall" text="">
+									<Size>
+										<AbsDimension x="97" y="10" />
+									</Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+												<AbsDimension x="-13" y="7"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentBindingLabel" inherits="GameFontNormalSmall" text="">
+									<Size>
+										<AbsDimension x="20" y="10"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-20" y="17"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<!-- Buff icons, displayed in a row below the debuffs -->
+			<Button name="$parentGypsyBuff1" inherits="Gypsy_PartyBuffButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="-80" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGypsyBuff2" inherits="Gypsy_PartyBuffButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGypsyBuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGypsyBuff3" inherits="Gypsy_PartyBuffButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGypsyBuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGypsyBuff4" inherits="Gypsy_PartyBuffButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGypsyBuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGypsyBuff5" inherits="Gypsy_PartyBuffButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGypsyBuff4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentGypsyBuff6" inherits="Gypsy_PartyBuffButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentGypsyBuff5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				Gypsy_PartyFrameOnLoad();
+			</OnLoad>
+			<OnEvent>
+				Gypsy_PartyFrameOnEvent(event);
+			</OnEvent>
+		</Scripts>
+	</Button>
+	<!-- Actual party frames, anchored to the defaults -->
+	<Button name="Gypsy_PartyFrame1" inherits="Gypsy_PartyFrameTemplate" parent="PartyMemberFrame1" toplevel="false" id="1">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="PartyMemberFrame1" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Gypsy_PartyFrame2" inherits="Gypsy_PartyFrameTemplate" parent="PartyMemberFrame2" toplevel="false" id="2">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="PartyMemberFrame2" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Gypsy_PartyFrame3" inherits="Gypsy_PartyFrameTemplate" parent="PartyMemberFrame3" toplevel="false" id="3">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="PartyMemberFrame3" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="Gypsy_PartyFrame4" inherits="Gypsy_PartyFrameTemplate" parent="PartyMemberFrame4" toplevel="false" id="4">
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="PartyMemberFrame4" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+</Ui>

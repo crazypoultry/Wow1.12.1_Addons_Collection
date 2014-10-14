@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="localization.lua"/>
+	<Script file="RaidAssist.lua"/>
+	<Script file="EasyRaid.lua"/>
+
+	<!-- Frame to handle all core events -->
+	<Frame name="EasyRaid">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("PLAYER_ENTERING_WORLD");
+				this:RegisterEvent("RAID_ROSTER_UPDATE");
+				this:RegisterEvent("RAID_TARGET_UPDATE");
+				this:RegisterEvent("PLAYER_REGEN_DISABLED");
+				this:RegisterEvent("PLAYER_TARGET_CHANGED");
+				this:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS");
+				this:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES");
+				this:RegisterEvent("UPDATE_WORLD_STATES");
+				-- this:RegisterEvent("CHAT_MSG_ADDON");
+			</OnLoad>
+			<OnEvent>
+				if ( event == "VARIABLES_LOADED" ) then
+					ER_OnLoad();
+				elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+					ER_OnPlayerEnteringWorld();
+				elseif ( event == "RAID_ROSTER_UPDATE" ) then
+					ER_OnRaidRosterUpdate();
+				elseif ( event == "RAID_TARGET_UPDATE" ) then
+					ER_OnRaidRosterUpdate();
+				elseif ( event == "PLAYER_REGEN_DISABLED" ) then
+					EB_PlayerEnterInCombat();
+				elseif ( event == "PLAYER_TARGET_CHANGED" ) then
+					ER_PlayerTargetChanged();
+				elseif ( event == "CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS" or event == "CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES") then
+					if ( GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 ) then
+						local time = GetTime();
+						if ( not ER_lastSelfCombatMessageTime or time - ER_lastSelfCombatMessageTime >= 5 ) then
+							ER_AggroAlert();
+						end
+						ER_lastSelfCombatMessageTime = time;
+					end
+				elseif ( event == "UPDATE_WORLD_STATES" ) then
+					ER_OnUpdateWorldStates();
+				elseif ( event == "CHAT_MSG_ADDON" ) then
+					ER_OnChatMsgAddon(arg1, arg2, arg3, arg4);
+				end
+			</OnEvent>
+			<OnUpdate>
+				ER_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ER_UnitFrameDropDown" inherits="UIDropDownMenuTemplate" id="1" clampedToScreen="true" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="O"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				ER_UnitFrameDropDown_OnLoad();
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

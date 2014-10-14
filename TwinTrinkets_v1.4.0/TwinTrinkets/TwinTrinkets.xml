@@ -1,0 +1,402 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Frame name="Trinket_TrinketDummy" parent="UIParent">
+		<Scripts>
+			<OnUpdate>
+				Trinket_TimerDummy();
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+
+	<CheckButton name="Trinket_CheckBox" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="25" y="25"/>
+		</Size>
+		<Scripts>
+			<OnEnter>GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				 GameTooltip:AddLine(getglobal(this:GetName() .. "Text"):GetText(),1,1,1);
+				 GameTooltip:AddLine(this.tooltipText,nil,nil,nil,1); GameTooltip:Show();</OnEnter>
+			<OnLeave> GameTooltip:Hide(); </OnLeave>
+		</Scripts>
+	</CheckButton>
+	<Button name="Trinket_TrinketLine" virtual="true">
+		<Size>
+			<AbsDimension x="250" y="36"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="186" y="16"/>
+					</Size>					
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="40" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentEquipCaption" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="186" y="16"/>
+					</Size>					
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentIco">		
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIconTexture">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>GameTooltip:SetOwner(this,"ANCHOR_BOTTOMRIGHT",0,32);
+						GameTooltip:SetHyperlink(this.itemLink);
+						GameTooltip:Show();
+						this:GetParent():LockHighlight();
+					</OnEnter>
+					<OnLeave>GameTooltip:Hide();
+						this:GetParent():UnlockHighlight();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<CheckButton name="$parentSwapOut" inherits="Trinket_CheckBox">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_EquipPrio[this:GetParent():GetID()].swap = (this:GetChecked() ~= 1); </OnClick>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentMoveUp" inherits="UIPanelScrollUpButtonTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_MovePrioList(this:GetParent():GetID(),-1); </OnClick>
+					<OnEnter>
+						this:GetParent():LockHighlight();
+					</OnEnter>						
+					<OnLeave>
+						this:GetParent():UnlockHighlight();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentMoveDown" inherits="UIPanelScrollDownButtonTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMoveUp" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_MovePrioList(this:GetParent():GetID(),1); </OnClick>
+					<OnEnter>
+						this:GetParent():LockHighlight();
+					</OnEnter>						
+					<OnLeave>
+						this:GetParent():UnlockHighlight();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnClick>
+				if (arg1 == "LeftButton") then
+					Trinket_PrioListAttemptDrop(this:GetID());
+				elseif (arg1 == "RightButton") then
+					Trinket_PrioListRemove(this:GetID());
+				end
+			</OnClick>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+			</OnLoad>
+		</Scripts>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD"/>
+	</Button>
+	<Frame name="Trinket_Container" parent="UIParent" movable="true" clampedToScreen="true" enableMouse="true" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="256" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-200"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="Trinket_ContainerTitle" inherits="GameFontHighlightLarge" text="sTrinket_HotSwap_Header" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="251" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Trinket_ContainerListHeader" inherits="GameFontHighlight" text="sTrinket_HotSwap_PriorityHeader">
+					<Size>
+						<AbsDimension x="251" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="5" y="-63"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="Trinket_ContainerListDescription" inherits="GameFontNormalSmall" text="sTrinket_HotSwap_Detail" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="251" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="Trinket_ContainerListHeader" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="Trinket_EnableSwapping" inherits="Trinket_CheckBox">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_UpdateHotswapSlots(); </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="Trinket_UseBothSlots" inherits="Trinket_CheckBox">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="125" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_UpdateHotswapSlots(); </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="Trinket_ShowUI" inherits="Trinket_CheckBox">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_ShowFrame = this:GetChecked() == 1 and true or false; Trinket_UpdateUI(); </OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="Trinket_LockUI" inherits="Trinket_CheckBox">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="125" y="-22"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick> Trinket_LockFrame = this:GetChecked() == 1 and true or false; Trinket_UpdateUI(); </OnClick>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentCloseButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseUp>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnMouseUp>
+			<OnMouseDown>
+			 Trinket_PrioListAttemptDrop();
+			 if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+			  this:StartMoving();
+			  this.isMoving = true;
+			 end
+			</OnMouseDown>
+			<OnHide>
+			 if ( this.isMoving ) then
+			  this:StopMovingOrSizing();
+			  this.isMoving = false;
+			 end
+			</OnHide>
+			<OnShow>Trinket_UpdatePriorityList();</OnShow>
+			<OnLoad>tinsert(UISpecialFrames,this:GetName());</OnLoad>
+		</Scripts>
+	</Frame>
+
+
+	<Button name="Trinket_ButtonTemplate" virtual="true">
+		<Size>
+				<AbsDimension x="32" y="32" />
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" file="Interface\Icons\INV_Misc_Gem_Pearl_04"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTime" inherits="GameFontHighlightSmall" justifyH="CENTER" text="0:25">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="0" y="-1" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture alphaMode="ADD" file=""/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<Scripts>
+			<OnClick>Trinket_ButtonClick(); </OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="Trinket_Feedback" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="136" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="125"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="Trinket_Btn1" inherits="Trinket_ButtonTemplate"/>
+			<Button name="Trinket_Btn2" inherits="Trinket_ButtonTemplate"/>
+			<Button name="Trinket_Btn3" inherits="Trinket_ButtonTemplate"/>
+			<Button name="Trinket_Btn4" inherits="Trinket_ButtonTemplate"/>
+			<Button name="$parentMoveBox" text="TwinTrinkets">
+				<Size>
+					<AbsDimension x="78" y="22" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="Trinket_Feedback">
+						<Offset>
+							<AbsDimension x="0" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="3" right="4" top="5" bottom="5" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16" />
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16" />
+					</EdgeSize>
+				</Backdrop>
+				<NormalText inherits="GameFontNormalSmall" justifyH="CENTER"/>
+				<Scripts>
+					<OnMouseUp>
+					 if ( this.isMoving ) then
+					  this:GetParent():StopMovingOrSizing();
+					  this.isMoving = false;
+					 end
+					</OnMouseUp>
+					<OnMouseDown>
+					 if (arg1 == "LeftButton" and not Trinkets_LockFrame) then
+					  this:GetParent():StartMoving();
+					  this.isMoving = true;
+					 end
+					</OnMouseDown>
+					<OnHide>
+					 if ( this.isMoving ) then
+					  this:GetParent():StopMovingOrSizing();
+					  this.isMoving = false;
+					 end
+					</OnHide>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				Trinket_Update();
+			</OnUpdate>
+			<OnLoad>
+				Trinket_Load();
+				Trinket_Btn1:SetPoint("TOPLEFT",Trinket_Feedback,"TOPLEFT",0,0);
+				local i;
+				for i=2,4 do getglobal("Trinket_Btn" .. i):SetPoint("TOPLEFT",getglobal("Trinket_Btn" .. (i-1)),"TOPRIGHT",4,0); end
+			</OnLoad>
+			<OnEvent>
+				Trinket_OnEvent();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

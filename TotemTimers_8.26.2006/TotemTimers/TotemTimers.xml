@@ -1,0 +1,153 @@
+<!--
+original author: Donald Ephraim Curtis 
+current author: Grumpey (grumpy.walker@gmail.com)
+TotemTimers: Provides totem timers and notification for totem expiration.
+-->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="localization.lua" />
+	<Script file="localization.ge.lua" />
+	<Script file="localization.fr.lua" />
+	<Script file="localization.ko.lua" />
+	<Script file="TotemTimersData.lua" />	
+	<Script file="TotemTimer.lua" />
+	<Script file="TotemTimers.lua" />
+  <Button name="TotemTimerTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="30" y="30" />
+    </Size>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="$parentIcon"/>
+        <FontString name="$parentTime" inherits="GameFontNormalSmall" justifyH="CENTER">
+          <Size>
+            <AbsDimension x="36" y="10"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER">
+              <Offset>
+                <AbsDimension x="-1" y="-20"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+	TotemTimer_OnLoad();
+      </OnLoad>
+      <OnUpdate>
+        TotemTimer_OnUpdate(arg1);
+      </OnUpdate>
+      <OnMouseDown>
+        TotemTimer_OnDragStart();
+      </OnMouseDown>
+      <OnMouseUp>
+        TotemTimer_OnDragStop();
+      </OnMouseUp>
+      <OnClick>
+        TotemTimer_ReCast();
+      </OnClick>
+      <OnEnter>
+        TotemTimer_OnEnter();
+      </OnEnter>
+      <OnLeave>
+        GameTooltip:Hide();
+      </OnLeave>
+    </Scripts>
+  </Button>
+	<!-- temporary, create frame to handle initialization; once complete, destroy frame -->
+	<Frame name="TotemTimersFrame" parent="UIParent" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" hidden="false">
+    <Size>
+      <AbsDimension x="155" y="50"/>
+    </Size>
+    <Anchors>
+      <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-200" y="-120"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Frames>
+    <!--
+<Frame name="ExpirationBackdrop" setAllPoints="true" frameStrata="BACKGROUND" hidden="false">
+<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+<EdgeSize>
+<AbsValue val="4"/>
+</EdgeSize>
+<TileSize>
+<AbsValue val="16"/>
+</TileSize>
+<BackgroundInsets>
+<AbsInset left="4" right="4" top="4" bottom="4"/>
+</BackgroundInsets>
+</Backdrop>
+<Scripts>
+<OnLoad>
+this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+</OnLoad>
+</Scripts>
+</Frame>
+-->
+    </Frames>
+		<Scripts>
+			<OnLoad>
+				TotemTimers_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				TotemTimers_OnEvent(event);
+			</OnEvent>
+      <!-- Disabled
+      <OnUpdate>
+        Expiration_OnUpdate(arg1);
+      </OnUpdate>
+      -->
+		</Scripts>
+	</Frame>
+  <Button name="TotemTimer1" parent="TotemTimersFrame" inherits="TotemTimerTemplate" id="0">
+    <Anchors>
+      <Anchor point="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="-10" y="-6"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+  <Button name="TotemTimer2" parent="TotemTimersFrame" inherits="TotemTimerTemplate" id="1">
+    <Anchors>
+      <Anchor point="RIGHT" relativeTo="TotemTimer1" relativePoint="LEFT">
+        <Offset>
+          <AbsDimension x="-5" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+  <Button name="TotemTimer3" parent="TotemTimersFrame" inherits="TotemTimerTemplate" id="2">
+    <Anchors>
+      <Anchor point="RIGHT" relativeTo="TotemTimer2" relativePoint="LEFT">
+        <Offset>
+          <AbsDimension x="-5" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+  <Button name="TotemTimer4" parent="TotemTimersFrame" inherits="TotemTimerTemplate" id="3">
+    <Anchors>
+      <Anchor point="RIGHT" relativeTo="TotemTimer3" relativePoint="LEFT">
+        <Offset>
+          <AbsDimension x="-5" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+ <GameTooltip name="TotemTimersTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+<Scripts>
+<OnLoad>
+this:SetOwner(UIParent, "ANCHOR_NONE");
+</OnLoad>
+</Scripts>
+</GameTooltip>
+  
+</Ui>

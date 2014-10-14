@@ -1,0 +1,240 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="ChatrBuddies.lua" />
+
+	<Font name="ChatrBuddyFont" font="Fonts\ARIALN.TTF" virtual="true">
+		<FontHeight>
+			<AbsValue val="12"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+		
+	</Font>
+	
+	<Button name="ChatrBuddyBtn" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="14"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				ChatrBuddies_Click(this);
+			</OnClick>
+			<OnDoubleClick>
+				PlaySound("igChatEmoteButton");
+				ChatrBuddies_DClick(this);
+			</OnDoubleClick>
+			<OnEnter>ChatrBuddies_ShowInfo(this);</OnEnter>
+			<OnLeave>ChatrBuddiesInfoLine:Hide();</OnLeave>			
+		</Scripts>
+		<NormalFont inherits="ChatrBuddyFont"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>	
+	
+	<Frame name="ChatrBuddiesOptions" toplevel="true" hidden="true" enableMouse="true" parent="ChatrOptions">
+		<Size><AbsDimension x="200" y="220"/></Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<BackgroundInsets><AbsInset left="11" right="12" top="12" bottom="11"/></BackgroundInsets>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="ChatrBuddiesOptionsTitle" inherits="GameFontNormal" text="ChatrBuddies" justifyH="CENTER">
+					<Anchors><Anchor point="TOP" /></Anchors>
+				</FontString>				
+				<FontString name="ChatrBuddiesShowCountT" inherits="GameFontNormal" text="Show Max." justifyH="LEFT">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-47" /></Offset></Anchor></Anchors>
+				</FontString>
+				<FontString name="ChatrBuddiesShowCountLabel" inherits="GameFontNormal" text="" justifyH="RIGHT">
+					<Anchors><Anchor point="TOPRIGHT"><Offset><AbsDimension x="-15" y="-47" /></Offset></Anchor></Anchors>
+				</FontString>
+				<FontString name="ChatrBuddiesShowByDefaultT" inherits="GameFontNormal" text="Show At Start" justifyH="LEFT">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="40" y="-87" /></Offset></Anchor></Anchors>
+				</FontString>				
+				<FontString name="ChatrBuddiesShowOfflineT" inherits="GameFontNormal" text="Show Offline" justifyH="LEFT">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="40" y="-107" /></Offset></Anchor></Anchors>
+				</FontString>				
+				<FontString name="ChatrBuddiesShowGuildiesT" inherits="GameFontNormal" text="Show Guildies" justifyH="LEFT">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="40" y="-127" /></Offset></Anchor></Anchors>
+				</FontString>				
+
+				<FontString name="ChatrBuddiesCustomT" inherits="GameFontNormal" text="Custom Labels" justifyH="LEFT">
+					<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-147" /></Offset></Anchor></Anchors>
+				</FontString>				
+				
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ChatrBuddiesToggle" inherits="GameMenuButtonTemplate" text="Toggle">
+				<Size><AbsDimension x="170" y="25" /></Size>
+				<Anchors>
+					<Anchor point="TOP"><Offset><AbsDimension x="0" y="-15" /></Offset></Anchor>
+				</Anchors>				
+				<Scripts>
+					<OnClick>ChatrBuddies_Toggle()</OnClick>
+				</Scripts>
+			</Button>		
+			<Slider name="ChatrBuddiesShowCount" minValue="1" maxValue="64" inherits="OptionsSliderTemplate">
+				<Size><AbsDimension x="170" y="17" /></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-60" /></Offset></Anchor></Anchors>
+				<Scripts><OnValueChanged>Chatr_BuddiesShowCount=floor(this:GetValue()); ChatrBuddiesShowCountLabel:SetText(tostring(Chatr_BuddiesShowCount));</OnValueChanged></Scripts>
+			</Slider>
+			<CheckButton name="ChatrBuddiesShowByDefault" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20" /></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-85" /></Offset></Anchor></Anchors>
+				<Scripts><OnClick>Chatr_BuddiesShowByDefault=this:GetChecked()</OnClick></Scripts>
+			</CheckButton>
+			<CheckButton name="ChatrBuddiesShowOffline" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20" /></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-105" /></Offset></Anchor></Anchors>
+				<Scripts><OnClick>Chatr_BuddiesShowOffline=this:GetChecked();ChatrBuddies_UpdateFrame()</OnClick></Scripts>
+			</CheckButton>
+			<CheckButton name="ChatrBuddiesShowGuildies" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20" /></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-125" /></Offset></Anchor></Anchors>
+				<Scripts><OnClick>Chatr_BuddiesShowGuildies=this:GetChecked();ChatrBuddies_UpdateFrame()</OnClick></Scripts>
+			</CheckButton>
+
+			<EditBox name="ChatrBuddiesCustom" inherits="ChatrEditTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"><Offset><AbsDimension x="15" y="-160" /></Offset></Anchor>
+					<Anchor point="TOPRIGHT"><Offset><AbsDimension x="-15" y="-160" /></Offset></Anchor>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged>Chatr_BuddiesCustom=this:GetText();</OnTextChanged>
+					<OnEnterPressed>ChatrBuddies_UpdateFrame();</OnEnterPressed>
+					<OnEnter>Chatr_Tip("Separate entries with commas (,).");</OnEnter>
+					<OnLeave>Chatr_Tip();</OnLeave>
+				</Scripts>
+			</EditBox>			
+		</Frames>
+		
+	</Frame>
+	<Frame name="ChatrBuddiesFrame" enableMouse="true" movable="true" parent="UIParent">
+		<Size><AbsDimension x="100" y="10" /></Size>	
+		<TitleRegion setAllPoints="true" />
+		<Anchors>
+			<Anchor point="LEFT" />
+		</Anchors>		
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">		
+				<FontString name="ChatrBuddiesTitle" inherits="GameFontNormal" text="Buddies" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset><AbsDimension x="0" y="0" /></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>				
+
+				<FontString name="ChatrBuddiesInfoLine" inherits="GameFontNormal" text="" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT">
+							<Offset><AbsDimension x="0" y="0" /></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>				
+			</Layer>			
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				ChatrBuddies_Init();
+				this:RegisterEvent("FRIENDLIST_UPDATE");
+				this:RegisterEvent("GUILD_ROSTER_UPDATE");
+				this:SetBackdropColor(0,0,0,0.7);
+				ChatrBuddiesTitle:SetAlpha(0.7);
+			</OnLoad>
+			<OnEvent>
+				if event=="FRIENDLIST_UPDATE" or event=="GUILD_ROSTER_UPDATE" then ChatrBuddies_UpdateFrame(); end
+			</OnEvent>
+			<OnUpdate>ChatrBuddies_OnUpdate(arg1);</OnUpdate>
+			<OnEnter>Chatr_Tip("This is ChatrBuddies.\nGrab here to drag the list.");</OnEnter>
+			<OnLeave>Chatr_Tip();</OnLeave>
+		</Scripts>
+		<Frames>
+			<Button name="ChatrBuddiesBtn1" inherits="ChatrBuddyBtn" id="1"/>
+			<Button name="ChatrBuddiesBtn2" inherits="ChatrBuddyBtn" id="2"/>
+			<Button name="ChatrBuddiesBtn3" inherits="ChatrBuddyBtn" id="3"/>
+			<Button name="ChatrBuddiesBtn4" inherits="ChatrBuddyBtn" id="4"/>
+			<Button name="ChatrBuddiesBtn5" inherits="ChatrBuddyBtn" id="5"/>
+			<Button name="ChatrBuddiesBtn6" inherits="ChatrBuddyBtn" id="6"/>
+			<Button name="ChatrBuddiesBtn7" inherits="ChatrBuddyBtn" id="7"/>
+			<Button name="ChatrBuddiesBtn8" inherits="ChatrBuddyBtn" id="8"/>
+			<Button name="ChatrBuddiesBtn9" inherits="ChatrBuddyBtn" id="9"/>
+			<Button name="ChatrBuddiesBtn10" inherits="ChatrBuddyBtn" id="10"/>
+			<Button name="ChatrBuddiesBtn11" inherits="ChatrBuddyBtn" id="11"/>
+			<Button name="ChatrBuddiesBtn12" inherits="ChatrBuddyBtn" id="12"/>
+			<Button name="ChatrBuddiesBtn13" inherits="ChatrBuddyBtn" id="13"/>
+			<Button name="ChatrBuddiesBtn14" inherits="ChatrBuddyBtn" id="14"/>
+			<Button name="ChatrBuddiesBtn15" inherits="ChatrBuddyBtn" id="15"/>
+			<Button name="ChatrBuddiesBtn16" inherits="ChatrBuddyBtn" id="16"/>
+			<Button name="ChatrBuddiesBtn17" inherits="ChatrBuddyBtn" id="17"/>
+			<Button name="ChatrBuddiesBtn18" inherits="ChatrBuddyBtn" id="18"/>
+			<Button name="ChatrBuddiesBtn19" inherits="ChatrBuddyBtn" id="19"/>
+			<Button name="ChatrBuddiesBtn20" inherits="ChatrBuddyBtn" id="20"/>
+			<Button name="ChatrBuddiesBtn21" inherits="ChatrBuddyBtn" id="21"/>
+			<Button name="ChatrBuddiesBtn22" inherits="ChatrBuddyBtn" id="22"/>
+			<Button name="ChatrBuddiesBtn23" inherits="ChatrBuddyBtn" id="23"/>
+			<Button name="ChatrBuddiesBtn24" inherits="ChatrBuddyBtn" id="24"/>
+			<Button name="ChatrBuddiesBtn25" inherits="ChatrBuddyBtn" id="25"/>
+			<Button name="ChatrBuddiesBtn26" inherits="ChatrBuddyBtn" id="26"/>
+			<Button name="ChatrBuddiesBtn27" inherits="ChatrBuddyBtn" id="27"/>
+			<Button name="ChatrBuddiesBtn28" inherits="ChatrBuddyBtn" id="28"/>
+			<Button name="ChatrBuddiesBtn29" inherits="ChatrBuddyBtn" id="29"/>
+			<Button name="ChatrBuddiesBtn30" inherits="ChatrBuddyBtn" id="30"/>
+			<Button name="ChatrBuddiesBtn31" inherits="ChatrBuddyBtn" id="31"/>
+			<Button name="ChatrBuddiesBtn32" inherits="ChatrBuddyBtn" id="32"/>			
+			<Button name="ChatrBuddiesBtn33" inherits="ChatrBuddyBtn" id="33"/>
+			<Button name="ChatrBuddiesBtn34" inherits="ChatrBuddyBtn" id="34"/>
+			<Button name="ChatrBuddiesBtn35" inherits="ChatrBuddyBtn" id="35"/>
+			<Button name="ChatrBuddiesBtn36" inherits="ChatrBuddyBtn" id="36"/>
+			<Button name="ChatrBuddiesBtn37" inherits="ChatrBuddyBtn" id="37"/>
+			<Button name="ChatrBuddiesBtn38" inherits="ChatrBuddyBtn" id="38"/>
+			<Button name="ChatrBuddiesBtn39" inherits="ChatrBuddyBtn" id="39"/>
+			<Button name="ChatrBuddiesBtn40" inherits="ChatrBuddyBtn" id="40"/>
+			<Button name="ChatrBuddiesBtn41" inherits="ChatrBuddyBtn" id="41"/>
+			<Button name="ChatrBuddiesBtn42" inherits="ChatrBuddyBtn" id="42"/>
+			<Button name="ChatrBuddiesBtn43" inherits="ChatrBuddyBtn" id="43"/>
+			<Button name="ChatrBuddiesBtn44" inherits="ChatrBuddyBtn" id="44"/>
+			<Button name="ChatrBuddiesBtn45" inherits="ChatrBuddyBtn" id="45"/>
+			<Button name="ChatrBuddiesBtn46" inherits="ChatrBuddyBtn" id="46"/>
+			<Button name="ChatrBuddiesBtn47" inherits="ChatrBuddyBtn" id="47"/>
+			<Button name="ChatrBuddiesBtn48" inherits="ChatrBuddyBtn" id="48"/>
+			<Button name="ChatrBuddiesBtn49" inherits="ChatrBuddyBtn" id="49"/>
+			<Button name="ChatrBuddiesBtn50" inherits="ChatrBuddyBtn" id="50"/>
+			<Button name="ChatrBuddiesBtn51" inherits="ChatrBuddyBtn" id="51"/>
+			<Button name="ChatrBuddiesBtn52" inherits="ChatrBuddyBtn" id="52"/>
+			<Button name="ChatrBuddiesBtn53" inherits="ChatrBuddyBtn" id="53"/>
+			<Button name="ChatrBuddiesBtn54" inherits="ChatrBuddyBtn" id="54"/>
+			<Button name="ChatrBuddiesBtn55" inherits="ChatrBuddyBtn" id="55"/>
+			<Button name="ChatrBuddiesBtn56" inherits="ChatrBuddyBtn" id="56"/>
+			<Button name="ChatrBuddiesBtn57" inherits="ChatrBuddyBtn" id="57"/>
+			<Button name="ChatrBuddiesBtn58" inherits="ChatrBuddyBtn" id="58"/>
+			<Button name="ChatrBuddiesBtn59" inherits="ChatrBuddyBtn" id="59"/>
+			<Button name="ChatrBuddiesBtn60" inherits="ChatrBuddyBtn" id="60"/>
+			<Button name="ChatrBuddiesBtn61" inherits="ChatrBuddyBtn" id="61"/>
+			<Button name="ChatrBuddiesBtn62" inherits="ChatrBuddyBtn" id="62"/>
+			<Button name="ChatrBuddiesBtn63" inherits="ChatrBuddyBtn" id="63"/>
+			<Button name="ChatrBuddiesBtn64" inherits="ChatrBuddyBtn" id="64"/>
+		</Frames>
+	</Frame>
+	
+	<Button name="ChatrBuddiesToggleOptions" inherits="GameMenuButtonTemplate" text="Buddies" parent="ChatrOptions">
+		<Size><AbsDimension x="60" y="25" /></Size>
+		<Scripts>
+			<OnClick>Chatr_ShowPlugin("ChatrBuddies");</OnClick>
+		</Scripts>
+	</Button>	
+</Ui>

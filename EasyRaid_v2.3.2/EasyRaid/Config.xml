@@ -1,0 +1,1624 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Config.lua"/>
+
+	<Button name="ER_OptionsSideFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PlaySound("igMainMenuOpen");
+				PanelTemplates_Tab_OnClick(ER_OptionsSideFrame);
+					
+				if ( ER_OptionsSideFrame.selectedTab == 1 ) then
+					ER_OptionsSideFrameRaidPanel:Show();
+					ER_OptionsSideFrameBuffsPanel:Hide();
+					ER_OptionsSideFrameMainTanksPanel:Hide();
+					ER_OptionsSideFrameTargetsPanel:Hide();
+					ER_OptionsSideFrameMiscPanel:Hide();
+				elseif ( ER_OptionsSideFrame.selectedTab == 2 ) then
+					ER_OptionsSideFrameRaidPanel:Hide();
+					ER_OptionsSideFrameBuffsPanel:Show();
+					ER_OptionsSideFrameMainTanksPanel:Hide();
+					ER_OptionsSideFrameTargetsPanel:Hide();
+					ER_OptionsSideFrameMiscPanel:Hide();
+				elseif ( ER_OptionsSideFrame.selectedTab == 3 ) then
+					ER_OptionsSideFrameRaidPanel:Hide();
+					ER_OptionsSideFrameBuffsPanel:Hide();
+					ER_OptionsSideFrameMainTanksPanel:Show();
+					ER_OptionsSideFrameTargetsPanel:Hide();
+					ER_OptionsSideFrameMiscPanel:Hide();
+				elseif ( ER_OptionsSideFrame.selectedTab == 4 ) then
+					ER_OptionsSideFrameRaidPanel:Hide();
+					ER_OptionsSideFrameBuffsPanel:Hide();
+					ER_OptionsSideFrameMainTanksPanel:Hide();
+					ER_OptionsSideFrameTargetsPanel:Show();
+					ER_OptionsSideFrameMiscPanel:Hide();
+				elseif ( ER_OptionsSideFrame.selectedTab == 5 ) then
+					ER_OptionsSideFrameRaidPanel:Hide();
+					ER_OptionsSideFrameBuffsPanel:Hide();
+					ER_OptionsSideFrameMainTanksPanel:Hide();
+					ER_OptionsSideFrameTargetsPanel:Hide();
+					ER_OptionsSideFrameMiscPanel:Show();
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+
+	<CheckButton name="ER_GroupCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="0" right="-50" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				ER_Config.groups[this:GetID()].isShown = this:GetChecked() == 1;
+				ER_OptionsSideFrame_Update();
+				ER_RaidPulloutFrame_Refresh();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="ER_ClassCheckButtonTemplate" virtual="true" hidden="false">
+		<Size>
+			<AbsDimension x="200" y="20"/>
+		</Size>
+		<Frames>
+			<CheckButton name="$parentCheckButton" hidden="false" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<HitRectInsets>
+					<AbsInset left="0" right="-50" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ER_Config.classes[this:GetParent():GetID()].isShown = this:GetChecked() == 1;
+						ER_OptionsSideFrame_Update();
+						ER_RaidPulloutFrame_Refresh();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentMoveUp" inherits="UIPanelScrollUpButtonTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="98" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local id = this:GetParent():GetID();
+						local tempClass = ER_Config.classes[id - 1];
+						ER_Config.classes[id - 1] = ER_Config.classes[id];
+						ER_Config.classes[id] = tempClass;
+						ER_OptionsSideFrame_Update();
+						ER_RaidPulloutFrame_Refresh();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentMoveDown" inherits="UIPanelScrollDownButtonTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentMoveUp">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local id = this:GetParent():GetID();
+						local tempClass = ER_Config.classes[id + 1];
+						ER_Config.classes[id + 1] = ER_Config.classes[id];
+						ER_Config.classes[id] = tempClass;
+						ER_OptionsSideFrame_Update();
+						ER_RaidPulloutFrame_Refresh();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="ER_OptionsSideFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="290" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="FriendsFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-35" y="-25"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentTopLeftTexture" file="Interface\AddOns\EasyRaid\Textures\SideFrame-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentTopRightTexture" file="Interface\AddOns\EasyRaid\Textures\SideFrame-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="64" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomLeftTexture" file="Interface\AddOns\EasyRaid\Textures\SideFrame-BottomLeft">
+					<Size>
+						<AbsDimension x="256" y="128"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBottomRightTexture" file="Interface\AddOns\EasyRaid\Textures\SideFrame-BottomRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="64" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" text="ER_OPTIONS" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentParchment" file="Interface\AddOns\EasyRaid\Textures\ParchmentTexture">
+					<Size>
+						<AbsDimension x="284" y="376"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-21"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentVersion" text="ER_VERSION_STRING" inherits="GameFontDisableSmall">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-17" y="15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="ER_OptionsSideFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="ER_OptionsSideFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						ER_Config["optionsSideIsShown"] = false;
+						ER_OptionsSideFrame:Hide();
+						SetButtonPulse(ER_RaidFrameOptionsButton, 3, 0.3);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Frame name="ER_OptionsSideFrameRaidPanel" setAllPoints="true">
+				<Frames>
+					<Frame name="ER_GroupsAndClassesDisplayFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="177"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" >
+								<Offset>
+									<AbsDimension x="10" y="-34"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" >
+								<Offset>
+									<AbsDimension x="-14" y="-34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_Group1CheckButton" inherits="ER_GroupCheckButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group2CheckButton" inherits="ER_GroupCheckButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group1CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group3CheckButton" inherits="ER_GroupCheckButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group2CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group4CheckButton" inherits="ER_GroupCheckButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group3CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group5CheckButton" inherits="ER_GroupCheckButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group4CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group6CheckButton" inherits="ER_GroupCheckButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group5CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group7CheckButton" inherits="ER_GroupCheckButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group6CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<CheckButton name="ER_Group8CheckButton" inherits="ER_GroupCheckButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Group7CheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</CheckButton>
+							<Frame name="ER_Class1" inherits="ER_ClassCheckButtonTemplate" id="1">
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="120" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class2" inherits="ER_ClassCheckButtonTemplate" id="2">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class1" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class3" inherits="ER_ClassCheckButtonTemplate" id="3">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class2" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class4" inherits="ER_ClassCheckButtonTemplate" id="4">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class3" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class5" inherits="ER_ClassCheckButtonTemplate" id="5">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class4" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class6" inherits="ER_ClassCheckButtonTemplate" id="6">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class5" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class7" inherits="ER_ClassCheckButtonTemplate" id="7">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class6" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<Frame name="ER_Class8" inherits="ER_ClassCheckButtonTemplate" id="8">
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_Class7" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="ER_GeneralFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="122"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ER_GroupsAndClassesDisplayFrameBox">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="ER_GroupsAndClassesDisplayFrameBox">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_ShowPlayerGroupCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_YOUR_GROUP);
+									</OnLoad>
+									<OnClick>
+										ER_Config.playerGroupIsShown = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+										ER_RaidPulloutFrame_Refresh();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_HideAlreadyDisplayedPlayersCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowPlayerGroupCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_HIDE_PLAYERS_ALREADY_DISPLAYED);
+									</OnLoad>
+									<OnClick>
+										ER_Config.alreadyDisplayedPlayersAreHidden = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+										ER_RaidPulloutFrame_Refresh();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_HidePlayerCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="ER_HideAlreadyDisplayedPlayersCheckButton" relativePoint="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_HIDE_PLAYER);
+									</OnLoad>
+									<OnClick>
+										ER_Config.playerIsHidden = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+										ER_RaidPulloutFrame_Refresh();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Frame name="ER_AlignmentDropDownMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-6" y="7"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="ER_ALIGNMENT">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="21" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										UIDropDownMenu_Initialize(this, ER_AlignmentDropDownMenu_Initialize);
+										UIDropDownMenu_SetSelectedValue(this, ER_Config.alignment);
+										UIDropDownMenu_SetWidth(100, this);
+									</OnShow>
+								</Scripts>
+							</Frame>
+							<Slider name="ER_ScaleSlider" inherits="OptionsSliderTemplate">
+								<Size>
+									<AbsDimension x="117" y="17"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_AlignmentDropDownMenu" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-7" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SCALE);
+										getglobal(this:GetName().."Low"):SetText("75%");
+										getglobal(this:GetName().."High"):SetText("100%");
+										this:SetMinMaxValues(75, 100);
+										this:SetValueStep(1);
+									</OnLoad>
+									<OnValueChanged>
+										ER_Config.scale = this:GetValue();
+										getglobal(this:GetName().."Text"):SetText(ER_SCALE.." "..ER_Config.scale.."%");
+										ER_UPDATE_INTERVAL = 0.2;
+									</OnValueChanged>
+								</Scripts>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="ER_RaidDefaultButton" inherits="OptionsButtonTemplate" text="DEFAULTS">
+						<Size>
+							<AbsDimension x="80" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								ER_InitRaidConfig();
+								ER_OptionsSideFrame_Update();
+								ER_RaidPulloutFrame_Refresh();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame name="ER_OptionsSideFrameBuffsPanel" hidden="true" setAllPoints="true">
+				<Frames>
+					<Frame name="ER_BuffsFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="126"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" >
+								<Offset>
+									<AbsDimension x="10" y="-34"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" >
+								<Offset>
+									<AbsDimension x="-14" y="-34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_ShowBuffsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_BUFFS);
+									</OnLoad>
+									<OnClick>
+										ER_Config.buffsAreShown = true;
+										ER_RaidPulloutFrame_Refresh();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_ShowCastableBuffsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowBuffsCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_CASTABLE_BUFFS);
+									</OnLoad>
+									<OnClick>
+										if ( this:GetChecked() == 1 ) then
+											SHOW_CASTABLE_BUFFS = "1";
+										else
+											SHOW_CASTABLE_BUFFS = "0";
+										end
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_ShowAllGroupsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowCastableBuffsCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_ALL_GROUPS);
+										getglobal(this:GetName().."Text"):SetJustifyH("LEFT");
+									</OnLoad>
+									<OnClick>
+										ER_Config.allGroupsAreShownWhenBuffsAreShown = this:GetChecked() == 1;
+										ER_RaidPulloutFrame_Refresh();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Slider name="ER_MaxBuffsSlider" inherits="OptionsSliderTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="20"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_MAX_DISPLAYABLE_BUFFS);
+										getglobal(this:GetName().."Low"):SetText(ER_MIN_BUFFS);
+										getglobal(this:GetName().."High"):SetText(ER_MAX_BUFFS);
+										this:SetMinMaxValues(ER_MIN_BUFFS, ER_MAX_BUFFS);
+										this:SetValueStep(2);
+									</OnLoad>
+									<OnValueChanged>
+										ER_Config.maxBuffs = this:GetValue();
+										ER_RaidPulloutFrame_UpdateBuffs();
+										ER_OptionsSideFrame_Update();
+									</OnValueChanged>
+								</Scripts>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="ER_DebuffsFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="126"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ER_BuffsFrameBox">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="ER_BuffsFrameBox">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_ShowDebuffsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_DEBUFFS);
+									</OnLoad>
+									<OnClick>
+										ER_Config.buffsAreShown = false;
+										ER_RaidPulloutFrame_Refresh();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_ShowDispellableDebuffsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowDebuffsCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_DISPELLABLE_DEBUFFS);
+									</OnLoad>
+									<OnClick>
+										if ( this:GetChecked() == 1 ) then
+											SHOW_DISPELLABLE_DEBUFFS = "1";
+										else
+											SHOW_DISPELLABLE_DEBUFFS = "0";
+										end
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_ShowDebuffsInCombatCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowDispellableDebuffsCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_DEBUFFS_IN_COMBAT);
+										getglobal(this:GetName().."Text"):SetJustifyH("LEFT");
+									</OnLoad>
+									<OnClick>
+										ER_Config.debuffsAreShownInCombat = this:GetChecked() == 1;
+										ER_RaidPulloutFrame_Refresh();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Slider name="ER_MaxDebuffsSlider" inherits="OptionsSliderTemplate">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="0" y="20"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_MAX_DISPLAYABLE_DEBUFFS);
+										getglobal(this:GetName().."Low"):SetText(ER_MIN_BUFFS);
+										getglobal(this:GetName().."High"):SetText(ER_MAX_BUFFS);
+										this:SetMinMaxValues(ER_MIN_BUFFS, ER_MAX_BUFFS);
+										this:SetValueStep(2);
+									</OnLoad>
+									<OnValueChanged>
+										ER_Config.maxDebuffs = this:GetValue();
+										ER_RaidPulloutFrame_UpdateBuffs();
+										ER_OptionsSideFrame_Update();
+									</OnValueChanged>
+								</Scripts>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="ER_BuffsAdvice">
+						<Size>
+							<AbsDimension x="10" y="80"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ER_DebuffsFrameBox">
+								<Offset>
+									<AbsDimension x="5" y="-8"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="ER_DebuffsFrameBox">
+								<Offset>
+									<AbsDimension x="-5" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentText" text="ER_KEY_BINDING_ADVICE_TO_SWITCH_BUFF_MODE" inherits="GameFontNormalSmall" setAllPoints="true" justifyH="LEFT" justifyV="TOP"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button name="ER_BuffsDefaultButton" inherits="OptionsButtonTemplate" text="DEFAULTS">
+						<Size>
+							<AbsDimension x="80" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								ER_InitBuffsConfig();
+								ER_RaidPulloutFrame_Refresh();
+								ER_OptionsSideFrame_Update();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame name="ER_OptionsSideFrameMainTanksPanel" hidden="true" setAllPoints="true">
+				<Frames>
+					<Frame name="ER_MainTanksOptionsFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="108"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" >
+								<Offset>
+									<AbsDimension x="10" y="-34"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" >
+								<Offset>
+									<AbsDimension x="-14" y="-34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_ShowMainTanksCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_MAIN_TANKS);
+									</OnLoad>
+									<OnClick>
+										ER_Config.mainTanksAreShown = this:GetChecked() == 1;
+										ER_RaidPulloutFrame_Refresh();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_AttachMainTanksCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowMainTanksCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="-4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_ATTACH_MAIN_TANKS_TO);
+									</OnLoad>
+									<OnClick>
+										ER_Config.mainTanksAreAttached = this:GetChecked() == 1;
+										ER_RaidPulloutFrame_Refresh();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Frame name="ER_MainTanksAttachmentDropDownMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_AttachMainTanksCheckButton" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="70" y="4"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="21" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										UIDropDownMenu_Initialize(this, ER_MainTanksAttachmentDropDownMenu_Initialize);
+										UIDropDownMenu_SetSelectedValue(this, ER_Config.mainTanksAttachment);
+										UIDropDownMenu_SetWidth(80, this);
+									</OnShow>
+								</Scripts>
+							</Frame>
+							<Frame name="ER_MainTanksAlignmentDropDownMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-6" y="7"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="ER_ALIGNMENT">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="21" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										UIDropDownMenu_Initialize(this, ER_AlignmentDropDownMenu_Initialize);
+										UIDropDownMenu_SetSelectedValue(this, ER_Config.mainTanksAlignment);
+										UIDropDownMenu_SetWidth(100, this);
+									</OnShow>
+								</Scripts>
+							</Frame>
+							<Slider name="ER_MainTanksScaleSlider" inherits="OptionsSliderTemplate">
+								<Size>
+									<AbsDimension x="117" y="17"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_MainTanksAlignmentDropDownMenu" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-7" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SCALE);
+										getglobal(this:GetName().."Low"):SetText("75%");
+										getglobal(this:GetName().."High"):SetText("100%");
+										this:SetMinMaxValues(75, 100);
+										this:SetValueStep(1);
+									</OnLoad>
+									<OnValueChanged>
+										if ( this:GetValue() ~= ER_Config.mainTanksScale ) then
+											local previousScale = ER_Config.mainTanksScale;
+											ER_Config.mainTanksScale = this:GetValue();
+											getglobal(this:GetName().."Text"):SetText(ER_SCALE.." "..ER_Config.mainTanksScale.."%");
+											local point, relativeObject, relativePoint, x, y = ER_MainTanksPlaceHolder:GetPoint(1);
+											ER_MainTanksPlaceHolder_UpdateScale();
+											local deltaScale = previousScale / ER_Config.mainTanksScale;
+											ER_MainTanksPlaceHolder:SetPoint(point, relativeObject, relativePoint, x*deltaScale, y*deltaScale);
+											ER_MainTanksPlaceHolder_SaveLocation();
+											ER_UPDATE_INTERVAL = 0.2;
+										end
+									</OnValueChanged>
+								</Scripts>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="ER_MainTanksFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="222"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="ER_MainTanksOptionsFrameBox">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="ER_MainTanksOptionsFrameBox">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Frame name="ER_MainTanksAdvice">
+								<Size>
+									<AbsDimension x="10" y="60"/>
+								</Size>
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="12" y="12"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-10" y="12"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="ER_MainTanksAdviceText" inherits="GameFontNormalSmall" setAllPoints="true" justifyH="LEFT" justifyV="BOTTOM"/>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="ER_MTsDefaultButton" inherits="OptionsButtonTemplate" text="DEFAULTS">
+						<Size>
+							<AbsDimension x="80" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								ER_InitMainTanksConfig();
+								ER_OptionsSideFrame_Update();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame name="ER_OptionsSideFrameTargetsPanel" hidden="true" setAllPoints="true">
+				<Frames>
+					<Frame name="ER_TargetsFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="142"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" >
+								<Offset>
+									<AbsDimension x="10" y="-34"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" >
+								<Offset>
+									<AbsDimension x="-14" y="-34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_ShowTargetsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_TARGETS);
+									</OnLoad>
+									<OnClick>
+										ER_Config.targetsAreShown = this:GetChecked() == 1;
+										ER_UpdateTargets();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_ShowHostileTargetsOnlyCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowTargetsCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_HOSTILE_TARGETS_ONLY);
+									</OnLoad>
+									<OnClick>
+										ER_Config.showHostileTargetsOnly = this:GetChecked() == 1;
+										ER_UpdateTargets();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_HideDuplicatedTargetsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowHostileTargetsOnlyCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_HIDE_DUPLICATED_TARGETS);
+									</OnLoad>
+									<OnClick>
+										ER_Config.duplicatedTargetsAreHidden = this:GetChecked() == 1;
+										ER_UpdateTargets();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_AutomaticallySetTargetsIconsCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_HideDuplicatedTargetsCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_AUTOMATICALLY_SET_TARGETS_ICONS);
+									</OnLoad>
+									<OnClick>
+										ER_Config.automaticallySetTargetsIcons = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<Frame name="ER_TargetsAlignmentDropDownMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="-6" y="7"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="ER_ALIGNMENT">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+													<Offset>
+														<AbsDimension x="21" y="0"/>
+													</Offset>
+												</Anchor>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Scripts>
+									<OnShow>
+										UIDropDownMenu_Initialize(this, ER_AlignmentDropDownMenu_Initialize);
+										UIDropDownMenu_SetSelectedValue(this, ER_Config.targetsAlignment);
+										UIDropDownMenu_SetWidth(100, this);
+									</OnShow>
+								</Scripts>
+							</Frame>
+							<Slider name="ER_TargetsScaleSlider" inherits="OptionsSliderTemplate">
+								<Size>
+									<AbsDimension x="117" y="17"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_TargetsAlignmentDropDownMenu" relativePoint="TOPRIGHT">
+										<Offset>
+											<AbsDimension x="-7" y="-2"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SCALE);
+										getglobal(this:GetName().."Low"):SetText("75%");
+										getglobal(this:GetName().."High"):SetText("100%");
+										this:SetMinMaxValues(75, 100);
+										this:SetValueStep(1);
+									</OnLoad>
+									<OnValueChanged>
+										if ( this:GetValue() ~= ER_Config.targetsScale ) then
+											local previousScale = ER_Config.targetsScale;
+											ER_Config.targetsScale = this:GetValue();
+											getglobal(this:GetName().."Text"):SetText(ER_SCALE.." "..ER_Config.targetsScale.."%");
+											local point, relativeObject, relativePoint, x, y = ER_TargetsFrame:GetPoint(1);
+											ER_TargetsFrame_UpdateScale();
+											local deltaScale = previousScale / ER_Config.targetsScale;
+											ER_TargetsFrame:SetPoint(point, relativeObject, relativePoint, x*deltaScale, y*deltaScale);
+											ER_TargetsFrame_SaveLocation();
+											if ( ER_Config.mainTanksAreAttached and ER_Config.mainTanksAttachment == "TARGETS" ) then
+												ER_RaidPulloutFrame_Update();
+											end
+										end
+									</OnValueChanged>
+								</Scripts>
+							</Slider>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="ER_TargetsDefaultButton" inherits="OptionsButtonTemplate" text="DEFAULTS">
+						<Size>
+							<AbsDimension x="80" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								ER_InitTargetsConfig();
+								ER_UpdateTargets();
+								ER_OptionsSideFrame_Update();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame name="ER_OptionsSideFrameMiscPanel" hidden="true" setAllPoints="true">
+				<Frames>
+					<Frame name="ER_MiscFrameBox" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="10" y="96"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" >
+								<Offset>
+									<AbsDimension x="10" y="-34"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="TOPRIGHT" >
+								<Offset>
+									<AbsDimension x="-14" y="-34"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<CheckButton name="ER_ShowTitleOfTheFramesCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="10" y="-8"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SHOW_TITLE_OF_THE_FRAMES);
+									</OnLoad>
+									<OnClick>
+										ER_Config.titleOfTheFramesIsShown = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+										ER_RaidPulloutFrame_UpdateTitle();
+										ER_RaidPulloutFrame_Refresh();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_HighlightAttackedPlayersCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_ShowTitleOfTheFramesCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_HIGHLIGHT_ATTACKED_PLAYER);
+									</OnLoad>
+									<OnClick>
+										ER_Config.highlightAttackedPlayers = this:GetChecked() == 1;
+										ER_UpdateTargets();
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_SoundsOnAggroCheckButton" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_HighlightAttackedPlayersCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_SOUNDS_ON_AGGRO);
+									</OnLoad>
+									<OnClick>
+										ER_Config.soundsOnAggro = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+							<CheckButton name="ER_UseAssist" inherits="OptionsCheckButtonTemplate">
+								<Size>
+									<AbsDimension x="20" y="20"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="ER_SoundsOnAggroCheckButton" relativePoint="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(this:GetName().."Text"):SetText(ER_USE_ASSIST);
+									</OnLoad>
+									<OnClick>
+										ER_Config.useAssist = this:GetChecked() == 1;
+										ER_OptionsSideFrame_Update();
+									</OnClick>
+								</Scripts>
+							</CheckButton>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+								this:SetBackdropColor(0.15, 0.15, 0.15);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Button name="ER_MiscDefaultButton" inherits="OptionsButtonTemplate" text="DEFAULTS">
+						<Size>
+							<AbsDimension x="80" y="21"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontHighlightSmall"/>
+						<DisabledText inherits="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								ER_InitMiscConfig();
+								ER_RaidPulloutFrame_UpdateTitle();
+								ER_RaidPulloutFrame_Refresh();
+								ER_OptionsSideFrame_Update();
+							</OnClick>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button name="ER_OptionsSideFrameTab1" inherits="ER_OptionsSideFrameTabTemplate" id="1" text="ER_RAID_TAB">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-7" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="ER_OptionsSideFrameTab2" inherits="ER_OptionsSideFrameTabTemplate" id="2" text="ER_BUFFS_TAB">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="ER_OptionsSideFrameTab1" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="ER_OptionsSideFrameTab3" inherits="ER_OptionsSideFrameTabTemplate" id="3" text="ER_MAIN_TANKS_TAB">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="ER_OptionsSideFrameTab2" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="ER_OptionsSideFrameTab4" inherits="ER_OptionsSideFrameTabTemplate" id="4" text="ER_TARGETS_TAB">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="ER_OptionsSideFrameTab3" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="ER_OptionsSideFrameTab5" inherits="ER_OptionsSideFrameTabTemplate" id="5" text="ER_MISC_TAB">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="ER_OptionsSideFrameTab4" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="14" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				PanelTemplates_SetNumTabs(this, 5);
+				this.selectedTab = 1;
+				PanelTemplates_UpdateTabs(this);
+				ER_RaidInfoFrame = { };
+				ER_RaidInfoFrame.point, ER_RaidInfoFrame.relativeTo, ER_RaidInfoFrame.relativePoint,
+					ER_RaidInfoFrame.offsetX, ER_RaidInfoFrame.offsetY = RaidInfoFrame:GetPoint();
+			</OnLoad>
+			<OnShow>
+				ER_OptionsSideFrame_Update();
+				UIFrameFadeIn(ER_ContainerFrame, 1, 0, ER_CONTAINER_FRAME_ALPHA);
+				ER_RaidFrameOptionsButton_Update();
+				RaidInfoFrame:SetPoint("TOPLEFT", ER_OptionsSideFrame, "TOPRIGHT", -1, -18);
+			</OnShow>
+			<OnHide>
+				ER_ContainerFrame:Hide();
+				ER_RaidFrameOptionsButton_Update();
+				RaidInfoFrame:SetPoint(ER_RaidInfoFrame.point, ER_RaidInfoFrame.relativeTo, ER_RaidInfoFrame.relativePoint,
+					ER_RaidInfoFrame.offsetX, ER_RaidInfoFrame.offsetY);
+			</OnHide>
+			<OnDragStart>
+				FriendsFrame:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				FriendsFrame:StopMovingOrSizing();
+				ValidateFramePosition(FriendsFrame, 25);
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	
+	<Button name="ER_FriendsFrameDragBar" parent="FriendsFrame">
+		<Size>
+			<AbsDimension x="260" y="22"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset><AbsDimension x="70" y="-13"/></Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:GetParent():SetMovable(true);
+			</OnLoad>
+			<OnMouseDown>
+				this:GetParent():StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				this:GetParent():StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+
+	<!--
+	<Button name="ER_RaidFrameOptionsButton" parent="RaidFrame" inherits="UIPanelButtonTemplate" text="ER_OPTIONS">
+		<Size>
+			<AbsDimension x="115" y="21"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="200" y="-37"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				ER_Config["optionsSideIsShown"] = not ER_Config["optionsSideIsShown"];
+				if ( ER_OptionsSideFrame:IsShown() ) then
+					ER_OptionsSideFrame:Hide();
+				else
+					ER_OptionsSideFrame:Show();
+				end
+			</OnClick>
+		</Scripts>
+		<NormalText inherits="GameFontNormalSmall"/>
+		<HighlightText inherits="GameFontHighlightSmall"/>
+		<DisabledText inherits="GameFontDisableSmall"/>
+	</Button>
+	-->
+	
+	<Frame name="ER_RaidFramePlusOrMinusButton" parent="RaidFrame">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-52" y="-8"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentTopRightTexture" file="Interface\AddOns\EasyRaid\Textures\LittleBox">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="ER_RaidFrameOptionsButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\EasyRaid\Textures\PlusButton-Up"/>
+				<PushedTexture file="Interface\AddOns\EasyRaid\Textures\PlusButton-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+				<Scripts>
+					<OnClick>
+						ER_Config["optionsSideIsShown"] = not ER_Config["optionsSideIsShown"];
+						if ( ER_OptionsSideFrame:IsShown() ) then
+							ER_OptionsSideFrame:Hide();
+						else
+							ER_OptionsSideFrame:Show();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

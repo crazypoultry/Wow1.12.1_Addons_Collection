@@ -1,0 +1,1179 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="PanzaPOM.lua"/>
+	<Frame name="PanzaPOMFrame" inherits="PanzaTemplateFrame">
+		<Size>
+			<AbsDimension x="350" y="510"/>
+		</Size>
+
+		<Frames>
+			<CheckButton name="cbxPanzaPOMOffAll" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="PanzaPOMFrame">
+						<Offset>
+							<AbsDimension x="20" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_OFFALL);
+					</OnLoad>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.offall = (not PASettings.Switches.Offense.offall);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMHS" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMOffAll">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_HS);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("hs")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.hs = (not PASettings.Switches.Offense.hs);
+						if (PASettings.Switches.Offense.hs==true and PA:SpellInSpellBook("hs") and PA:SpellInSpellBook("HEALSPECIAL")) then
+							cbxPanzaPOMHSOnlyOnDF:Enable();
+							cbxPanzaPOMHSAlwaysOnDF:Enable();
+						else
+							cbxPanzaPOMHSOnlyOnDF:Disable();
+							cbxPanzaPOMHSAlwaysOnDF:Disable();
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMHSOnlyOnDF" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMHS">
+						<Offset>
+							<AbsDimension x="40" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_HSONLYONDF);
+					</OnLoad>
+					<OnShow>
+						if (PASettings.Switches.Offense.hs==true and PA:SpellInSpellBook("hs") and PA:SpellInSpellBook("HEALSPECIAL")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.HSOnlyOnDF = (not PASettings.Switches.Offense.HSOnlyOnDF);
+						if (PASettings.Switches.Offense.HSAlwaysOnDF==true and PASettings.Switches.Offense.HSOnlyOnDF==true) then
+							PASettings.Switches.Offense.HSAlwaysOnDF=false;
+						end
+						PA:POM_SetValues();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMHSAlwaysOnDF" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMHSOnlyOnDF">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_HSALWAYSONDF);
+					</OnLoad>
+					<OnShow>
+						if (PASettings.Switches.Offense.hs==true and PA:SpellInSpellBook("hs") and PA:SpellInSpellBook("HEALSPECIAL")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.HSAlwaysOnDF = (not PASettings.Switches.Offense.HSAlwaysOnDF);
+						if (PASettings.Switches.Offense.HSOnlyOnDF==true and PASettings.Switches.Offense.HSAlwaysOnDF==true) then
+							PASettings.Switches.Offense.HSOnlyOnDF=false;
+						end
+						PA:POM_SetValues();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMEXO" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMHSAlwaysOnDF">
+						<Offset>
+							<AbsDimension x="-40" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_EXO);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("exo")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.exo = (not PASettings.Switches.Offense.exo);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMHOW" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMEXO">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_HOW);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("how")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.how = (not PASettings.Switches.Offense.how);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMSoC" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMHOW">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_SOC);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("soc")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.soc = (not PASettings.Switches.Offense.soc);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMStunned" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMSoC">
+						<Offset>
+							<AbsDimension x="40" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_STUNNED);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("soc")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.stunned = (not PASettings.Switches.Offense.stunned);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+
+			<CheckButton name="cbxPanzaPOMSoR" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMSoC">
+						<Offset>
+							<AbsDimension x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_SOR);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("sor")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.sor = (not PASettings.Switches.Offense.sor);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="cbxPanzaPOMThreat" inherits="UICheckButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMSoR">
+						<Offset>
+							<AbsDimension x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(PANZA_POM_THREAT);
+					</OnLoad>
+					<OnShow>
+						if (PA:SpellInSpellBook("sor") or PA:SpellInSpellBook("soc")) then
+							this:Enable();
+						else
+							this:Disable();
+						end
+					</OnShow>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PASettings.Switches.Offense.MaxThreat = (not PASettings.Switches.Offense.MaxThreat);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- Seal Menu Panel + Options-->
+
+			<Frame name="$parentPanel1">
+				<Size>
+					<AbsDimension x="330" y="180" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaPOMThreat">
+						<Offset>
+							<AbsDimension x="-10" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<BackgroundInsets>
+						<AbsInset left="5" right="5" top="5" bottom="5" />
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16" />
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16" />
+					</EdgeSize>
+				</Backdrop>
+
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="txtPanzaPBMNPCount" inherits="GameFontNormal" text="PANZA_POM_SMTEXT">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="10" y="14"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+
+				<Frames>
+
+					<Frame name="$parentTitle">
+						<Size>
+						  <AbsDimension x="114" y="17" />
+						</Size>
+						<Anchors>
+						  <Anchor point="TOPLEFT">
+							<Offset>
+							  <AbsDimension x="10" y="16" />
+							</Offset>
+						  </Anchor>
+						</Anchors>
+						<Layers>
+						  <Layer>
+							<FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" justifyH="LEFT" text="Seal Menu:">
+							  <Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							  </Anchors>
+							  <FontHeight>
+								<AbsValue val="12" />
+							  </FontHeight>
+							  <Color r="1" g="1" b="1" />
+							  <Shadow>
+								<Color r="0" g="0" b="0" />
+								<Offset>
+								  <AbsDimension x="1" y="-1" />
+								</Offset>
+							  </Shadow>
+							</FontString>
+						  </Layer>
+						</Layers>
+					</Frame>
+
+
+					<CheckButton name="cbxPanzaSMShow" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="10" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_SMSHOW);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PA:SealMenu_Toggle();
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMLocked" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMShow">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_SMLOCK);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.Locked = not PASettings.SealMenu.Locked;
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMKeepOpen" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMLocked">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_SMKEEPOPEN);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.KeepOpen = not PASettings.SealMenu.KeepOpen;
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMKeepDocked" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMKeepOpen">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_SMKEEPDOCKED);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.KeepDocked = not PASettings.SealMenu.KeepDocked;
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMMenuOnShift" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMKeepDocked">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_SMMENUONSHIFT);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.MenuOnShift = not PASettings.SealMenu.MenuOnShift;
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMPvP" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMMenuOnShift">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_SMPVP);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.IgnorePvP = not PASettings.SealMenu.IgnorePvP;
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMTooltips" inherits="UICheckButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMPvP">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_TOOLTIPS);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.Tooltips = not PASettings.SealMenu.Tooltips;
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMTextTop" inherits="SendMailRadioButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="cbxPanzaSMTooltips">
+								<Offset>
+									<AbsDimension x="100" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_TEXTTOP);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.Text = "top";
+								PASealMenu_MainFrameNextTextTop:Show();
+								PASealMenu_MainFrameNextTextBottom:Hide();
+								cbxPanzaSMTextTop:SetChecked(true);
+								cbxPanzaSMTextBottom:SetChecked(false);
+								cbxPanzaSMTextOff:SetChecked(false);
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMTextBottom" inherits="SendMailRadioButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="cbxPanzaSMTextTopText">
+								<Offset>
+									<AbsDimension x="5" y="6.5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_TEXTBOTTOM);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.Text = "bot";
+								PASealMenu_MainFrameNextTextTop:Hide();
+								PASealMenu_MainFrameNextTextBottom:Show();
+								cbxPanzaSMTextTop:SetChecked(false);
+								cbxPanzaSMTextBottom:SetChecked(true);
+								cbxPanzaSMTextOff:SetChecked(false);
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="cbxPanzaSMTextOff" inherits="SendMailRadioButtonTemplate">
+						<Size>
+							<AbsDimension x="24" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="cbxPanzaSMTextBottomText">
+								<Offset>
+									<AbsDimension x="5" y="6.5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(PANZA_POM_TEXTOFF);
+							</OnLoad>
+							<OnEnter>
+								PA:POM_ShowTooltip(this);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<OnClick>
+								PASettings.SealMenu.Text = "off";
+								PASealMenu_MainFrameNextTextTop:Hide();
+								PASealMenu_MainFrameNextTextBottom:Hide();
+								cbxPanzaSMTextTop:SetChecked(false);
+								cbxPanzaSMTextBottom:SetChecked(false);
+								cbxPanzaSMTextOff:SetChecked(true);
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+
+
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.5, 0.5, 0.5);
+						this:SetBackdropColor(0.05, 0.05, 0.05);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+
+			<Button name="btnPanzaPOMDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="PanzaPOMFrame">
+						<Offset>
+							<AbsDimension x="24" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PA:POM_btnDone_OnClick()
+						if (PanzaTreeFrame:IsVisible()) then
+							PanzaTreeFrame:Hide();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPOMRepos" inherits="OptionsButtonTemplate" text="Reposition">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="btnPanzaPOMDone">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PA:POM_btnRepos_OnClick()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="btnPanzaPOMDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="PanzaPOMFrame">
+						<Offset>
+							<AbsDimension x="-24" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						PA:POM_ShowTooltip(this);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick>
+						PA:POM_Defaults();
+						PA:POM_SetValues();
+						if (PanzaSTAFrame:IsVisible()) then
+							PanzaSTA_SetValues();
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				PA:POM_OnLoad();
+				getglobal(this:GetName().."Title"):SetText(PANZA_POM_TITLE);
+			</OnLoad>
+			<OnShow>
+				this:SetBackdropColor(0, 0, 0);
+				PA:POM_OnShow();
+			</OnShow>
+			<OnHide>
+				PA:POM_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+
+
+	<!-- SEAL MENU SECTION -->
+
+
+	<!-- Templates -->
+
+	<FontString name="PASealMenuFont" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" justifyH="LEFT" virtual="true">
+		<FontHeight>
+			<AbsValue val="9"/>
+		</FontHeight>
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</FontString>
+
+	<Button name="PASealMenuResizeTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="16" y="16"/>
+		</Size>
+		<Scripts>
+			<OnMouseDown>
+				PA:SealMenu_StartScaling(arg1, this)
+			</OnMouseDown>
+			<OnMouseUp>
+				PA:SealMenu_StopScaling(arg1, this)
+			</OnMouseUp>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\Panza\Images\SealMenu-ResizeGrip"/>
+		<HighlightTexture file="Interface\AddOns\Panza\Images\SealMenu-ResizeGrip" alphaMode="ADD"/>
+	</Button>
+
+	<CheckButton name="PASealMenuMainSealTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+			<OnEnter>
+				PA:SealMenu_ShowMenu()
+				PA:SealMenu_InventoryTooltip(this)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				PA:SealMenu_Seal_OnClick(this)
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="PASealMenuSwapSealTemplate" inherits="ActionButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp")
+			</OnLoad>
+			<OnEnter>
+				PA:SealMenu_Tooltip(this);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				PA:SealMenu_SwapSeal(arg1, this);
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="PASealMenuTimeTemplate" enableMouse="false" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="12"/>
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTime" inherits="NumberFontNormal" justifyH="CENTER"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- MainFrame: Configured Seals -->
+
+	<Frame name="PASealMenu_MainFrame" toplevel="true" frameStrata="LOW" enableMouse="true" movable="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="91" y="82" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="400" y="400"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="PASealMenu_MainDock_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PASealMenu_MainDock_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PASealMenu_MainDock_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PASealMenu_MainDock_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<FontString Name="$parentNextTextTop" inherits="GameFontNormal" hidden="true" text="" halign="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString Name="$parentNextTextBottom" inherits="GameFontNormal" hidden="true" text="" halign="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<CheckButton name="PASealMenu_Seal0" inherits="PASealMenuMainSealTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Frame parent="PASealMenu_Seal0" inherits="PASealMenuTimeTemplate"/>
+
+			<CheckButton name="PASealMenu_Seal1" inherits="PASealMenuMainSealTemplate" id="14">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-8" y="8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<Frame parent="PASealMenu_Seal1" inherits="PASealMenuTimeTemplate"/>
+
+			<Button name="PASealMenu_MainResizeButton" inherits="PASealMenuResizeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnEnter>
+				PA:SealMenu_ShowMenu()
+			</OnEnter>
+			<OnMouseDown>
+				PA:SealMenu_MainFrame_OnMouseDown(arg1);
+			</OnMouseDown>
+			<OnMouseUp>
+				PA:SealMenu_MainFrame_OnMouseUp(arg1);
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- MenuFrame: available Seals -->
+
+	<Frame name="PASealMenu_MenuFrame" toplevel="true" frameStrata="MEDIUM" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="91" y="82" />
+		</Size>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="PASealMenu_MainFrame" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="PASealMenu_MenuDock_TOPRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.625" right="0.75" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PASealMenu_MenuDock_TOPLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0.5" right="0.625" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PASealMenu_MenuDock_BOTTOMLEFT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.75" right="0.875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="PASealMenu_MenuDock_BOTTOMRIGHT" file="Interface\Tooltips\UI-Tooltip-Border" alphaMode="ADD" hidden="true">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<TexCoords left="0.875" right="1" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Button name="PASealMenu_MenuResizeButton" inherits="PASealMenuResizeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<CheckButton name="PASealMenu_Menu1" inherits="PASealMenuSwapSealTemplate" id="1"/>
+			<CheckButton name="PASealMenu_Menu2" inherits="PASealMenuSwapSealTemplate" id="2"/>
+			<CheckButton name="PASealMenu_Menu3" inherits="PASealMenuSwapSealTemplate" id="3"/>
+			<CheckButton name="PASealMenu_Menu4" inherits="PASealMenuSwapSealTemplate" id="4"/>
+			<CheckButton name="PASealMenu_Menu5" inherits="PASealMenuSwapSealTemplate" id="5"/>
+			<CheckButton name="PASealMenu_Menu6" inherits="PASealMenuSwapSealTemplate" id="6"/>
+			<CheckButton name="PASealMenu_Menu7" inherits="PASealMenuSwapSealTemplate" id="7"/>
+			<CheckButton name="PASealMenu_Menu8" inherits="PASealMenuSwapSealTemplate" id="8"/>
+			<CheckButton name="PASealMenu_Menu9" inherits="PASealMenuSwapSealTemplate" id="9"/>
+
+			<Frame parent="PASealMenu_Menu1" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu2" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu3" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu4" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu5" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu6" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu7" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu8" inherits="PASealMenuTimeTemplate"/>
+			<Frame parent="PASealMenu_Menu9" inherits="PASealMenuTimeTemplate"/>
+
+		</Frames>
+
+		<Scripts>
+			<OnEnter>
+				PA:SealMenu_ResetMenuTimer()
+			</OnEnter>
+			<OnUpdate>
+				PA:SealMenu_MenuFrame_OnUpdate(arg1)
+			</OnUpdate>
+			<OnMouseDown>
+				PA:SealMenu_MenuFrame_OnMouseDown(arg1)
+			</OnMouseDown>
+			<OnMouseUp>
+				PA:SealMenu_MenuFrame_OnMouseUp(arg1)
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<!-- OnUpdate Frames used by demand only -->
+
+	<Frame name="PASealMenu_ScalingFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				PA:SealMenu_ScalingFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PASealMenu_DockingFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				PA:SealMenu_DockingFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PASealMenu_InventoryFrame" parent="PASealMenu_MainFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				PA:SealMenu_InventoryFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PASealMenu_TooltipFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				PA:SealMenu_TooltipFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PASealMenu_IconDraggingFrame" hidden="true">
+		<Scripts>
+			<OnUpdate>
+				PA:SealMenu_IconDraggingFrame_OnUpdate(arg1)
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PASealMenu_CooldownCountFrame" parent="PASealMenu_MainFrame" hidden="false">
+		<Scripts>
+			<OnUpdate>
+				PA:SealMenu_CooldownCountFrame_OnUpdate(arg1)
+			</OnUpdate>
+			<OnHide>
+				PA:SealMenu_CooldownCountFrame_OnHide()
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+</Ui>

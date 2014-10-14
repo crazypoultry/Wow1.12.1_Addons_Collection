@@ -1,0 +1,100 @@
+golomag? (fif) buff wartning
+Ony breath warning
+
+
+CHAT_MSG_RAID_WARNING
+arg1: message
+arg2: sender
+arg3: language
+(arg4 to arg9 are probably the same as CHAT_MSG_RAID - haven't checked)
+
+Fires when a raid leader/assistant sends a raid warning. Send with:
+SendChatMessage(msg, "RAID_WARNING", language)
+
+RAID_TARGET_UPDATE
+[no args]
+
+Fires when a raid leader/assistants changes a raid target (the icons visible in the 3D world, similar to Hunter's Mark)
+
+READY_CHECK
+[no args]
+
+Fires when the raid leader initiates a ready check
+
+UPDATE_INSTANCE_INFO
+[no args]
+
+Fires when instance lockout information is available
+
+GMSURVEY_DISPLAY
+[don't know]
+
+Probably fires after you've finished talking to a GM.
+A Blizzard_GMSurveyUI addon has been added, which is more than likely related to this event.
+
+
+Functions:
+
+val = HasKey() -- return 1 or nil, if the player has a key or not (used with keyrings, to decide if the icon should be shown or not)
+
+DoReadyCheck() -- initiates a ready check
+ConfirmReadyCheck(bool) -- Sends a confirmation to a ready check. Called with 1, to show the player is ready, nil or false to show the player is not ready.
+
+SetRaidTarget(unit, index) -- Sets the raid target icon index for the specified index (0 = no icon)
+index = GetRaidTargetIndex(unit) -- returns the raid target icon index for the specified unit, or nil if if no icon.
+
+RequestRaidInfo() -- Request saved instance information from the server (fires UPDATE_INSTANCE_INFO when the data is available)
+num = GetNumSavedInstances() -- Returns number of instances the player is saved to
+zone, id, resetTime = GetSavedInstanceInfo(index) -- Return information about the instance the player is saved to (resetTime is seconds till the instance resets)
+
+canshow = CanShowResetInstances() -- Returns 1 or nil, if the players has any non-saved instances that can be reset (and is not currently in an instance).
+ResetInstances() -- resets all non-saved instances for the player
+
+
+
+Watcher - Boss hunter
+TargetByName("name")
+then test UnitName("target");
+
+
+/script SendChatMessage("THis is a test", "RAID_WARNING");
+
+
+
+Possible new format to allow localization
+
+{
+
+
+oRA_RaidSay:chatRaidSay(msg)
+
+
+
+function CT_RABoss_Announce(msg, fullRaid)
+	if ( fullRaid and CT_RA_Level >= 1 ) then
+		CT_RA_AddMessage("MS " .. msg);
+		SendChatMessage(msg, "RAID");
+	end
+	CT_RA_WarningFrame:AddMessage(msg, 1, 1, 1, 1, UIERRORS_HOLD_TIME);
+end
+
+
+
+
+
+
+function isUnitDebuffUp(sUnitname, sDebuffname) 
+  local iIterator = 1
+  while (UnitDebuff(sUnitname, iIterator)) do
+    if (string.find(UnitDebuff(sUnitname, iIterator), sDebuffname)) then
+      return true
+    end
+    iIterator = iIterator + 1
+  end
+  return false
+end
+
+function isTargetDebuffUp(sDebuffname)
+  if not sDebuffname then dbg("isTargetDebuffUp:sBuffname empty")return false end;
+  return isUnitDebuffUp("target", sDebuffname) 
+end;

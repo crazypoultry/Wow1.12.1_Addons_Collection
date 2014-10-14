@@ -1,0 +1,221 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	
+	<Script file="localization.lua" />
+	<Script file="localization.fr.lua" />
+	<Script file="localization.de.lua" />
+	
+	<Script file="iManaConserve.lua" />
+	<GameTooltip name="iMCTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+   		<Scripts>
+			<OnLoad>
+				this:SetOwner(UIParent, "ANCHOR_NONE")
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+
+	<!-- Check Box Template -->
+	<CheckButton name="iMCCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>		
+		<Scripts>
+			<OnLoad>
+				iMCOptionsCheckButton_OnLoad();
+			</OnLoad>
+			<OnClick>
+				iMCOptionsCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
+
+	<!-- Options Frame -->	
+	<Frame name="iMCOptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Scripts>
+			<OnLoad>
+				iMC_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				iMC_OnEvent();
+			</OnEvent>
+		</Scripts>
+		<Size>
+			<AbsDimension x="300" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="iMCOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="350" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="iMCVERSION">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="iMCOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Check Boxes -->
+			<CheckButton name="iMCBOXCOMBAT" inherits="iMCCheckButtonTemplate" id="0">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="100" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="iMCBOXONOFF" inherits="iMCCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="25" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="iMCBOXACTIONBAR" inherits="iMCCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="100" y="-50"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+
+			<!-- MouseWheel DropDown -->
+			<Frame name="iMCOptionsMouseWheelDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="5" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="iMC_LOCALE_MOUSEWHEEL">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Cast Timer DropDown -->
+			<Frame name="iMCOptionsCastTimerDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="145" y="-85"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentText" inherits="GameFontNormalSmall" text="iMC_LOCALE_TIMERTHRESHOLD">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- Threshold -->
+			<Slider name="iMCSliderThreshold" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="50" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."High"):SetText();
+						getglobal(this:GetName().."Low"):SetText();
+						iMCSliderThreshold:SetMinMaxValues(0,100);
+						iMCSliderThreshold:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged>
+						imcthresh = iMCSliderThreshold:GetValue();
+						iMC_SaveVar("mcthresh", imcthresh);
+						getglobal(this:GetName().."Text"):SetText(iMC_LOCALE_THRESHOLD.."["..this:GetValue().."\194\176]");
+					</OnValueChanged>
+				</Scripts>
+			</Slider>	
+			<!-- Default Button -->
+			<Button name="iMCOptionsFrameDefaults" inherits="OptionsButtonTemplate" text="iMC_LOCALE_DEFAULT">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						iMC_ResetSettings();
+						PlaySound("gsTitleOptionOK");
+					</OnClick>
+				</Scripts>
+			</Button>			
+			<!-- Okay Button -->			
+			<Button name="iMCOptionsFrameOkay" inherits="OptionsButtonTemplate" text="iMC_LOCALE_OKAY">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-12" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						HideUIPanel(iMCOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>			
+		</Frames>
+	</Frame>
+</Ui>

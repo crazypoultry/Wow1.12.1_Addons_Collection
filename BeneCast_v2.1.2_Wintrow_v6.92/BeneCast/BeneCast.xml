@@ -1,0 +1,3025 @@
+<!--
+	BeneCast: this AddOn creates clickable buttons to help the casting of heals and buff spells
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="BeneCastLocalization.lua"/>
+	<Script file="BeneCastSnapTo.lua"/>
+	<Script file="BeneCastSpellList.lua"/>
+	<Script file="BeneCast.lua"/>
+	
+	<!--
+		TEMPLATES: Used for making multiple instances of the same type of thing
+	-->
+	
+	<!-- WINTROW.6 START -->
+	<!-- Edit box to hold information -->
+	<EditBox name="BeneCastEditBoxTemplate" letters="1000" autoFocus="false" inherits="InputBoxTemplate" virtual="true" frameStrata="HIGH">
+		<Scripts>
+			<OnEnterPressed>
+				BeneCastEditBox_ApplyChange();
+			</OnEnterPressed>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Label" inherits="GameFontNormal">
+					<Color r="0" g="0" b="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset><AbsDimension x="-5" y="0"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</EditBox>
+	<!-- WINTROW.6 STOP -->
+	
+	<!-- BeneCastButtonTemplate: Template for buttons that cast spells when clicked -->
+	<Button name="BeneCastButtonTemplate" toplevel="true" virtual="true" hidden="true">
+		
+		<!-- Default size for the buttons is that of an action button -->
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		
+		<!-- Layers is used for button art -->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Icon is the icon used for the spell -->
+				<Texture name="$parentIcon"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<!-- Fade is used for the button fade when the spell is to be shown at all times -->
+				<Texture name="$parentFade" file="Interface\Buttons\UI-Quickslot" hidden="true">
+					<Size>
+						<AbsDimension x="62" y="62"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- Range is used for the button when the unit is out of range -->
+				<Texture name="$parentRange" file="Interface\Buttons\UI-QuickslotRed" hidden="true">
+					<Size>
+						<AbsDimension x="62" y="62"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<!-- This frame is the cooldown model animation of a spell -->
+		<Frames>
+			<Model name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		
+		<!-- Texture art for the frame around the button -->
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="62" y="62"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		
+		<!-- Texture art for when the button is pressed -->
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		
+		<!-- Texture art for when the mouse is over the button -->
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		
+		<!-- Scripts called by BeneCastButtons -->
+		<Scripts>
+			<!-- Cast a spell when the button is clicked on -->
+			<OnClick>
+				BeneCastButton_OnClick();
+			</OnClick>
+			<!-- Show spell tooltip when the mouse cursor enters the button -->
+			<OnEnter>
+				BeneCastButton_OnEnter();
+			</OnEnter>
+			<!-- Update Cooldown animation when the SPELL_UPDATE_COOLDOWN event is called
+			Also update the Cooldown animation when the button is shown -->
+			<OnEvent>
+				BeneCastButton_UpdateCooldown();
+			</OnEvent>
+			<OnShow>
+				BeneCastButton_UpdateCooldown();
+			</OnShow>
+			<!-- Update the flash on heal over times OnUpdate -->
+			<!-- Temporarely disabled to find lag in raids
+			<OnUpdate>
+				BeneCastButton_OnUpdate();
+				BeneCastButton_UpdateCooldown();
+			</OnUpdate>
+			-->
+			<!-- Hide the tooltip when the mouse cursor leaves the button -->
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<!-- Initialization for BeneCastButtons -->
+			<OnLoad>
+				BeneCastButton_OnLoad();
+			</OnLoad>
+		</Scripts>
+
+	</Button>
+	
+	<!-- BeneCastPanelTemplate: Template for grouping of buttons for a unit -->
+	<Frame name="BeneCastPanelTemplate" toplevel="true" virtual="true" hidden="true" movable="true" enableMouse="true" parent="UIParent">
+	
+		<!-- Size of the panel frame
+		Needs to be large enough to hold 10 buttons in a horizontal formation -->
+		<Size>
+			<AbsDimension x="258" y="64"/>
+		</Size>
+		
+		<!-- Backdrop for the Panel frame
+		Use tooltip background and tooltip edges -->
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<!-- Buttons for the Panel frame and drop down menu -->
+		<Frames>
+			<Button name="$parentButton1" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>			
+			<Button name="$parentButton2" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton3" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton4" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton5" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton6" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton7" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton8" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton9" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton10" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton11" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton12" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton13" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton12" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton14" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton15" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton16" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton15" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton17" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton16" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton18" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton17" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton19" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton18" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentButton20" inherits="BeneCastButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton19" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="3" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<!-- Drop down menu for lock options and identification of a Panel
+			Inherits from UIDropDownMenuTemplate, a Blizz widget -->
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate">
+				<Scripts>
+					<!-- Ensure that the correct information is displayed (As info changes during play) -->
+					<OnShow>
+						BeneCastPanelMenu_OnLoad();
+					</OnShow>
+					<OnLoad>
+						BeneCastPanelMenu_OnLoad();
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		
+		<!-- Scripts called by BeneCastPanels -->
+		<Scripts>
+			<!-- Make sure to stop moving the frame in case it is hidden during movement -->
+			<OnHide>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+			<!-- Initialization for BeneCastMembers -->
+			<OnLoad>
+				BeneCastPanel_OnLoad();
+			</OnLoad>
+			<!-- Start moving the frame if unlocked and clicked on -->
+			<OnMouseDown>
+				BeneCastPanel_OnMouseDown()
+			</OnMouseDown>
+			<!-- Stop moving the frame if it was being moved and the mouse button is no longer pressed -->
+			<OnMouseUp>
+				if arg1 == "RightButton" then
+					ToggleDropDownMenu(1, nil, getglobal(this:GetName().."DropDown"), this:GetName(), 0, 0);
+				end
+				if arg1 == "LeftButton" then
+					BeneCastPanel_OnMouseUp();
+				end
+			</OnMouseUp>
+			<!-- Add a debug msg when the mouse cursor enters the panel -->
+			<OnEnter>
+				BeneCastPanel_OnEnter();
+			</OnEnter>
+		</Scripts>
+
+	</Frame>
+	
+	<!-- BeneCastOptionFrameTabTemplate: Template used for the tab buttons for the configuration screen -->
+	<CheckButton name="BeneCastOptionFrameTabTemplate" virtual="true" hidden="false">
+
+		<!-- Size of the tab -->
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Texture art for the tab border -->
+				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size>
+						<AbsDimension x="51" y="50"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-3" y="9"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>		
+
+		<!-- Icon art for the tab -->
+		<NormalTexture name="$parentNormalTexture"/>
+
+		<!-- Texture art for when the mouse is over the tab -->
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+
+		<!-- Texture art for when the tab is checked -->
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+
+		<!-- Scripts called by BeneCastOptionFrameTabs -->
+		<Scripts>
+			<!-- Select this tab and show the appropriate sub-frame for the config screen when clicked -->
+			<OnClick>
+				BeneCastOptionFrameTab_OnClick();
+			</OnClick>
+			<!-- Show the tooltip for the tab when the mouse cursor enters it -->
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<!-- Hide the tooltip for the tab when the mouse cursor leaves it -->
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+
+	</CheckButton>
+	
+	<!-- BeneCastCheckOptionsButtonTemplate: Template used for the checkbuttons used for config options
+	Inherits from OptionsCheckButtonTemplate, a Blizz widget -->
+	<CheckButton name="BeneCastOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true">
+		
+		<!-- Scripts called by BeneCastOptionsCheckButtons -->
+		<Scripts>
+			<!-- Toggle the state of the options config variables when clicked -->
+			<OnClick>
+				BeneCastOptionsCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+		
+	</CheckButton>
+
+	<!-- BeneCastSpellCheckButtonTemplate: Template used for the checkbuttons used for spell config options
+	Inherits from OptionsCheckButtonTemplate, a Blizz widget -->
+	<CheckButton name="BeneCastSpellCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" virtual="true" hidden="true">
+
+		<!-- Scripts called by BeneCastSpellCheckButtons -->
+		<Scripts>
+			<!-- Toggle the state of the spell config variables when clicked -->
+			<OnClick>
+				BeneCastSpellCheckButton_OnClick();
+			</OnClick>
+		</Scripts>
+		
+	</CheckButton>
+	
+	<!-- BeneCastRaidCheckButtonTemplate: Template used for raid checkbuttons used for raid config options -->
+	<CheckButton name="BeneCastRaidCheckButtonTemplate" virtual="true">
+		
+		<!-- Size of the checkbutton -->
+		<Size>
+			<AbsDimension x="156" y="14"/>
+		</Size>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Fontstring for when there is no associated entity for this checkbutton -->
+				<FontString name="$parentEmpty" inherits="GameFontNormalSmall" justifyH="Center">
+					<Size>
+						<AbsDimension x="60" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- Fontstring to hold the associated entity's name -->
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="60" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="20" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- Fontstring to hold the associated entity's level -->
+				<FontString name="$parentLevel" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="22" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentName" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<!-- Fontstring to hold the associated entity's class -->
+				<FontString name="$parentClass" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="50" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLevel" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="5" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<!-- Scripts called by BeneCastRaidCheckButtonTemplate -->
+		<Scripts>
+			<!--  Toggle the state of the raid config variables when clicked -->
+			<OnClick>
+				BeneCastRaidCheckButton_OnClick();
+			</OnClick>
+			<!-- Show a tooltip when the mouse cursor is over the checkbutton -->
+			<OnEnter>
+				BeneCastRaidCheckButton_OnEnter();
+			</OnEnter>
+			<!-- Hide the tooltip when the mouse cursor leaves the checkbutton -->
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		
+		<!-- Texture for the checkbutton -->
+		<NormalTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton">
+			<TexCoords left="0" right="0.640625" top="0" bottom="0.4375"/>
+		</NormalTexture>
+		
+		<!-- Texture for the checkbutton when the mouse cursor is over it -->
+		<HighlightTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+		</HighlightTexture>
+		
+		<!-- Texture for the checkbutton when it is checked -->
+		<CheckedTexture file="Interface\RaidFrame\UI-RaidFrame-GroupButton" alphaMode="ADD">
+			<TexCoords left="0" right="0.640625" top="0.46875" bottom="0.90625"/>
+		</CheckedTexture>
+		
+	</CheckButton>
+	
+	<!-- BeneCastRaidGroupTemplate: Template used for enabling multiple raid checkbuttons -->
+	<Button name="BeneCastRaidGroupTemplate" virtual="true">
+		
+		<!-- Size of the button -->
+		<Size>
+			<AbsDimension x="40" y="8"/>
+		</Size>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Fontstring to hold the group name -->
+				<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="40" y="8"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<!-- Scripts called by BeneCastRaidGroupTemplate -->
+		<Scripts>
+			<!-- Enable the entire group for showing buttons when clicked -->
+			<OnClick>
+				BeneCastRaidGroup_OnClick();
+			</OnClick>
+			<!-- Initialize the button name when loaded -->
+			<OnLoad>
+				BeneCastRaidGroup_OnLoad();
+			</OnLoad>
+			<!-- Show tooltips when the mouse is over the button -->
+			<OnEnter>
+				BeneCastRaidGroup_OnEnter();
+			</OnEnter>
+			<!-- Hide the tooltip when the mouse leaves the button -->
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		
+	</Button>
+
+	<!-- BeneCastOptionsSliderTemplate: Template used for options sliders used by BeneCast -->
+	<Slider name="BeneCastOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Fontstring to hold the current value of the slider -->
+				<FontString name="$parentValue" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<!-- Scripts called by BeneCastOptionsSliders -->
+		<Scripts>
+			<!-- Set the saved variable to that of the new value -->
+			<OnValueChanged>
+				BeneCastOptionsSlider_OnValueChanged();
+			</OnValueChanged>
+		</Scripts>
+
+	</Slider>
+
+	<!-- BeneCastSubFrameTemplate: Template used for the selection of spells for a class -->
+	<Frame name="BeneCastOptionsSubFrameTemplate" hidden="true" virtual="true">
+
+		<!-- Size of an options sub-frame -->
+		<Size>
+			<AbsDimension x="324" y="450"/>
+		</Size>
+		
+		<!-- Anchors to set the subframes in the correct spot in the Options Frame -->
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="18" y="-90"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		
+		<!-- Spell selection checkbuttons in a sub-frame -->
+		<Frames>
+
+			<CheckButton name="$parentButton1" inherits="BeneCastSpellCheckButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="BeneCastSpellCheckButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton1" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="BeneCastSpellCheckButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton2" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="BeneCastSpellCheckButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton3" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="BeneCastSpellCheckButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton4" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="BeneCastSpellCheckButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton5" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="BeneCastSpellCheckButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton6" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="BeneCastSpellCheckButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton7" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="BeneCastSpellCheckButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton8" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="BeneCastSpellCheckButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton9" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="BeneCastSpellCheckButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton10" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="BeneCastSpellCheckButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton11" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton13" inherits="BeneCastSpellCheckButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton12" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton14" inherits="BeneCastSpellCheckButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="110" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton15" inherits="BeneCastSpellCheckButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton14" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton16" inherits="BeneCastSpellCheckButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton15" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton17" inherits="BeneCastSpellCheckButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton16" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton18" inherits="BeneCastSpellCheckButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton17" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton19" inherits="BeneCastSpellCheckButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton18" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton20" inherits="BeneCastSpellCheckButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton19" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton21" inherits="BeneCastSpellCheckButtonTemplate" id="21">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton20" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton22" inherits="BeneCastSpellCheckButtonTemplate" id="22">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton21" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton23" inherits="BeneCastSpellCheckButtonTemplate" id="23">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton22" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton24" inherits="BeneCastSpellCheckButtonTemplate" id="24">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton23" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton25" inherits="BeneCastSpellCheckButtonTemplate" id="25">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton24" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton26" inherits="BeneCastSpellCheckButtonTemplate" id="26">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton25" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton27" inherits="BeneCastSpellCheckButtonTemplate" id="27">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentButton1" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-110" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton28" inherits="BeneCastSpellCheckButtonTemplate" id="28">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton27" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton29" inherits="BeneCastSpellCheckButtonTemplate" id="29">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton28" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton30" inherits="BeneCastSpellCheckButtonTemplate" id="30">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton29" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton31" inherits="BeneCastSpellCheckButtonTemplate" id="31">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton30" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton32" inherits="BeneCastSpellCheckButtonTemplate" id="32">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton31" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton33" inherits="BeneCastSpellCheckButtonTemplate" id="33">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton32" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton34" inherits="BeneCastSpellCheckButtonTemplate" id="34">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton33" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton35" inherits="BeneCastSpellCheckButtonTemplate" id="35">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton34" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton36" inherits="BeneCastSpellCheckButtonTemplate" id="36">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton35" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton37" inherits="BeneCastSpellCheckButtonTemplate" id="37">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton36" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton38" inherits="BeneCastSpellCheckButtonTemplate" id="38">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton37" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton39" inherits="BeneCastSpellCheckButtonTemplate" id="39">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentButton38" relativePoint="BOTTOM"/>
+				</Anchors>
+			</CheckButton>
+				
+		</Frames>
+		
+	</Frame>
+	
+	<!--
+		OBJECTS: Frames used by BeneCast
+	-->
+	
+	<!-- BeneCast_Tooltip: Tooltip Frame used for BeneCast's Tooltip parsing. Prevents GameTooltip from acting funky -->
+	<GameTooltip name="BeneCast_Tooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	
+	<!-- BeneCastPanelManager: Frame used for the event handling for updating the panel for a friendly unit -->
+	<Frame name="BeneCastPanelManager">
+	
+		<!-- Scripts called by the BeneCastPanelManager -->
+		<Scripts>
+			<!-- Init function for the panel manager -->
+			<OnLoad>
+				BeneCastPanelManager_OnLoad();
+			</OnLoad>
+			<!-- Event handler for the panel manager, draws panels based on the event -->
+			<OnEvent>
+				BeneCastPanelManager_OnEvent();
+			</OnEvent>
+			<OnUpdate>
+				BeneCastPanelManager_OnUpdate();
+			</OnUpdate>
+		</Scripts>
+
+	</Frame>
+
+	<!-- BeneCastOptionFrame: Frame used for the configuration of BeneCast -->
+	<Frame name="BeneCastOptionFrame" hidden="true" enableMouse="true" movable="true" parent="UIParent" frameStrata="HIGH">
+
+		<!-- Size of the BeneCastOptionFrame -->
+		<Size>
+			<AbsDimension x="384" y="550"/>
+		</Size>
+
+		<!-- Allows the frame to be moved by the user -->
+		<TitleRegion setAllPoints="true"/>
+
+		<!-- Default anchor for the options menu is the center of the screen -->
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="300" y="-75"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+
+		<!-- Texture art for the frame -->
+		<Layers>
+			<!-- Icon in the top left corner of the frame -->
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Icons\INV_Misc_Book_11">
+					<Size>
+						<AbsDimension x="64" y="78"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="8" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<!-- Texture artwork for the frame -->
+			<Layer level="ARTWORK">
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="320"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrame" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-TopRight">
+					<Size>
+						<AbsDimension x="128" y="320"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="BeneCastOptionFrame" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="320"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="BeneCastOptionFrame" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-90"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\Spellbook\UI-SpellbookPanel-BotRight">
+					<Size>
+						<AbsDimension x="128" y="320"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="BeneCastOptionFrame" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-90"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<!-- String to identify the title and version of the AddOn -->
+				<FontString name="BeneCastTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="6" y="-26"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<!-- Objects in the OptionsFrame -->
+		<Frames>
+			
+			<!-- Close button for the frame -->
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BeneCastOptionFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-44" y="-31"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<!-- Tabs to allow switching between subframes -->
+			<CheckButton name="BeneCastOptionFrameTab1" inherits="BeneCastOptionFrameTabTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-32" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab2" inherits="BeneCastOptionFrameTabTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab3" inherits="BeneCastOptionFrameTabTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab2" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab4" inherits="BeneCastOptionFrameTabTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab5" inherits="BeneCastOptionFrameTabTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab4" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab6" inherits="BeneCastOptionFrameTabTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab7" inherits="BeneCastOptionFrameTabTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab6" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab8" inherits="BeneCastOptionFrameTabTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab9" inherits="BeneCastOptionFrameTabTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab8" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab10" inherits="BeneCastOptionFrameTabTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab9" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab11" inherits="BeneCastOptionFrameTabTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab10" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab12" inherits="BeneCastOptionFrameTabTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab11" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="BeneCastOptionFrameTab13" inherits="BeneCastOptionFrameTabTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BeneCastOptionFrameTab12" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			
+			<!-- Sub-frames for the OptionsFrame -->
+			<!-- Spell selection sub-frames for the OptionsFrame -->
+			<Frame name="BeneCastPlayerFrame" inherits="BeneCastOptionsSubFrameTemplate" id="1" parent="BeneCastOptionFrame" hidden="false"/>
+			<Frame name="BeneCastClass1Frame" inherits="BeneCastOptionsSubFrameTemplate" id="2" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass2Frame" inherits="BeneCastOptionsSubFrameTemplate" id="3" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass3Frame" inherits="BeneCastOptionsSubFrameTemplate" id="4" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass4Frame" inherits="BeneCastOptionsSubFrameTemplate" id="5" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass5Frame" inherits="BeneCastOptionsSubFrameTemplate" id="6" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass6Frame" inherits="BeneCastOptionsSubFrameTemplate" id="7" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass7Frame" inherits="BeneCastOptionsSubFrameTemplate" id="8" parent="BeneCastOptionFrame"/>
+			<Frame name="BeneCastClass8Frame" inherits="BeneCastOptionsSubFrameTemplate" id="9" parent="BeneCastOptionFrame"/>
+			
+			<!-- Option Checkbutton for using the player spell selection for everyone
+			It is a part of BeneCastPlayerFrame -->
+			<!-- Cascade Player Config -->
+			<CheckButton name="BeneCastOptionCheckButton22" inherits="BeneCastOptionsCheckButtonTemplate" id="22" parent = "BeneCastPlayerFrame">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="30" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</CheckButton>
+			
+			<!-- Configuration sub-frames for the OptionsFrame -->
+			
+			<!-- Setup subframe -->
+			<Frame name="BeneCastSetupFrame" id="10" parent="BeneCastOptionFrame" hidden="true">
+				
+				<!-- Size of the subframe -->
+				<Size>
+					<AbsDimension x="324" y="450"/>
+				</Size>
+				
+				<!-- Anchor to ensure proper placement in the parent frame -->
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-90"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<!-- Option Checkbuttons/Sliderbars/Dropdown menus in BeneCastSetupFrame -->
+				<Frames>
+					<!-- Checkbuttons for BeneCastSetupFrame -->
+					<!-- Damage Based Heals -->
+					<CheckButton name="BeneCastOptionCheckButton1" inherits="BeneCastOptionsCheckButtonTemplate" id="1">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="30" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Reverse HoTs -->
+					<CheckButton name="BeneCastOptionCheckButton26" inherits="BeneCastOptionsCheckButtonTemplate" id="26">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Mana Based Heals -->
+					<CheckButton name="BeneCastOptionCheckButton27" inherits="BeneCastOptionsCheckButtonTemplate" id="27">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton26" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="-10" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Overheal -->
+					<CheckButton name="BeneCastOptionCheckButton2" inherits="BeneCastOptionsCheckButtonTemplate" id="2">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton27" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Show All Buffs -->
+					<CheckButton name="BeneCastOptionCheckButton3" inherits="BeneCastOptionsCheckButtonTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Flash As Fade -->
+					<CheckButton name="BeneCastOptionCheckButton28" inherits="BeneCastOptionsCheckButtonTemplate" id="28">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Hide Minimap Button -->
+					<CheckButton name="BeneCastOptionCheckButton4" inherits="BeneCastOptionsCheckButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BeneCastOptionCheckButton1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="100" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Show Tooltips -->
+					<CheckButton name="BeneCastOptionCheckButton5" inherits="BeneCastOptionsCheckButtonTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton4" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Show only Name on tooltip -->
+					<CheckButton name="BeneCastOptionCheckButton6" inherits="BeneCastOptionsCheckButtonTemplate" id="6">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Unlock Buttons -->
+					<CheckButton name="BeneCastOptionCheckButton7" inherits="BeneCastOptionsCheckButtonTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton6" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="-10" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Check Range -->
+					<CheckButton name="BeneCastOptionCheckButton30" inherits="BeneCastOptionsCheckButtonTemplate" id="30">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton7" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Show Target of Target -->
+					<CheckButton name="BeneCastOptionCheckButton31" inherits="BeneCastOptionsCheckButtonTemplate" id="31">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton30" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Sliderbars for BeneCastSetupFrame -->
+					<!-- Button Size -->
+					<Slider name="BeneCastOptionSlider1" inherits="BeneCastOptionsSliderTemplate" id="1">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="BeneCastSetupFrame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="30" y="50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					<!-- Number of Buttons -->
+					<Slider name="BeneCastOptionSlider3" inherits="BeneCastOptionsSliderTemplate" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BeneCastOptionSlider1" relativePoint="RIGHT"/>
+						</Anchors>
+					</Slider>
+					<!-- Ranks to Overheal -->
+					<Slider name="BeneCastOptionSlider2" inherits="BeneCastOptionsSliderTemplate" id="2">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastOptionSlider1" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+					
+					<!-- Dropdown menus for BeneCastSetupFrame -->
+					
+					<!-- Drop down menu for SnapTo options
+					Inherits from UIDropDownMenuTemplate, a Blizz widget -->
+					<Frame name="BeneCastSnapToMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-20" y="235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<!-- Ensure that the correct information is displayed
+							Also setup the different options and function for selecting options-->
+							<OnShow>
+								BeneCastSnapToMenu_Load();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					
+					<!-- Drop Down menu for Raid SnapTo options
+					Inherits from UIDropDownMenuTemplate, a Blizz widget -->
+					<Frame name="BeneCastRaidSnapToMenu" inherits="UIDropDownMenuTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="BeneCastSnapToMenu" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-100" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="21" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<!-- Ensure that the correct information is displayed
+							Also setup the different options and function for selecting options -->
+							<OnShow>
+								BeneCastRaidSnapToMenu_Load();
+							</OnShow>
+							<OnEnter>
+								GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT");
+								GameTooltip:SetText(this.tooltip, nil, nil, nil, nil, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+					
+					<!-- More checkbuttons to show under the dropdown menus -->
+					<!-- Show Pets -->
+					<CheckButton name="BeneCastOptionCheckButton23" inherits="BeneCastOptionsCheckButtonTemplate" id="23">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidSnapToMenu" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Show Raid -->
+					<CheckButton name="BeneCastOptionCheckButton24" inherits="BeneCastOptionsCheckButtonTemplate" id="24">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton23" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Show Raid Pets -->
+					<CheckButton name="BeneCastOptionCheckButton25" inherits="BeneCastOptionsCheckButtonTemplate" id="25">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton24" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="15" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Reset button on the frame to allow for config to be reset to default -->
+					<Button name="BeneCastReset" inherits="GameMenuButtonTemplate" text="RESET" hidden="false">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="BeneCastSetupFrame" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								BeneCast_ResetTooltip();
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+							<!-- Reset the configuration for BeneCast when clicked
+							Play a sound for feedback -->
+							<OnClick>
+								PlaySound("igMainMenuOptionCheckBoxOn");
+								BeneCast_ResetConfig();
+							</OnClick>
+						</Scripts>
+					</Button>
+					
+				</Frames>
+			
+			</Frame>
+			
+			<!-- Notification Subframe -->
+			<Frame name="BeneCastNotificationFrame" id="11" parent="BeneCastOptionFrame" hidden="true">
+
+				<!-- Size of the subframe -->
+				<Size>
+					<AbsDimension x="324" y="450"/>
+				</Size>
+
+				<!-- Anchor to ensure proper placement of the subframe -->
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-90"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+
+				<!-- Checkbuttons in BeneCastNotificationFrame -->
+				<Frames>
+					<!-- Use Notification -->
+					<CheckButton name="BeneCastOptionCheckButton8" inherits="BeneCastOptionsCheckButtonTemplate" id="8">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="30" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Self Channel -->
+					<CheckButton name="BeneCastOptionCheckButton9" inherits="BeneCastOptionsCheckButtonTemplate" id="9">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton8" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Party Channel -->
+					<CheckButton name="BeneCastOptionCheckButton10" inherits="BeneCastOptionsCheckButtonTemplate" id="10">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton9" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Raid Channel -->
+					<CheckButton name="BeneCastOptionCheckButton11" inherits="BeneCastOptionsCheckButtonTemplate" id="11">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton10" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Whisper Target -->
+					<CheckButton name="BeneCastOptionCheckButton12" inherits="BeneCastOptionsCheckButtonTemplate" id="12">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton11" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Say Channel -->
+					<CheckButton name="BeneCastOptionCheckButton29" inherits="BeneCastOptionsCheckButtonTemplate" id="29">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton12" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Emote -->
+					<CheckButton name="BeneCastOptionCheckButton32" inherits="BeneCastOptionsCheckButtonTemplate" id="32">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton29" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- User Channel -->
+					<CheckButton name="BeneCastOptionCheckButton20" inherits="BeneCastOptionsCheckButtonTemplate" id="20">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton32" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Selfcasts -->
+					<CheckButton name="BeneCastOptionCheckButton13" inherits="BeneCastOptionsCheckButtonTemplate" id="13">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BeneCastOptionCheckButton9" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="100" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Rank -->
+					<CheckButton name="BeneCastOptionCheckButton14" inherits="BeneCastOptionsCheckButtonTemplate" id="14">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton13" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Casttime -->
+					<CheckButton name="BeneCastOptionCheckButton15" inherits="BeneCastOptionsCheckButtonTemplate" id="15">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton14" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Heals -->
+					<CheckButton name="BeneCastOptionCheckButton16" inherits="BeneCastOptionsCheckButtonTemplate" id="16">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton15" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Max heals -->
+					<CheckButton name="BeneCastOptionCheckButton17" inherits="BeneCastOptionsCheckButtonTemplate" id="17">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton16" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Cures -->
+					<CheckButton name="BeneCastOptionCheckButton18" inherits="BeneCastOptionsCheckButtonTemplate" id="18">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton17" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="-10" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Buffs -->
+					<CheckButton name="BeneCastOptionCheckButton19" inherits="BeneCastOptionsCheckButtonTemplate" id="19">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton18" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Notify Resurrects -->
+					<CheckButton name="BeneCastOptionCheckButton21" inherits="BeneCastOptionsCheckButtonTemplate" id="21">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastOptionCheckButton19" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Edit box to hold the user channel information -->
+					<EditBox name="BeneCastChannelEditBox" letters="64" historyLines="0" autoFocus="false">
+						<Size>
+							<AbsDimension x="237" y="20"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-15" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormal" text="Channel:" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="-12" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+									<Size>
+										<AbsDimension x="8" y="20"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="-8" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+									<Size>
+										<AbsDimension x="221" y="20"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+									<Size>
+										<AbsDimension x="8" y="20"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnterPressed>
+								BeneCastChannelEditBox:SetFocus();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								BeneCastChannelEditBox:ClearFocus();
+							</OnEscapePressed>
+							<OnTextChanged>
+								BeneCastUserChannel_OnTextChange();
+							</OnTextChanged>
+						</Scripts>
+						<FontString inherits="ChatFontNormal"/>
+					</EditBox>
+					
+				</Frames>
+
+			</Frame>
+			
+			<!-- Raid Subframe -->
+			<Frame name="BeneCastRaidFrame" id="12" parent="BeneCastOptionFrame" hidden="true">
+				
+				<!-- Size of the subframe -->
+				<Size>
+					<AbsDimension x="324" y="450"/>
+				</Size>
+				
+				<!-- Anchor to ensure proper placement of the subframe -->
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-90"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<!-- All the raid and raidgroup checkbuttons in BeneCastRaidFrame -->
+				<Frames>
+					<!-- Buttons for Raid Group 1 -->
+					<CheckButton name="BeneCastRaidButton1" id="1" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="7" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup1" id="1" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton1" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton2" id="2" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton3" id="3" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton2" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton4" id="4" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton3" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton5" id="5" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 2 -->
+					<CheckButton name="BeneCastRaidButton6" id="6" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="BeneCastRaidButton1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup2" id="2" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton6" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton7" id="7" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton6" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton8" id="8" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton7" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton9" id="9" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton8" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton10" id="10" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton9" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 3 -->
+					<CheckButton name="BeneCastRaidButton11" id="11" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup3" id="3" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton11" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton12" id="12" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton11" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton13" id="13" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton12" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton14" id="14" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton13" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton15" id="15" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton14" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 4 -->
+					<CheckButton name="BeneCastRaidButton16" id="16" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton10" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup4" id="4" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton16" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton17" id="17" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton16" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton18" id="18" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton17" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton19" id="19" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton18" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton20" id="20" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton19" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 5 -->
+					<CheckButton name="BeneCastRaidButton21" id="21" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton15" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup5" id="5" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton21" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton22" id="22" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton21" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton23" id="23" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton22" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton24" id="24" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton23" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton25" id="25" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton24" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 6 -->
+					<CheckButton name="BeneCastRaidButton26" id="26" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton20" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup6" id="6" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton26" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton27" id="27" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton26" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton28" id="28" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton27" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton29" id="29" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton28" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton30" id="30" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton29" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 7 -->
+					<CheckButton name="BeneCastRaidButton31" id="31" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton25" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup7" id="7" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton31" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton32" id="32" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton31" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton33" id="33" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton32" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton34" id="34" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton33" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton35" id="35" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton34" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Buttons for Raid Group 8 -->
+					<CheckButton name="BeneCastRaidButton36" id="36" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton30" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Button name="BeneCastRaidGroup8" id="8" inherits="BeneCastRaidGroupTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="BeneCastRaidButton36" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<CheckButton name="BeneCastRaidButton37" id="37" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton36" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton38" id="38" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton37" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton39" id="39" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton38" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="BeneCastRaidButton40" id="40" inherits="BeneCastRaidCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="BeneCastRaidButton39" relativePoint="BOTTOM"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<!-- WINTROW.6 START -->
+			<!-- Custom SnapTo Frame -->
+			<Frame name="BeneCastSnapToFrame" id="13" parent="BeneCastOptionFrame" hidden="true">
+				
+				<!-- Size of the subframe -->
+				<Size>
+					<AbsDimension x="324" y="450"/>
+				</Size>
+				
+				<!-- Anchor to ensure proper placement of the subframe -->
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="18" y="-90"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="BeneCastPanel1Label" text="player" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-15"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel2Label" text="party1" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel1Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel3Label" text="party2" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel2Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel4Label" text="party3" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel3Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel5Label" text="party4" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel4Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel46Label" text="pet" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel5Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel47Label" text="partypet1" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel46Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel48Label" text="partypet2" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel47Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel49Label" text="partypet3" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel48Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel50Label" text="partypet4" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel49Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="BeneCastPanel91Label" text="target" inherits="GameFontNormal">
+							<Size>
+								<AbsDimension x="40" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="BeneCastPanel50Label" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- EditBoxes for player -->
+					<EditBox name="BeneCastPanel1Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="50" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel1Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel1Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel1RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel1Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel1X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel1Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel1Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel1X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for party1 -->
+					<EditBox name="BeneCastPanel2Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel1X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel2Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel2Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel2RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel2Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel2X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel2Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel2Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel2X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for party2 -->
+					<EditBox name="BeneCastPanel3Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel2X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel3Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel3Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel3RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel3Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel3X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel3Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel3Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel3X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for party3 -->
+					<EditBox name="BeneCastPanel4Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel3X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel4Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel4Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel4RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel4Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel4X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel4Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel4Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel4X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for party4 -->
+					<EditBox name="BeneCastPanel5Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel4X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel5Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel5Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel5RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel5Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel5X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel5Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel5Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel5X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for pet -->
+					<EditBox name="BeneCastPanel46Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel5X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel46Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel46Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel46RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel46Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel46X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel46Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel46Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel46X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for partypet1 -->
+					<EditBox name="BeneCastPanel47Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel46X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel47Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel47Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel47RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel47Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel47X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel47Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel47Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel47X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for partypet2 -->
+					<EditBox name="BeneCastPanel48Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel47X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel48Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel48Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel48RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel48Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel48X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel48Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel48Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel48X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for partypet3 -->
+					<EditBox name="BeneCastPanel49Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel48X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel49Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel49Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel49RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel49Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel49X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel49Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel49Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel49X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for partypet4 -->
+					<EditBox name="BeneCastPanel50Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel49X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel50Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel50Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel50RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel50Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel50X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel50Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel50Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel50X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<!-- EditBoxes for target -->
+					<EditBox name="BeneCastPanel91Frame" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="110" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel50X" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel91Point" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel91Frame" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel91RelativePoint" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="80" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel91Point" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel91X" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel91Frame" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+					<EditBox name="BeneCastPanel91Y" inherits="BeneCastEditBoxTemplate">
+						<Size>
+							<AbsDimension x="100" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="BeneCastPanel91X" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<!-- WINTROW.6 STOP -->
+			
+		</Frames>
+		
+		<!-- Scripts for BeneCastOptionFrame -->
+		<Scripts>
+			<OnLoad>
+				<!-- Register for Events and do some string initialization -->
+				BeneCastOptionFrame_OnLoad();
+			</OnLoad>
+		</Scripts>
+
+	</Frame>
+	
+	<!-- Panel frames for each possible ally -->
+	<!-- Panel frame for the player -->
+	<Frame name="BeneCastPanel1" inherits="BeneCastPanelTemplate" id="1"/>
+	<!-- Panel frames for the party members -->
+	<Frame name="BeneCastPanel2" inherits="BeneCastPanelTemplate" id="2"/>
+	<Frame name="BeneCastPanel3" inherits="BeneCastPanelTemplate" id="3"/>
+	<Frame name="BeneCastPanel4" inherits="BeneCastPanelTemplate" id="4"/>
+	<Frame name="BeneCastPanel5" inherits="BeneCastPanelTemplate" id="5"/>
+	<!-- Panel frames for the raid members -->
+	<Frame name="BeneCastPanel6" inherits="BeneCastPanelTemplate" id="6"/>
+	<Frame name="BeneCastPanel7" inherits="BeneCastPanelTemplate" id="7"/>
+	<Frame name="BeneCastPanel8" inherits="BeneCastPanelTemplate" id="8"/>
+	<Frame name="BeneCastPanel9" inherits="BeneCastPanelTemplate" id="9"/>
+	<!-- Thanks to Shimavak for fix to raidpanels, panelname 10 and 11 were switched !!! -->
+	<Frame name="BeneCastPanel10" inherits="BeneCastPanelTemplate" id="10"/>
+	<Frame name="BeneCastPanel11" inherits="BeneCastPanelTemplate" id="11"/>
+	<Frame name="BeneCastPanel12" inherits="BeneCastPanelTemplate" id="12"/>
+	<Frame name="BeneCastPanel13" inherits="BeneCastPanelTemplate" id="13"/>
+	<Frame name="BeneCastPanel14" inherits="BeneCastPanelTemplate" id="14"/>
+	<Frame name="BeneCastPanel15" inherits="BeneCastPanelTemplate" id="15"/>
+	<Frame name="BeneCastPanel16" inherits="BeneCastPanelTemplate" id="16"/>
+	<Frame name="BeneCastPanel17" inherits="BeneCastPanelTemplate" id="17"/>
+	<Frame name="BeneCastPanel18" inherits="BeneCastPanelTemplate" id="18"/>
+	<Frame name="BeneCastPanel19" inherits="BeneCastPanelTemplate" id="19"/>
+	<Frame name="BeneCastPanel20" inherits="BeneCastPanelTemplate" id="20"/>
+	<Frame name="BeneCastPanel21" inherits="BeneCastPanelTemplate" id="21"/>
+	<Frame name="BeneCastPanel22" inherits="BeneCastPanelTemplate" id="22"/>
+	<Frame name="BeneCastPanel23" inherits="BeneCastPanelTemplate" id="23"/>
+	<Frame name="BeneCastPanel24" inherits="BeneCastPanelTemplate" id="24"/>
+	<Frame name="BeneCastPanel25" inherits="BeneCastPanelTemplate" id="25"/>
+	<Frame name="BeneCastPanel26" inherits="BeneCastPanelTemplate" id="26"/>
+	<Frame name="BeneCastPanel27" inherits="BeneCastPanelTemplate" id="27"/>
+	<Frame name="BeneCastPanel28" inherits="BeneCastPanelTemplate" id="28"/>
+	<Frame name="BeneCastPanel29" inherits="BeneCastPanelTemplate" id="29"/>
+	<Frame name="BeneCastPanel30" inherits="BeneCastPanelTemplate" id="30"/>
+	<Frame name="BeneCastPanel31" inherits="BeneCastPanelTemplate" id="31"/>
+	<Frame name="BeneCastPanel32" inherits="BeneCastPanelTemplate" id="32"/>
+	<Frame name="BeneCastPanel33" inherits="BeneCastPanelTemplate" id="33"/>
+	<Frame name="BeneCastPanel34" inherits="BeneCastPanelTemplate" id="34"/>
+	<Frame name="BeneCastPanel35" inherits="BeneCastPanelTemplate" id="35"/>
+	<Frame name="BeneCastPanel36" inherits="BeneCastPanelTemplate" id="36"/>
+	<Frame name="BeneCastPanel37" inherits="BeneCastPanelTemplate" id="37"/>
+	<Frame name="BeneCastPanel38" inherits="BeneCastPanelTemplate" id="38"/>
+	<Frame name="BeneCastPanel39" inherits="BeneCastPanelTemplate" id="39"/>
+	<Frame name="BeneCastPanel40" inherits="BeneCastPanelTemplate" id="40"/>
+	<Frame name="BeneCastPanel41" inherits="BeneCastPanelTemplate" id="41"/>
+	<Frame name="BeneCastPanel42" inherits="BeneCastPanelTemplate" id="42"/>
+	<Frame name="BeneCastPanel43" inherits="BeneCastPanelTemplate" id="43"/>
+	<Frame name="BeneCastPanel44" inherits="BeneCastPanelTemplate" id="44"/>
+	<Frame name="BeneCastPanel45" inherits="BeneCastPanelTemplate" id="45"/>
+	<!-- Panel frame for the player's pet -->
+	<Frame name="BeneCastPanel46" inherits="BeneCastPanelTemplate" id="46"/>
+	<!-- Panel frames for the party's pets -->
+	<Frame name="BeneCastPanel47" inherits="BeneCastPanelTemplate" id="47"/>
+	<Frame name="BeneCastPanel48" inherits="BeneCastPanelTemplate" id="48"/>
+	<Frame name="BeneCastPanel49" inherits="BeneCastPanelTemplate" id="49"/>
+	<Frame name="BeneCastPanel50" inherits="BeneCastPanelTemplate" id="50"/>
+	<!-- Panel frames for the raid's pets -->
+	<Frame name="BeneCastPanel51" inherits="BeneCastPanelTemplate" id="51"/>
+	<Frame name="BeneCastPanel52" inherits="BeneCastPanelTemplate" id="52"/>
+	<Frame name="BeneCastPanel53" inherits="BeneCastPanelTemplate" id="53"/>
+	<Frame name="BeneCastPanel54" inherits="BeneCastPanelTemplate" id="54"/>
+	<Frame name="BeneCastPanel55" inherits="BeneCastPanelTemplate" id="55"/>
+	<Frame name="BeneCastPanel56" inherits="BeneCastPanelTemplate" id="56"/>
+	<Frame name="BeneCastPanel57" inherits="BeneCastPanelTemplate" id="57"/>
+	<Frame name="BeneCastPanel58" inherits="BeneCastPanelTemplate" id="58"/>
+	<Frame name="BeneCastPanel59" inherits="BeneCastPanelTemplate" id="59"/>
+	<Frame name="BeneCastPanel60" inherits="BeneCastPanelTemplate" id="60"/>
+	<Frame name="BeneCastPanel61" inherits="BeneCastPanelTemplate" id="61"/>
+	<Frame name="BeneCastPanel62" inherits="BeneCastPanelTemplate" id="62"/>
+	<Frame name="BeneCastPanel63" inherits="BeneCastPanelTemplate" id="63"/>
+	<Frame name="BeneCastPanel64" inherits="BeneCastPanelTemplate" id="64"/>
+	<Frame name="BeneCastPanel65" inherits="BeneCastPanelTemplate" id="65"/>
+	<Frame name="BeneCastPanel66" inherits="BeneCastPanelTemplate" id="66"/>
+	<Frame name="BeneCastPanel67" inherits="BeneCastPanelTemplate" id="67"/>
+	<Frame name="BeneCastPanel68" inherits="BeneCastPanelTemplate" id="68"/>
+	<Frame name="BeneCastPanel69" inherits="BeneCastPanelTemplate" id="69"/>
+	<Frame name="BeneCastPanel70" inherits="BeneCastPanelTemplate" id="70"/>
+	<Frame name="BeneCastPanel71" inherits="BeneCastPanelTemplate" id="71"/>
+	<Frame name="BeneCastPanel72" inherits="BeneCastPanelTemplate" id="72"/>
+	<Frame name="BeneCastPanel73" inherits="BeneCastPanelTemplate" id="73"/>
+	<Frame name="BeneCastPanel74" inherits="BeneCastPanelTemplate" id="74"/>
+	<Frame name="BeneCastPanel75" inherits="BeneCastPanelTemplate" id="75"/>
+	<Frame name="BeneCastPanel76" inherits="BeneCastPanelTemplate" id="76"/>
+	<Frame name="BeneCastPanel77" inherits="BeneCastPanelTemplate" id="77"/>
+	<Frame name="BeneCastPanel78" inherits="BeneCastPanelTemplate" id="78"/>
+	<Frame name="BeneCastPanel79" inherits="BeneCastPanelTemplate" id="79"/>
+	<Frame name="BeneCastPanel80" inherits="BeneCastPanelTemplate" id="80"/>
+	<Frame name="BeneCastPanel81" inherits="BeneCastPanelTemplate" id="81"/>
+	<Frame name="BeneCastPanel82" inherits="BeneCastPanelTemplate" id="82"/>
+	<Frame name="BeneCastPanel83" inherits="BeneCastPanelTemplate" id="83"/>
+	<Frame name="BeneCastPanel84" inherits="BeneCastPanelTemplate" id="84"/>
+	<Frame name="BeneCastPanel85" inherits="BeneCastPanelTemplate" id="85"/>
+	<Frame name="BeneCastPanel86" inherits="BeneCastPanelTemplate" id="86"/>
+	<Frame name="BeneCastPanel87" inherits="BeneCastPanelTemplate" id="87"/>
+	<Frame name="BeneCastPanel88" inherits="BeneCastPanelTemplate" id="88"/>
+	<Frame name="BeneCastPanel89" inherits="BeneCastPanelTemplate" id="89"/>
+	<Frame name="BeneCastPanel90" inherits="BeneCastPanelTemplate" id="90"/>
+	<!-- Panel frame for the target -->
+	<Frame name="BeneCastPanel91" inherits="BeneCastPanelTemplate" id="91"/>
+	<!-- Panel frame for the target's target -->
+	<Frame name="BeneCastPanel92" inherits="BeneCastPanelTemplate" id="92"/>
+	
+	<!-- BeneCastMinimapButton: Button used to toggle the visibility of the setup screen -->
+	<Button name="BeneCastMinimapButton" parent="Minimap" toplevel="true" hidden="false" frameStrata="LOW" enableMouse="true" movable="true">
+		
+		<!-- Size of the Minimap Button -->
+		<Size>
+			<AbsDimension x="34" y="34"/>
+		</Size>
+		
+		<!-- Anchor to place it on the Minimap by default -->
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="MinimapBackdrop" relativePoint="BOTTOM">
+				<Offset>
+					<AbsDimension x="-65" y="90"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		
+		<!-- Scripts called by BeneCastMinimapButton -->
+		<Scripts>
+			<!-- Stop moving the button when the mousebutton is released -->
+			<OnMouseUp>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<!-- Start moving the button when the mousebutton is released -->
+			<OnMouseDown>
+				BeneCastMiniMap_OnMouseDown();
+			</OnMouseDown>
+			<!-- Stop moving the button just incase it is hidden while being moved -->
+			<OnHide>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnHide>
+			<!-- Show the BeneCast Options frame when this button is clicked -->
+			<OnClick>
+				BeneCastOptionFrameToggle(arg1);
+			</OnClick>
+			<OnLoad>
+				BeneCastMiniMap_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				BeneCastMiniMap_OnEvent();
+			</OnEvent>
+		</Scripts>
+		
+		<!-- Normal texture of the button -->
+		<NormalTexture file="Interface\AddOns\BeneCast\BeneCastButton"/>
+		<!-- Texture of the button when it is pressed -->
+		<PushedTexture file="Interface\AddOns\BeneCast\BeneCastButtonDown"/>
+		<!-- Texture of the button when the mouse is over it -->
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		
+	</Button>
+	
+</Ui>

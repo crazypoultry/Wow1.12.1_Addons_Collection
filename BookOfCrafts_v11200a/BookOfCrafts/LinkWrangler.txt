@@ -1,0 +1,33 @@
+
+1.) Add a function to your AddOn that will handle the content you wish to add
+    to a Link Wrangler Tooltip. It must adhere to the following prototype, but
+    can have any name you wish (i.e. only the function arguments are required):
+
+function MyAddOn_AddStuff(frame,link)
+-- Your code here
+frame:AddLine(link);
+frame:AddLine("test 1a\nnew lines");
+end
+
+2.) Add the following code to your AddOn's OnLoad Handler:
+
+this:RegisterEvent("VARIABLES_LOADED");
+
+3.) Add the following code to your AddOns OnEvent handler:
+
+if (event == "VARIABLES_LOADED") then
+if (IsAddOnLoaded("Link Wrangler") ~= nil) then
+LINK_WRANGLER_CALLER["MyAddOnName"] = "MyAddOn_AddStuff";
+end
+end
+
+Your function needs to be a string and not the function itself (for error 
+checking). It will not work if you have:
+LINK_WRANGLER_CALLER["MyAddOnName"] = MyAddOn_AddStuff; -> it must be 
+LINK_WRANGLER_CALLER["MyAddOnName"] = "MyAddOn_AddStuff";
+
+The index of the your AddOn's function should be the name of your AddOn.
+
+Once your function appears in the LINK_WRANGLER_CALLER table, it will be called
+when any Link Wrangler window is opened.
+-------------------------------------------------------------------------------

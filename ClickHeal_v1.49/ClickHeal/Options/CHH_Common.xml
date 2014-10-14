@@ -1,0 +1,411 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<!-- ##################################################################################################################################### -->
+	<!-- # TEMPLATES for the whole help                                                                                                      # -->
+	<!-- ##################################################################################################################################### -->
+
+	<!-- ===== Options check box for config values, incl hint ========================================================================== -->
+
+	<CheckButton name="HintOptionsCheckButtonTemplate" inherits="OptionsCheckButtonTemplate" checked="true" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this.ch_config_option = nil;
+			</OnLoad>
+			<OnShow>
+				if ( CHH_HintOptionCheckConfig() ) then
+					CHH_HintOptionCheckBoxShow();
+				end
+			</OnShow>
+			<OnClick>
+				if ( CHH_HintOptionCheckConfig() ) then
+					CHH_HintOptionCheckBoxClicked();
+				end
+			</OnClick>
+			<OnEnter>
+				if ( CHH_HintOptionCheckConfig() and CH_Config.showHints ) then
+					CH_HintTooltipShow( this, this.ch_config_option, 0, 0 );
+				end
+			</OnEnter>
+			<OnLeave>
+				CH_HintTooltipHide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+
+	<!-- ===== Slider with hints ======================================================================================================= -->
+	<Slider name="HintOptionsSliderTemplate" inherits="OptionsSliderTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="250" y="16"/>
+		</Size>
+<!--  huch???
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="380" y="-80"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+-->
+		<Scripts>
+			<OnLoad>
+				this.ch_config_option = nil;
+			</OnLoad>
+			<OnShow>
+				if ( CHH_HintOptionCheckConfig() ) then
+					CHH_HintOptionSliderShow();
+				end
+			</OnShow>
+			<OnValueChanged>
+				if ( CHH_HintOptionCheckConfig() ) then
+					CHH_HintOptionSliderClicked();
+				end
+			</OnValueChanged>
+			<OnEnter>
+				if ( CHH_HintOptionCheckConfig() and CH_Config.showHints ) then
+					CH_HintTooltipShow( this, this.ch_config_option, 0, 10 );
+				end
+			</OnEnter>
+			<OnLeave>
+				CH_HintTooltipHide();
+			</OnLeave>
+		</Scripts>
+	</Slider>
+
+	<!-- ===== EditBox with hints ====================================================================================================== -->
+	<EditBox name="HintEditBox" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this.ch_config_option = nil;
+			</OnLoad>
+			<OnEnter>
+				if ( CHH_HintOptionCheckConfig() and CH_Config.showHints ) then
+					CH_HintTooltipShow( this, this.ch_config_option, 0, 10 );
+				end
+			</OnEnter>
+			<OnLeave>
+				CH_HintTooltipHide();
+			</OnLeave>
+		</Scripts>
+	</EditBox>
+
+	<!-- ===== DropDown Menu with hints================================================================================================= -->
+	<Frame name="HintDropDownMenuTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="16"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				this.ch_config_option = nil;
+			</OnLoad>
+			<OnShow>
+				if ( CHH_HintOptionCheckConfig() ) then
+					CHH_HintDropDownShow();
+				end
+			</OnShow>
+			<OnEnter>
+				if ( CHH_HintOptionCheckConfig() and CH_Config.showHints ) then
+					CH_HintTooltipShow( this, this.ch_config_option, 0, 10 );
+				end
+			</OnEnter>
+			<OnLeave>
+				CH_HintTooltipHide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<!-- ===== Content frame (frame with title box on top center) ====================================================================== -->
+
+	<Frame name="CHH_ContentTemplate" inherits="OptionFrameBoxTemplate" virtual="true" hidden="false">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="20" y="-30"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-20" y="45"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.15, 0.15, 0.15);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+        <!-- ===== CHH_FrameBoxTemplate  =================================================================================================== -->
+
+	<Frame name="CHH_FrameBoxTemplate" inherits="OptionFrameBoxTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.15, 0.15, 0.15);
+			</OnLoad>
+		</Scripts>
+		<Frames>
+			<Frame name="$parentTitle">
+				<Size>
+					<AbsDimension x="200" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>			
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="2" right="2" top="2" bottom="2"/>
+					</BackgroundInsets>
+				</Backdrop>
+				<Layers>
+					<Layer>
+				                <FontString name="$parentText" inherits="GameFontNormal" text="Available Buffs">
+				                 	<Anchors>
+				                    		<Anchor point="CENTER">
+                          						<Offset>
+                              							<AbsDimension x="0" y="0"/>
+                          						</Offset>
+                      						</Anchor>
+                  					</Anchors>
+              					</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+						this:SetBackdropColor(0.15, 0.15, 0.15);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>        
+
+	<!-- ===== Mouse button dropdown template ================================================================================================= -->
+
+	<Frame name="CHH_MouseButtonDropDownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentMyText" inherits="GameFontNormal" text="SomeText">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" justifyH="RIGHT">
+							<Offset>
+								<AbsDimension x="10" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parentEditText" letters="200">
+				<Size>
+					<AbsDimension x="120" y="32"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="75" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-10" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.2" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="75" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="10" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						CHH_MouseButtonEditBox( this, 1 );
+					</OnEnterPressed>
+					<OnTextChanged>
+						CHH_MouseButtonEditBox( this, 1 );
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontNormal">
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</EditBox>
+			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<EditBox name="$parentEditText2" letters="200" hidden="true">
+				<Size>
+					<AbsDimension x="120" y="32"></AbsDimension>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="160" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+							<Size>
+								<AbsDimension x="75" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT">
+									<Offset>
+										<AbsDimension x="-10" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.2" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+						<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+							<Size>
+								<AbsDimension x="75" y="32"></AbsDimension>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset>
+										<AbsDimension x="10" y="0"></AbsDimension>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						CHH_MouseButtonEditBox( this, 2 );
+					</OnEnterPressed>
+					<OnTextChanged>
+						CHH_MouseButtonEditBox( this, 2 );
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontNormal">
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</EditBox>
+			<Frame name="$parentDropDown2" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="140" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<!-- ===== Frame containing all mouse buttons ============================================================================================= -->
+
+	<Frame name="CHH_ActionFrameTemplate" inherits="CHH_FrameBoxTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="10" y="-10"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-10" y="40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName()..'TitleText'):SetText( 'Button assignment' );
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.15, 0.15, 0.15);
+			</OnLoad>
+		</Scripts>
+		<Frames>
+                        <Frame name="$parentLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentShiftLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentCtrlLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentAltLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentAltMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentAltRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentAltButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentAltButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentShiftCtrlLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentShiftAltLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftAltMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftAltRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftAltButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftAltButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentCtrlAltLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlAltMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlAltRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlAltButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentCtrlAltButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+
+                        <Frame name="$parentShiftCtrlAltLeftButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlAltMiddleButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlAltRightButton" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlAltButton4" inherits="CHH_MouseButtonDropDownTemplate" />
+                        <Frame name="$parentShiftCtrlAltButton5" inherits="CHH_MouseButtonDropDownTemplate" />
+		</Frames>
+	</Frame>
+
+</Ui>

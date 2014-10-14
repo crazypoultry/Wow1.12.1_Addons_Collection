@@ -1,0 +1,1541 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+  <Script file="localization.lua" />
+  <Script file="StatusBars.lua" />
+  <Frame name="StatusBars_GlobalUpdater">
+    <Scripts>
+      <OnUpdate>StatusBars_GlobalUpdate();</OnUpdate>
+    </Scripts>
+  </Frame>
+  <StatusBar name="StatusBars_BarTemplate" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1"
+  defaultValue="0.5">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
+  </StatusBar>
+  <StatusBar name="StatusBars_ComboBarTemplate" virtual="true" drawLayer="BACKGROUND" minValue="0" maxValue="1"
+  defaultValue="0.5">
+    <Size>
+      <AbsDimension x="25" y="10" />
+    </Size>
+    <BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
+  </StatusBar>
+  <FontString name="StatusBars_BarTextTemplate" virtual="true" inherits="GameFontNormalSmall">
+    <Anchors>
+      <Anchor point="CENTER" relativeto="$Parent">
+        <Offset>
+          <AbsDimension x="0" y="1" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Size>
+      <AbsDimension x="170" y="10" />
+    </Size>
+  </FontString>
+  <FontString name="StatusBars_PercentageText" virtual="true" inherits="GameFontNormalSmall">
+    <Size>
+      <AbsDimension x="170" y="10" />
+    </Size>
+  </FontString>
+  <Texture name="StatusBars_BarFlashOverlay" virtual="true" file="Interface\AddOns\StatusBars\Flash" alphaMode="ADD"
+  hidden="true">
+    <Size>
+      <AbsDimension x="174" y="20" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeto="$Parent">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Texture>
+  <StatusBar name="StatusBars_ComboStatusTemplate" virtual="true" inherits="StatusBars_ComboBarTemplate">
+    <Anchors>
+      <Anchor point="CENTER" relativeto="$Parent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </StatusBar>
+  <Texture name="StatusBars_ComboFlashTemplate" virtual="true" file="Interface\AddOns\StatusBars\ComboFlash"
+  alphaMode="ADD" hidden="true">
+    <Size>
+      <AbsDimension x="38" y="20" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeto="$Parent">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Texture>
+  <Frame name="StatusBars_PlayerContainer" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-200" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames>
+      <Frame name="StatusBars_HealthBar" parent="StatusBars_PlayerContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_HealthBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_HealthBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_HealthBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_HealthBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_HealthBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_PowerBar" parent="StatusBars_PlayerContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_PowerBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_PowerBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_PowerBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_PowerBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_PowerBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_DruidBar" parent="StatusBars_PlayerContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_DruidBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_DruidBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_DruidBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_DruidBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_DruidBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_BuffBar" parent="StatusBars_PlayerContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame>
+            <Layers>
+              <Layer>
+                <Texture name="StatusBars_Buff_Texture1">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture2">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture3">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture4">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture5">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture6">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture7">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Buff_Texture8">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_BuffBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_BuffBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_BuffBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_BuffBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_BuffBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_DebuffBar" parent="StatusBars_PlayerContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame>
+            <Layers>
+              <Layer>
+                <Texture name="StatusBars_Debuff_Texture1">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture2">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture3">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture4">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture5">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture6">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture7">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_Debuff_Texture8">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_DebuffBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_DebuffBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_DebuffBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_DebuffBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_DebuffBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_ComboBar" parent="StatusBars_PlayerContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame name="StatusBars_Combo_1" parent="StatusBars_ComboBar">
+            <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+            tile="true">
+              <EdgeSize>
+                <AbsValue val="16" />
+              </EdgeSize>
+              <TileSize>
+                <AbsValue val="16" />
+              </TileSize>
+              <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5" />
+              </BackgroundInsets>
+            </Backdrop>
+            <Size>
+              <AbsDimension x="35" y="20" />
+            </Size>
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="-67.5" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Frames>
+              <Frame setAllPoints="true">
+                <Layers>
+                  <Layer level="OVERLAY">
+                    <Texture name="StatusBars_Combo_1_Flash" inherits="StatusBars_ComboFlashTemplate" />
+                  </Layer>
+                </Layers>
+              </Frame>
+              <StatusBar name="StatusBars_Combo_1_Status" inherits="StatusBars_ComboStatusTemplate" />
+            </Frames>
+          </Frame>
+          <Frame name="StatusBars_Combo_2" parent="StatusBars_ComboBar">
+            <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+            tile="true">
+              <EdgeSize>
+                <AbsValue val="16" />
+              </EdgeSize>
+              <TileSize>
+                <AbsValue val="16" />
+              </TileSize>
+              <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5" />
+              </BackgroundInsets>
+            </Backdrop>
+            <Size>
+              <AbsDimension x="35" y="20" />
+            </Size>
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="-33.75" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Frames>
+              <Frame setAllPoints="true">
+                <Layers>
+                  <Layer level="OVERLAY">
+                    <Texture name="StatusBars_Combo_2_Flash" inherits="StatusBars_ComboFlashTemplate" />
+                  </Layer>
+                </Layers>
+              </Frame>
+              <StatusBar name="StatusBars_Combo_2_Status" inherits="StatusBars_ComboStatusTemplate" />
+            </Frames>
+          </Frame>
+          <Frame name="StatusBars_Combo_3" parent="StatusBars_ComboBar">
+            <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+            tile="true">
+              <EdgeSize>
+                <AbsValue val="16" />
+              </EdgeSize>
+              <TileSize>
+                <AbsValue val="16" />
+              </TileSize>
+              <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5" />
+              </BackgroundInsets>
+            </Backdrop>
+            <Size>
+              <AbsDimension x="35" y="20" />
+            </Size>
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Frames>
+              <Frame setAllPoints="true">
+                <Layers>
+                  <Layer level="OVERLAY">
+                    <Texture name="StatusBars_Combo_3_Flash" inherits="StatusBars_ComboFlashTemplate" />
+                  </Layer>
+                </Layers>
+              </Frame>
+              <StatusBar name="StatusBars_Combo_3_Status" inherits="StatusBars_ComboStatusTemplate" />
+            </Frames>
+          </Frame>
+          <Frame name="StatusBars_Combo_4" parent="StatusBars_ComboBar">
+            <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+            tile="true">
+              <EdgeSize>
+                <AbsValue val="16" />
+              </EdgeSize>
+              <TileSize>
+                <AbsValue val="16" />
+              </TileSize>
+              <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5" />
+              </BackgroundInsets>
+            </Backdrop>
+            <Size>
+              <AbsDimension x="35" y="20" />
+            </Size>
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="33.75" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Frames>
+              <Frame setAllPoints="true">
+                <Layers>
+                  <Layer level="OVERLAY">
+                    <Texture name="StatusBars_Combo_4_Flash" inherits="StatusBars_ComboFlashTemplate" />
+                  </Layer>
+                </Layers>
+              </Frame>
+              <StatusBar name="StatusBars_Combo_4_Status" inherits="StatusBars_ComboStatusTemplate" />
+            </Frames>
+          </Frame>
+          <Frame name="StatusBars_Combo_5" parent="StatusBars_ComboBar">
+            <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+            tile="true">
+              <EdgeSize>
+                <AbsValue val="16" />
+              </EdgeSize>
+              <TileSize>
+                <AbsValue val="16" />
+              </TileSize>
+              <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5" />
+              </BackgroundInsets>
+            </Backdrop>
+            <Size>
+              <AbsDimension x="35" y="20" />
+            </Size>
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="67.5" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Frames>
+              <Frame setAllPoints="true">
+                <Layers>
+                  <Layer level="OVERLAY">
+                    <Texture name="StatusBars_Combo_5_Flash" inherits="StatusBars_ComboFlashTemplate" />
+                  </Layer>
+                </Layers>
+              </Frame>
+              <StatusBar name="StatusBars_Combo_5_Status" inherits="StatusBars_ComboStatusTemplate" />
+            </Frames>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_ComboBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_ComboBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_ComboBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_ComboBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_ComboBar2_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+    </Frames>
+  </Frame>
+  <Frame name="StatusBars_TargetContainer" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-270" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames>
+      <Frame name="StatusBars_TargetHealthBar" parent="StatusBars_TargetContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_TargetHealthBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_TargetHealthBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_TargetHealthBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_TargetHealthBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_TargetHealthBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_TargetPowerBar" parent="StatusBars_TargetContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_TargetPowerBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_TargetPowerBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_TargetPowerBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_TargetPowerBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_TargetPowerBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_TargetDebuffBar" parent="StatusBars_TargetContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame>
+            <Layers>
+              <Layer>
+                <Texture name="StatusBars_TargetDebuff_Texture1">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture2">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture3">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture4">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture5">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture6">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture7">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetDebuff_Texture8">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_TargetDebuffBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_TargetDebuffBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_TargetDebuffBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_TargetDebuffBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_TargetDebuffBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_TargetBuffBar" parent="StatusBars_TargetContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame>
+            <Layers>
+              <Layer>
+                <Texture name="StatusBars_TargetBuff_Texture1">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture2">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture3">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture4">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture5">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture6">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture7">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_TargetBuff_Texture8">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_TargetBuffBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_TargetBuffBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_TargetBuffBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_TargetBuffBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_TargetBuffBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+    </Frames>
+  </Frame>
+  <Frame name="StatusBars_PetContainer" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-320" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames>
+      <Frame name="StatusBars_PetHealthBar" parent="StatusBars_PetContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_PetHealthBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_PetHealthBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_PetHealthBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_PetHealthBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_PetHealthBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_PetPowerBar" parent="StatusBars_PetContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_PetPowerBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_PetPowerBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_PetPowerBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_PetPowerBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_PetPowerBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_HappinessBar" parent="StatusBars_PetContainer" hidden="true">
+        <Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" bgFile="Interface\Tooltips\UI-Tooltip-Background"
+        tile="true">
+          <EdgeSize>
+            <AbsValue val="16" />
+          </EdgeSize>
+          <TileSize>
+            <AbsValue val="16" />
+          </TileSize>
+          <BackgroundInsets>
+            <AbsInset left="5" right="5" top="5" bottom="5" />
+          </BackgroundInsets>
+        </Backdrop>
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame setAllPoints="true">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_HappinessBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_HappinessBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+              <Layer level="OVERLAY">
+                <Texture name="StatusBars_HappinessBar_FlashOverlay" inherits="StatusBars_BarFlashOverlay" />
+              </Layer>
+            </Layers>
+          </Frame>
+          <StatusBar name="StatusBars_HappinessBar_Status" inherits="StatusBars_BarTemplate">
+            <Anchors>
+              <Anchor point="CENTER" relativeto="$Parent">
+                <Offset>
+                  <AbsDimension x="0" y="0" />
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>StatusBars_HappinessBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </StatusBar>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_PetBuffBar" parent="StatusBars_PetContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame>
+            <Layers>
+              <Layer>
+                <Texture name="StatusBars_PetBuff_Texture1">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture2">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture3">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture4">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture5">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture6">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture7">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetBuff_Texture8">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_PetBuffBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_PetBuffBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_PetBuffBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_PetBuffBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_PetBuffBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+      <Frame name="StatusBars_PetDebuffBar" parent="StatusBars_PetContainer" hidden="true">
+        <Size>
+          <AbsDimension x="170" y="20" />
+        </Size>
+        <Frames>
+          <Frame>
+            <Layers>
+              <Layer>
+                <Texture name="StatusBars_PetDebuff_Texture1">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture2">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture3">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture4">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="-10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture5">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="10" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture6">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="30" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture7">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="50" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+                <Texture name="StatusBars_PetDebuff_Texture8">
+                  <Size>
+                    <AbsDimension x="18" y="18" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" relativeto="$Parent">
+                      <Offset>
+                        <AbsDimension x="70" y="0" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+          <Frame setAllPoints="true" name="StatusBars_PetDebuffBar_TextKeeper">
+            <Layers>
+              <Layer level="OVERLAY">
+                <FontString name="StatusBars_PetDebuffBar_Text" inherits="StatusBars_BarTextTemplate" />
+                <FontString name="StatusBars_PetDebuffBar_PercentageText" inherits="StatusBars_PercentageText" />
+              </Layer>
+            </Layers>
+            <Scripts>
+              <OnLoad>this:SetFrameLevel(this:GetFrameLevel() + 1);</OnLoad>
+            </Scripts>
+          </Frame>
+          <Frame name="StatusBars_PetDebuffBar_ScriptKeeper">
+            <Scripts>
+              <OnLoad>StatusBars_PetDebuffBar_OnLoad();</OnLoad>
+              <OnEvent>this._StatusBars_vars:onEvent(event);</OnEvent>
+            </Scripts>
+          </Frame>
+        </Frames>
+      </Frame>
+    </Frames>
+  </Frame>
+  <Frame name="StatusBars_Group1Container" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-320" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames></Frames>
+  </Frame>
+  <Frame name="StatusBars_Group2Container" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-320" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames></Frames>
+  </Frame>
+  <Frame name="StatusBars_Group3Container" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-320" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames></Frames>
+  </Frame>
+  <Frame name="StatusBars_Group4Container" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-320" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames></Frames>
+  </Frame>
+  <Frame name="StatusBars_Group5Container" parent="UIParent" enableMouse="false" movable="true" frameStrata="LOW">
+    <Size>
+      <AbsDimension x="160" y="10" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="-320" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnLoad>this:EnableMouse(0);</OnLoad>
+      <OnMouseDown>if IsShiftKeyDown() and not (StatusBars_moving or StatusBars_locked) then StatusBars_moving = this;
+      this:StartMoving(); end</OnMouseDown>
+      <OnMouseUp>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing(); end</OnMouseUp>
+      <OnDragStop>if StatusBars_moving == this then StatusBars_moving = nil; this:StopMovingOrSizing();
+      end</OnDragStop>
+    </Scripts>
+    <Frames></Frames>
+  </Frame>
+</Ui>

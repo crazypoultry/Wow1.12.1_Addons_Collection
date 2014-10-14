@@ -1,0 +1,408 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <!-- Source -->
+	<Script file="BuyPoisons.lua"/>
+	<Script file="BuyPoisonsFrame.lua"/>
+	<Script file="BuyPoisonsConfigFrame.lua"/>
+	<Script file="Restock.lua"/>
+	<Script file="Poisons.lua"/>
+	
+	<!-- Localisation -->
+       <Script file="localization_en.lua"/>
+       <Script file="localization_fr.lua"/>
+       <Script file="localization_de.lua"/>
+    
+	<Frame name="BuyPoisonsItemTemplate" virtual="true">	
+		<Size>
+			<AbsDimension x="153" y="44"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-13" y="13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+					<Size>
+						<AbsDimension x="128" y="78"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-9" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="100" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItemButton" inherits="ItemButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( IsShiftKeyDown() ) then
+							BuyPoisonsItemButton_OnShiftClick();
+						else
+							BuyPoisonsItemButton_OnClick(arg1);
+						end
+					</OnClick>
+					<OnLoad>
+						BuyPoisonsItemButton_OnLoad();
+					</OnLoad>
+					<OnDragStart>
+						BuyPoisonsItemButton_OnClick("LeftButton");
+					</OnDragStart>
+					<OnEnter>
+						BuyPoisonsTooltip:SetOwner(this, "ANCHOR_RIGHT");
+						--GameTooltip:SetBuyPoisonsItem(this:GetID());
+
+						ShowMerchantSellCursor(1);
+					</OnEnter>
+					<OnLeave>
+						BuyPoisonsTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
+					<OnHide>
+						if ( this.hasStackSplit == 1 ) then
+							StackSplitFrame:Hide();
+						end
+					</OnHide>
+				</Scripts>
+			</Button>
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentNameFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="2" y="31"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad();
+						MoneyFrame_SetType("STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="BuyPoisonsFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="35" top="0" bottom="61"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="MerchantFramePortrait">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\MerchantFrame\UI-Merchant-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>		
+				<Texture file="Interface\MerchantFrame\UI-Merchant-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MerchantFrame\UI-Merchant-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MerchantFrame\UI-Merchant-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+				 <FontString name="BuyPoisonsVersionText" inherits="GameFontNormal" text="BuyPoisons Version">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="BuyPoisonsFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-17"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="BuyPoisonsPageText" inherits="GameFontNormal" text="Page">
+					<Size>
+						<AbsDimension x="104" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="-14" y="150"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="BuyPoisonsItem1" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-80"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem2" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem1" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem3" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem1" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem4" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem3" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem5" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem3" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem6" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem5" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem7" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem5" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem8" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem7" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem9" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem7" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsItem10" inherits="BuyPoisonsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="BuyPoisonsItem9" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="12" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="BuyPoisonsMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="BuyPoisonsFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-40" y="67"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Button name="BuyPoisonsPrevPageButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BuyPoisonsFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="37" y="156"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" justifyH="LEFT" text="PREV">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="BuyPoisonsPrevPageButton" relativePoint="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						BuyPoisonsPrevPageButton_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="BuyPoisonsNextPageButton">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="BuyPoisonsFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="324" y="156"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString inherits="GameFontNormal" justifyH="RIGHT" text="NEXT">
+							<Anchors>
+								<Anchor point="RIGHT" relativeTo="BuyPoisonsNextPageButton" relativePoint="LEFT">
+									<Offset>
+										<AbsDimension x="-3" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						BuyPoisonsNextPageButton_OnClick();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="BuyPoisonsFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="BuyPoisonsFrame" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-29" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide>
+				BuyPoisons_OnHide();
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
+			<OnLoad>
+				BuyPoisons_OnLoad();
+			</OnLoad>
+			<OnShow>
+				BuyPoisons_OnShow();
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnEvent>
+			    BuyPoisons_OnEvent(event);
+			</OnEvent>
+			<OnMouseUp>
+			</OnMouseUp>
+			<OnDragStart>
+ 				this:StartMoving();
+ 				this.isMoving = true;
+			</OnDragStart>
+			<OnDragStop>
+ 				this:StopMovingOrSizing();
+ 				this.isMoving = false;
+			</OnDragStop>
+			<OnReceiveDrag>
+				BuyPoisonsItemButton_OnClick("LeftButton");
+			</OnReceiveDrag>
+		</Scripts>
+	</Frame>
+	<GameTooltip name="BuyPoisonsTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

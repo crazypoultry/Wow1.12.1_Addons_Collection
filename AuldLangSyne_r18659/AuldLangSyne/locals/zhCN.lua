@@ -1,0 +1,67 @@
+--[[ $Id: zhCN.lua 16226 2006-11-07 11:18:41Z hshh $ ]]--
+local L = AceLibrary("AceLocale-2.2"):new("AuldLangSyne")
+L:RegisterTranslations("zhCN", function()
+	return {
+--		["AuldLangSyne"] = true,
+--		["Options for AuldLangSyne."] = true,
+
+		--options
+		["data"] = "数据管理",
+		["Random data-management functions"] = "数据管理",
+		["clear"] = "清除已保存的数据",
+		["Clear stored data"] = "清除已保存的数据",
+		["dump"] = "列出已保存的数据",
+		["Print stored data"] = "列出已保存的数据",
+		["ctimport"] = "导入CT_PlayerNotes数据",
+		["Import notes for this realm from CT_PlayerNotes"] = "从CT_PlayerNotes导入本服务器的数据",
+		["backup"] = "备份/恢复",
+		["Options for backing up and restoring your friends list"] = "备份和恢复好友列表选项",
+		["save"] = "保存快照",
+		["Take a snapshot of your current friends list"] = "生成当前好友列表的快照备份",
+		["load"] = "恢复快照",
+		["Restore a snapshot of your friends list, wiping out your current friends list"] = "从一份好友备份快照中恢复, 将清除当前的好友列表",
+
+		["show"] = "显示设置",
+		["Choose what information to display"] = "选择要显示的信息",
+		["Turns display of PVP ranks on and off."] = "显示PvP军衔名称",
+		["PVP rank numbers"] = "显示PvP军衔等级",
+		["Turns display of PVP rank numbers on and off."] = "显示PvP军衔等级",
+		["Guild"] = "显示公会名称",
+		["Turns display of guild membership on and off."] = "显示公会名称",
+		["Colors"] = "显示彩色名字",
+		["Choose which elements to color"] = "选择显示颜色方案",
+		["Name"] = "按照性别",
+		["Turns coloring names by gender on and off."] = "根据性别显示不同的颜色",
+		["Class"] = "按照职业",
+		["Turns coloring class names on and off."] = "根据职业显示不同的颜色",
+		["Compact mode"] = "简洁模式",
+		["Turns compact friends list on and off."] = "使用简洁模式显示好友列表",
+		["Compact mode levels"] = "在简洁模式中显示等级",
+		["Turns display of levels in compact mode on and off."] = "在简洁模式中显示等级",
+		["Note in player tooltip"] = "信息提示上显示备注",
+		["Turns display of player notes in tooltips on and off."] = "在信息提示上显示用户备注",
+		["Note on logon"] = "登陆显示备注",
+		["Turns display of player notes on logon on and off."] = "在好友登陆时显示用户备注",
+		["Note on /who"] = "查询显示备注",
+		["Turns display of player notes when you /who them on and off."] = "在查询好友时显示用户备注",
+
+		-- output text
+		["Detected an older database version.  Upgrading!"] = "检测到旧版本数据. 开始升级!",
+		[" day"] = "日",
+		[" hour"] = "小时",
+		[" minute"] = "分钟",
+		["s"] = "",
+		[" ago"] = "以前",
+		["Friend: "] = "好友: ",
+		["Guild: "] = "公会: ",
+		["Ignore: "] = "忽略: ",
+		["This slot is currently empty."] = "该配置当前是空的.",
+		["Backed up %d friends to slot %d"] = "已备份 %d 个好友到配置 %d",
+		["Editing note for %s"] = "编辑 %s 的备注",
+		["Click to edit"] = "点击编辑备注",
+		["Edit note"] = "编辑备注",
+		["Confirm"] = "确定",
+		["Cancel"] = "取消",
+
+	}
+end)

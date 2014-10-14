@@ -1,0 +1,225 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Frame name="EnhancedLootFrames_FrameTemplate" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" virtual="true">
+		<Size><AbsDimension x="300" y="40"/></Size>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\Addons\EnhancedLootFrames\bg.tga" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<BackgroundInsets><AbsInset left="4" right="4" top="4" bottom="4" /></BackgroundInsets>
+			<TileSize><AbsValue val="16" /></TileSize>
+			<EdgeSize><AbsValue val="16" /></EdgeSize>
+		</Backdrop>
+	</Frame>
+	<Frame name="EnhancedLootFrames_GroupLootFrameTemplate" inherits="EnhancedLootFrames_FrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+					<Size><AbsDimension x="40" y="40"/></Size>
+					<Anchors><Anchor point="LEFT" relativePoint="LEFT">
+							<Offset><AbsDimension x="0" y="0"/></Offset>
+					</Anchor></Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+					<FontHeight><AbsValue val="10"/></FontHeight>
+					<Color r="1.0" g="1.0" b="0"/>
+					<Size><AbsDimension x="144" y="10"/></Size>
+					<Anchors><Anchor point="CENTER" relativePoint="TOP">
+						<Offset><AbsDimension x="-40" y="-10"/></Offset>
+					</Anchor></Anchors>
+				</FontString>
+				<FontString name="$parentNeed" inherits="GameFontNormalSmall" text="Need: 0" justifyH="LEFT">
+					<FontHeight><AbsValue val="10"/></FontHeight>
+					<Color r="1.0" g="1.0" b="0"/>
+					<Size><AbsDimension x="50" y="10"/></Size>
+					<Anchors><Anchor point="CENTER" relativePoint="TOP">
+						<Offset><AbsDimension x="-87" y="-21"/></Offset>
+					</Anchor></Anchors>
+				</FontString>
+				<FontString name="$parentGreed" inherits="GameFontNormalSmall" text="Greed: 0" justifyH="LEFT">
+					<FontHeight><AbsValue val="10"/></FontHeight>
+					<Color r="1.0" g="1.0" b="0"/>
+					<Size><AbsDimension x="54" y="10"/></Size>
+					<Anchors><Anchor point="CENTER" relativePoint="TOP">
+						<Offset><AbsDimension x="-32" y="-21"/></Offset>
+					</Anchor></Anchors>
+				</FontString>
+				<FontString name="$parentPass" inherits="GameFontNormalSmall" text="Pass: 0" justifyH="LEFT">
+					<FontHeight><AbsValue val="10"/></FontHeight>
+					<Color r="1.0" g="1.0" b="0"/>
+					<Size><AbsDimension x="50" y="10"/></Size>
+					<Anchors><Anchor point="CENTER" relativePoint="TOP">
+						<Offset><AbsDimension x="22" y="-21"/></Offset>
+					</Anchor></Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentIconFrame" enableMouse="true">
+				<Size><AbsDimension x="64" y="64"/></Size>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="$parentSlotTexture">
+					<Offset><AbsDimension x="-12" y="12"/></Offset>
+				</Anchor></Anchors>
+				<Layers><Layer level="OVERLAY">
+					<Texture name="$parentIcon" > <!-- file="interface\icons\inv_hammer_unique_sulfuras" -->
+						<Size><AbsDimension x="32" y="32"/></Size>
+						<TexCoords left="0.06" right="0.94" top="0.06" bottom="0.94"/>
+						<Anchors><Anchor point="CENTER"/></Anchors>
+					</Texture>
+				</Layer></Layers>
+				<Scripts>
+					<OnLoad>
+						this.hasItem = 1
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+						GameTooltip:SetLootRollItem(this:GetParent().rollID)
+						CursorUpdate()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+						ResetCursor()
+					</OnLeave>
+					<OnUpdate>
+						CursorOnUpdate()
+					</OnUpdate>
+					<OnClick>
+						if IsControlKeyDown() then
+							DressUpItemLink(GetLootRollItemLink(this:GetParent().rollID))
+						elseif IsShiftKeyDown() then
+							if ChatFrameEditBox:IsVisible() then
+								ChatFrameEditBox:Insert(GetLootRollItemLink(this:GetParent().rollID))
+							end
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Size><AbsDimension x="32" y="32"/></Size>
+				<Anchors><Anchor point="RIGHT">
+					<Offset><AbsDimension x="0" y="0"/></Offset>
+				</Anchor></Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(this:GetParent().rollID, 0)
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+						GameTooltip:SetText(PASS)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentGreedButton">
+				<Size><AbsDimension x="32" y="32"/></Size>
+				<Anchors><Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT">
+					<Offset><AbsDimension x="-4" y="-2"/></Offset>
+				</Anchor></Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(this:GetParent().rollID, 2)
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+						GameTooltip:SetText(GREED)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Coin-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
+			</Button>
+			<Button name="$parentRollButton">
+				<Size><AbsDimension x="32" y="32"/></Size>
+				<Anchors><Anchor point="RIGHT" relativeTo="$parentGreedButton" relativePoint="LEFT">
+					<Offset><AbsDimension x="-5" y="0"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(this:GetParent().rollID, 1)
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+						GameTooltip:SetText(NEED)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
+			</Button>
+			<StatusBar name="$parentTimer" drawLayer="BACKGROUND" minValue="0" maxValue="60000" defaultValue="0">
+				<Size>
+					<AbsDimension x="150" y="5"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentIconFrame" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-14" y="18"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size>
+								<AbsDimension x="150" y="15"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP">
+									<Offset>
+										<AbsDimension x="0" y="5"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnUpdate>
+						GroupLootFrame_OnUpdate();
+					</OnUpdate>
+				</Scripts>
+				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="1.0" g="1.0" b="0" />
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("CANCEL_LOOT_ROLL")
+			</OnLoad>
+			<OnShow>
+				EnhancedLootFrames:FrameOnShow()
+			</OnShow>
+			<OnEvent>
+				GroupLootFrame_OnEvent()
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	<Frame name="EnhancedLootFrames_MoverTemplate" inherits="EnhancedLootFrames_FrameTemplate" virtual="true">
+		<Layers><Layer level="OVERLAY">
+			<FontString name="$parentName" inherits="GameFontNormalSmall" justifyH="CENTER">
+				<Anchors><Anchor point="CENTER"/></Anchors>
+			</FontString>
+		</Layer></Layers>
+		<Scripts>
+			<OnMouseDown>
+				this:StartMoving()
+			</OnMouseDown>
+			<OnMouseUp>
+				this:StopMovingOrSizing()
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+	<Frame name="EnhancedLootFrames_MoverFrame1" inherits="EnhancedLootFrames_MoverTemplate" movable="true" id="1"><Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="200"/></Offset></Anchor></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_MoverFrame2" inherits="EnhancedLootFrames_MoverTemplate" movable="true" id="2"><Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="235"/></Offset></Anchor></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_MoverFrame3" inherits="EnhancedLootFrames_MoverTemplate" movable="true" id="3"><Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="270"/></Offset></Anchor></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_MoverFrame4" inherits="EnhancedLootFrames_MoverTemplate" movable="true" id="4"><Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="305"/></Offset></Anchor></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_GroupLootFrame1" inherits="EnhancedLootFrames_GroupLootFrameTemplate" id="1"><Anchors><Anchor point="TOPLEFT" relativeTo="EnhancedLootFrames_MoverFrame1"/></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_GroupLootFrame2" inherits="EnhancedLootFrames_GroupLootFrameTemplate" id="2"><Anchors><Anchor point="TOPLEFT" relativeTo="EnhancedLootFrames_MoverFrame2"/></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_GroupLootFrame3" inherits="EnhancedLootFrames_GroupLootFrameTemplate" id="3"><Anchors><Anchor point="TOPLEFT" relativeTo="EnhancedLootFrames_MoverFrame3"/></Anchors></Frame>
+	<Frame name="EnhancedLootFrames_GroupLootFrame4" inherits="EnhancedLootFrames_GroupLootFrameTemplate" id="4"><Anchors><Anchor point="TOPLEFT" relativeTo="EnhancedLootFrames_MoverFrame4"/></Anchors></Frame>
+</Ui>

@@ -1,0 +1,367 @@
+<Ui xmlns = "http://www.blizzard.com/wow/ui/" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation = "http://www.blizzard.com/wow/ui/ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+<Script file="RecipeBookSearch.lua"/> 
+	<GameTooltip name="RecipeBookSearchTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate">
+	    <Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(1, 1, 1);
+				this:SetBackdropColor(0.09, 0.09, 0.19 );
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+<!--		<GameTooltip name="GameTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("UPDATE_MOUSEOVER_UNIT"); 
+			</OnLoad>
+			<OnEvent>
+				if ( event == "UPDATE_MOUSEOVER_UNIT" ) then
+					getglobal(this:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"));
+				end
+			</OnEvent>
+			<OnHide>
+				GameTooltip_OnHide();
+				ShoppingTooltip1:Hide();
+				ShoppingTooltip2:Hide();
+			</OnHide>
+-->
+    <Button name = "RecipeBook_SearchFrameEntryTemplate" virtual = "true">
+        <Size>
+            <AbsDimension x = "340" y = "40"/>
+        </Size>
+		<Frames>
+			<Frame name="$parent_Text" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<FontString name="$parentItem" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="10" y="-3"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentFlavor" inherits="GameFontHighlightSmall" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentItem" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+        <Scripts>
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+			</OnLoad>        
+			<OnClick>
+				RecipeBookSearch_Button_OnClick(arg1);
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+			<OnEnter>
+			
+			</OnEnter>
+			<OnLeave>
+				RecipeBookSearchTooltip:Hide();
+			</OnLeave>
+        </Scripts>
+    </Button>
+
+	<Frame name="RecipeBook_SearchFrame" frameStrata="BACKGROUND" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x = "700" y = "475"/>
+		</Size>
+		<Anchors>
+			<Anchor point = "CENTER"/>
+		</Anchors>
+		<Backdrop bgFile = "Interface\DialogFrame\UI-DialogBox-Background" edgeFile = "Interface\DialogFrame\UI-DialogBox-Border" tile = "true">
+			<BackgroundInsets>
+				<AbsInset left = "11" right = "12" top = "12" bottom = "11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val = "32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val = "32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name = "RecipeBook_SearchFrameHeader" file = "Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x = "520" y = "64"/>
+					</Size>
+					<Anchors>
+						<Anchor point = "TOP">
+							<Offset>
+								<AbsDimension x = "0" y = "12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="RecipeBook_SearchFrame_TitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name = "RecipeBookSearch_BUT_Search" inherits = "GameMenuButtonTemplate" text = "SEARCH">
+				<Size>
+					<AbsDimension x = "100" y = "21"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x = "16" y = "16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						RecipeBookSearch_DoSearch();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name = "RecipeBookSearch_BUT_Close" inherits = "GameMenuButtonTemplate" text = "Close">
+				<Size>
+					<AbsDimension x = "100" y = "21"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "LEFT" relativeTo = "RecipeBookSearch_BUT_Search" relativePoint = "RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(RecipeBook_SearchFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<EditBox name="RecipeBook_SearchFor" autoFocus="false">
+				<Size>
+					<AbsDimension x = "250" y = "40"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "TOPLEFT">
+						<Offset>
+							<AbsDimension x = "32" y = "-32"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+					<Backdrop bgFile = "Interface\DialogFrame\UI-DialogBox-Background" edgeFile = "Interface\DialogFrame\UI-DialogBox-Border" tile = "true">
+						<TileSize>
+							<AbsValue val = "16"/>
+						</TileSize>
+						<EdgeSize>
+							<AbsValue val = "16"/>
+						</EdgeSize>
+					</Backdrop>
+				<Scripts>
+					<OnShow>
+						this:ClearFocus();
+						this:SetTextInsets(10, 0, 0, 0);
+					</OnShow>
+					<OnEnterPressed>
+						RecipeBookSearch_DoSearch();
+					</OnEnterPressed>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+				</Scripts>
+				<FontString inherits="ChatFontNormal" bytes="256"/>
+			</EditBox>
+			<CheckButton name = "RecipeBookSearch_CBX_SearchItems" inherits="UIOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x = "35" y = "35"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "TOPLEFT" relativeTo="RecipeBook_SearchFor" relativePoint = "BOTTOMLEFT" >
+						<Offset>
+							<AbsDimension x = "10" y = "-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_SEARCHITEMS_TEXT); </OnLoad>
+					<OnShow>
+						this:SetChecked(1);
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name = "RecipeBookSearch_CBX_SearchMats" inherits="UIOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x = "35" y = "35"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "TOPLEFT" relativeTo="RecipeBookSearch_CBX_SearchItems" relativePoint = "BOTTOMLEFT" >
+						<Offset>
+							<AbsDimension x = "0" y = "-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_SEARCHMATS_TEXT); </OnLoad>
+					<OnShow>
+						this:SetChecked(0);
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name = "RecipeBookSearch_CBX_SearchExact" inherits="UIOptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x = "35" y = "35"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "TOPLEFT" relativeTo="RecipeBookSearch_CBX_SearchMats" relativePoint = "BOTTOMLEFT" >
+						<Offset>
+							<AbsDimension x = "0" y = "-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(RECIPEBOOK_CBX_SEARCHEXACT_TEXT); </OnLoad>
+					<OnShow>
+						this:SetChecked(0);
+					</OnShow>
+					<OnClick>
+						if ( this:GetChecked() ) then
+							PlaySound("igMainMenuOptionCheckBoxOn");
+						else
+							PlaySound("igMainMenuOptionCheckBoxOff");
+						end
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+		
+			<!-- SearchResultsFrame: A ScrollFrame for displaying results of RecipeBook searches -->
+			<Frame name = "RecipeBook_SearchResultsFrame" toplevel = "true" movable = "true" enableMouse = "true" hidden = "true" parent = "UIParent">
+				<Size>
+					<AbsDimension x = "350" y = "425"/>
+				</Size>
+				<Anchors>
+					<Anchor point = "TOPRIGHT" relativeTo = "RecipeBook_SearchFrame" relativePoint = "TOPRIGHT">
+						<Offset>
+							<AbsDimension x = "-16" y = "-16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name = "RecipeBook_SearchResults_ScrollFrame" inherits = "FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x = "300" y = "445"/>
+						</Size>
+						<Anchors>
+							<Anchor point = "TOP">
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>FauxScrollFrame_OnVerticalScroll(40, RecipeBookSearch_ResultsScrollBar_Update)</OnVerticalScroll>
+							<OnShow> RecipeBookSearch_ResultsScrollBar_Update() </OnShow>
+						</Scripts>
+					</ScrollFrame>
+					<Button name = "RecipeBook_SearchFrameEntry1" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchResults_ScrollFrame">
+								<Offset>
+									<AbsDimension x = "0" y = "-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry2" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry1" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry3" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry2" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry4" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry3" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry5" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry4" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry6" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry5" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry7" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry6" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry8" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry7" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry9" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry8" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+					<Button name = "RecipeBook_SearchFrameEntry10" inherits = "RecipeBook_SearchFrameEntryTemplate">
+						<Anchors>
+							<Anchor point = "TOP" relativeTo = "RecipeBook_SearchFrameEntry9" relativePoint = "BOTTOM"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow> 
+						RecipeBook_SearchFrame_TitleText:SetText(RECIPEBOOK_SEARCH_TITLEBAR);
+						RecipeBook_SearchResults_ScrollFrame:Show(); 
+					</OnShow>
+					<OnHide> RecipeBook_SearchResults_ScrollFrame:Hide() </OnHide>
+				</Scripts>
+
+				
+				
+			</Frame>
+			
+		</Frames>
+        <Scripts>
+            <OnLoad>RecipeBookSearch_OnLoad();</OnLoad>
+            <OnEvent>RecipeBookSearch_OnEvent(event);</OnEvent>
+			<OnShow> 
+				RecipeBook_SearchResultsFrame:Show(); 
+			</OnShow>
+			<OnHide>RecipeBook_SearchResultsFrame:Hide();</OnHide>
+        </Scripts>
+    </Frame>
+</Ui>

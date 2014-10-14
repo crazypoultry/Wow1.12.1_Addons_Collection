@@ -1,0 +1,83 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Container.lua"/>
+
+	<Frame name="ER_ContainerFrame" parent="UIParent" movable="true" resizable="true" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="200" y="200"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Button name="ER_ContainerFrameResizeGripBottomRight">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<AbsDimension x="-2" y="-2"/>
+					</Anchor>
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\EasyRaid\Textures\ResizeGrip-BottomRight" />
+				<PushedTexture file="Interface\AddOns\EasyRaid\Textures\ResizeGrip-BottomRight" />
+				<HighlightTexture file="Interface\AddOns\EasyRaid\Textures\ResizeGrip-BottomRight" alphaMode="ADD" />
+				<Scripts>
+					<OnShow>
+						SetButtonPulse(this, 600, 0.2);
+					</OnShow>
+					<OnHide>
+						ButtonPulse_StopPulse(this);
+					</OnHide>
+					<OnMouseDown>
+						ER_ContainerFrame:StartSizing("BOTTOMRIGHT")
+						ER_ContainerFrameIsMovingOrSizing = true;
+						ER_RaidPulloutFrame_Update();
+					</OnMouseDown>
+					<OnMouseUp>
+						ER_ContainerFrame:StopMovingOrSizing();
+						ER_ContainerFrameIsMovingOrSizing = false;
+						ValidateFramePosition(this, 25);
+						ER_ContainerFrame_SaveLocation();
+						ER_RaidPulloutFrame_Update();
+					</OnMouseUp>
+					<OnEnter>
+						ER_ContainerFrame_OnEnter();
+					</OnEnter>
+					<OnLeave>
+						ER_ContainerFrame_OnLeave();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");				
+			</OnLoad>
+			<OnDragStart>
+				ER_ContainerFrame_StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				ER_ContainerFrame_StopMoving();
+			</OnDragStop>
+			<OnEnter>
+				ER_ContainerFrame_OnEnter();
+			</OnEnter>
+			<OnLeave>
+				ER_ContainerFrame_OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,355 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	<Script file="RamzClock.lua"/>
+	<Frame name="ClockFrame" frameStrata="HIGH" toplevel="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="46" y="25"/>
+		</Size>
+		<Backdrop name="MoneyDisplayBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="3" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+--		<Anchors>
+--			<Anchor point="TOP">
+--				<Offset>
+--					<AbsDimension x="-48" y="0"/>
+--				</Offset>
+--			</Anchor>
+--		</Anchors>
+		<TitleRegion setAllPoints="true"/>
+		<Frames>
+		<Button name="ClockTextButton">
+			<Size>
+				<AbsDimension x="64" y="12"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER" relativeTo="ClockFrame">
+					<Offset>
+						<AbsDimension x="-1" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<FontString name="ClockText" inherits="GameFontNormalSmall" wraponspaces="true">
+						<Size>
+							<AbsDimension x="64" y="10"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					this:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				</OnLoad>
+				<OnClick>
+					ClickHandler(arg1, "CLICK");
+				</OnClick>
+				<OnMouseUp>
+					ClickHandler(arg1, "UP");
+				</OnMouseUp>
+				<OnMouseDown>
+					ClickHandler(arg1, "DOWN");
+				</OnMouseDown>
+				<OnEnter>
+					doShowTooltip();
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+			</Scripts>
+		</Button>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			Clock_OnLoad();
+		</OnLoad>
+		<OnUpdate>
+			Clock_OnUpdate(arg1);
+		</OnUpdate>
+		<OnEvent>
+			Clock_OnEvent(event);
+		</OnEvent>
+	</Scripts>
+	</Frame>
+
+
+-- RamzClockConfigFrame
+	<Frame name="RamzClockConfigFrame" toplevel="true" parent="UIParent" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Size><AbsDimension x="260" y="380"/></Size>
+		<Anchors><Anchor point="CENTER"/></Anchors>
+	
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize><AbsValue val="32"/></TileSize>
+			<EdgeSize><AbsValue val="32"/></EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size><AbsDimension x="260" y="58"/></Size>
+					<Anchors>
+						<Anchor point="TOP">
+						<Offset><AbsDimension x="0" y="12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString inherits="GameFontNormal" text="RamzClock Config">
+					<Anchors>                                     
+						<Anchor point="TOP" relativeTo="$parent"></Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+
+			<Frame name="RamzClockTimeFormatDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+						<Offset>
+							<AbsDimension x="100" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Time Format">
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="-120" y="-8"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Slider name="$parentSliderOffset" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent">
+					<Offset><AbsDimension x="0" y="90"/></Offset>
+				</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Offset");
+						getglobal(this:GetName().."High"):SetText("12");
+						getglobal(this:GetName().."Low"):SetText("-12");
+						this:SetMinMaxValues(-12,12);
+						this:SetValueStep(0.5);
+					</OnLoad>
+					<OnValueChanged> doConfigSave(); </OnValueChanged>
+				</Scripts>
+			</Slider>
+
+
+			<CheckButton name="$parentEnable30min" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentSliderOffset">
+						<Offset><AbsDimension x="-10" y="-50"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>                                
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Enable 30 mins offset ajustment"); </OnLoad>
+					<OnClick>
+						doConfigSave();
+						doChangeAjustMode();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentShowDate" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentEnable30min">
+						<Offset><AbsDimension x="0" y="-22"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>                                
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Show date in format "); </OnLoad>
+					<OnClick> doConfigSave(); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+
+			<EditBox name="$parentDateFormat" letters="30">
+				<Size>
+					<AbsDimension x="77" y="32"></AbsDimension>
+				</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="$parentShowDate">
+					<Offset>
+						<AbsDimension x="135" y="0"></AbsDimension>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+						<Size>
+							<AbsDimension x="75" y="32"></AbsDimension>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT">
+								<Offset>
+									<AbsDimension x="-10" y="0"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0" right="0.2" top="0" bottom="1.0"></TexCoords>
+					</Texture>
+					<Texture file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+						<Size>
+							<AbsDimension x="75" y="32"></AbsDimension>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT">
+								<Offset>
+									<AbsDimension x="10" y="0"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<TexCoords left="0.7" right="1.0" top="0" bottom="1.0"></TexCoords>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad></OnLoad>
+			</Scripts>
+			<FontString inherits="ChatFontNormal"></FontString>
+			</EditBox>
+
+
+			<CheckButton name="$parentCheckButtonShowAllCharacters" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parentShowDate">
+						<Offset><AbsDimension x="0" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>                                
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Show cooldowns for all characters"); </OnLoad>
+					<OnClick> doConfigSave(); </OnClick>
+					<OnEnter>
+						doShowNotifyWarning();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="$parentCheckButtonDoNotify" inherits="OptionsCheckButtonTemplate">
+				<Size><AbsDimension x="20" y="20"/></Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonShowAllCharacters">
+						<Offset><AbsDimension x="0" y="-20"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad> getglobal(this:GetName().."Text"):SetText(" Send notifications on cooldown expire"); </OnLoad>
+					<OnClick> doConfigSave(); </OnClick>
+				</Scripts>
+			</CheckButton>
+
+                        <Slider name="$parentSliderTooltipX" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentCheckButtonDoNotify">
+					<Offset><AbsDimension x="10" y="-45"/></Offset>
+				</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Tooltip position X");
+						getglobal(this:GetName().."High"):SetText("200");
+						getglobal(this:GetName().."Low"):SetText("-200");
+						this:SetMinMaxValues(-200,200);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged> doConfigSave(); </OnValueChanged>
+				</Scripts>
+			</Slider>
+
+                        <Slider name="$parentSliderTooltipY" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="200" y="14"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSliderTooltipX">
+					<Offset><AbsDimension x="0" y="-35"/></Offset>
+				</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Tooltip position Y");
+						getglobal(this:GetName().."High"):SetText("200");
+						getglobal(this:GetName().."Low"):SetText("-200");
+						this:SetMinMaxValues(-200,200);
+						this:SetValueStep(1);
+					</OnLoad>
+					<OnValueChanged> doConfigSave(); </OnValueChanged>
+				</Scripts>
+			</Slider>
+
+
+			
+
+
+			<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+					<Offset><AbsDimension x="-12" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						doConfigSave();
+						RamzClockConfigFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="$parentButtonToDefault" inherits="OptionsButtonTemplate" text="Defaults">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="13" y="16"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>doSetDefaultSettings(); </OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+	        <Scripts>
+			<OnShow>
+				doInitializeConfig(0);
+			</OnShow>
+		</Scripts>
+ 	</Frame>
+
+</Ui>
+                                        

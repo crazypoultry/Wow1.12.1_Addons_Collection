@@ -1,0 +1,233 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+	<Script file="GuildAdsDebug.lua"/>
+  
+	<Frame name="GuildAdsDebugFrame" parent="GuildAdsMainWindowFrame" hidden="true" >
+		<Size>
+			<AbsDimension x="500" y="420"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-80"/>
+				</Offset>
+			</Anchor>
+		</Anchors>	
+		<Frames>
+			<ScrollingMessageFrame name="GuildAdsDebug_Log" displayDuration="1200.0" maxLines="128">
+				<Size>
+					<AbsDimension x="460" y="460"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="30" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<Button name="$parentBottomButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-32" y="-4"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentFlash" file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight" hidden="true"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								PlaySound("igChatBottom");
+								this:GetParent():ScrollToBottom();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentDownButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parentBottomButton" relativePoint="TOP">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MessageFrameScrollButton_OnLoad();
+							</OnLoad>
+							<OnUpdate>
+								MessageFrameScrollButton_OnUpdate(arg1);
+							</OnUpdate>
+							<OnClick>
+								if ( this:GetButtonState() == "PUSHED" ) then
+									this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+								else
+									PlaySound("igChatScrollDown");
+									this:GetParent():ScrollDown();
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="$parentUpButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parentDownButton" relativePoint="TOP"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								MessageFrameScrollButton_OnLoad();
+							</OnLoad>
+							<OnUpdate>
+								MessageFrameScrollButton_OnUpdate(arg1);
+							</OnUpdate>
+							<OnClick>
+								if ( this:GetButtonState() == "PUSHED" ) then
+									this.clickDelay = MESSAGE_SCROLLBUTTON_INITIAL_DELAY;
+								else
+									PlaySound("igChatScrollUp");
+									this:GetParent():ScrollUp();
+								end
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+						<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+						<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnHyperlinkClick>
+						ChatFrame_OnHyperlinkShow(arg1, arg2, arg3);
+					</OnHyperlinkClick>
+					<OnLoad>
+						this:SetBackdropColor(1,1,1,1);
+						this:EnableMouseWheel(1);
+					</OnLoad>
+				</Scripts>
+				<FontString justifyH="LEFT" font="Fonts\ARIALN.TTF">
+					<FontHeight>
+						<AbsValue val="12"/>
+					</FontHeight>
+					<Shadow>
+						<Offset>
+							<AbsDimension x="1" y="-1"/>
+						</Offset>
+						<Color r="0" g="0" b="0" a="0.5"/>
+					</Shadow>
+				</FontString>								
+			</ScrollingMessageFrame>
+			
+			<Button name="GuildAdsDebugDettach" inherits="UIPanelButtonTemplate" text="Dettach">
+				<Size>
+					<AbsDimension x="100" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						GuildAdsDebugFloatingFrame:Show();
+						GuildAdsDebug_Log:SetParent("GuildAdsDebugFloatingFrame");
+						GuildAdsDebug_Log:ClearAllPoints();
+						GuildAdsDebug_Log:SetPoint("TOPLEFT", "GuildAdsDebugFloatingFrame", "TOPLEFT", 35, -5);
+						GuildAdsDebugDettach:Disable();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="GuildAdsDebugTab" inherits="GuildAdsWindowTabTemplate" text="Debug" />
+		</Frames>
+		<Scripts>
+			<OnLoad>
+					GuildAds_DebugPlugin.onLoad();
+			</OnLoad>
+			<OnEvent>
+					GuildAds_DebugPlugin.onVariablesLoaded();
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="GuildAdsDebugFloatingFrame" frameStrata="HIGH" setAllPoints="true" parent="UIParent" hidden="true" enableMouse="true" movable="true">
+        <Size>
+            <AbsDimension x="500" y="480"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="GuildAdsMainWindowFrame" relativePoint="TOPRIGHT">
+                <Offset>
+                    <AbsDimension x="5" y="-100"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="3" right="5" top="3" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		<Frames>
+			<Button name="GuildAdsDebugFloatingFrameCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="GuildAdsDebugFloatingFrame">
+						<Offset>
+							<AbsDimension x="2" y="2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseUp>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if ( ( ( not this.isLocked ) or ( this.isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+					this:StartMoving();
+					this.isMoving = true;
+				end
+			</OnMouseDown>
+			<OnHide>
+				if ( this.isMoving ) then
+					this:StopMovingOrSizing();
+					this.isMoving = false;
+				end
+				GuildAdsDebug_Log:SetParent("GuildAdsDebugFrame");
+				GuildAdsDebug_Log:ClearAllPoints();
+				GuildAdsDebug_Log:SetPoint("TOP", "GuildAdsDebugFrame", "TOP", 30, 0);
+				GuildAdsDebug_Log:Show();
+				GuildAdsDebugDettach:Enable();
+			</OnHide>
+		</Scripts>
+	</Frame>
+  
+</Ui>

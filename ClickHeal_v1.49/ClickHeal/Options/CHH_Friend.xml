@@ -1,0 +1,724 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+	<!-- ##################################################################################################################################### -->
+	<!-- # FRIEND CONFIG                                                                                                                     # -->
+	<!-- ##################################################################################################################################### -->
+
+        <!-- ===== Check Heal Range frame ====================================================================================================== -->
+	<Frame name="CHH_FriendCheckHealRangeTemplate" inherits="CHH_FrameBoxTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="30" y="-200"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-10" y="10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName()..'TitleText'):SetText( CHHT_FRIEND_CHECK_HEAL_RANGE );
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.15, 0.15, 0.15);
+			</OnLoad>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentConditionMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_FRIEND_CHECK_HEAL_RANGE_MODE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-50" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="50" y="-75" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentVisualizationPossibleMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_FRIEND_CHECK_HEAL_RANGE_VISUALIZATION_POSSIBLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-200" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="100" y="-225" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentVisualizationVerifiedMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_FRIEND_CHECK_HEAL_RANGE_VISUALIZATION_VERIFIED">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-225" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="100" y="-250" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentCondition" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentConditionMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth( 190, this );
+						CHH_HintDropDownLoad( 'checkHealRange', CHH_FriendCheckHealRangeOptions );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Slider name="$parentKeepDuration" inherits="HintOptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="260" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-130"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionSliderLoad( 'healRangeKeepDuration', 1, 5, 0.1, 
+						                          string.format(CHHT_FRIEND_CHECK_HEAL_RANGE_BOUNDARY_FORMAT,1.0),
+						                          string.format(CHHT_FRIEND_CHECK_HEAL_RANGE_BOUNDARY_FORMAT,5.0),
+						                          CHHT_FRIEND_CHECK_HEAL_RANGE_KEEP_DURATION );
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Frame name="$parentVisualizationPossible" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentVisualizationPossibleMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth( 140, this );
+						CHH_HintDropDownLoad( 'healRangeVisualizationPossible', CHH_FriendHealRangeVisOptions );
+						CHH_HintDropDownSetPostClickFunc( CHH_FriendGeneralRangeVisualizationPossibleChanged );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentVisualizationVerified" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentVisualizationVerifiedMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth( 140, this );
+						CHH_HintDropDownLoad( 'healRangeVisualizationVerified', CHH_FriendHealRangeVisOptions );
+						CHH_HintDropDownSetPostClickFunc( CHH_FriendGeneralRangeVisualizationVerifiedChanged );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Button name="$parentVisualizationVerifiedColor" inherits="OptionsButtonTemplate" hidden='true' text="CHHT_FRIEND_CHECK_HEAL_RANGE_VISUALIZATION_VERIFIED_COLOR">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint='BOTTOMRIGHT'>
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_FriendGeneralOpenRangeVisiualizationColorPicker( 'VERIFIED' );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentVisualizationPossibleColor" inherits="OptionsButtonTemplate" hidden='true' text="CHHT_FRIEND_CHECK_HEAL_RANGE_VISUALIZATION_POSSIBLE_COLOR">
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentVisualizationVerifiedColor" relativePoint='LEFT'>
+						<Offset>
+							<AbsDimension x="-10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_FriendGeneralOpenRangeVisiualizationColorPicker( 'POSSIBLE' );
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+        <!-- ===== The Friend General frame ==================================================================================================== -->
+	<Frame name="CHH_FriendGeneralFrameTemplate" inherits="CHH_FrameBoxTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="10" y="-10"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-10" y="40"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				getglobal(this:GetName()..'TitleText'):SetText( CHHT_FRIEND_OPTIONS );
+				this:SetBackdropBorderColor(0.4, 0.4, 0.4);
+				this:SetBackdropColor(0.15, 0.15, 0.15);
+			</OnLoad>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentPartyLabelMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_GUI_PARTY_MEMBER_LABEL">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-50" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-75" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentHPLabelMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_FRIEND_HITPOINT_LABEL">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-75" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-100" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentFrameBackgroundMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_FRIEND_FRAME_BACKGROUND">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-100" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-125" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentFriendDebuffsMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_GUI_SHOW_FRIEND_DEBUFFS">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-125" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-150" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+				<FontString name="$parentResurrectMyText" inherits="GameFontNormal" justifyH="RIGHT" text="CHHT_FRIEND_RESURRECT">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="-10" y="-150" />
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-175" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentCheckHealRange" inherits="CHH_FriendCheckHealRangeTemplate" />
+			<Frame name="$parentHPLabel" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentHPLabelMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CHH_HintDropDownLoad( 'friendHPLabel', CHH_FriendHPLabelOptions );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentFrameBackground" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentFrameBackgroundMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CHH_HintDropDownLoad( 'friendFrameBackground', CHH_FriendFrameBackgroundOptions );
+						CHH_HintDropDownSetPostClickFunc( CHH_FriendGeneralFrameBackgroundChanged );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Slider name="$parentFrameBackgroundAlpha" inherits="HintOptionsSliderTemplate" hidden="true">
+				<Size>
+					<AbsDimension x="150" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentFrameBackground" relativePoint='RIGHT'>
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionSliderLoad( 'friendFrameBackgroundAlpha', 0, 1, 0.05, '0', '1', CHHT_FRIEND_FRAME_BACKGROUND_ALPHA );
+					</OnLoad>
+				</Scripts>
+			</Slider>
+			<Button name="$parentFrameBackgroundColor" inherits="OptionsButtonTemplate" hidden='true' text="CHHT_FRIEND_PICK_COLOR">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentFrameBackground" relativePoint='RIGHT'>
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_FriendGeneralOpenColorPicker();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentPartyLabel" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPartyLabelMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CHH_HintDropDownLoad( 'partyLabel', CHH_FriendPartyLabelOptions );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentFriendDebuffs" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentFriendDebuffsMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CHH_HintDropDownLoad( 'showFriendDebuffs', CHH_FriendDebuffsOptions );
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentResurrect" inherits="HintDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentResurrectMyText" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="10" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						if ( CH_UnitClass('player') == 'DRUID' ) then
+							CHH_HintDropDownLoad( 'resurrectPlayer', CHH_FriendResurrectDruidOptions );
+						else
+							CHH_HintDropDownLoad( 'resurrectPlayer', CHH_FriendResurrectOtherOptions );
+						end
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<CheckButton name="$parentFinetuneSwiftmend" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-170" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_SWIFTMEND">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'finetuneSwiftmend' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentFinetuneSpell1" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-200" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+	                			<FontString name="$parentName" inherits="GameFontNormal" text="Finetune spell 1">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						if ( CH_UnitClass('player') == 'PRIEST' ) then
+							getglobal(this:GetName()..'Name'):SetText( CHHT_FRIEND_POWER_WORD_SHIELD );
+							CHH_HintOptionCheckBoxLoad( 'finetunePwS' );
+						else
+							getglobal(this:GetName()..'Name'):SetText( CHHT_FRIEND_REGROWTH );
+							CHH_HintOptionCheckBoxLoad( 'finetuneRegrowth' );
+						end
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentFinetuneSpell2" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-230" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+	                			<FontString name="$parentName" inherits="GameFontNormal" text="Finetune spell 2">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						if ( playerClass == 'PRIEST' ) then
+							getglobal(this:GetName()..'Name'):SetText( CHHT_FRIEND_RENEW );
+							CHH_HintOptionCheckBoxLoad( 'finetuneRenew' );
+						else
+							getglobal(this:GetName()..'Name'):SetText( CHHT_FRIEND_REJUVENATION );
+							CHH_HintOptionCheckBoxLoad( 'finetuneRejuvenation' );
+						end
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentAdjustSpellRank" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-260" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_ADJUST_SPELLRANK">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'adjustSpellRank' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowMana" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-290" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_SHOW_MANA">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'showFriendMana' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowRage" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-320" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_SHOW_RAGE">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'showFriendRage' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowEnergy" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-350" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+	                			<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_SHOW_ENERGY">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'showFriendEnergy' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentShowFocus" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-380" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_SHOW_FOCUS">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'showFriendFocus' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentToggleShadowform" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-410" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_SHADOWFORM">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'toggleShadowform' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCastOnCharmed" inherits="HintOptionsCheckButtonTemplate" checked="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="20" y="-440" />
+						</Offset>
+						
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentName" inherits="GameFontNormal" text="CHHT_FRIEND_CAST_ON_CHARMED">
+	                 				<Anchors>
+	                    					<Anchor point="LEFT" relativePoint="RIGHT" />
+       							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						CHH_HintOptionCheckBoxLoad( 'castOnCharmedFriend' );
+					</OnLoad>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Frame>
+
+        <!-- ===== The friendly/extended button config ================================================================ -->
+	<Frame name="CHH_FriendTemplate" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+		</Anchors>
+		<Frames>
+			<Frame name="$parentGeneral" inherits="CHH_FriendGeneralFrameTemplate" hidden="true" />
+			<Frame name="$parentAction" inherits="CHH_ActionFrameTemplate" hidden="true" />
+
+			<Button name="$parentPage1Button" inherits="OptionsButtonTemplate" text="CHHT_FRIEND_PAGE1">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="20" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_FriendInit( 1 );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentPage2Button" inherits="OptionsButtonTemplate" text="CHHT_FRIEND_PAGE2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPage1Button" relativePoint="RIGHT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_InitTabs( CHH_Friend, CHH_FriendAction, 'FRIEND', 'MOUSE', nil, nil );
+						CHH_SpellAssignInit( 'CHH_FriendAction', 'Friend', 'friend', 1, CHHT_FRIEND_MOUSE_TITLE );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentPage3Button" inherits="OptionsButtonTemplate" text="CHHT_FRIEND_PAGE3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPage2Button" relativePoint="RIGHT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_InitTabs( CHH_Friend, CHH_FriendAction, 'FRIEND', 'MOUSE', nil, nil );
+						CHH_SpellAssignInit( 'CHH_FriendAction', 'Friend', 'friend', 2, CHHT_FRIEND_MOUSE_TITLE );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentPage4Button" inherits="OptionsButtonTemplate" text="CHHT_FRIEND_PAGE4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentPage3Button" relativePoint="RIGHT" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_InitTabs( CHH_Friend, CHH_FriendAction, 'FRIEND', 'MOUSE', nil, nil );
+						CHH_SpellAssignInit( 'CHH_FriendAction', 'Friend', 'friend', 3, CHHT_FRIEND_MOUSE_TITLE );
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentResetButton" inherits="OptionsButtonTemplate" text="CHHT_LABEL_DEFAULTS">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						CHH_ResetDefaults();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+
+</Ui>

@@ -1,0 +1,57 @@
+﻿XCALC_VERSION = "2.00";
+
+BINDING_HEADER_XCALC = "xcalc (automatic)";
+BINDING_NAME_XC_NUMLOCK = "Numlock";
+BINDING_NAME_XC_CLEAR = "Clear";
+BINDING_NAME_XC_CLOSE = "Close";
+BINDING_NAME_XC_DIV = "Divide";
+BINDING_NAME_XC_MUL = "Multiply";
+BINDING_NAME_XC_SUB = "Subtract";
+BINDING_NAME_XC_ADD = "Add";
+BINDING_NAME_XC_EQ = "Equals";
+BINDING_NAME_XC_0 = "Digit 0";
+BINDING_NAME_XC_1 = "Digit 1";
+BINDING_NAME_XC_2 = "Digit 2";
+BINDING_NAME_XC_3 = "Digit 3";
+BINDING_NAME_XC_4 = "Digit 4";
+BINDING_NAME_XC_5 = "Digit 5";
+BINDING_NAME_XC_6 = "Digit 6";
+BINDING_NAME_XC_7 = "Digit 7";
+BINDING_NAME_XC_8 = "Digit 8";
+BINDING_NAME_XC_9 = "Digit 9";
+BINDING_NAME_XC_DEC = "Decimal";
+
+
+XCALC_REMAPPED = {
+    NUMLOCK = "";
+    HOME = "";
+    END = "";
+    NUMPADDIVIDE = "";
+    NUMPADMULTIPLY = "";
+    NUMPADMINUS = "";
+    NUMPADPLUS = "";
+    ENTER = "";
+    NUMPAD0 = "";
+    NUMPAD1 = "";
+    NUMPAD2 = "";
+    NUMPAD3 = "";
+    NUMPAD4 = "";
+    NUMPAD5 = "";
+    NUMPAD6 = "";
+    NUMPAD7 = "";
+    NUMPAD8 = "";
+    NUMPAD9 = "";
+    NUMPADDECIMAL = "";
+    };
+    
+XCALC_NUMBERDISPLAY = "0";
+XCALC_RUNNINGTOTAL = "";
+XCALC_PREVIOUSKEYTYPE = "none";
+XCALC_PREVIOUSOP = "";
+
+XCALC_CONSOLE_LAST_ANS = "0";
+XCALC_MEMORYINDICATOR = "";
+XCALC_MEMORYINDICATORON = "M";
+XCALC_MEMORYNUMBER = "0";
+XCALC_MEMORYSET = "0";
+Xcalc_Settings = { }

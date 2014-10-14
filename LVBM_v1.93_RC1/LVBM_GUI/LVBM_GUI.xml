@@ -1,0 +1,2858 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Files to Include while needed for this xml -->
+	<Include file="LVBM_GUI_Templates.xml"/>
+	<Script file="LVBM_GUI.lua"/>
+	<Script file="LVBM_GUI_InfoFrame.lua"/>
+	<Script file="localization.gui.en.lua"/><!-- Default Language -->
+	<Script file="localization.gui.de.lua"/>
+	<Script file="localization.gui.fr.lua"/>
+	<Script file="localization.gui.tw.lua"/>
+	<Script file="localization.gui.cn.lua"/>
+	<!-- ****************************************** -->
+
+	<Frame name="LVBMBossModFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG">
+		<Size>
+			<AbsDimension x="384" y="512"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="-104"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="30" top="0" bottom="45"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\FriendsFrame\FriendsFrameScrollIcon">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="LVBMBossModFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="LVBMBossModFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="LVBMBossModFrameBottomLeft" file="Interface\FriendsFrame\UI-FriendsFrame-BotLeft">
+					<Size>
+						<AbsDimension x="256" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="LVBMBossModFrameBottomRight" file="Interface\FriendsFrame\UI-FriendsFrame-BotRight">
+					<Size>
+						<AbsDimension x="128" y="256"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="LVBMBossModFrameTitleText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-18"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="LVBMBossModDropDown" inherits="UIDropDownMenuTemplate"/>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-30" y="-8"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentOptionsButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_SHOW_OPTIONS">
+				<Size><AbsDimension x="100" y="22"/></Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-45" y="-43"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						if LVBMOptionsFrame:IsShown() then
+							HideUIPanel(LVBMOptionsFrame);
+							this:SetText(LVBMGUI_SHOW_OPTIONS);
+						else
+							ShowUIPanel(LVBMOptionsFrame);
+							this:SetText(LVBMGUI_HIDE_OPTIONS);
+						end
+					</OnMouseUp>
+				</Scripts>
+				<NormalText inherits="GameFontNormal"/>
+				<HighlightText inherits="GameFontNormal"/>
+			</Button>
+
+
+			<!-- SubPages Menu -->
+			<!--
+			<Frame name="$parentSubPagesMenu" hidden="true" setAllPoints="true">
+				<Frames>
+					<Button name="$parentToggleTab1" inherits="TabButtonTemplate" text="LVBMGUI_SUBTAB_1" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LVBMBossModFrameSubPagesMenu">
+								<Offset>
+									<AbsDimension x="70" y="-39"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								PanelTemplates_SelectTab(this);
+								PanelTemplates_TabResize(0);
+								getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 31);
+							</OnLoad>
+							<OnClick>
+								LVBMBossModFrame.showPage = 1;
+								LVBMBossModFrame_Update();
+							</OnClick>
+							<OnUpdate>
+								if( LVBMBossModFrame.showPage == 1 ) then
+									PanelTemplates_SelectTab(this);
+								else
+									PanelTemplates_DeselectTab(this);
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button name="$parentToggleTab2" inherits="TabButtonTemplate" text="LVBMGUI_SUBTAB_2" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LVBMBossModFrameSubPagesMenuToggleTab1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								LVBMBossModFrame.showPage = 2;
+								LVBMBossModFrame_Update();
+							</OnClick>
+							<OnUpdate>
+								if( LVBMBossModFrame.showPage == 2 ) then
+									PanelTemplates_SelectTab(this);
+								else
+									PanelTemplates_DeselectTab(this);
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+					<Button name="$parentToggleTab3" inherits="TabButtonTemplate" text="LVBMGUI_SUBTAB_3" id="3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LVBMBossModFrameSubPagesMenuToggleTab2" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								LVBMBossModFrame.showPage = 3;
+								LVBMBossModFrame_Update();
+							</OnClick>
+							<OnUpdate>
+								if( LVBMBossModFrame.showPage == 3 ) then
+									PanelTemplates_SelectTab(this);
+								else
+									PanelTemplates_DeselectTab(this);
+								end
+							</OnUpdate>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			-->
+			<!-- End SubPages Menu -->
+
+
+
+
+
+			<!-- ************************************** -->
+			<!--  Give me the Bossmod List              -->
+			<!-- ************************************** -->
+			<Frame name="LVBMBossModListFrame" hidden="true" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="LVBMBossModListFrameLoadAddOnInfo" inherits="GameFontNormal" justifyH="LEFT" text=" ">
+							<Size>
+								<AbsDimension x="310" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+									<Offset>
+										<AbsDimension x="0" y="-140"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+
+				</Layers>
+				<Frames>
+					<!-- Buttons at the Bottom Page -->
+					<Button name="LVBMBossModListFrameButton1" inherits="UIPanelButtonTemplate">
+						<Size><AbsDimension x="131" y="21"/></Size>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="LVBMBossModListFrame">
+								<Offset><AbsDimension x="17" y="107"/></Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModListFrameButton2" inherits="UIPanelButtonTemplate">
+						<Size><AbsDimension x="131" y="21"/></Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModListFrameButton1" relativePoint="BOTTOM">
+								<Offset><AbsDimension x="0" y="-5"/></Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModListFrameButton3" inherits="UIPanelButtonTemplate">
+						<Size><AbsDimension x="131" y="21"/></Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="LVBMBossModListFrameButton1" relativePoint="RIGHT">
+								<Offset><AbsDimension x="66" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModListFrameButton4" inherits="UIPanelButtonTemplate">
+						<Size><AbsDimension x="131" y="21"/></Size>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModListFrameButton3" relativePoint="BOTTOM">
+								<Offset><AbsDimension x="0" y="-5"/></Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModListFrameLoadAddOns" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_LOADADDON">
+						<Size><AbsDimension x="131" y="21"/></Size>
+						<Anchors>
+							<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
+								<Offset><AbsDimension x="-10" y="-5"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM_GUI_LoadAddOn();
+							</OnMouseUp>
+						</Scripts>
+					</Button>
+
+					<!-- Selection List -->
+					<Button name="LVBMBossModButton1" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="LVBMBossModFrame">
+								<Offset>
+									<AbsDimension x="23" y="-76"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton2" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton3" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton2" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton4" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton5" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton4" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton6" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton5" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton7" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton6" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton8" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton7" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton9" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton8" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="LVBMBossModButton10" inherits="LVBMBossModFrameButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="LVBMBossModButton9" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<ScrollFrame name="LVBMBossModFrameLVBMBossModScrollFrame" inherits="FauxScrollFrameTemplate">
+						<Size>
+							<AbsDimension x="296" y="304"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="LVBMBossModFrame">
+								<Offset>
+									<AbsDimension x="-67" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="256"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+								</Texture>
+								<Texture file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+									<Size>
+										<AbsDimension x="31" y="106"/>
+									</Size>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="-2"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(LVBMGUI_FRAME_HEIGHT, LVBMBossModList_Update)
+							</OnVerticalScroll>
+						</Scripts>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Button name="$parentTab1"  inherits="LVBMBossModFrameTabTemplate" id="1"  hidden="true"/>
+			<Button name="$parentTab2"  inherits="LVBMBossModFrameTabTemplate" id="2"  hidden="true"/>
+			<Button name="$parentTab3"  inherits="LVBMBossModFrameTabTemplate" id="3"  hidden="true"/>
+			<Button name="$parentTab4"  inherits="LVBMBossModFrameTabTemplate" id="4"  hidden="true"/>
+			<Button name="$parentTab5"  inherits="LVBMBossModFrameTabTemplate" id="5"  hidden="true"/>
+			<Button name="$parentTab6"  inherits="LVBMBossModFrameTabTemplate" id="6"  hidden="true"/>
+			<!--
+			<Button name="$parentTab7"  inherits="LVBMBossModFrameTabTemplate" id="7"  hidden="true"/>
+			<Button name="$parentTab8"  inherits="LVBMBossModFrameTabTemplate" id="8"  hidden="true"/>
+			<Button name="$parentTab9"  inherits="LVBMBossModFrameTabTemplate" id="9"  hidden="true"/>
+			<Button name="$parentTab10" inherits="LVBMBossModFrameTabTemplate" id="10" hidden="true"/>
+			-->
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				LVBMGUI_SetTabPosition_Update(2, 11, 62, -16, 0, LVBMGUI_MAINFRAME_TABCOUNT);
+			</OnUpdate>
+			<OnLoad>
+				this:RegisterEvent("PLAYER_LOGIN");
+				this:RegisterEvent("RAID_ROSTER_UPDATE");
+				this:RegisterEvent("PLAYER_LOGOUT");
+
+				LVBMBossModFrame.lastSelectedBossMod = {};
+				PanelTemplates_SetNumTabs(this, LVBMGUI_MAINFRAME_TABCOUNT);	-- Anzahl Tabs // Naxx, AQ, etc.
+				LVBMBossModFrame.selectedTab = 1;
+				LVBMBossModFrame.showPage = 1;
+				PanelTemplates_UpdateTabs(this);
+	
+				LVBMBossModFrame.selectedBossMod = 0;
+
+				for i, value in pairs(LVBMGUI_FRAME_LOADADDON_DESCRIPTION) do
+					LVBMBossModListFrameLoadAddOnInfo:SetText( 
+						LVBMBossModListFrameLoadAddOnInfo:GetText().."\n"..value
+					);
+				end
+			</OnLoad>
+			<OnShow>
+				LVBMBossModFrame_OnShow();
+
+				PanelTemplates_SetNumTabs(this, LVBMGUI_MAINFRAME_TABCOUNT);
+				for i=1, LVBMGUI_MAINFRAME_TABCOUNT, 1 do
+					getglobal(this:GetName().."Tab"..i):Show();
+					getglobal(this:GetName().."Tab"..i):SetText(LVGUI.MainFrameTabs[i].Title);
+					PanelTemplates_TabResize(0, getglobal(this:GetName().."Tab"..i), nil, nil);
+				end
+				PanelTemplates_UpdateTabs(this);
+			</OnShow>
+			<OnHide>
+				LVBMBossModFrame_OnHide();
+				LVBMOptionsFrame:Hide();
+			</OnHide>
+			<OnEvent>
+				LVBMBossModFrame_OnEvent(event);
+			</OnEvent>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+		</Scripts>
+	</Frame>
+
+	<!-- ******************************************************** -->
+	<!-- ******************************************************** -->
+
+	<Frame name="LVBMOptionsFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size>
+			<AbsDimension x="384" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="LVBMBossModFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-35" y="-25"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentTexture" file="Interface\AddOns\LVBM_API\Textures\OptionsFrame" alphaMode="ALPHAKEY">
+					<Size><AbsDimension x="512" y="512"/></Size>
+					<Anchors><Anchor point="TOPLEFT"/></Anchors>					
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentTitle" text="LVBMGUI_OPTIONS" inherits="GameFontNormal">
+					<Anchors><Anchor point="TOP"><Offset><AbsDimension x="-10" y="-6"/></Offset></Anchor></Anchors>
+				</FontString>
+				<FontString name="$parentVersion" text="LVBMGUI_VERSION" inherits="GameFontDisableSmall">
+					<Anchors><Anchor point="BOTTOMRIGHT"><Offset><AbsDimension x="-17" y="13"/></Offset></Anchor></Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						this:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Tabs -->
+			<Button name="$parentTab1" inherits="LVBMOptionsFrameTabTemplate" id="1" hidden="true" text="LVBMGUI_SIDEFRAME_TAB1"></Button>
+			<Button name="$parentTab2" inherits="LVBMOptionsFrameTabTemplate" id="2" hidden="true" text="LVBMGUI_SIDEFRAME_TAB2"></Button>
+			<Button name="$parentTab3" inherits="LVBMOptionsFrameTabTemplate" id="3" hidden="true" text="LVBMGUI_SIDEFRAME_TAB3"></Button>
+			<Button name="$parentTab4" inherits="LVBMOptionsFrameTabTemplate" id="4" hidden="true" text="LVBMGUI_SIDEFRAME_TAB4"></Button>
+			<Button name="$parentTab5" inherits="LVBMOptionsFrameTabTemplate" id="5" hidden="true" text="LVBMGUI_SIDEFRAME_TAB5"></Button>
+			<Button name="$parentTab6" inherits="LVBMOptionsFrameTabTemplate" id="6" hidden="true" text="LVBMGUI_SIDEFRAME_TAB6"></Button>
+
+			<!-- ************************************** -->
+			<!--  Want some Options? ... here we go !!  -->
+			<!-- ************************************** -->
+			<Frame name="$parentPage1" hidden="true" setAllPoints="true">  <!-- LVBMOptionsFramePage1 -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSyncSettingsTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_SYNCSETTINGS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+
+						<FontString name="$parentMinimapButtonTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_MINIMAPBUTTON">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-115"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+
+						<FontString name="$parentAggroAlertTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_AGGROALERT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-190"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+					</Layer>
+				</Layers>
+
+				<Frames>
+					<!-- Sync Setup -->
+					<CheckButton name="$parentOptionSyncEnable" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="40" y="-50"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_SYNC_ENABLE);
+								this:SetChecked(LVBM.Options.EnableSync);
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.EnableSync = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentOptionSyncOldEnable" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentOptionSyncEnable" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_ALLOWSYNCFROMOLDCLIENT);
+								this:SetChecked(LVBM.Options.AllowSyncFromOldVersions);
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.AllowSyncFromOldVersions = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+
+					<Button name="$parentSyncSystemVersionCheckButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_VERSION_CHECK">
+						<Size><AbsDimension x="120" y="18"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentOptionSyncEnable" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="150" y="0"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								SlashCmdList["LVNAXXRAMASBOSSMODS"]("ver");
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Button name="$parentSyncSystemStatusBarsButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_STATUSBAR_SYNCINFO">
+						<Size><AbsDimension x="120" y="18"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentSyncSystemVersionCheckButton" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-20"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								local syncedBars = false;
+								for index, value in pairs(LVBM.StatusBarData) do
+									if value.syncedBy then
+										LVBM.AddMsg(index..": "..value.syncedBy);
+										syncedBars = true;
+									end
+								end
+								if( syncedBars == false ) then
+									LVBM.AddMsg(LVBMGUI_BUTTON_STATUSBAR_SYNCINFO_FAILD);
+								end
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+
+
+
+					<!-- ******************** -->
+					<!-- Minimap Button Setup -->
+					<!-- ******************** -->
+					<Slider name="$parentMiniMapPositionSlider" inherits="LVBMSliderTemplate" minValue="0" maxValue="360" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="100" y="-130"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_MINIMAP_1);
+								this:SetValue(LVBM.Options.MinimapButton.Position);
+								getglobal(this:GetName().."Value"):SetText(this:GetValue());
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(this:GetValue());
+								LVBM.Options.MinimapButton.Position = this:GetValue();
+								LVBMMinimapButton_Move();
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentMiniMapRadiusSlider" inherits="LVBMSliderTemplate" minValue="25" maxValue="125" valueStep="0.1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentMiniMapPositionSlider" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-15"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_MINIMAP_2);
+								this:SetValue(LVBM.Options.MinimapButton.Radius);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+								LVBM.Options.MinimapButton.Radius = LVBM.math.round(this:GetValue(), 1);
+								LVBMMinimapButton_Move();
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<CheckButton name="$parentOptionMiniMap" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentMiniMapPositionSlider" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="100" y="20"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_MINIMAP);
+								this:SetChecked(LVBM.Options.MinimapButton.Enabled);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.MinimapButton.Enabled = false;
+									LVBMMinimapButton:Hide();
+								else 
+									LVBM.Options.MinimapButton.Enabled = true;
+									LVBMMinimapButton:Show();
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					
+
+					<!-- *********** -->
+					<!-- AGGRO ALERT -->
+					<!-- *********** -->
+					<CheckButton name="$parentButtonEnableAggroAlert" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="30" y="-205"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AGGROALERT_ENABLE);
+								this:SetChecked(LVBM.Options.CharSettings[UnitName("player")].AggroAlert);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.CharSettings[UnitName("player")].AggroAlert = false;
+								else 
+									LVBM.Options.CharSettings[UnitName("player")].AggroAlert = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parentButtonTestAggroAlert" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_AGGROALERT_TEST">
+						<Size><AbsDimension x="120" y="25"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonEnableAggroAlert" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="200" y="0"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.HasAggro("GUI");
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Button name="$parentButtonResetAggroAlert" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_AGGROALERT_RESET">
+						<Size><AbsDimension x="120" y="25"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonTestAggroAlert" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-30"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								if UnitClass("player") == LVBM_WARRIOR then
+									LVBM.Options.CharSettings[UnitName("player")].AggroAlert = false;
+									LVBM.Options.CharSettings[UnitName("player")].AggroSound = false;
+									LVBM.Options.CharSettings[UnitName("player")].AggroFlash = false;
+									LVBM.Options.CharSettings[UnitName("player")].AggroShake = false;
+									LVBM.Options.CharSettings[UnitName("player")].AggroSpecialWarning = false;
+									LVBM.Options.CharSettings[UnitName("player")].AggroLocalWarning = false;
+								else
+									LVBM.Options.CharSettings[UnitName("player")].AggroAlert = true;
+									LVBM.Options.CharSettings[UnitName("player")].AggroSound = false;
+									LVBM.Options.CharSettings[UnitName("player")].AggroFlash = true;
+									LVBM.Options.CharSettings[UnitName("player")].AggroShake = true;
+									LVBM.Options.CharSettings[UnitName("player")].AggroSpecialWarning = true;
+									LVBM.Options.CharSettings[UnitName("player")].AggroLocalWarning = false;
+								end
+								HideUIPanel(LVBMOptionsFrame);
+								ShowUIPanel(LVBMOptionsFrame);
+								LVBM.AddMsg(LVBMGUI_BUTTON_AGGROALERT_RESET_DONE);
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<CheckButton name="$parentButtonSoundAggro" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonEnableAggroAlert" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AGGROALERT_PLAYSOUND);
+								this:SetChecked(LVBM.Options.CharSettings[UnitName("player")].AggroSound);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.CharSettings[UnitName("player")].AggroSound = false;
+								else 
+									LVBM.Options.CharSettings[UnitName("player")].AggroSound = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonFlashAggro" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonSoundAggro" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AGGROALERT_FLASH);
+								this:SetChecked(LVBM.Options.CharSettings[UnitName("player")].AggroFlash);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.CharSettings[UnitName("player")].AggroFlash = false;
+								else 
+									LVBM.Options.CharSettings[UnitName("player")].AggroFlash = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonShakeAggro" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonFlashAggro" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AGGROALERT_SHAKE);
+								this:SetChecked(LVBM.Options.CharSettings[UnitName("player")].AggroShake);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.CharSettings[UnitName("player")].AggroShake = false;
+								else 
+									LVBM.Options.CharSettings[UnitName("player")].AggroShake = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonSpecialWarningAggro" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonShakeAggro" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AGGROALERT_SPECIALTEXT);
+								this:SetChecked(LVBM.Options.CharSettings[UnitName("player")].AggroSpecialWarning);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.CharSettings[UnitName("player")].AggroSpecialWarning = false;
+								else 
+									LVBM.Options.CharSettings[UnitName("player")].AggroSpecialWarning = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonLocalWarningAggro" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonSpecialWarningAggro" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AGGROALERT_LOCALWARNING);
+								this:SetChecked(LVBM.Options.CharSettings[UnitName("player")].AggroLocalWarning);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.CharSettings[UnitName("player")].AggroLocalWarning = false;
+								else 
+									LVBM.Options.CharSettings[UnitName("player")].AggroLocalWarning = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+
+					<Button name="$parentCheckRangeButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_RANGECHECK">
+						<Size><AbsDimension x="104" y="22"/></Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset><AbsDimension x="-44" y="5"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.RangeCheck();
+							</OnMouseUp>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(LVBMGUI_TOOLTIP_RANGECHECK_TITLE, 1.0, 1.0, 1.0, LVBMGUI_TOOLTIP_RANGECHECK_TEXT, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Button name="$parentDistanceFrame" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_DISTANCEFRAME">
+						<Size><AbsDimension x="98" y="22"/></Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentCheckRangeButton" relativePoint="LEFT">
+								<Offset><AbsDimension x="-2" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM_Gui_DistanceFrame();
+							</OnMouseUp>
+							<OnEnter>
+								GameTooltip_AddNewbieTip(LVBMGUI_TOOLTIP_DISTANCEFRAME_TITLE, 1.0, 1.0, 1.0, LVBMGUI_TOOLTIP_DISTANCEFRAME_TEXT, 1);
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+				
+				</Frames>
+			</Frame>
+
+
+
+			
+			<!-- ************************************ -->
+			<!--                 Page 2               -->
+			<!-- ************************************ -->
+			<Frame name="$parentPage2" hidden="true" setAllPoints="true">  <!-- LVBMOptionsFramePage2 -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentStatusBarsTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_STATUSBARS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentPizzaTimerTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_PIZZATIMER">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-275"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Statusbar Setup -->
+					<Frame name="$parentStatusBarTimerExample" hidden="false" inherits="LVBM_StatusBarTimerDefaultTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="46" y="-55"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<Frame name="$parentStatusBarDesignDropDown" inherits="UIDropDownMenuTemplate">	
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentStatusBarTimerExample" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="190" y="18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size><AbsDimension x="100" y="16"/></Size>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(this, function()
+									for index,value in pairs(LVBMStatusBars_Designs) do
+										local info = {};
+										info.func = function()
+											LVBM_Gui_ChangeExampleBarDesign(this:GetID(), true);
+											HideUIPanel(LVBMOptionsFrame);
+											ShowUIPanel(LVBMOptionsFrame);
+										end;
+										info.text = value.name;
+										UIDropDownMenu_AddButton(info);
+									end
+								end);
+								UIDropDownMenu_SetWidth(100);
+								UIDropDownMenu_SetSelectedID(this, LVBM.Options.StatusBarDesign);
+							</OnLoad>
+							<OnUpdate>
+								UIDropDownMenu_SetSelectedID(this, LVBM.Options.StatusBarDesign);
+								UIDropDownMenu_SetText(LVBMStatusBars_Designs[LVBM.Options.StatusBarDesign].name, this);
+							</OnUpdate>
+						</Scripts>
+					</Frame>					
+					<CheckButton name="$parentButtonEnableStatusBars" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentStatusBarTimerExample" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="-10" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_STATUSBAR_ENABLE);
+								this:SetChecked(LVBM.Options.EnableStatusBars);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.EnableStatusBars = false;
+									for index, value in pairs(LVBM.StatusBarData) do	-- hide current Bars
+										LVBM.EndStatusBarTimer(index, true, nil, true);
+									end
+								else 
+									LVBM.Options.EnableStatusBars = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonFillUpStatusBars" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonEnableStatusBars" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_STATUSBAR_FILLUP);
+								this:SetChecked(LVBM.Options.FillUpStatusBars);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.FillUpStatusBars = false;
+								else 
+									LVBM.Options.FillUpStatusBars = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonFliptOverStatusBars" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonFillUpStatusBars" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_STATUSBAR_FLIPOVER);
+								this:SetChecked(LVBM.Options.StatusBarsFlippedOver);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.StatusBarsFlippedOver = false;
+								else 
+									LVBM.Options.StatusBarsFlippedOver = true;
+								end
+								LVBMStatusBars_FlipOver();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonFlashBarOnEnd" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonFliptOverStatusBars" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_BUTTON_STATUSBAR_FLASHONEND);
+								this:SetChecked(LVBM.Options.FlashBars);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.FlashBars = false;
+								else 
+									LVBM.Options.FlashBars = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentButtonAutoColorBars" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentButtonFlashBarOnEnd" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_BUTTON_STATUSBAR_AUTOCOLORBARS);
+								this:SetChecked(LVBM.Options.AutoColorBars);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.AutoColorBars = false;
+									for index, value in pairs(LVBM.StatusBarData) do
+										if value.frame.specialColor then
+											getglobal(value.frame:GetName().."Bar"):SetStatusBarColor(value.color.R, value.color.G, value.color.B, value.color.A);
+										else
+											getglobal(value.frame:GetName().."Bar"):SetStatusBarColor(LVBM.Options.StatusBarColor.r, LVBM.Options.StatusBarColor.g, LVBM.Options.StatusBarColor.b, LVBM.Options.StatusBarColor.a);
+										end
+									end
+								else 
+									LVBM.Options.AutoColorBars = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+
+					<ColorSelect name="$parentColorSelect" enableMouse="true">
+						<Size><AbsDimension x="75" y="75" /></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentStatusBarTimerExample" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-10" y="-25"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ColorWheelTexture name="$parentPickerWheel">				<!-- Color Round -->
+							<Size><AbsDimension x="75" y="75" /></Size>
+						</ColorWheelTexture>
+						<ColorWheelThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons"> <!-- Target -->
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<TexCoords left="0" right="0.15625" top="0" bottom="0.625"/>
+						</ColorWheelThumbTexture>
+						<Scripts>
+							<OnShow>
+								local r, g, b = LVBM.Options.StatusBarColor.r, LVBM.Options.StatusBarColor.g, LVBM.Options.StatusBarColor.b;
+								this:SetColorRGB(r,g,b); 
+							</OnShow>
+							<OnColorSelect>
+								local r, g, b = this:GetColorRGB();
+								LVBM.Options.StatusBarColor.r = r;
+								LVBM.Options.StatusBarColor.g = g;
+								LVBM.Options.StatusBarColor.b = b;
+								getglobal(this:GetParent():GetName().."StatusBarTimerExampleBar"):SetStatusBarColor(r,g,b);
+								<!-- Set Colors to the Bars -->
+								LVBMGuiUpdateStatusbars();
+							</OnColorSelect>
+						</Scripts>
+					</ColorSelect>
+					<Slider name="$parentCSOpacitySlider" orientation="VERTICAL" minValue="0" maxValue="1" valueStep="0.01" defaultValue="1">
+						<Size><AbsDimension x="16" y="80"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentStatusBarTimerExample" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="80" y="-20"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="OPACITY">
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="0%">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="2" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="100%">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="-2" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								this:SetValue(LVBM.Options.StatusBarColor.a);
+							</OnShow>
+							<OnValueChanged>
+								local r, g, b, a = getglobal(this:GetParent():GetName().."StatusBarTimerExampleBar"):GetStatusBarColor();
+								LVBM.Options.StatusBarColor.a = this:GetValue();
+								getglobal(this:GetParent():GetName().."StatusBarTimerExampleBar"):SetStatusBarColor(r,g,b, this:GetValue());
+								
+								LVBMGuiUpdateStatusbars();
+							</OnValueChanged>
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<Slider name="$parentStatusBarScaleSlider" inherits="LVBMSliderTemplate" minValue="0.5" maxValue="3" valueStep="0.025">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentButtonAutoColorBars" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								this.ShowTestMsg = false;
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_STATUSBAR_SCALE_SLIDER);
+								this:SetValue(LVBM.Options.StatusBarSize.Scale);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.3f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.3f", this:GetValue()));
+								LVBM.Options.StatusBarSize.Scale = LVBM.math.round(this:GetValue(), 3);
+								LVBMStatusBars_Resize();
+
+								if this.ShowTestMsg then
+									LVBM.StartStatusBarTimer(10, "test", true);
+								end
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentStatusBarWidthSlider" inherits="LVBMSliderTemplate" minValue="100" maxValue="500" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentStatusBarScaleSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								this.ShowTestMsg = false;
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_STATUSBAR_WIDTH_SLIDER);
+								this:SetValue(LVBM.Options.StatusBarSize.Width);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.0f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.0f", this:GetValue()));
+								LVBM.Options.StatusBarSize.Width = LVBM.math.round(this:GetValue());
+								LVBMStatusBars_Resize();
+
+								if this.ShowTestMsg then
+									LVBM.StartStatusBarTimer(10, "test", true);
+								end
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentStatusBarCountSlider" inherits="LVBMSliderTemplate" minValue="1" maxValue="30" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentStatusBarWidthSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								-- this.ShowTestMsg = false;
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_STATUSBAR_COUNT);
+								this:SetValue(LVBM.Options.MaxStatusBars);
+								getglobal(this:GetName().."Value"):SetText(string.format("%d", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%d", this:GetValue()));
+								LVBM.Options.MaxStatusBars = LVBM.math.round(this:GetValue());
+
+								--[[
+								if this.ShowTestMsg then
+									for i=1, 30, 1 do
+										LVBM.EndStatusBarTimer(i..". test", true);
+									end
+									for i=1, LVBM.Options.MaxStatusBars, 1 do
+										LVBM.StartStatusBarTimer(3, i..". test", true);
+									end
+								end  --]]
+
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+
+
+
+					<!-- ******************* -->
+					<!-- Setup PizzaBoxTimer -->
+					<!-- ******************* -->
+					<EditBox name="$parentPizzaBoxName" inherits="LVBMBossModFrameEditBoxTemplate" letters="20">
+						<!-- /script LVBMOptionsFramePage2PizzaBoxName:SetPoint("TOPLEFT", 46, -260)  -->
+						<Size><AbsDimension x="125" y="32"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="46" y="-300"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitle" inherits="GameFontNormalSmall" text="LVBMGUI_EDITBOX_PIZZATIMER_TEXT">
+									<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"><Offset>
+												<AbsDimension x="5" y="10"/>
+									</Offset></Anchor></Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetAutoFocus(false);
+							</OnLoad>
+							<OnShow>
+								this:SetText(LVBM.Options.Gui.PizzaTimerText);
+							</OnShow>
+							<OnEditFocusGained>
+								if( this:GetText() == "TestTimer" ) then
+									this:SetText("");
+								end
+							</OnEditFocusGained>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentPizzaBoxMin" inherits="LVBMBossModFrameEditBoxTemplate" letters="2">
+						<!-- LVBMOptionsFramePage2PizzaBoxMin -->
+						<Size><AbsDimension x="45" y="32"/></Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentPizzaBoxName" relativePoint="RIGHT">
+								<Offset><AbsDimension x="20" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitle" inherits="GameFontNormalSmall" text="LVBMGUI_EDITBOX_PIZZATIMER_MIN">
+									<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"><Offset>
+												<AbsDimension x="-5" y="10"/>
+									</Offset></Anchor></Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetAutoFocus(false);
+							</OnLoad>
+							<OnShow>
+								this:SetNumber(LVBM.Options.Gui.PizzaTimerMin);
+							</OnShow>
+						</Scripts>
+					</EditBox>
+					<EditBox name="$parentPizzaBoxSec" inherits="LVBMBossModFrameEditBoxTemplate" letters="2">
+						<Size><AbsDimension x="45" y="32"/></Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentPizzaBoxMin" relativePoint="RIGHT">
+								<Offset><AbsDimension x="20" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitle" inherits="GameFontNormalSmall" text="LVBMGUI_EDITBOX_PIZZATIMER_SEC">
+									<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"><Offset>
+												<AbsDimension x="-5" y="10"/>
+									</Offset></Anchor></Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								this:SetAutoFocus(false);
+							</OnLoad>
+							<OnShow>
+								this:SetNumber(LVBM.Options.Gui.PizzaTimerSec);
+							</OnShow>
+						</Scripts>
+					</EditBox>
+					<CheckButton name="$parentOptionBroadcastPizzaTimer" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentPizzaBoxName" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="-10" y="-35"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.Options.Gui.PizzaTimerBroadcast = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parentPizzaTimerStartButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_PIZZATIMER_START">
+						<Size><AbsDimension x="120" y="18"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentOptionBroadcastPizzaTimer" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="135" y="0"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.Options.Gui.PizzaTimerText = getglobal(this:GetParent():GetName().."PizzaBoxName"):GetText(); 
+								LVBM.Options.Gui.PizzaTimerMin = getglobal(this:GetParent():GetName().."PizzaBoxMin"):GetNumber();
+								LVBM.Options.Gui.PizzaTimerSec = getglobal(this:GetParent():GetName().."PizzaBoxSec"):GetNumber();	
+								if( LVBM.Rank > 0 ) then
+								else
+									LVBM.Options.Gui.PizzaTimerBroadcast = false;
+								end
+
+								LVBM.StartStatusBarTimer(
+									((LVBM.Options.Gui.PizzaTimerMin * 60 ) +
+									  LVBM.Options.Gui.PizzaTimerSec),
+									LVBM.Options.Gui.PizzaTimerText, 
+									not LVBM.Options.Gui.PizzaTimerBroadcast
+								)
+								if ((LVBM.Options.Gui.PizzaTimerMin * 60 ) + LVBM.Options.Gui.PizzaTimerSec) > 10 then 
+									if LVBM.Options.Gui.PizzaTimerBroadcast then
+										LVBM.Schedule(((LVBM.Options.Gui.PizzaTimerMin * 60 ) + LVBM.Options.Gui.PizzaTimerSec) - 10, "LVBM.Announce", string.format(LVBM_TIMER_IS_ABOUT_TO_EXPIRE, LVBM.Options.Gui.PizzaTimerText));
+									else
+										LVBM.Schedule(((LVBM.Options.Gui.PizzaTimerMin * 60 ) + LVBM.Options.Gui.PizzaTimerSec) - 10, "LVBM.AddSpecialWarning", string.format(LVBM_TIMER_IS_ABOUT_TO_EXPIRE, LVBM.Options.Gui.PizzaTimerText));
+									end
+								end
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+
+
+					<Button name="$parentButtonMoveableBar" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_MOVEABLEBAR">
+						<Size><AbsDimension x="104" y="22"/></Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset><AbsDimension x="-44" y="5"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM_StatusBarTimerDrag:Show();
+							</OnMouseUp>
+						</Scripts>
+					</Button>
+					<Button name="$parentButtonSetToDefaults" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_DEFAULTS">
+						<Size><AbsDimension x="98" y="22"/></Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentButtonMoveableBar" relativePoint="LEFT">
+								<Offset><AbsDimension x="-2" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBMStatusBars_SetDefaultValues();
+
+								HideUIPanel(LVBMOptionsFrame);
+								ShowUIPanel(LVBMOptionsFrame);
+							</OnMouseUp>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow>
+						if( LVBM.Rank > 0 ) then
+							LVBMOptionsFramePage2OptionBroadcastPizzaTimer:Show();
+							LVBMOptionsFramePage2OptionBroadcastPizzaTimerText:SetText(LVBMGUI_CHECKBOX_PIZZATIMER_BROADCAST);
+							if( LVBM.Options.Gui.PizzaTimerBroadcast ) then
+								LVBMOptionsFramePage2OptionBroadcastPizzaTimer:SetChecked(1);
+							else
+								LVBMOptionsFramePage2OptionBroadcastPizzaTimer:SetChecked(nil);
+							end
+						else 
+							LVBMOptionsFramePage2OptionBroadcastPizzaTimer:Hide();
+						end
+						LVBM_Gui_ChangeExampleBarDesign(LVBM.Options.StatusBarDesign);
+					</OnShow>
+				</Scripts>
+			</Frame>
+
+			<!-- ************************************ -->
+			<!--                 Page 3               -->
+			<!-- ************************************ -->
+			<Frame name="$parentPage3" hidden="true" setAllPoints="true">  <!-- LVBMOptionsFramePage3 -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentRaidWarningTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_RAIDWARNING">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12"/>
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentSelfWarningTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_SELFWARNING">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-200"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12"/>
+							</FontHeight>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+
+					<!-- ***************** -->
+					<!-- Raidwarning Setup -->
+					<!-- ***************** -->
+					<Frame name="$parentRaidWarningDropDown" inherits="UIDropDownMenuTemplate">	
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Size><AbsDimension x="180" y="16"/></Size>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_Initialize(this, LVBMOptionsFrame_RaidWarningDropDown_CreateMenu);
+								UIDropDownMenu_SetWidth(180);
+								UIDropDownMenu_SetSelectedID(this, 1);
+							</OnLoad>
+							<OnShow>
+								UIDropDownMenu_SetSelectedID(this, LVBM.Options.Gui.RaidWarnSound);
+								if( LVBM.Options.Gui.RaidWarnSound == 1 ) then
+									UIDropDownMenu_SetText(LVBMGUI_DROPDOWN_RAIDWARNING_OPTION_1, this);
+	
+								elseif(  LVBM.Options.Gui.RaidWarnSound == 2 ) then
+									UIDropDownMenu_SetText(LVBMGUI_DROPDOWN_RAIDWARNING_OPTION_2, this);
+
+								elseif(  LVBM.Options.Gui.RaidWarnSound == 3 ) then
+									UIDropDownMenu_SetText(LVBMGUI_DROPDOWN_RAIDWARNING_OPTION_3, this);
+								end
+							</OnShow>
+						</Scripts>
+					</Frame>
+					<ColorSelect name="$parentRaidWarningColorSelect" enableMouse="true">
+						<Size><AbsDimension x="75" y="75" /></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentRaidWarningDropDown" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-40"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ColorWheelTexture name="$parentPickerWheel">
+							<Size><AbsDimension x="75" y="75" /></Size>		
+						</ColorWheelTexture>
+						<ColorWheelThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<TexCoords left="0" right="0.15625" top="0" bottom="0.625"/>
+						</ColorWheelThumbTexture>
+
+						<Scripts>
+							<OnShow>
+								this:SetColorRGB(	LVBM.Options.Gui["RaidWarning_R"],
+											LVBM.Options.Gui["RaidWarning_G"],
+											LVBM.Options.Gui["RaidWarning_B"]	);
+								this.ShowTestMsg = false;
+							</OnShow>
+							<OnColorSelect>
+								if this.ShowTestMsg then
+									local r, g, b = this:GetColorRGB();
+									LVBM.Options.Gui["RaidWarning_R"] = r;
+									LVBM.Options.Gui["RaidWarning_G"] = g;
+									LVBM.Options.Gui["RaidWarning_B"] = b;
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTestMsg = true;
+							</OnColorSelect>
+						</Scripts>
+					</ColorSelect>
+					<Slider name="$parentRaidWarningFontSizeSlider" orientation="VERTICAL" minValue="5" maxValue="35" valueStep="0.1">
+						<Size><AbsDimension x="16" y="75"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentRaidWarningColorSelect" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="85" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="Size">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="5">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="35">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>								
+								this.ShowTextMsg = false;
+								this:SetValue( LVBM.Options.Gui["RaidWarning_Height"] );
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTextMsg then
+									LVBM.Options.Gui["RaidWarning_Height"] = this:GetValue();
+									RaidWarningFrame:SetFont(	LVBM.Options.Gui["RaidWarning_Font"], 
+													LVBM.Options.Gui["RaidWarning_Height"],
+													"" );
+
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTextMsg = true;
+							</OnValueChanged>
+
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<Slider name="$parentRaidWarningYSlider" orientation="VERTICAL" minValue="0" maxValue="700" valueStep="5">
+						<Size><AbsDimension x="16" y="75"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentRaidWarningFontSizeSlider" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="40" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="Pos Y">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="0">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="-700">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								this:SetValue( LVBM.Options.Gui["RaidWarning_PosY"] * -1 );
+								this.ShowTestMsg = false;
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTestMsg then
+									LVBM.Options.Gui["RaidWarning_PosY"] = LVBM.math.round(this:GetValue()) * (-1);
+	
+									RaidWarningFrame:ClearAllPoints();
+									RaidWarningFrame:SetPoint("CENTER", "UIParent", "TOP", 
+												LVBM.Options.Gui["RaidWarning_PosX"],
+												LVBM.Options.Gui["RaidWarning_PosY"]);
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<Slider name="$parentRaidWarningXSlider" orientation="VERTICAL" minValue="-700" maxValue="700" valueStep="25">
+						<Size><AbsDimension x="16" y="75"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentRaidWarningYSlider" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="50" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="Pos X">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="700">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="-700">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								this:SetValue( LVBM.Options.Gui["RaidWarning_PosX"] * -1 );
+								this.ShowTestMsg = false;
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTestMsg then
+									LVBM.Options.Gui["RaidWarning_PosX"] = LVBM.math.round(this:GetValue()) * (-1);
+	
+									RaidWarningFrame:ClearAllPoints();
+									RaidWarningFrame:SetPoint("CENTER", "UIParent", "TOP", 
+												LVBM.Options.Gui["RaidWarning_PosX"],
+												LVBM.Options.Gui["RaidWarning_PosY"]);
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<CheckButton name="$parentOptionDisableRaidWarningFrame" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentRaidWarningColorSelect" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="10" y="-80"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_ENABLE_RAIDWARNINGFRAME);
+								if( LVBM.Options.Gui.RaidWarning_Enable == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.Gui.RaidWarning_Enable = not this:GetChecked();
+								if( LVBM.Options.Gui["RaidWarning_Enable"] == false ) then
+									RaidWarningFrame:Hide();
+								else
+									RaidWarningFrame:Show();
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+
+
+					<!-- Local Warning Frame -->
+					<ColorSelect name="$parentSelfWarningColorSelect" enableMouse="true">
+						<Size><AbsDimension x="75" y="75" /></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentRaidWarningDropDown" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-180"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ColorWheelTexture name="$parentPickerWheel">
+							<Size><AbsDimension x="75" y="75" /></Size>
+						</ColorWheelTexture>
+						<ColorWheelThumbTexture file="Interface\Buttons\UI-ColorPicker-Buttons">
+							<Size>
+								<AbsDimension x="10" y="10"/>
+							</Size>
+							<TexCoords left="0" right="0.15625" top="0" bottom="0.625"/>
+						</ColorWheelThumbTexture>
+
+						<Scripts>
+							<OnShow>
+								this:SetColorRGB(	LVBM.Options.Gui["SelfWarning_R"],
+											LVBM.Options.Gui["SelfWarning_G"],
+											LVBM.Options.Gui["SelfWarning_B"]	);
+								this.ShowTestMsg = false;
+							</OnShow>
+							<OnColorSelect>
+								if this.ShowTestMsg then
+									local r, g, b = this:GetColorRGB();
+									LVBM.Options.Gui["SelfWarning_R"] = r;
+									LVBM.Options.Gui["SelfWarning_G"] = g;
+									LVBM.Options.Gui["SelfWarning_B"] = b;
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTestMsg = true;
+							</OnColorSelect>
+						</Scripts>
+					</ColorSelect>
+					<Slider name="$parentSelfWarningFontSizeSlider" orientation="VERTICAL" minValue="5" maxValue="35" valueStep="0.1">
+						<Size><AbsDimension x="16" y="75"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSelfWarningColorSelect" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="85" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="Size">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="5">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="35">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>								
+								this.ShowTextMsg = false;
+								this:SetValue( LVBM.Options.Gui["SelfWarning_Height"] );
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTextMsg then
+									LVBM.Options.Gui["SelfWarning_Height"] = this:GetValue();
+									LVBMWarningFrame:SetFont(	LVBM.Options.Gui["SelfWarning_Font"], 
+													LVBM.Options.Gui["SelfWarning_Height"],
+													"" );
+
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTextMsg = true;
+							</OnValueChanged>
+
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<Slider name="$parenttSelfWarningYSlider" orientation="VERTICAL" minValue="0" maxValue="500" valueStep="5">
+						<Size><AbsDimension x="16" y="75"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentSelfWarningFontSizeSlider" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="40" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="Pos Y">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="0">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="+500">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								this:SetValue( 500 - LVBM.Options.Gui["SelfWarning_PosY"] );
+								this.ShowTestMsg = false;
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTestMsg then
+									LVBM.Options.Gui["SelfWarning_PosY"] = 500 - LVBM.math.round(this:GetValue());
+	
+									LVBMWarningFrame:ClearAllPoints();
+									LVBMWarningFrame:SetPoint("CENTER", "UIParent", "BOTTOM", 
+												LVBM.Options.Gui["SelfWarning_PosX"],
+												LVBM.Options.Gui["SelfWarning_PosY"])
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<Slider name="$parenttSelfWarningXSlider" orientation="VERTICAL" minValue="-700" maxValue="700" valueStep="25">
+						<Size><AbsDimension x="16" y="75"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parenttSelfWarningYSlider" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="50" y="0"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
+							<EdgeSize>
+								<AbsValue val="8"/>
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8"/>
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6"/>
+							</BackgroundInsets>
+						</Backdrop>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" inherits="GameFontNormalSmall" text="Pos X">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="10"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="700">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="-5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<FontString inherits="GameFontHighlightSmall" text="-700">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+											<Offset>
+												<AbsDimension x="3" y="5"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+								this:SetValue( LVBM.Options.Gui["SelfWarning_PosX"] * -1 );
+								this.ShowTestMsg = false;
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTestMsg then
+									LVBM.Options.Gui["SelfWarning_PosX"] = LVBM.math.round(this:GetValue()) * (-1);
+	
+									LVBMWarningFrame:ClearAllPoints();
+									LVBMWarningFrame:SetPoint("CENTER", "UIParent", "BOTTOM", 
+												LVBM.Options.Gui["SelfWarning_PosX"],
+												LVBM.Options.Gui["SelfWarning_PosY"]);
+									RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+								end
+								this.ShowTestMsg = true;
+							</OnValueChanged>
+
+						</Scripts>
+						<ThumbTexture file="Interface\Buttons\UI-SliderBar-Button-Vertical">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+						</ThumbTexture>
+					</Slider>
+					<CheckButton name="$parentOptionDisableSelfWarningFrame" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentSelfWarningColorSelect" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="10" y="-80"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_ENABLE_SELFWARNINGFRAME);
+								if( LVBM.Options.Gui.SelfWarning_Enable == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.Gui.SelfWarning_Enable = not this:GetChecked();
+								if( LVBM.Options.Gui["SelfWarning_Enable"] == false ) then
+									LVBMWarningFrame:Hide();
+								else
+									LVBMWarningFrame:Show();
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+
+					<Button name="$parentTestSoundButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_SOUND_TEST">
+						<Size><AbsDimension x="90" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentRaidWarningDropDown" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="20" y="5"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBMBossModFrame_RaidWarningPlaySound(LVBM.Options.Gui.RaidWarnSound);
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Button name="$parentShowMessageButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_SHOW_EXAMPLE">
+						<Size><AbsDimension x="90" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentTestSoundButton" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-5"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								RaidWarningFrames_AddLocalMessages(LVBMGUI_RAIDWARNING_EXAMPLE);
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_RAIDWARNING_RESET">
+						<Size><AbsDimension x="90" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentShowMessageButton" relativePoint="BOTTOMLEFT">
+								<Offset><AbsDimension x="0" y="-5"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.Options.Gui["RaidWarning_R"] 	= 1.000000;
+								LVBM.Options.Gui["RaidWarning_G"] 	= 0.858823;
+								LVBM.Options.Gui["RaidWarning_B"] 	= 0.717647;
+								LVBM.Options.Gui["RaidWarning_Delay"] 	= 1;
+								LVBM.Options.Gui["RaidWarning_Font"] 	= "Fonts\\FRIZQT__.TTF";
+								LVBM.Options.Gui["RaidWarning_Height"] 	= 20;
+								LVBM.Options.Gui["RaidWarning_PosX"] 	= 0;
+								LVBM.Options.Gui["RaidWarning_PosY"] 	= -235;
+
+								LVBM.Options.Gui["SelfWarning_R"] 	= 1.000000;
+								LVBM.Options.Gui["SelfWarning_G"] 	= 0.858823;
+								LVBM.Options.Gui["SelfWarning_B"] 	= 0.717647;
+								LVBM.Options.Gui["SelfWarning_Delay"] 	= 5;
+								LVBM.Options.Gui["SelfWarning_Font"] 	= "Fonts\\FRIZQT__.TTF";
+								LVBM.Options.Gui["SelfWarning_Height"] 	= 20;
+								LVBM.Options.Gui["SelfWarning_PosX"] 	= 0;
+								LVBM.Options.Gui["SelfWarning_PosY"] 	= 235;
+
+								LVBMBossModFrame_OnEvent("PLAYER_LOGIN");		-- Reset Positions
+								LVBM.AddMsg(LVBMGUI_BUTTON_RAIDWARNING_RESET_DONE);
+
+								HideUIPanel(LVBMBossModFrame);
+								ShowUIPanel(LVBMBossModFrame);
+								ShowUIPanel(LVBMOptionsFrame);
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+
+
+				</Frames>
+			</Frame>
+
+
+			<!-- ************************************ -->
+			<!--                 Page 4               -->
+			<!-- ************************************ -->
+			<Frame name="$parentPage4" hidden="true" setAllPoints="true">  <!-- LVBMOptionsFramePage4 -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentSpecialWarning" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_SPECIALWARNING">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentShakescreen" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_SHAKESCREEN">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-140"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentFlashEffects" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_FLASHEFFECT">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-225"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentCombatInfos" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_COMBATSYSTEM">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-310"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+					</Layer>
+				</Layers>
+
+				<Frames>
+					<!-- Special Warning Texts --> 
+					<CheckButton name="$parentOptionSpecialWarnings" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="40" y="-45"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_SPECWARNING_ENABLE);
+								this:SetChecked(LVBM.Options.SpecialWarningsEnabled);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.SpecialWarningsEnabled = false;
+								else 
+									LVBM.Options.SpecialWarningsEnabled = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parentTestWarningButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_SPECWARNING_TEST">
+						<Size><AbsDimension x="90" y="18"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentOptionSpecialWarnings" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="165" y="0"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.AddSpecialWarning(LVBMGUI_BUTTON_SPECWARNING_EXAMPLE);
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Slider name="$parentDurationSlider" inherits="LVBMSliderTemplate" minValue="1" maxValue="15" valueStep="0.1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentOptionSpecialWarnings" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="60" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_SPECWARNING_DURATION);
+								this:SetValue(LVBM.Options.SpecialWarningTextDuration);
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+								LVBM.Options.SpecialWarningTextDuration = LVBM.math.round(this:GetValue());
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentFadeTimeSlider" inherits="LVBMSliderTemplate" minValue="1" maxValue="10" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentDurationSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_SPECWARNING_FADETIME);
+								this:SetValue(LVBM.Options.SpecialWarningTextFadeTime);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+								LVBM.Options.SpecialWarningTextFadeTime = LVBM.math.round(this:GetValue(), 1);
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentTextSizeSlider" inherits="LVBMSliderTemplate" minValue="5" maxValue="50" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFadeTimeSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_SPECWARNING_TEXTSIZE);
+								this:SetValue(LVBM.Options.SpecialWarningTextSize);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+								LVBM.Options.SpecialWarningTextSize = LVBM.math.round(this:GetValue(), 1);
+								LVBMSpecialWarningFrameText:SetFont("Fonts\\FRIZQT__.TTF", 
+												    LVBM.Options.SpecialWarningTextSize, 
+												    "THICKOUTLINE");
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<!-- Shakes -->
+					<CheckButton name="$parentOptionShakeScreenEffects" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="40" y="-150"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_SHAKESCREEN_ENABLE);
+								this:SetChecked(LVBM.Options.ShakeEnabled);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.ShakeEnabled = false;
+								else 
+									LVBM.Options.ShakeEnabled = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parentTestShakeButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_SHAKESCREEN_TEST">
+						<Size><AbsDimension x="90" y="18"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentOptionShakeScreenEffects" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="165" y="0"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.ShakeScreen();
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Slider name="$parentShakeDurationSlider" inherits="LVBMSliderTemplate" minValue="0.1" maxValue="5" valueStep="0.1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentOptionShakeScreenEffects" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="60" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_SHAKESCREEN_DURATION);
+								this:SetValue(LVBM.Options.ShakeDuration);
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+								LVBM.Options.ShakeDuration = LVBM.math.round(this:GetValue());
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentShakeIntensitySlider" inherits="LVBMSliderTemplate" minValue="1" maxValue="100" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShakeDurationSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_SHAKESCREEN_INTENSITY);
+								this:SetValue(LVBM.Options.ShakeIntensity);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+								LVBM.Options.ShakeIntensity = LVBM.math.round(this:GetValue(), 1);
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<!-- Flashes -->
+					<CheckButton name="$parentOptionFlashEffects" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="40" y="-235"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_FLASHEFFECT_ENABLE);
+								this:SetChecked(LVBM.Options.FlashEnabled);
+							</OnShow>
+							<OnMouseUp>
+								if( this:GetChecked() ) then
+									LVBM.Options.FlashEnabled = false;
+								else 
+									LVBM.Options.FlashEnabled = true;
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<Button name="$parentTestFlashButton" inherits="UIPanelButtonTemplate" text="LVBMGUI_BUTTON_FLASHEFFECT_TEST">
+						<Size><AbsDimension x="90" y="18"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentOptionFlashEffects" relativePoint="TOPRIGHT">
+								<Offset><AbsDimension x="165" y="0"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnMouseUp>
+								LVBM.AddSpecialWarning("", false, true);
+							</OnMouseUp>
+						</Scripts>
+						<NormalText inherits="GameFontNormalSmall"/>
+						<HighlightText inherits="GameFontNormalSmall"/>
+					</Button>
+					<Slider name="$parentFlashDurationSlider" inherits="LVBMSliderTemplate" minValue="0.2" maxValue="5" valueStep="0.1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentOptionFlashEffects" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="60" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_FLASHEFFECT_DURATION);
+								this:SetValue(LVBM.Options.FlashDuration);
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+								LVBM.Options.FlashDuration = LVBM.math.round(this:GetValue());
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					<Slider name="$parentFlashesSlider" inherits="LVBMSliderTemplate" minValue="1" maxValue="10" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentFlashDurationSlider" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText(LVBMGUI_SLIDER_FLASHEFFECT_FLASHES);
+								this:SetValue(LVBM.Options.NumFlashes);
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								getglobal(this:GetName().."Value"):SetText(string.format("%.1f", this:GetValue()));
+								LVBM.Options.NumFlashes = LVBM.math.round(this:GetValue(), 1);
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+					
+					<!-- Combat Informations -->
+					<CheckButton name="$parentShowCombatInformations" inherits="OptionsCheckButtonTemplate">
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="40" y="-320"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_SHOWCOMBATINFO);
+								if( LVBM.Options.ShowCombatInformations == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.ShowCombatInformations = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+
+				</Frames>
+			</Frame>
+
+			<!-- ************************************ -->
+			<!--                 Page 5               -->
+			<!-- ************************************ -->
+			<Frame name="$parentPage5" hidden="true" setAllPoints="true">  <!-- LVBMOptionsFramePage5 -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentAutoRespondTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_AUTORESPOND">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentRaidSettingsTitle" inherits="GameFontNormalSmall" text="LVBMGUI_TITLE_RAIDOPTIONS">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-210"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton name="$parentAutoRespondEnable" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="20" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AUTORESPOND_ENABLE);
+								if( LVBM.Options.AutoRespond == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.AutoRespond = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoRespondShowWhispers" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentAutoRespondEnable" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AUTORESPOND_SHOW_WHISPERS);
+								if( LVBM.Options.ShowWhispersDuringCombat == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.ShowWhispersDuringCombat = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoRespondInformUser" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentAutoRespondShowWhispers" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AUTORESPOND_INFORM_USER);
+								if( LVBM.Options.ShowAutoRespondInfo == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.ShowAutoRespondInfo = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentAutoRespondHideReply" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentAutoRespondInformUser" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_AUTORESPOND_HIDE_REPLY);
+								if( LVBM.Options.HideOutgoingInfoWhisper == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.HideOutgoingInfoWhisper = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<CheckButton name="$parentEnableStatusOption" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentAutoRespondHideReply" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="0" y="-23"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_ALLOW_STATUS_COMMAND);
+								if( LVBM.Options.EnableStatusCommand == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.EnableStatusCommand = not this:GetChecked();
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<EditBox name="$parentAutoRespondBusyMessage" inherits="LVBMBossModFrameEditBoxTemplate" letters="250">
+						<Size><AbsDimension x="310" y="32"/></Size>
+						<Anchors><Anchor point="TOPLEFT" relativeTo="$parentEnableStatusOption" relativePoint="TOPLEFT">
+								<Offset><AbsDimension x="15" y="-33"/></Offset>
+						</Anchor></Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentTitle" inherits="GameFontNormalSmall" text="LVBMGUI_EDITBOX_AUTORESPOND_TITLE">
+									<Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"><Offset>
+												<AbsDimension x="5" y="10"/>
+									</Offset></Anchor></Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<FontString inherits="ChatFontNormal"></FontString>
+						<Scripts>
+							<OnLoad>
+								this:SetAutoFocus(false);
+							</OnLoad>
+							<OnShow>
+								this:SetText(LVBM.Options.BusyMessage);
+							</OnShow>
+							<OnTextChanged>
+								LVBM.Options.BusyMessage = this:GetText();
+							</OnTextChanged>
+							<OnEnter>
+								GameTooltip:Hide();
+								GameTooltip:ClearLines();
+								GameTooltip:SetOwner(this, "ANCHOR_CURSOR");
+								GameTooltip:SetText(LVBMGUI_EDITBOX_AUTORESPOND_TOOLTIP_HEADER);
+								local i = 1;
+								while( getglobal("LVBMGUI_EDITBOX_AUTORESPOND_TOOLTIP_TEXT"..i) ) do
+									GameTooltip:AddDoubleLine(getglobal("LVBMGUI_EDITBOX_AUTORESPOND_TOOLTIP_TEXT"..i)[1], 
+												  getglobal("LVBMGUI_EDITBOX_AUTORESPOND_TOOLTIP_TEXT"..i)[2], 
+												  NORMAL_FONT_COLOR.r,
+												  NORMAL_FONT_COLOR.g, 
+												  NORMAL_FONT_COLOR.b, 
+												  HIGHLIGHT_FONT_COLOR.r, 
+												  HIGHLIGHT_FONT_COLOR.g,
+												  HIGHLIGHT_FONT_COLOR.b);
+									i = i + 1;
+								end
+								GameTooltip:Show()
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</EditBox>
+
+					<!-- Raid Settings -->
+					<CheckButton name="$parentShowPlayerNamesInRaidGroup" inherits="OptionsCheckButtonTemplate">
+						<Size><AbsDimension x="20" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT">
+								<Offset><AbsDimension x="20" y="-225"/></Offset>
+						</Anchor></Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Text"):SetText(LVBMGUI_CHECKBOX_HIDEPLAYERNAMESINRAIDS);
+								if( LVBM.Options.Gui.HidePlayerNamesInRaid == true ) then
+									this:SetChecked(1);
+								else
+									this:SetChecked(nil);
+								end
+							</OnShow>
+							<OnMouseUp>
+								LVBM.Options.Gui.HidePlayerNamesInRaid = not this:GetChecked();
+
+								if (LVBM.Options.Gui.HidePlayerNamesInRaid 
+								   and tonumber(GetCVar("UnitNamePlayer")) == 1 
+								   and GetNumRaidMembers() > 0) then
+
+									LVBM.Options.Gui["HidePlayerNames"] = true;
+									SetCVar("UnitNamePlayer", 0);
+
+								elseif (not LVBM.Options.Gui.HidePlayerNamesInRaid
+								   and LVBM.Options.Gui["HidePlayerNames"]) then
+
+									LVBM.Options.Gui["HidePlayerNames"] = false;
+									SetCVar("UnitNamePlayer", 1);
+								end
+							</OnMouseUp>
+						</Scripts>
+					</CheckButton>
+					<Slider name="$parentCombatLogDistanceSlider" inherits="LVBMSliderTemplate" minValue="1" maxValue="3" valueStep="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShowPlayerNamesInRaidGroup" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="100" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								getglobal(this:GetName().."Title"):SetText("Combatlog range");
+								this:SetValue(LVBM.Options.Gui.CombatLogValue);
+								getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+							</OnShow>
+							<OnValueChanged>
+								if this.ShowTestMsg then
+									LVBM.SetCombatLogDistance( this:GetValue() );
+									LVBM.Options.Gui.CombatLogValue = LVBM.math.round(this:GetValue());
+									getglobal(this:GetName().."Value"):SetText(LVBM.math.round(this:GetValue()));
+								end
+
+								this.ShowTestMsg = true
+							</OnValueChanged>
+						</Scripts>
+					</Slider>					
+					
+					
+
+				</Frames>
+			</Frame>
+
+		
+			<!-- ************************************ -->
+			<!--                 Page 6               -->
+			<!-- ************************************ -->
+			<Frame name="$parentPage6" hidden="true" setAllPoints="true">  <!-- LVBMOptionsFramePage6 -->
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTitle" inherits="GameFontNormal" text="LVBMGUI_ABOUTTITLE">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="20" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+						</FontString>
+						<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT" text=" ">
+							<Size>
+								<AbsDimension x="310" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="30" y="-2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						for i, value in pairs(LVBMGUI_ABOUTTEXT) do
+							getglobal(this:GetName().."Text"):SetText( 
+								getglobal(this:GetName().."Text"):GetText().."\n"..value
+							);
+						end
+					</OnLoad>
+				</Scripts>
+			</Frame>
+
+
+		</Frames>
+		<Scripts>
+			<OnUpdate>
+				LVBMGUI_SetTabPosition_Update(2, -4, -12, -16, 0, LVBMGUI_SIDEFRAME_TABCOUNT);
+			</OnUpdate>
+			<OnLoad>
+				PanelTemplates_SetNumTabs(this, LVBMGUI_SIDEFRAME_TABCOUNT);
+				LVBMOptionsFrame.selectedTab = 1;
+				PanelTemplates_UpdateTabs(this);
+			</OnLoad>
+			<OnShow>
+				LVBMOptionsFrame_OnShow();
+
+				for i=1, LVBMGUI_SIDEFRAME_TABCOUNT, 1 do
+					getglobal("LVBMOptionsFrameTab"..i):Show();
+				end
+			</OnShow>
+			<OnHide>
+				LVBMOptionsFrame_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+
+
+	<Button name="LVBMMinimapButton" parent="Minimap" hidden="true" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Scripts>
+			<OnClick>
+				if LVBMBossModFrame:IsShown() then
+					HideUIPanel(LVBMBossModFrame);
+				else
+					ShowUIPanel(LVBMBossModFrame);
+				end
+			</OnClick>
+			<OnMouseUp>
+
+			</OnMouseUp>
+			<OnEnter>
+				GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+				GameTooltip:SetText("La Vendetta Boss Mods");
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\AddOns\LVBM_API\Textures\Minimap-Button-Up"/>
+		<PushedTexture file="Interface\AddOns\LVBM_API\Textures\Minimap-Button-Down"/>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>	
+
+</Ui>
+
+

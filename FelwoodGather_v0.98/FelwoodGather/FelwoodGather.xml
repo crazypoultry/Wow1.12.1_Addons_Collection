@@ -1,0 +1,552 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\FrameXML\UI.xsd">
+	<Script file="Localization.lua"/>
+	<Script file="FelwoodGather.lua"/>
+	<Frame name="FelwoodGather" parent="UIParent">
+		<Size>
+			<AbsDimension x="0" y="0"/>
+		</Size>
+		<Scripts>
+			<OnLoad>
+				FelwoodGather_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				FelwoodGather_OnEvent(event);
+			</OnEvent>
+			<OnUpdate>
+				FelwoodGather_TimeCheck(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+	<Frame name="FelwoodMapOverlayFrame" parent="WorldMapDetailFrame" hidden="true" enablemouse="false" movable="false">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+				<AbsDimension x="0" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:SetWidth(WorldMapDetailFrame:GetWidth());
+				this:SetHeight(WorldMapDetailFrame:GetHeight());
+				this:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
+			</OnLoad>
+			<OnUpdate>
+				FelwoodGather_TimeCheck(arg1);
+				FelwoodGather_MapUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+		<Frames>
+			<Frame name="FelwoodMapOverlayFrame1" parent="FelwoodMapOverlayFrame" hidden="false" enablemouse="false" movable="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<AbsDimension x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetWidth(this:GetParent():GetWidth());
+						this:SetHeight(this:GetParent():GetHeight());
+						this:SetFrameLevel(this:GetParent():GetFrameLevel() + 1);
+--						this:SetWidth(WorldMapDetailFrame:GetWidth());
+--						this:SetHeight(WorldMapDetailFrame:GetHeight());
+--						this:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Button name="FelwoodMainTemplate" inherits="ActionButtonTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this.toolTip="no time";
+			</OnLoad>
+			<OnEnter>
+				local x, y = this:GetCenter();
+				local parentX, parentY = this:GetParent():GetCenter();
+				if ( x~=nil and parentX ~= nil and x > parentX ) then
+					FWGMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					FWGMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				FWGMapTooltip:SetText(this.toolTip);
+				FWGMapTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				FWGMapTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				local id = this:GetID();
+				FelwoodGather_OnClick(arg1, id, this:GetName());
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentTexture" file="Interface\Icons\INV_Misc_Food_45.blp"/> 
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" inherits="GameFontHighlightSmallOutline" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-2" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	<Frame name="FelwoodMainMenu" inherits="UIDropDownMenuTemplate" hidden="true">
+		<Size>
+			<AbsDimension x="10" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="-20" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Frame>
+
+	<Button name="FelwoodMain1" id="1" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain2" id="2" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain3" id="3" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain4" id="4" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain5" id="5" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain6" id="6" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain7" id="7" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain8" id="8" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain9" id="9" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain10" id="10" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain11" id="11" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain12" id="12" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain13" id="13" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain14" id="14" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain15" id="15" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain16" id="16" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain17" id="17" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain18" id="18" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain19" id="19" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain20" id="20" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain21" id="21" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain22" id="22" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain23" id="23" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain24" id="24" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain25" id="25" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain26" id="26" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain27" id="27" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain28" id="28" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain29" id="29" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Button name="FelwoodMain30" id="30" inherits="FelwoodMainTemplate" parent="FelwoodMapOverlayFrame1" toplevel="true"/>
+	<Frame name="FelwoodGather_OptionsFrame" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent" enableKeyboard="true">
+		<Size>
+			<AbsDimension x="300" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="FelwoodGather_OptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="350" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="FelwoodGather Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="FelwoodGather_OptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="FelwoodGather_AcceptTimer" inherits="OptionsCheckButtonTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-30"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_ACCEPTTIMER);
+					</OnLoad>
+					<OnClick>
+						FelwoodGather_Config.acceptTimer = (not FelwoodGather_Config.acceptTimer);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="FelwoodGather_SendAddonMessage" inherits="OptionsCheckButtonTemplate">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="FelwoodGather_AcceptTimer" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="120" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_SENDADDON);
+					</OnLoad>
+					<OnClick>
+						FelwoodGather_Config.useMsg = (not FelwoodGather_Config.useMsg);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="FelwoodGather_ShowMinimapIcons" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" >
+						<Offset>
+							<AbsDimension x="40" y="-60"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_SHOWMINIMAPICONS);
+					</OnLoad>
+					<OnClick>
+						FelwoodGather_ToggleMiniMap();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="FelwoodGather_MinimapInterval" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-100" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_MINIMAPINTERVAL);
+						getglobal(this:GetName().."High"):SetText("2.0");
+						getglobal(this:GetName().."Low"):SetText("0.0");
+						FelwoodGather_MinimapInterval:SetMinMaxValues(0.0, 2.0);
+						FelwoodGather_MinimapInterval:SetValueStep(0.05);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGather_Config.minimapInterval = this:GetValue();
+						local time = string.format(FELWOODGATHER_OPTIONS_SEC, FelwoodGather_Config.minimapInterval);
+						FelwoodGather_MinimapIntervalLabel:SetText(time);
+
+					</OnValueChanged>
+				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmallOutline" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Slider>
+
+			
+			<CheckButton name="FelwoodGather_Notify" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="40" y="-140"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FWG_NOTIFY);
+					</OnLoad>
+					<OnClick>
+						FelwoodGather_Config.notify = (not FelwoodGather_Config.notify);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<Slider name="FelwoodGather_SliderWarn1" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-180" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_WARN1);
+						getglobal(this:GetName().."High"):SetText(FELWOODGATHER_OPTIONS_WARN_HIGH);
+						getglobal(this:GetName().."Low"):SetText(FELWOODGATHER_OPTIONS_WARN_LOW);
+						FelwoodGather_SliderWarn1:SetMinMaxValues(0, 1500);
+						FelwoodGather_SliderWarn1:SetValueStep(60);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGather_Config.warn1 = FelwoodGather_SliderWarn1:GetValue();
+						FelwoodGather_SliderWarn1Label:SetText((FelwoodGather_Config.warn1/60)..FELWOODGATHER_OPTIONS_MINUTE);
+
+					</OnValueChanged>
+				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmallOutline" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+
+			</Slider>
+			<Slider name="FelwoodGather_SliderWarn2" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-220" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_WARN2);
+						getglobal(this:GetName().."Low"):SetText(FELWOODGATHER_OPTIONS_WARN_HIGH);
+						getglobal(this:GetName().."High"):SetText(FELWOODGATHER_OPTIONS_WARN_HIGH);
+						FelwoodGather_SliderWarn2:SetMinMaxValues(0, 1500);
+						FelwoodGather_SliderWarn2:SetValueStep(60);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGather_Config.warn2 = FelwoodGather_SliderWarn2:GetValue();
+						if(FelwoodGather_Config.warn2 > FelwoodGather_Config.warn1) then
+							FelwoodGather_Config.warn2 = FelwoodGather_Config.warn1;
+							FelwoodGather_SliderWarn2:SetValue(FelwoodGather_Config.warn2);
+						end
+						FelwoodGather_SliderWarn2Label:SetText((FelwoodGather_Config.warn2/60) ..FELWOODGATHER_OPTIONS_MINUTE);
+					</OnValueChanged>
+				</Scripts>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontHighlightSmallOutline" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+
+			</Slider>
+
+			<Slider name="FelwoodGather_SliderAlpha" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-280" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_TRANSPARENCY);
+						getglobal(this:GetName().."High"):SetText("100%");
+						getglobal(this:GetName().."Low"):SetText("0%");
+						FelwoodGather_SliderAlpha:SetMinMaxValues(0.0,1.0);
+						FelwoodGather_SliderAlpha:SetValueStep(0.1);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGather_Config.alpha = FelwoodGather_SliderAlpha:GetValue();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="FelwoodGather_SliderScale" inherits="OptionsSliderTemplate">
+				<Size>
+					<AbsDimension x="220" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-320" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText(FELWOODGATHER_OPTIONS_ICONSIZE);
+						getglobal(this:GetName().."High"):SetText("16");
+						getglobal(this:GetName().."Low"):SetText("4");
+						FelwoodGather_SliderScale:SetMinMaxValues(4,16);
+						FelwoodGather_SliderScale:SetValueStep(2);
+					</OnLoad>
+					<OnValueChanged>
+						FelwoodGather_Config.scale = FelwoodGather_SliderScale:GetValue();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Button name="FelwoodGather_OptionsFrameDone" inherits="OptionsButtonTemplate" text="Done">
+				<Anchors>
+					<Anchor point="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						this:SetText(FELWOODGATHER_OPTIONS_DONE);
+					</OnLoad>
+					<OnClick>
+						FelwoodGather_ToggleConfigWindow();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				FelwoodGather_Options_OnLoad();
+			</OnLoad>
+			<OnHide>
+				FelwoodGather_Options_OnHide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<GameTooltip name="FWGBuffTooltip" inherits="GameTooltipTemplate" parent="WorldFrame" hidden="false" toplevel="true" >
+			<Scripts>
+			<OnLoad>
+				this:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</OnLoad>
+		</Scripts>
+
+	</GameTooltip>
+	<GameTooltip name="FWGMapTooltip" inherits="GameTooltipTemplate" parent="WorldMapFrame" hidden="true" toplevel="true" >
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				this:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+	<Button name="FWGMinimapPOITemplate" hidden="true" enablemouse="false" virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="MinimapBackdrop" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-51" y="60"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+			</OnLoad>
+			<OnEnter>
+				FWGMapTooltip:SetParent("Minimap");
+				local x, y = this:GetCenter();
+				local parentX, parentY = this:GetParent():GetCenter();
+				if ( x~=nil and parentX ~= nil and x > parentX ) then
+					FWGMapTooltip:SetOwner(this, "ANCHOR_LEFT");
+				else
+					FWGMapTooltip:SetOwner(this, "ANCHOR_RIGHT");
+				end
+				local id = this:GetID();
+				FelwoodGather_SetMinimapTooltipText(id);
+			</OnEnter>
+			<OnLeave>
+				FWGMapTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				local id = this:GetID();
+				FelwoodGather_OnClick(arg1, id, this:GetName());
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentTexture" file="Interface\Icons\INV_Misc_Food_45.blp"/> 
+	</Button>
+	<Button name="FWGMinimapPOI1"  inherits="FWGMinimapPOITemplate" id="1" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI2"  inherits="FWGMinimapPOITemplate" id="2" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI3"  inherits="FWGMinimapPOITemplate" id="3" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI4"  inherits="FWGMinimapPOITemplate" id="4" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI5"  inherits="FWGMinimapPOITemplate" id="5" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI6"  inherits="FWGMinimapPOITemplate" id="6" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI7"  inherits="FWGMinimapPOITemplate" id="7" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI8"  inherits="FWGMinimapPOITemplate" id="8" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI9"  inherits="FWGMinimapPOITemplate" id="9" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI10"  inherits="FWGMinimapPOITemplate" id="10" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI11"  inherits="FWGMinimapPOITemplate" id="11" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI12"  inherits="FWGMinimapPOITemplate" id="12" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI13"  inherits="FWGMinimapPOITemplate" id="13" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI14"  inherits="FWGMinimapPOITemplate" id="14" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI15"  inherits="FWGMinimapPOITemplate" id="15" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI16"  inherits="FWGMinimapPOITemplate" id="16" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI17"  inherits="FWGMinimapPOITemplate" id="17" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI18"  inherits="FWGMinimapPOITemplate" id="18" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI19"  inherits="FWGMinimapPOITemplate" id="19" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI20"  inherits="FWGMinimapPOITemplate" id="20" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI21"  inherits="FWGMinimapPOITemplate" id="21" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI22"  inherits="FWGMinimapPOITemplate" id="22" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI23"  inherits="FWGMinimapPOITemplate" id="23" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI24"  inherits="FWGMinimapPOITemplate" id="24" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI25"  inherits="FWGMinimapPOITemplate" id="25" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI26"  inherits="FWGMinimapPOITemplate" id="26" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI27"  inherits="FWGMinimapPOITemplate" id="27" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI28"  inherits="FWGMinimapPOITemplate" id="28" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI29"  inherits="FWGMinimapPOITemplate" id="29" hidden="false" parent="Minimap" toplevel="true"/>
+	<Button name="FWGMinimapPOI30"  inherits="FWGMinimapPOITemplate" id="30" hidden="false" parent="Minimap" toplevel="true"/>
+
+</Ui>

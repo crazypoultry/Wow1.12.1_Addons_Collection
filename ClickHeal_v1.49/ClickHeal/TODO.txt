@@ -1,0 +1,364 @@
+BUGS
+
+- color dps, even if 0 and if not yet expired
+- FindInventoryItemByName(): Weird behavior of strfind(), check out
+- bug: if i get aggro (unitaffectingcombat) during spellcasting, unit does not defend itself
+- duel someone in the raid with a pet (NOT in party). charm him. Pet Effects will expire (warnings printed)
+- if item (potion) twice on the action bar and 2nd (higher) is clicked, cooldown may show wrong potion (CH_ActionBar[] only stores FIRST potion)
+
+WEB
+
+- Friend->Misc: Friend frame background
+- new section: supported Addons and "supporting" addons: e.g. Perl Classic Unit frames, X-perl, OzRaid,... NurfedUI->Check if integration done
+- Config->Misc: PCUF (perl classic unit frames) removed
+- Friend->Misc: party/raid label: class-name color
+- buff popup: LMB=automatic, MMB=party version, RMB=single player version
+- explain anchor system: bright blue, dark blue, >>>anchor<<<<, add to FAQ "what are all these blue bars??"
+- API: add that now value is returned by UnitClicked(), as ClickHeal always processes the event (even if it concludes to do nothing)
+- new section: Supporing Addons (Addons, which make use of ClickHeal): OzRaid
+- Config->Healing: new overhealAllowance , explain!!! also explain why keeping this too low is not good (MASSIVE underhealing)
+- new panic (range scan, in/out of battlefield, downgrade, force combat, ...)
+- External API: only PANIC supported now!
+- GUI->Misc: remove "Show anchors"
+- procedure of a clean install
+- procedure for a wipe of the saved variables
+- heal range checking: Friend->Misc (OOR in yellow/red)
+- buffs-tab: partybuff not in battlefield
+- slash command: /clickhea [reset]   (reset added)
+- list the plugins in the plugin section
+- new section: "Know Conflicts" ; 
+  - addon "Group Button": Middle button not usable on raid frames
+  - charcoal: uses CH_Config too. Charcoal author suggested to change his part
+- Gui->Tooltips : tooltip scale
+- Gui->Anchors + Describe anchor system (clicking on bars, how to magnetize, ...)
+- "Raid tooltip orientation" from GUI->Tooltip to Extended->Raid
+- not cast on charmed: Friend->Misc, Enemy->Misc
+- new tab: extended with needy List
+- moved MT to extended tab
+- moved raid to extended tab
+- FAQS: add right click of standard wow gui frames (Cannot (right) click portrait of player/....)
+- new tab: plugins
+- Gui->Raid: Hide party in raid
+- Gui->MainTank: width, height, scale
+- Config->Notify: custom channel, emote/party for "Avatar hit", channels for OOM
+- Config->Notify2: customChannel for notifications
+- Config->Misc: Debug levels (incl description of each level)
+- add new section: keys (keyboard)
+- NEW description on download pages (not only healing mod!)
+- explain colors of action tooltip
+- screenshots of "in action" plus update of all frames
+- autoshot/wand to action bar !!! (check also in Variables load and bring up a warning if this is not done)
+
+PROJECTS
+
+- use "IsCasting" for spell detection (http://www.wowwiki.com/IsCasting)
+- use icons instead of letters (missing buffs, debuffs, HOT) (locate where? below each frame? in frame?) (make use of rezise, esp height (2 line icons))
+- make PANIC configable. Add frames to PANIC bar with 
+  - range settings for emergency (CRITIC/SEVERE/...) for in combat per class! (also out of combat???) 
+  - now only meta spells possible. add more?
+- macros/scripts: make own tab, to create "named" macros (like WoW), then assign named macros to action (choose "named macro" or "quick macro")
+- OOR:
+  - make new action "SCAN RANGE"
+  - bring warning if RANGE spell NOT on action slot (same for wand-shot)
+  - new option "Check Range" at buffs, if enabled, check range at groupbuffing
+- NeedyList
+  - sort "emergency" and "emergency,lock": UnitFrames are "upated" with new unit info on the fly. 
+    - store frame.nextUnit at frame, when done updating current unit, morph current init into next unit. this avoids collisions
+  - further optimize by recursive redocking in CH_AnchorUpdateVisibility() (see comment there)
+  - Sort NL-buff with prios from the buff list (optional)
+  - When buff goes from "warn" to missing, it briefly vanishes from the list
+  - sort dead list by rezzers on top
+  - better system for when units show up on "Heal" list. e.g. make groups: "Tanks%/Assist%/InCombat%/OutOfCombat%" Class%
+  - make difference in heal% when whole raid/group is in- or out of combat 
+  - if unit leaves list, scan for a new unit to replace the one who left, to avoid "jumping" of units in list (only scan if list is full?)
+- extend input for actions:
+  - small button on the very right. when clicked, window with more config options shows up
+  - for spells: pre-/post spell triggers (preSpell: use trinket or cast NS or the like) (postspell: eg message or macro...)
+  - macros: extended input window
+- Anchors:
+  - grow dropdown: check if "grow direction" is allowed
+  - grow Direction: Change whole "list" recursive, Check CH_AnchorSetGrow()
+  - when docking a grow UP to the bottom of a grow DOWN, then change grow of to be docked (recursive) and vice versa
+  - make it possible to dock the "outmost" (e.g. leftmost) frame
+  - tooltip direction/location: move out of "tabs" to anchor (raid, maintank, needylist, main)
+  - make "real" scaling of anchors possible (and not adjust width), problem: jumpiness!
+- Buffs
+  - Add "MainTank" to "valid units" (does this solve the "blessing might" on tank pally and "blessing wisdom" on assist pally?) THINK ABOUT IT!
+  - different setups for a) solo, b) party, c) raid, d) BG (dropdown on top)
+- frame draw optimization
+  - cache name and color
+  - draw unit frames in a hidden master frame and then just copy over the elements to the visible frame.
+  - use the existing frames as the "hidden" frames (party/raid group n) (raidN->raidGroupN mapping!)
+  - what if frame does not need to be drawn (e.g. RaidGroupN disabled and not in NeedyList). register frame (drawCount++)?
+  - can this be done or are values too different anyway (e.g. in NL only curable effects are displayed and in the unit frame all effects)
+- CLickHeal communication (show "incoming" heals)
+  - put spelldection code into a module!
+  - broadcast SLOW/QUICK heals (amount, when finished, when started, unique ID)
+  - add + to health number (85%+)
+  - add orange colored bar to health bar, giving the heal of others
+  - option to disable broadcast
+  - uniqueID: unitname + incremental number, loop when 1000 reached
+- combat display (HUD):
+  - target window in middle, config if player also, config for pet, 
+  - config for extra buttons, 
+  - challenge: mana/combot points (bigger window?)
+  - make predefined layouts where user can chose from
+  - health-bar: player, mana-bar-panic
+  - option to color healthbar of target (aggressive: red, neutral: yellow, friendly: green) (check bar layout of 'V' key)
+- action "script/functions":
+  - ability to give them a label and show this label on actions tooltip
+  - more room for input (second page)
+
+TUNING
+
+- add time checks for: UnitFrameUpdate (the drawing), UpdateUnitEffect for one/all units (how long does it need to execute)
+
+NEXT
+
+- NOTE: name in BG not unique!!!!! name + servername? name+class?
+
+- paranoia: if disabled in BG, still warning sound!  any CH_Msg() left?
+- paranoia: switch off in instances (are BG instances??)
+
+- if no compo for party buff, cast single buff (plus give warning via CH_Msg() )
+- CTRA: when tank added (changed), not added to CH tank list on screen
+
+- BUG: 7505,  class is nil BATTLEFIELD / 1 / UNKNOWN / 1 / raid33
+       RIGHT before: CH_EmergencyLevel(), class is UNKNOWN for unit raid33
+- BUG: Pets always show, even when turned off
+- PlayerTargets...
+- RedockAnchors(): firct check if redocking is necessary! (ie dont dock if they are already docked)
+  - on move, ONLY redock the anchor which is now docked, if any !!!
+  - get anchor which triggered the event and only redock "dependant" anchors
+- NeedyList:
+  - simple cast (e.g. buff: left=buff,middle=buffPopup,right=target,...) (also mainTank: left=target)
+  - check performance !!!
+  - check why anchors are visible but NL should not be displayed (happens in BG, after reloadui), remove QUICKFIX from NeedyListProcessEvents()
+- background of target frames / enemy frames (health color, custom, faction[healthcolor friend, gray mob, brightred enemy player])
+  - (CH_Config.colorTarget, Options/CHH_Gui.xml)
+- Lua Profiler: add "dump" option, and save as CSV
+- BUG: GetSpellFromList, debug added, check results
+
+- dynamically shorten unitLabel dependant on length of EffectsText: PROBLEM: need to set effects first, PROBLEM2: cannot cache!
+- anchor crashes when moving around: also happens when magneticRange = 0. Caused by MouseUp/MouseDown()???
+- assist list (MainTank/PlayerAssist) assist or "prio" list
+- sort dropdown lists for custom dropdowns
+- overheal override: eg. class which should ALWAYS be overhealed (mages,locks, ...)
+- Optimize OnUnitFrameUpdate(): how can i make it even faster? (cache abbrevated name)
+- TARGET: show HOT/BUFF/MISSING if friendly unit, make width 100px, also use name formating for friendly targets
+- if people are our of HealRange[], but run into range, update HealRange[] (already working???) (test with long keepOnList)
+
+- check messages at startup (login, not reload!). "CH_UnitListIdx() returns NIL for player", not critical but should be checked
+- DropdownMenu not working in raid/on raid member (on CH frames) (logical, TARGET the unit and bring target menu????)
+- SpellDropdown: Warlock/Demonology: Too many buttons in dropdownlist!! (find out what is max and do domething there are too many, like page1/page2, or "more")
+- not able to heal npc which is MC'ed (Mind Controled) by a different player (in party/raid)
+- hide WoW party windows: not boolean but "Hide Wow Party windows: NEVER|IN PARTY|IN RAID|IN PARTY OR RAID|ALWAYS
+- SLOW and FAST: make it possible to chose highest level of spell to cast (WARNING: cleric LesserHeal|Heal|GreaterHeal)
+- spell-notify: if groupspell, do not announce target (only for spells i know CH_SPELL_INFO)
+- easy way to assign main tanks (key binding, slash command, mouse action) 
+  - (mouse action: bring popup to select MT#, like the one with buffs) (also for PlayerTargets/PlayerAssist)
+- hide ClickHeal when joining a raid
+- 5 second rule: start counting when spell Finishes! (instant spells???)
+- if "Use items" but nothing entered, leave screen, enter gain: BUG
+- Self defense: if switch off in group, also switch off pet!!!
+- check paladin buffs, on targets not in group: Might works, Wisdom does not
+- SHaman weapon buff error (search for Hratgard in ClickHeal.lua)
+- plugin (or add to Nutriton): feed pet
+- BUG: check OOM notify, they spam! (no repeat)
+- notifications: global on/off switch
+- at group spells, dont display unit_msg (e.g. prayer of healing, "foo casts prayer of healing on <monstername>"
+- new setting: hide party in BG (add to raid?)
+- PANIC tab: add "classes" for heal (in BG e.g. only heal warriors)
+- PANIC: when casting and clicking again, abort if target is already healed (how many %), problem: what was the target? store in own variable, panicHealTarget???
+
+- remove CH_Config.castSpellByNameOnSelf (also from CH_CastSpellOnFriend()!!!)
+
+- if died and spirit of redemption, spells are initialized (CH_InitSpellData()), there old data is "restored". Can I also just set mana to 0 (zero)?
+  - this is only possible if CH_InitSpellData() is called again on resurrect/release or when Spirit of redemption ends
+- Buffs: if single player version is cast on Avatar and party version already active, cancel the party version if it is in warntime and cast single version
+  - problems: a) only possible at avatar (player), b) single player does not automatically replace the party version ("more powerful spell already active")
+- include "slash commands" to "script/function". check the global array SlashCmdList[] to get slash command and function to call
+- spelldowngrade: downgrade based on health and mana now checked in different loops, should be in one loop (CHL_DowngradeSpell & CHL_DowngradeSpellLom)
+- main tank window: add config "simple clicks" LMB=target, RMB=assist
+- limit "Quick" ("Slow?") to spell ranks (only cast below rank X) for mana conservation
+- allow "marking" to assign to buttons (plugin?)
+- if spell is NS (or friends), then call "SpellCastStop()" at the end of CH_CastSpellOnFriend/Enemy (or in the masked? check out, prefer NOT masked)
+- notify: a) possibility to add spell rank optionally b) only announce if below certain health
+- Chain: When assigning (two) offensive spells to a chain and then casting on e.g. "player1target", chain breaks. works fine if casting on "target" (verify)
+- Action "Use Item", add field/dropdown for "default target" (others too? inventory item?)
+- GetRaidTargetIndex("unit"): Display on frame???
+  - make action to assign them!!!
+- all internationalizations: check one letter abbrevations for: a) buffs b) effects
+- GetPlayerBuffApplications(): useable for InnerFire??? YES (a,b,c=UnitBuff() too???) (Inner Fire, Ligthning Shield)
+- if druid is shapeshifted, show what (bear, lion, ...) (only at friend/parrty?)
+- if partypet (raidpet?) dies, effects are not cleared. check out. what about invis party succubuses (aka what if pet "vanishes"?) (dismiss succ, get imp?)
+- 5 sec rule: When option changed, sliders reset to absolution positions (35px). But what if frame width changed!!!! (relDimension, parentWidth*35%) (already done???)
+- Add chain to Extra (and Friend)
+- Rogue/Warrior: Cooldown of spell (class-file) this esp is the GLOBAL cooldown of the instants. 
+- Rogue/Warrior: defaults in class-file, incl translation
+- group-buff-problem: what if "target" too low level for group buff (or in that case: any party/raidgroup member)
+  - dont count them in PreferPartyBuff()!
+- detect "triggered" actions and make them green in the ActionToolip (and show up flashing icon somewhere that it is usable)
+  - problem: how to detect? a) make a list, 
+                            b) CH_Action[spellName].isTriggered: check if action in range and not has cooldown and enough mana but still unusable -> triggered (hmm...)
+- if IsCurrentAction() then also place it as cooldownIcon, if action is marked for cooldown display (time --)
+- cure/decurse: Show dropdown with options: a) decursive, b) dispel magic c) cure disease (or whatever spells the clas has)
+- BuffPopup: at paladins (BLESSING), use greater blessing if buff is enabled, otherwise only bless the unit
+- BuffExpireMsg: Bigger Font! (customizable?)
+- if shapeshifting, CH_InitSpellData() is called. is this REALLY required and WHY? (can i stop this?)
+- show missing buffs/debuffs on raid members (all friendly players?), when they are targetted (in the target box) (also for party members??)
+- spell target detection: Missing alot of targeting methods (TargetLastTarget, TargetNextEnemy, Prev, Friend, ...), maybe also TARGET_CHANGED event
+- indication if player is soulstoned (+ warning if missing for WLs?)
+- indication if player is afk
+
+- Plugins: add author as entry and show in pluginlist (GetAuthor()), also GetDescription(ActionID)
+- MT: own settings for a) MT background (color) b) MT label formatting
+- mind control: abort not detected (channel just "stops"). same problem if channeled spell and getting disrupted???? (e.g. moving?)
+- downgrade healing/buffing spells not cast via ClickHeal (options) (in CastSpell/Action MASK)
+- GotW/Prayer of Fort: Check for AdjustSpellRank() (already at MayReceiveBuff)
+- CH_SPELL_DATA and CH_SPELL_INFO confusing: rename CH_SPELL_INFO to CH_SPELL_DATA and CH_SPELL_DATA to something distinct new
+- buff timers: if player, then get data directly from the api (tooltip remaining time, UnitIsEffectedBy(buffIdx))
+  - bandage, weakend soul (duration of weakend soul varies) (where to store master data? CH_DEBUFF_INFO??)
+  - Problem: when casting on raid, how long can be delay between cast and scan???
+  - BLESSING: would need to store UnitClass() of spellTarget at spell resolve!
+- debuff at targetFrame: show applications (count)
+- give tooltips on moveover of: cooldown, target debuffs, mesmerize info
+- tooltip: when casting and target moves out of range, add red (oor) to the spell (which is in blue)
+- show cooldown of equipped items (trinkets). check for ACTION_BAR_COOLDOWN and if event, scan equipment. 
+  - WATCHOUT OUT: bag items on action bar! now handled by CH_CooldownBagUpdateCooldown()
+- when casting spell on an enemy a) always attack that enemy b) only attack that enemy if not in active combat d) do nothing
+   NOTE: When in active combat and targeting something else (e.g. other enemy player to cast spell upon), WoW will cancel your attack! (help?)
+- attack: configure options (keep target, change target, toggle) also check if unit already in attack mode (ENTER_COMBAT???) (toggle)
+- use wow party frames for clicking (PartyMemberFrame_OnClick(); ) (problem: Clickheal is hidden, what with updates of frames??? PartyFrame.xml)
+- chains: check if spell had been casted successfully! and only then advance to next index
+- chains: if condition is "refresh" and mob already has the buff, do not cast it!
+- show selected party member (name in yellow) (plus * at end/start)
+- pet spells: remember what kind of pet it was at PETSPELL (at warlock) (hunter? bird/cat/...?)
+- not only show tracking buff as missing, also cast it with "rebuff" (plus make it configable to show up as missing)
+  - make action (plugin) to cycle
+- add channels to announce to for when u get hit (now only party)
+- CH_TooltipActionsShow/..Refresh: Cache string and only update if underlaying unit changes (esp with plugin.ActionToString() it takes "long")
+  - WARNING: range check on target!
+- IDEA: if spell in tooltip (at target) is not on ActionBar, color it yellow (config?)
+- remove targeting/clear target sound (CastSpellOnFriend/Enemy) (there is an addon that does this, old version of paranoia too)
+- titan panel integration (like MetaMap). problem: need icon
+- MiniMap Icon
+
+CLASS DRUID:
+- when morphed into feral, missing buffs display (or better, GROUPBUFF, BUFF) what to cast
+- when morphed into feral, PANIC button functionallity
+- 5 sec DRUID: gUnitManaMax: 
+  - check if i can use UNIT_MANA_MAX event (when does it fire, in shapeshift too?)
+  - if UNIT_MANA not firing for couple of seconds, then mana is on 100%. problem: how to detect, it does NOT fire
+  - better way to calculate regain average??? what if regain changes ??? (level up, other gear, ...)
+  - calculate 2 avgs regain: inCombat, outOfCombat
+
+CLASS HUNTER:
+- PetAttack: new configure: only cast mark if not cast in the last n seconds
+- announce FD to party. block OOM warning when FDed
+- Warning if low on ammo, color ammo red
+- if sting already active, cast other shot (Configable!!!)
+- Show DZ (where?)
+- show pet hungry/happiness as debuff (or at pet) (both PANIC and pet frame, just as a "normal" debuff) (integrate with feed-o-matic)
+- cleanup non used items on config screen: e.g. overheal
+- show duration of traps (at polymorph)
+
+CLASS MAGE
+- show lack of mana agate
+- conjure best mana agate
+
+CLASS PALADIN
+- warning if other pally has same aura up
+- new paladin heal/damage spell (talent) (patch 1.9)
+- blessing of protection: show cooldown (small orange p?) (or just in cooldown watch list)
+- show debuff of devine protection/blessing of protect (check description for other spells)
+- buffs: blessing of protect different duration per rank!
+- divine favor/devine shield: show as buffs, with warning. put in bufflist??? or only spelllist? check out!
+- casting of seal causes half a second "Freeze".
+- lay on hands: only cast if health below n% or mana below n% (slider)
+
+CLASS PRIEST
+- add levitate to buffs (problem: component! add component to CH_BUFF_DATA, check for compo before cast, if not compo, skip casting)
+
+CLASS SHAMAN
+- Add "Wait" to totem spells. if true, wait until cooled down, if false take next totem
+
+CLASS WARLOCK
+- Show shards instead of PNC (use event BAG_UPDATE to count shards) 
+- Create healthstone (best) and autotrade
+- if target (of pet) is feared, abort pet spellcast/attack
+
+PLUGIN Bandage
+- bandage treshold slider (ala mana potion) (next to Action)
+
+PLUGIN Nutrition
+- option: "eat food" -> a) normal only b) buffed food too
+- if you have 2 food with same healing value, take lowest stack first
+- allow to give limits (next to ACTION, SLIDER) (isEditable = TEXT, DROPDOWN, SLIDER )
+- best first, worst first, lowest batch first
+
+PLUGIN ShapeShift
+- add "shape to caster form" (cancel of active shapeshift) (can be used in chains to cancel current shapeshift)
+
+HIGH
+
+- add a "(de)select all" possibility to raid-group / raid-class
+- possibility to limit PANIC healing to a) needyList, b) needyList Tanks
+- make notify2 messages customizable (with meta tags)
+- anchors (raid and other):if framewidth chagned, anchor width does not change (note: scale is not easy, as it "moves" the anchor relative to parent!)
+- totemSet and Chain: Allow to give them a name (input box in options), then show this name in ActionTooltip
+- make it possible to modify buff duration (e.g. druid set gives +50% thorns duration)
+- if casting buff on 'target', who is not in raid or party and buff has party version: add config to cast party buff (or not, as it is now)
+- Reset "Defaults": On Extra, MISC, cooldown spell dropdown not reset (only label)
+- Thrown: cannot be triggered with "Auto Shot", have to use UseItem() or the like (TotemKiller, somewhere else?)
+- colors for: SHIELD / NOTARGET / SELECTED (make own tab "Colors"?)
+- CHH_Config: DropDowns use local info = {}, thus a local array. maybe make this global (gInfo) and use it everywhere, dont forget to init every time!!!
+- GROUPBUFF/GROUPCURE: make an options to cure raid members or not (currently they are cured/buffed)
+- missing party buffs (CH_PreferPartyBuff()) now only checks for party/raid members, not their pets!
+- EFFECT_EXPIRATION: make this a config: make GOOD, HARD lower limit (0.3, 0.5??)
+- CH_EffectsCleanUp(): optimize: Scan party/raid and flag the ones not found as missing. prevents from scanning whole raid every loop run
+- check wowwiki Buffs/Debuffs for alot of new ideas of what to do with buffs/debuffs
+- Announce HIT/OOM also to raid (incl config checkbox)
+- also announce LOM (low on mana) (second slider)
+- on PANIC, check if player is moving and then select instant spell (GetPlayerMapPosition)
+- UnitPANIC: an action which heals/buffs/cures the unit, depending on what is needed
+- What to do with debuff side effects ('Shadow Vulnerability')?
+- add option to always heal units in critical state FIRST
+- HealUp: Check for HoTs
+- When spell has cooldown, cast QUICK (dangerous!!! at custom spells)
+- allow to cast buffs on players not in group (add 'target') to buff selection
+- Also color name Pink when unit is "Blessing of Protection" (or similar color?)
+- Make it possible to reset all values, not just mousebutton assignments
+- slider of how long a unit should stay on the blacklist
+- Allow to assign maintank
+  - assign "target color" to main tank (target which is targetted by tank in that color, not in partyN color)
+- Own section/tab for pet?
+- check range on heal metaspells (and panic). reason: U can detect this BEFORE u cast and can still chose a different target
+- weapon buff: make only one weapon buff active in list (if one selected, disable the other)
+- use theorycraft (alt of bonusscanner) Problem: it returns values per spell/rank, and not +heal or the like
+
+MEDIUM
+
+- target of target (of party/raid member)
+- if in shapeshift/shadowform and casting healspell, autocancel shapeshift/shadow (does not work, check out further)
+- PANIC missing buffs indication only works for party. should work for raid too (problem: have to scan WHOLE raid)
+- How exactly is this with high level bandages and item level? can apply when i have level or can apply to level???
+- use darkblue when combat regen, use lighterblue when normal/outofcombat regain (or other way around)
+- show spell icon next to spellName in spell assigns
+- allow to drag spell to spellname box in config
+- allow to drag inventory item to name box in config (at UseBagItem)
+- show "weakened soul" as debuff on enemy (indication for priest shield)
+- overhealing: base % values on class / target (boss/elite/normal)
+- if healer OOM, /whisper backhealer to take over (+ option to setup backup healer or just tell every healer in group/raid?)
+
+LOW
+
+- use different (number) font for numbers (mana, dps)
+- Buff Tab: new config "show missing buffs": if disabled, missing buffs are not displayed (on unit and PANIC), make 2 configs?
+- IDEA: if i cannot determine spellrank for mesmerize, then check with playerlevel what rank he can cast in CH_MesmerizeUpdateUnit()
+- config to display class of player in target always/enemyPlayer/never
+- make a checkbox at mousebutton assign, if action == SPELL then show cooldown if box is clicked
+- make it possible to give slotName for "use item" for inventory slots (e.g. headSlot)
+- DPS calculation: do not consider 0 if at the end (e.g. at falling damage). 5 5 0 0 0 = (5+5)/2 and not (5+5+0+0+0)/5 (does this make sense?)
+- When using PANIC and could not cast spell (ie unit added to blacklist), automatically take next best.
+   this also involves to return a sorted list by CHL_NeediestHeal() (how to detect BEFORE cast/target???)

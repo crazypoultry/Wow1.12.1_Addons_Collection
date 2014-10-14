@@ -1,0 +1,122 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<StatusBar name="SW_BarTemplate" virtual="true" hidden="true">
+		<BarTexture name="$parent_Texture" file="Interface\AddOns\SW_Stats\images\b3" />
+		<Size>
+			<AbsDimension x="128" y="10" />
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parent_Text" inherits="GameFontNormalSmall" justifyH="LEFT" />
+				<FontString name="$parent_TextVal" inherits="GameFontNormalSmall" justifyH="RIGHT" />
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				SW_InitBarFrameBar(this);
+			</OnLoad>
+			<OnEnter>
+				if this.displayType == 1 then
+					SW_DoUnitMouseOver(this); 
+				elseif this.displayType == 2 then
+					SW_DoSkillMouseOver(this);
+				elseif this.displayType == 3 then
+					SW_DoSchoolMouseOverDone(this);
+				elseif this.displayType == 4 then
+					SW_DoSchoolMouseOverRecieved(this);
+				end
+			</OnEnter>
+			<OnLeave>GameTooltip:Hide();</OnLeave>
+		</Scripts>
+	</StatusBar>
+	<Frame name="SW_SyncList_Item" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="20" />
+		</Size>
+		<Scripts>
+			<OnEnter></OnEnter>
+			<OnLeave></OnLeave>
+			<OnMouseUp></OnMouseUp>
+		</Scripts>
+		<!--
+		<Backdrop bgFile="Interface\AddOns\SW_Stats\images\back" tile="true">
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="1" right="1" top="1" bottom="1" />
+			</BackgroundInsets>
+		</Backdrop>
+		-->
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parent_Text" inherits="SW_FontBar" wraponspaces="false" justifyH="LEFT" text="entry">
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="5" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="SW_BarFrame_Title" virtual="true" hidden="false">
+		<Scripts>
+			<OnMouseUp>
+				if ( this:GetParent().isMoving ) then
+					this:GetParent():StopMovingOrSizing();
+					this:GetParent().isMoving = false;
+				end
+				</OnMouseUp>
+			<OnMouseDown>
+				if ( ( ( not this:GetParent().isLocked ) or ( this:GetParent().isLocked == 0 ) ) and ( arg1 == "LeftButton" ) ) then
+					this:GetParent():StartMoving();
+					this:GetParent().isMoving = true;
+				end
+				</OnMouseDown>
+			<OnHide>
+				if ( this.isMoving ) then
+					this:GetParent():StopMovingOrSizing();
+					this:GetParent().isMoving = false;
+				end
+				</OnHide>
+			<OnLoad>
+				local scTarget = this:GetName().."_Texture";
+				getglobal(scTarget):SetVertexColor(1,0,0,1);
+				scTarget = this:GetName().."_Text";
+				getglobal(scTarget):SetTextColor(1,1,1,1);
+				table.insert(SW_Registerd_BF_Titles, this:GetName());
+			</OnLoad>
+		</Scripts>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="TOP">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parent_Text" inherits="GameFontNormalSmall" text="SW">
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Texture" file="Interface\AddOns\SW_Stats\images\titleBar">
+					<Color r="1" g="0" b="0" a="1" />
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames></Frames>
+	</Frame>
+
+</Ui>

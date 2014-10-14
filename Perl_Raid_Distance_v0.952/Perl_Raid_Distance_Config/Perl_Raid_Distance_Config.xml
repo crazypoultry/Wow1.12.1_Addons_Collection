@@ -1,0 +1,347 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Perl_Raid_Distance_Config.lua"/>
+	
+	<Button name="Perl_Config_ThirdParty_Raid_Distance_Button1" inherits="UIPanelButtonTemplate" parent="Perl_Config_ThirdParty_Frame" text="Perl_Raid_Distance">
+		<Size>
+			<AbsDimension x="120" y="22"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT" relativePoint="TOPLEFT">
+				<Offset>
+					<AbsDimension x="40" y="-120"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:Hide();
+			</OnLoad>
+			<OnClick>
+				PRD_ShowOptions();
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	
+	<Frame name="PRD_Config_Frame" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="600" y="380"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="Perl_Config_Frame">
+				<Offset>
+					<AbsDimension x="0" y="-120"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parent_Header" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Perl Raid Distance">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent_Header">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Text_RetriveMethod" inherits="GameFontNormal" text="How to retrive distances">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="20" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Text_Alpha" inherits="GameFontNormal" text="Transparency:">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="320" y="-150"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parent_Text_DisplayMethod" inherits="GameFontNormal" text="How to display distances">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="320" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parent_Radio_RetriveMethod_1" inherits="UICheckButtonTemplate" id="1">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Text_RetriveMethod">
+						<Offset>
+							<AbsDimension  x="20" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Spells to evaluate distance.");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["RetriveMethod"] = this:GetID();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_Radio_RetriveMethod_1_1" inherits="UICheckButtonTemplate" id="1_1">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Radio_RetriveMethod_1">
+						<Offset>
+							<AbsDimension  x="20" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("40yrd (default 30yrd)");
+					</OnLoad>
+					<OnClick>
+						if ( PRD_Running["Yards"] == 30 ) then
+							this:SetChecked(1);
+							PRD_Running["Yards"] = 40;
+						else
+							this:SetChecked(0);
+							PRD_Running["Yards"] = 30;
+						end
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_Radio_RetriveMethod_2" inherits="UICheckButtonTemplate" id="2">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Radio_RetriveMethod_1">
+						<Offset>
+							<AbsDimension  x="0" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("InteractDistance (follow ~27yrd)");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["RetriveMethod"] = this:GetID();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_Radio_RetriveMethod_3" inherits="UICheckButtonTemplate" id="3">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Radio_RetriveMethod_2">
+						<Offset>
+							<AbsDimension  x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Auto-select (InteractDis when mount/cast/dead)");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["RetriveMethod"] = this:GetID();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Slider name="$parent_Bar_AlphaRange" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1">
+				<Size>
+					<AbsDimension x="200" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Text_Alpha">
+						<Offset>
+							<AbsDimension x="20" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Low"):SetText("0");
+						getglobal(this:GetName().."High"):SetText("100");
+					</OnLoad>
+					<OnValueChanged>
+						getglobal(this:GetName().."Text"):SetText("Out of range: "..this:GetValue());
+						PRD_Running["Alpha"]["Range"] = (this:GetValue()/100);
+						PRD_SaveConfig();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parent_Bar_AlphaDead" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1">
+				<Size>
+					<AbsDimension x="200" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Bar_AlphaRange">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Low"):SetText("0");
+						getglobal(this:GetName().."High"):SetText("100");
+					</OnLoad>
+					<OnValueChanged>
+						getglobal(this:GetName().."Text"):SetText("Dead: "..this:GetValue());
+						PRD_Running["Alpha"]["Dead"] = (this:GetValue()/100);
+						PRD_SaveConfig();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<Slider name="$parent_Bar_AlphaOffline" inherits="OptionsSliderTemplate" minValue="0" maxValue="100" valueStep="1">
+				<Size>
+					<AbsDimension x="200" y="15"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Bar_AlphaDead">
+						<Offset>
+							<AbsDimension x="0" y="-25"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Low"):SetText("0");
+						getglobal(this:GetName().."High"):SetText("100");
+					</OnLoad>
+					<OnValueChanged>
+						getglobal(this:GetName().."Text"):SetText("Offline: "..this:GetValue());
+						PRD_Running["Alpha"]["Offline"] = (this:GetValue()/100);
+						PRD_SaveConfig();
+					</OnValueChanged>
+				</Scripts>
+			</Slider>
+			<CheckButton name="$parent_Radio_DisplayMethod_1" inherits="UICheckButtonTemplate" id="1">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Text_DisplayMethod">
+						<Offset>
+							<AbsDimension  x="20" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Only use fade");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["DisplayMethod"] = this:GetID();
+						PRD_Reset();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_Radio_DisplayMethod_2" inherits="UICheckButtonTemplate" id="2">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Radio_DisplayMethod_1">
+						<Offset>
+							<AbsDimension  x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Fade + Border [close]");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["DisplayMethod"] = this:GetID();
+						PRD_Reset();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_Radio_DisplayMethod_3" inherits="UICheckButtonTemplate" id="3">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Radio_DisplayMethod_2">
+						<Offset>
+							<AbsDimension  x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Fade + Border [out of range]");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["DisplayMethod"] = this:GetID();
+						PRD_Reset();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parent_Radio_DisplayMethod_4" inherits="UICheckButtonTemplate" id="4">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_Radio_DisplayMethod_3">
+						<Offset>
+							<AbsDimension  x="0" y="-20"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Fade + Border [close][out of range]");
+					</OnLoad>
+					<OnClick>
+						PRD_Running["DisplayMethod"] = this:GetID();
+						PRD_Reset();
+						PRD_UpdateGUI();
+						PRD_SaveConfig();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	
+</Ui>

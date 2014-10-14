@@ -1,0 +1,686 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+<Script file="ChatCopy.lua"/>
+		<CheckButton name="CCCheckButton" virtual="true">
+			<Size>
+				<AbsDimension x="22" y="22"/>
+			</Size>
+			<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+			<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+			<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+			<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+			<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			<Scripts>
+				<OnClick>
+					ChatCopyTextUpdate();
+				</OnClick>
+			</Scripts>
+		</CheckButton>
+		<FontString name="CCTitle" inherits="MasterFont" font="Fonts\FRIZQT__.TTF" virtual="true">
+			<FontHeight>
+				<AbsValue val="14"/>
+			</FontHeight>
+			<Color r="1.0" g="0.82" b="0"/>
+		</FontString>
+<Frame name="ChatCopy_Core" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+	<Size>
+		<AbsDimension x="500" y="200"/>
+	</Size>
+	<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="5" right="5" top="5" bottom="5"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Anchors>
+		<Anchor point="CENTER">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Button name="ChatCopyClose" inherits="UIPanelCloseButton">
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativeTo="ChatCopy_Core" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="1" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="ChatCopy_OptionsToggle" inherits="OptionsButtonTemplate" text="Options">
+			<Anchors>
+				<Anchor point="RIGHT" relativeTo="ChatCopyClose" relativePoint="LEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					if (ChatCopy_Options:IsVisible()) then
+						ChatCopy_Options:Hide();
+					else
+						ChatCopy_Options:Show();
+					end
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="ChatCopyScrollChatBottom">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativeTo="ChatCopy_Core" relativePoint="BOTTOMRIGHT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyResetScroll();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollEnd-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<Button name="ChatCopyScrollChatDown">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM" relativeTo="ChatCopyScrollChatBottom" relativePoint="TOP">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyScrollDown();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<Button name="ChatCopyScrollChatUp">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM" relativeTo="ChatCopyScrollChatDown" relativePoint="TOP">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyScrollUp();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<Button name="ChatCopyRefreshChat">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="BOTTOM" relativeTo="ChatCopyScrollChatUp" relativePoint="TOP">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyInitText();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up.blp"/>
+			<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<CheckButton name="CCSayCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ChatCopy_Title" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="-5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Say">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCYellCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCSayCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="30" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Yell">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCEmoteCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCYellCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="30" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Emote">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCWhisperCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCEmoteCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="30" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Whisper">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCGuildCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCWhisperCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="40" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Guild">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCPartyCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCGuildCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="30" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Party">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCRaidCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCPartyCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="30" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Raid">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCSystemCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCRaidCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="30" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="System">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<CheckButton name="CCOtherCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCSystemCheck" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="35" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Other">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+		<EditBox name="ChatCopy_Edit" multiline="true">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="CCSayCheck" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="1" y="-5"/>
+					</Offset>
+				</Anchor>
+				<Anchor point="RIGHT" relativeTo="ChatCopy_Core" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="-7" y="5"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<FontString inherits="ChatFontNormal"/>
+		</EditBox>
+	</Frames>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="ChatCopy_Title" inherits="CCTitle">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			this:RegisterEvent("PLAYER_ENTERING_WORLD");
+			this:RegisterEvent("PLAYER_LEAVING_WORLD");
+			this:RegisterEvent("CHAT_MSG_AFK");
+			this:RegisterEvent("CHAT_MSG_CHANNEL");
+			this:RegisterEvent("CHAT_MSG_DND");
+			this:RegisterEvent("CHAT_MSG_EMOTE");
+			this:RegisterEvent("CHAT_MSG_GUILD");
+			this:RegisterEvent("CHAT_MSG_IGNORED");
+			this:RegisterEvent("CHAT_MSG_OFFICER");
+			this:RegisterEvent("CHAT_MSG_PARTY");
+			this:RegisterEvent("CHAT_MSG_RAID");
+			this:RegisterEvent("CHAT_MSG_RAID_LEADER");
+			this:RegisterEvent("CHAT_MSG_RAID_WARNING");
+			this:RegisterEvent("CHAT_MSG_SAY");
+			this:RegisterEvent("CHAT_MSG_TEXT_EMOTE");
+			this:RegisterEvent("CHAT_MSG_WHISPER");
+			this:RegisterEvent("CHAT_MSG_WHISPER_INFORM");
+			this:RegisterEvent("CHAT_MSG_YELL");
+		</OnLoad>      
+		<OnEvent> 
+			ChatCopy_OnEvent(event, arg1);
+		</OnEvent>
+		<OnDragStart>
+			if(arg1 == "LeftButton" and IsShiftKeyDown()) then
+				ChatCopy_Core:StartMoving();
+			end
+		</OnDragStart>
+		<OnHide>
+			ChatCopy_Core:StopMovingOrSizing();
+		</OnHide>
+		<OnDragStop>
+			ChatCopy_Core:StopMovingOrSizing();
+		</OnDragStop>
+		<OnMouseUp>
+			ChatCopy_Core:StopMovingOrSizing();
+		</OnMouseUp>
+	</Scripts>
+</Frame>
+
+
+<Frame name="ChatCopy_Options" toplevel="true" enableMouse="true" parent="ChatCopy_Core">
+	<Size>
+		<AbsDimension x="115" y="170"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOPLEFT" relativeTo="ChatCopy_Core" relativePoint="TOPRIGHT">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+		<EdgeSize>
+			<AbsValue val="16"/>
+		</EdgeSize>
+		<TileSize>
+			<AbsValue val="16"/>
+		</TileSize>
+		<BackgroundInsets>
+			<AbsInset left="5" right="5" top="5" bottom="5"/>
+		</BackgroundInsets>
+	</Backdrop>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="ChatCopy_OptionsTitle" inherits="CCTitle">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="6" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="ChatCopy_OptionsLinesTitle" inherits="ChatFontNormal" text="Lines Shown:">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatCopy_OptionsTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="ChatCopy_OptionsLines" inherits="ChatFontNormal" text="0">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChatCopy_Options" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-45"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="ChatCopy_OptionsMemoryTitle" inherits="ChatFontNormal" text="Lines Recorded:">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="ChatCopy_OptionsLinesTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="-35"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString name="ChatCopy_OptionsMemoryLabel" inherits="ChatFontNormal" text="0">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="ChatCopy_Options" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-95"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Button name="ChatCopyOptionsClose" inherits="UIPanelCloseButton">
+			<Anchors>
+				<Anchor point="TOPRIGHT" relativeTo="ChatCopy_Options" relativePoint="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="1" y="1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</Button>
+		<Button name="ChatCopy_OptionsFlush" inherits="OptionsButtonTemplate" text="Clear Memory">
+			<Anchors>
+				<Anchor point="TOP" relativeTo="ChatCopy_OptionsMemoryLabel" relativePoint="BOTTOM">
+					<Offset>
+						<AbsDimension x="0" y="-10"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ccchat = {};
+				</OnClick>
+			</Scripts>
+		</Button>
+		<Button name="ChatCopyOptionsAddLine">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="RIGHT" relativeTo="ChatCopy_OptionsLines" relativePoint="LEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyAddLine();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<Button name="ChatCopyOptionsRemoveLine">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="ChatCopy_OptionsLines" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyRemoveLine();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<Button name="ChatCopyOptionsAddMemory">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="RIGHT" relativeTo="ChatCopy_OptionsMemoryLabel" relativePoint="LEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyAddMemory();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<Button name="ChatCopyOptionsRemoveMemory">
+			<Size>
+				<AbsDimension x="32" y="32"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeTo="ChatCopy_OptionsMemoryLabel" relativePoint="RIGHT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick>
+					ChatCopyRemoveMemory();
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up.blp"/>
+			<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down.blp"/>
+			<HighlightTexture file="Interface\ChatFrame\UI-ChatIcon-BlinkHilight.blp" AlphaMode="ADD"/>
+		</Button>
+		<CheckButton name="CCFixChansCheck" inherits="CCCheckButton">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="ChatCopy_OptionsFlush" relativePoint="BOTTOMLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString inherits="GameFontNormalSmall" text="Disable Other">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-2" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</CheckButton>
+	</Frames>
+</Frame>
+
+
+<Frame name="ChatCopy_Opener" toplevel="true" enableMouse="true" parent="UIParent" hidden="false">
+	<Size>
+		<AbsDimension x="25" y="25"/>
+	</Size>
+	<Anchors>
+		<Anchor point="TOP" relativeTo="ChatFrame1BottomButton" relativePoint="BOTTOM">
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchor>
+	</Anchors>
+	<Frames>
+		<Button name="ChatCopy_OpenerButton" text="...">
+			<Size>
+				<AbsDimension x="25" y="25"/>
+			</Size>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+			<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+				<EdgeSize>
+					<AbsValue val="16"/>
+				</EdgeSize>
+				<TileSize>
+					<AbsValue val="16"/>
+				</TileSize>
+				<BackgroundInsets>
+					<AbsInset left="5" right="5" top="5" bottom="5"/>
+				</BackgroundInsets>
+			</Backdrop>
+			<Scripts>
+				<OnClick>
+					ChatCopy_Options:Hide();
+					if (ChatCopy_Core:IsVisible()) then
+						ChatCopy_Core:Hide();
+					else
+						--  inherits="OptionsButtonTemplate"
+						ChatCopy_Core:Show();
+						ChatCopyInitText();
+					end
+				</OnClick>
+			</Scripts>
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString name="ChatCopy_OpenerTitle" inherits="GameFontHighlight">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+		</Button>
+	</Frames>
+</Frame>
+</Ui>

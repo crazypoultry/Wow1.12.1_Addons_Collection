@@ -1,0 +1,2759 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="MiniGroup2Options.lua"/>	
+<!--********************************************************
+	MiniGroup 0.5
+	MiniGroup_Options.xml
+
+	Author: Kaitlin
+	Official Site: wow.jaslaughter.com
+
+	Description:
+		A set of movable, configurable unit frames including
+		player,pet,target, and party member frames.
+
+	********************************************************
+	NOTICE:
+		Please  feel free to modify,  compile,  redistribute
+		or  otherwise use MG code and concepts in  your  own
+		works.  However if you do so, please give credit  to
+		me for my work.  I only ask for a small comment line
+		stating  that  this work has been used, and  nothing
+		more.
+
+		It  is a given that some Blizzard code must be  used
+		as  we are working within their  sandbox.  Any  code
+		that is  not  unique  to  MG can be  assumed  to  be
+		Blizzard's unless otherwise noted with the function.
+
+		Any  oversights  on my part are simply that  and  no
+		harm is intended.  If you notice an oversight please
+		point  it  out to me and it will be  remedied  ASAP.
+	********************************************************-->
+	<!-- Templates -->
+	<Button name="MGOptions_BottomTabTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="80" y="50"/>
+		</Size>
+		<HitRectInsets>
+			<AbsInset left="15" right="14" top="13" bottom="15"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				MiniGroup2:OptionsSelectTab(this:GetID());
+			</OnClick>
+		</Scripts>
+		<NormalText inherits="GameFontNormalSmall">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalText>
+		<HighlightText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="3"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</HighlightText>
+		<DisabledText inherits="GameFontHighlightSmall">
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="6"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</DisabledText>
+		<DisabledTexture file="Interface\AddOns\MiniGroup2\Images\UI-SpellBook-Tab-Selected"/>
+		<NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
+		<HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight"/>
+	</Button>
+	<CheckButton name="MGOptions_CheckButtonTemplate" inherits="UICheckButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-100" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Scripts>
+			<OnClick>
+				if ( this:GetChecked() ) then
+					PlaySound("igMainMenuOptionCheckBoxOff");
+				else
+					PlaySound("igMainMenuOptionCheckBoxOn");
+				end
+				MiniGroup2:MGOptionsCheckButtonOnClick();
+			</OnClick>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</CheckButton>
+	<EditBox name="MGEditBoxTemplate" letters="1" historyLines="0" autoFocus="false" virtual="true">
+		<Size>
+			<AbsDimension x="20" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-8" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="10" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size>
+						<AbsDimension x="8" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnTextChanged>
+				MiniGroup2:MGOptionsUpdateDebuffText();
+			</OnTextChanged>
+			<OnEditFocusLost>
+				this:HighlightText(0, 0);
+			</OnEditFocusLost>
+			<OnEnterPressed>
+				this:ClearFocus();
+			</OnEnterPressed>
+			<OnEscapePressed>
+				this:ClearFocus();
+			</OnEscapePressed>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+	<Frame name="MGDebuffCharTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="160" y="22"/>
+		</Size>
+		<Frames>
+			<EditBox name="$parent_TextBox" inherits="MGEditBoxTemplate">
+				<Anchors>
+					<Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			<Button name="$parent_ColorSwatch">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_TextBox" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parent_SwatchBg">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						CloseMenus();
+						UIDropDownMenuButton_OpenColorPicker(this:GetParent());
+					</OnClick>
+					<OnEnter>
+						getglobal(this:GetName().."_SwatchBg"):SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave>
+						getglobal(this:GetName().."_SwatchBg"):SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLeave>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
+			</Button>
+			<Button name="$parent_UpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_ColorSwatch" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MGOptions_SortBuff_OnClick(this:GetParent():GetID(),"Up");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parent_DownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent_UpButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MGOptions_SortBuff_OnClick(this:GetParent():GetID(),"Down");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="MGOptionsFrame_DropdownTemplate" inherits="UIDropDownMenuTemplate" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="21" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if ( this.tooltipText ) then
+					GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+					GameTooltip:SetText(this.tooltipText, nil, nil, nil, nil, 1);
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	
+	<!-- Real Frames -->
+	<Frame name="MGOptionsFrame" toplevel="true" frameStrata="MEDIUM" movable="false" enableMouse="true" hidden="true" parent="UIParent">
+		<Size>
+			<AbsDimension x="564" y="500"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+		<TitleRegion setAllPoints="true"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="MGOptionsFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="384" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="MiniGroup Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="MGOptionsFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="MGOptionsFrame_Page1" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame1" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="540" y="145"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- other addons -->
+					<Frame name="MGOptions_SubFrame2" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="270" y="265"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame1" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>				
+					</Frame>
+
+					<Frame name="MGOptions_SubFrame3" inherits="OptionFrameBoxTemplate" hidden="false">
+						<Size>
+							<AbsDimension x="270" y="265"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame2" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+				
+					<!-- Use global config -->
+					<CheckButton name="MGOptionsFrame_CheckButton85" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Smooth health/mana bar colors -->
+					<CheckButton name="MGOptionsFrame_CheckButton10" inherits="MGOptions_CheckButtonTemplate" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Show Endcaps -->
+					<CheckButton name="MGOptionsFrame_CheckButton80" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton10" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<Frame name="MGOptionsFrame_Dropdown58" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton80" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-13" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Highlight selected party member -->
+					<CheckButton name="MGOptionsFrame_CheckButton46" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="190" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Show key bindings -->
+					<CheckButton name="MGOptionsFrame_CheckButton44" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton46" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Use party raid colors -->
+					<CheckButton name="MGOptionsFrame_CheckButton45" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton44" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="MGOptionsFrame_CheckButton111" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton45" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton96" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="360" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton97" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton96" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Hide Raid Everything -->
+					<CheckButton name="MGOptionsFrame_CheckButton92" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame2" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Enable CastParty -->
+					<CheckButton name="MGOptionsFrame_CheckButton81" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton92" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Enable CastParty for target -->
+					<CheckButton name="MGOptionsFrame_CheckButton86" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton81" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Show CastParty 
+					<CheckButton name="MGOptionsFrame_CheckButton82" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton86" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>-->
+
+					<!-- Override CastParty right click (mouse) -->
+					<Frame name="MGOptionsFrame_Dropdown26" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton81" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-10" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Override CastParty right click (alt) -->
+					<CheckButton name="MGOptionsFrame_CheckButton88" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown26" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Override CastParty right click (ctrl) -->
+					<CheckButton name="MGOptionsFrame_CheckButton89" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton88" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="60" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Override CastParty right click (shift) -->
+					<CheckButton name="MGOptionsFrame_CheckButton90" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton88" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="125" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Enable Buff Times -->
+					<CheckButton name="MGOptionsFrame_CheckButton153" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton88" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Use independent scaling -->
+					<CheckButton name="MGOptionsFrame_CheckButton11" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame3" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="MGOptionsFrame_Slider1" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="210" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton11" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="25" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								MGOptionsFrame_Slider1.tip = 1;
+							</OnEnter>
+							<OnValueChanged>
+								MiniGroup2:MGOptionsSliderChanged(arg1);
+							</OnValueChanged>
+							<OnLeave>
+								GameTooltip:Hide();
+								MGOptionsFrame_Slider1.tip = nil;
+							</OnLeave>
+						</Scripts>
+					</Slider>
+
+					<!-- Show MapButton -->
+					<CheckButton name="MGOptionsFrame_CheckButton91" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Slider1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-25" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Icon position slider (based on Gatherer code) -->					
+					<Slider name="MGOptionsFrame_Slider2" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="210" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton91" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="25" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_ICONPOSITION_TEXT);
+								getglobal(this:GetName().."High"):SetText();
+								getglobal(this:GetName().."Low"):SetText();
+								this:SetMinMaxValues(0, 360);
+								this:SetValueStep(1);
+								this.tooltipText = MG_OPTIONS_ICONPOSITION_TEXT;
+							</OnLoad>
+							<OnShow>
+								if (MiniGroup2.GetOpt("IconPosition")) then
+									this:SetValue(MiniGroup2.GetOpt("IconPosition"));
+								end
+							</OnShow>
+							<OnValueChanged>
+								MiniGroup2.SetOpt("IconPosition",this:GetValue());
+								getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_ICONPOSITION_TEXT.." - "..this:GetValue().."\194\176");
+								MG_MapButton:SetPoint("TOPLEFT", "Minimap", "TOPLEFT", 52 - (80 * cos(this:GetValue())), (80 * sin(this:GetValue())) - 52);
+							</OnValueChanged>
+						</Scripts>
+					</Slider>					
+					
+				<!-- Frame Growth -->
+					<Frame name="MGOptionsFrame_Dropdown25" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Slider2" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="-35" y="-18"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<Frame name="MGOptionsFrame_Dropdown57" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown25" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Slider name="MGOptionsFrame_Slider4" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="210" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown57" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="35" y="-50"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_SPACING_TEXT);
+								getglobal(this:GetName().."High"):SetText();
+								getglobal(this:GetName().."Low"):SetText();
+								this:SetMinMaxValues(0, 50);
+								this:SetValueStep(1);
+								this.tooltipText = MG_OPTIONS_SPACING_TEXT;
+							</OnLoad>
+							<OnShow>
+								if (MiniGroup2.GetOpt("GroupSpace")) then
+									this:SetValue(MiniGroup2.GetOpt("GroupSpace"));
+								end
+							</OnShow>
+							<OnValueChanged>
+								MiniGroup2.SetOpt("GroupSpace",this:GetValue());
+								getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_SPACING_TEXT.." - "..this:GetValue().." points");
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+					
+			<Frame name="MGOptionsFrame_Page2" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame4" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptions_SubFrame5" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="365" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame4" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptions_SubFrame6" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame4" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Player frame style -->
+					<Frame name="MGOptionsFrame_Dropdown9" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame4" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Player Blizzard frame -->
+					<CheckButton name="MGOptionsFrame_CheckButton1" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown9" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Player grouping -->
+					<CheckButton name="MGOptionsFrame_CheckButton76" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Player status text style -->
+					<Frame name="MGOptionsFrame_Dropdown13" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown9" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Player status text style -->
+					<Frame name="MGOptionsFrame_Dropdown33" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown13" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Player aura style -->
+					<Frame name="MGOptionsFrame_Dropdown17" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame6" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton112" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown17" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Player Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown19" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton112" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Player Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown18" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown19" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton120" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown18" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Show player combat text -->
+					<CheckButton name="MGOptionsFrame_CheckButton69" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame5" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Show player XP -->
+					<CheckButton name="MGOptionsFrame_CheckButton23" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton69" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton130" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton23" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton140" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton130" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- RestIndicator -->
+					<Frame name="MGOptionsFrame_Dropdown6" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame5" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-295"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- CombatIndicator -->
+					<Frame name="MGOptionsFrame_Dropdown7" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown6" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- RestIndicator -->
+					<Frame name="MGOptionsFrame_Dropdown8" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown7" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- FlashRestIndicator -->
+					<CheckButton name="MGOptionsFrame_CheckButton77" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown6" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="170" y="1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- FlashCombatIndicator -->
+					<CheckButton name="MGOptionsFrame_CheckButton78" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown7" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="170" y="1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- FlashAggroIndicator -->
+					<CheckButton name="MGOptionsFrame_CheckButton79" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown8" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="170" y="1"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+				</Frames>
+			</Frame>
+				
+			<!-- Pet page -->
+			<Frame name="MGOptionsFrame_Page3" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame7" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+				
+					<Frame name="MGOptions_SubFrame8" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="365" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame7" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<Frame name="MGOptions_SubFrame9" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame7" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Pet frame style -->
+					<Frame name="MGOptionsFrame_Dropdown10" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame7" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Pet Blizzard frame 
+					<CheckButton name="MGOptionsFrame_CheckButton2" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown10" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>-->
+					
+					<!-- Pet grouping -->
+					<Frame name="MGOptionsFrame_Dropdown24" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown10" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Pet Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown14" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown24" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown34" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown14" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Pet aura style -->
+					<Frame name="MGOptionsFrame_Dropdown20" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame9" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton113" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown20" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Pet Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown22" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton113" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Pet Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown21" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown22" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton121" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown21" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Show pet combat -->
+					<CheckButton name="MGOptionsFrame_CheckButton70" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame8" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Show pet XP -->
+					<CheckButton name="MGOptionsFrame_CheckButton24" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton70" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton131" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton24" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton141" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton131" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="MGOptionsFrame_CheckButton25" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton141" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Always show pet frame -->
+					<CheckButton name="MGOptionsFrame_CheckButton84" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton25" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+				</Frames>
+			</Frame>
+
+			<!-- Party page -->
+			<Frame name="MGOptionsFrame_Page4" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame10" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame11" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="365" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame10" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame12" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame10" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party frame style -->
+					<Frame name="MGOptionsFrame_Dropdown11" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame10" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Blizzard frame -->
+					<CheckButton name="MGOptionsFrame_CheckButton4" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown11" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Party grouping -->
+					<CheckButton name="MGOptionsFrame_CheckButton5" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton4" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Party Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown15" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown11" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown35" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown15" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Party aura style -->
+					<Frame name="MGOptionsFrame_Dropdown1" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame12" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton114" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown1" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Party Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown23" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton114" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Party Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown3" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown23" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton122" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown3" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Always show party frames -->
+					<CheckButton name="MGOptionsFrame_CheckButton83" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame11" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton132" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton83" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton142" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton132" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Hide party frames when in raid -->
+					<CheckButton name="MGOptionsFrame_CheckButton93" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton142" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton101" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton93" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<!-- Party Pet page -->
+			<Frame name="MGOptionsFrame_Page5" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame13" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+				
+					<Frame name="MGOptions_SubFrame14" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="365" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame13" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<Frame name="MGOptions_SubFrame15" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame13" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet frame style -->
+					<Frame name="MGOptionsFrame_Dropdown27" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame13" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet Blizzard frame 
+					<CheckButton name="MGOptionsFrame_CheckButton94" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown27" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>-->
+
+					<!-- Party Pet grouping -->
+					<Frame name="MGOptionsFrame_Dropdown31" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown27" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown28" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown31" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown37" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown28" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet aura style -->
+					<Frame name="MGOptionsFrame_Dropdown29" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame15" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton115" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown29" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Party Pet Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown30" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton115" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown32" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown30" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton123" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown32" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Always show party pet frame -->
+					<CheckButton name="MGOptionsFrame_CheckButton95" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame14" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton133" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton95" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton143" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton133" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="MGOptionsFrame_CheckButton102" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton143" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+
+			<!-- Raid page -->
+			<Frame name="MGOptionsFrame_Page6" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame19" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame20" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="365" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame19" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame21" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame19" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party frame style -->
+					<Frame name="MGOptionsFrame_Dropdown38" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame19" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party grouping 
+					<CheckButton name="MGOptionsFrame_CheckButton98" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown38" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton> -->
+					
+					<!-- Party Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown39" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown38" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown40" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown39" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Party aura style -->
+					<Frame name="MGOptionsFrame_Dropdown41" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame21" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton116" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown41" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Party Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown42" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton116" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Party Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown43" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown42" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton124" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown43" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton134" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame20" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton144" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton134" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Always show party frames -->
+					<CheckButton name="MGOptionsFrame_CheckButton99" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton144" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton103" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton99" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton108" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton103" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton109" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton108" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton110" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton109" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					<CheckButton name="MGOptionsFrame_CheckButton107" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton110" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<Slider name="MGOptionsFrame_Slider3" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="210" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton107" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="25" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								MGOptionsFrame_Slider3.tip = 1;
+							</OnEnter>
+							<OnValueChanged>
+								MiniGroup2:MGOptionsSliderChanged3(arg1);
+							</OnValueChanged>
+							<OnLeave>
+								GameTooltip:Hide();
+								MGOptionsFrame_Slider3.tip = nil;
+							</OnLeave>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</Frame>
+			
+			<!-- RaidPet page -->
+			<Frame name="MGOptionsFrame_Page7" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame22" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+				
+					<Frame name="MGOptions_SubFrame23" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="365" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame22" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<Frame name="MGOptions_SubFrame24" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame22" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet frame style -->
+					<Frame name="MGOptionsFrame_Dropdown44" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame22" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet grouping 
+					<Frame name="MGOptionsFrame_Dropdown48" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown44" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-65"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>-->
+
+					<!-- Party Pet Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown45" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown44" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown50" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown45" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet aura style -->
+					<Frame name="MGOptionsFrame_Dropdown46" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame24" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton117" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown46" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Party Pet Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown47" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton117" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Party Pet Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown49" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown47" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton125" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown49" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Always show party pet frame -->
+					<CheckButton name="MGOptionsFrame_CheckButton100" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame23" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="MGOptionsFrame_CheckButton135" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton100" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton145" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton135" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>		
+					
+					<CheckButton name="MGOptionsFrame_CheckButton104" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton145" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<!-- Target page -->
+			<Frame name="MGOptionsFrame_Page8" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame16" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame17" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="190" y="425"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame16" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame18" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame16" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Target frame style -->
+					<Frame name="MGOptionsFrame_Dropdown12" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame16" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Target Blizzard frame -->
+					<CheckButton name="MGOptionsFrame_CheckButton3" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown12" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Target Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown16" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown12" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown36" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown16" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Use target raid colors 
+					<CheckButton name="MGOptionsFrame_CheckButton47" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame17" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>-->
+
+					<CheckButton name="MGOptionsFrame_CheckButton136" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame17" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-10"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton146" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton136" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<CheckButton name="MGOptionsFrame_CheckButton137" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton146" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton147" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton137" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<CheckButton name="MGOptionsFrame_CheckButton105" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton147" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-32"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton106" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton105" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					<CheckButton name="MGOptionsFrame_CheckButton128" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton106" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>					
+					<!-- Target aura style -->
+					<Frame name="MGOptionsFrame_Dropdown2" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame18" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton118" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown2" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Target Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown5" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton118" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Target Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown4" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown5" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton126" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown4" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- targettarget -->
+					<Frame name="MGOptions_SubFrame25" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="215"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame17" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="MGOptions_SubFrame27" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="175" y="210"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame25" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Target frame style -->
+					<Frame name="MGOptionsFrame_Dropdown51" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame25" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Target Status Text Style -->
+					<Frame name="MGOptionsFrame_Dropdown52" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown51" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-110"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<Frame name="MGOptionsFrame_Dropdown53" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown52" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+
+					<!-- Target aura style -->
+					<Frame name="MGOptionsFrame_Dropdown54" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame27" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-5" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- Filter Auras -->
+					<CheckButton name="MGOptionsFrame_CheckButton119" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown54" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-25"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+					
+					<!-- Target Aura Pos -->
+					<Frame name="MGOptionsFrame_Dropdown56" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton119" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-15" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					
+					<!-- Target Aura Tooltip Style -->
+					<Frame name="MGOptionsFrame_Dropdown55" inherits="MGOptionsFrame_DropdownTemplate" enableMouse="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown56" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<!-- Debuff coloring -->
+					<CheckButton name="MGOptionsFrame_CheckButton127" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_Dropdown55" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-30"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			
+			<!-- other options page -->
+			<Frame name="MGOptionsFrame_Page9" setAllPoints="true">
+				<Frames>
+					<Frame name="MGOptions_SubFrame28" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="540" y="145"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="12" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+
+					<!-- theme options -->
+					<Frame name="MGOptions_SubFrame29" inherits="OptionFrameBoxTemplate">
+						<Size>
+							<AbsDimension x="270" y="265"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame28" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-15"/>
+								</Offset>
+							</Anchor>
+						</Anchors>				
+					</Frame>
+
+					<!-- Hide Player Cast Bars -->
+					<CheckButton name="MGOptionsFrame_CheckButton150" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame28" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Hide Not Here Alerts -->
+					<CheckButton name="MGOptionsFrame_CheckButton152" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton150" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Hide Not Here Alerts For OFFLINES -->
+					<CheckButton name="MGOptionsFrame_CheckButton154" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton152" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="190" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Hide FSR Status -->
+					<CheckButton name="MGOptionsFrame_CheckButton156" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton154" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Hide FSR Status OOFSR -->
+					<CheckButton name="MGOptionsFrame_CheckButton157" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton156" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Hide OOR Alerts -->
+					<CheckButton name="MGOptionsFrame_CheckButton151" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton152" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-24"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- Use Big Health Fonts -->
+					<CheckButton name="MGOptionsFrame_CheckButton155" inherits="MGOptions_CheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptions_SubFrame29" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</CheckButton>
+
+					<!-- OOR Base Spell Select -->
+					<Slider name="MGOptionsFrame_Slider5" inherits="OptionsSliderTemplate">
+						<Size>
+							<AbsDimension x="154" y="17"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton151" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="6" y="-45"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_OORSELECT_TEXT);
+								getglobal(this:GetName().."High"):SetText();
+								getglobal(this:GetName().."Low"):SetText();
+								this:SetMinMaxValues(1, 12);
+								this:SetValueStep(1);
+								this.tooltipText = MG_OPTIONS_OORSELECT_TOOLTIPTEXT;
+							</OnLoad>
+							<OnShow>
+								if (MiniGroup2.GetOpt("OORSpell")) then
+									this:SetValue(MiniGroup2.GetOpt("OORSpell"));
+								end
+							</OnShow>
+							<OnValueChanged>
+								MiniGroup2.SetOpt("OORSpell",this:GetValue());
+								GameTooltip:SetOwner(GameTooltip, "ANCHOR_NONE")
+								GameTooltip:SetAction(this:GetValue());
+								local spname = GameTooltipTextLeft1:GetText();
+								if (spname ~= nil) then
+									if (string.len(spname) > 12) then spname = string.sub(spname,0,12).."..."; end
+									getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_OORSELECT_TEXT..": "..spname);
+								else
+									getglobal(this:GetName().."Text"):SetText(MG_OPTIONS_OORSELECT_TEXT..": None");
+								end
+								GameTooltip:Hide();
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+
+					<Frame name="MGOptionsFrame_CastBarColor" enableMouse="true">
+						<Size>
+							<AbsDimension x="200" y="24"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton150" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="200" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="20" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+								<Texture name="$parentSwatchBg">
+									<Size>
+										<AbsDimension x="15" y="15"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.7" g="0" b="0.3"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnMouseUp>
+								MGOptionsFrame_CastBarColorSelect:Show();
+								MGOptionsFrame_CastBarColor:EnableMouse(false);
+							</OnMouseUp>
+						</Scripts>
+					</Frame>
+					<ColorSelect name="MGOptionsFrame_CastBarColorSelect" enableMouse="true" hidden="true">
+						<Size>
+							<AbsDimension x="40" y="40"></AbsDimension>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame_CheckButton150" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="185" y="6"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ColorWheelTexture></ColorWheelTexture>
+						<Scripts>
+							<OnMouseUp>
+								MGOptionsFrame_CastBarColorSelect:Hide();
+								MGOptionsFrame_CastBarColor:EnableMouse(true);
+								local castr,castg,castb = MGOptionsFrame_CastBarColorSelect:GetColorRGB();
+								MGOptionsFrame_CastBarColorSwatchBg:SetTexture(castr,castg,castb);
+								MiniGroup2.SetOpt("CastBarR",castr);
+								MiniGroup2.SetOpt("CastBarG",castg);
+								MiniGroup2.SetOpt("CastBarB",castb);
+							</OnMouseUp>
+						</Scripts>
+					</ColorSelect>
+
+				</Frames>
+			</Frame>
+
+			<Button name="MGOptionsFrameOkay" inherits="GameMenuButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="75" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						MiniGroup2:OptionsSave();
+						HideUIPanel(MGOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="MGOptionsFrameApply" inherits="GameMenuButtonTemplate" text="Apply">
+				<Size>
+					<AbsDimension x="75" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MGOptionsFrameOkay" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionOK");
+						MiniGroup2:OptionsSave();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="MGOptionsFrameCancel" inherits="GameMenuButtonTemplate" text="CANCEL">
+				<Size>
+					<AbsDimension x="75" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MGOptionsFrameApply" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("gsTitleOptionExit");
+						HideUIPanel(MGOptionsFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="MGOptionsFrameDefaults" inherits="OptionsButtonTemplate" text="DEFAULTS">
+				<Size>
+					<AbsDimension x="75" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="13" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MiniGroup2:Reset()
+						MGOptionsFrame:Hide();
+						MGOptionsFrame:Show();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(MG_OPTIONS_DEFAULTS_TOOLTIP1, 1.0, 1.0, 1.0, MG_OPTIONS_DEFAULTS_TOOLTIP2);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			
+			<!-- <Button name="MGOptionsFrameGlobal" inherits="OptionsButtonTemplate" text="Global">
+				<Size>
+					<AbsDimension x="75" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptionsFrameDefaults" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn");
+						MGOptionsFrame:Hide();
+						MGOptionsFrame:Show();
+					</OnClick>
+					<OnEnter>
+						GameTooltip_AddNewbieTip(MG_OPTIONS_GLOBAL_TOOLTIP1, 1.0, 1.0, 1.0, MG_OPTIONS_GLOBAL_TOOLTIP2);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button> -->
+
+			<Button name="MGOptions_Tab1" inherits="MGOptions_BottomTabTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MGOptionsFrame" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab2" inherits="MGOptions_BottomTabTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab3" inherits="MGOptions_BottomTabTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab4" inherits="MGOptions_BottomTabTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab5" inherits="MGOptions_BottomTabTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab6" inherits="MGOptions_BottomTabTemplate" id="6">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab7" inherits="MGOptions_BottomTabTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab8" inherits="MGOptions_BottomTabTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="MGOptions_Tab9" inherits="MGOptions_BottomTabTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MGOptions_Tab8" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-20" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+
+			<OnLoad>
+				UIPanelWindows["MGOptionsFrame"] = {area = "center", pushable = 0};
+			</OnLoad>
+			<OnShow>
+				MiniGroup2:OptionsInit();
+				MiniGroup2:OptionsOnShow();
+			</OnShow>
+			<OnHide>
+				if ( ColorPickerFrame:IsVisible() ) then
+					ColorPickerFrame:Hide();
+				end
+				if (MYADDONS_ACTIVE_OPTIONSFRAME == this) then
+					ShowUIPanel(myAddOnsFrame);
+				end
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>
